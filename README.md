@@ -1,1 +1,1 @@
-# a2a-payments
+# Agent Payment Protocol (AP2)  

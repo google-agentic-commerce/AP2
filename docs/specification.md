@@ -286,8 +286,9 @@ Some salient points of the flow diagram:
 
 ### 7.2 Code Samples
 
+#### Sample Merchant Agent Card
+
 ```json
-// Sample Merchant Agent Card
 {
   "name": "MerchantAgent",
   "description": "A sales assistant agent for a merchant.",
@@ -295,12 +296,12 @@ Some salient points of the flow diagram:
     "extensions": [
       {
         "description": "Supports the A2A payments extension.",
-        "required": True,
+        "required": true,
         "uri": "https://google-a2a.github.io/A2A/ext/payments/v1",
       },
       {
         "description": "Supports the Visa payment method extension",
-        "required": True,
+        "required": true,
         "uri": "https://visa.github.io/paymentmethod/types/v1",
       },
     ]
@@ -318,8 +319,9 @@ Some salient points of the flow diagram:
 }
 ```
 
+#### Sample Credential Provider Agent Card
+
 ```json
-// Sample Credential Provider Agent Card
 {
   "name": "CredentialProvider",
   "description": "An agent that holds a user's payment credentials.",
@@ -375,12 +377,13 @@ Some salient points of the flow diagram:
 }
 ```
 
+#### Sample CartMandate
+
 ```json
-// Sample CartMandate
 {
   "contents": {
     "id": "cart_shoes_123",
-    "user_signature_required": False,
+    "user_signature_required": false,
     "payment_request": {
       "method_data": [
         {
@@ -399,26 +402,26 @@ Some salient points of the flow diagram:
               "currency": "USD",
               "value": 120.0,
             },
-            "pending": None,
+            "pending": null,
           }
         ],
-        "shipping_options": None,
-        "modifiers": None,
+        "shipping_options": null,
+        "modifiers": null,
         "total": {
           "label": "Total",
             "amount": {
               "currency": "USD",
               "value": 120.0,
             },
-            "pending": None,
+            "pending": null,
         },
       },
       "options": {
-        "requestPayerName": False,
-        "requestPayerEmail": False,
-        "requestPayerPhone": False,
-        "requestShipping": True,
-        "shippingType": None,
+        "requestPayerName": false,
+        "requestPayerEmail": false,
+        "requestPayerPhone": false,
+        "requestShipping": true,
+        "shippingType": null,
       },
     },
   },
@@ -427,15 +430,15 @@ Some salient points of the flow diagram:
 }
 ```
 
+#### Sample PaymentMandate
+
 ```json
-// Sample PaymentMandate
 {
   "payment_details": {
     "cart_mandate": "<user-signed hash of the cart mandate>"
     "payment_request_id": "order_shoes_123",
     "merchant_agent_card": {
       "name": "MerchantAgent"
-      ...
     },
     "payment_method": {
       "supported_methods": "CARD",
@@ -449,10 +452,9 @@ Some salient points of the flow diagram:
     },
     "risk_info": {
       "device_imei": "abc123"
-      ...
-    }
+    },
     "display_info": "<image bytes>"
-  }
+  },
   "creation_time": "2025-08-26T19:36:36.377022Z"
 }
 ```

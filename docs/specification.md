@@ -97,7 +97,7 @@ The agent payments ecosystem consists of the following key roles:
 - **The Merchant Payment Processor Endpoint (MPP)**: The Merchant Payment Processor (web, API, MCP or AI Agent) may be the same as the Merchant if the Merchant has all the capabilities to fulfill this role. The MPP constructs the txn auth message which can be sent to the payment ecosystem for authorization.
 - **Network and Issuer**: The provider of the payment network and issuer of payment credentials to the human user. The Credentials Provider may need to interact with the network for issuance of specific tokens for AI agent transactions and the Merchant/PSP may submit these transactions for authorization to issuers via the networks.
 
-![][image1]
+![Roles & Responsibilities](assets/roles_responsibilities.png)
 
 ### 3.2 The Flow of Trust
 
@@ -111,9 +111,9 @@ In the immediate future, payment ecosystem trust will be established through man
 
 These registries are decentralized and manually curated by the entity owners (*e.g. Shopping Agent provider decides that they want to allowlist limited popular credentials providers but not any others*). This is less work than the industry current approach of point-to-point integrations where there is development work required for every bespoke integration.
 
-![][image2]
+![Shopping Surface Trust](assets/shopping_surface_trust.png)
 
-![][image3]
+![Merchant Surface Trust](assets/merchant_surface_trust.png)
 
 #### 3.2.2 Long Term
 

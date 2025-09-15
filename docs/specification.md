@@ -1,3 +1,5 @@
+<!-- Copyright 2025 Google LLC. Licensed  under the Apache License, Version 2.0 (the “License”); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://www.apache.org/licenses/LICENSE-2.0 -->
+
 # Agent Payments Protocol (AP2): Building a Secure and Interoperable Future for AI-Driven Payments
 
 ## Executive Summary
@@ -271,7 +273,70 @@ We consider MCP to be equally important and plan to follow up with reference imp
 
 ### 7.1 Illustrative Transaction Flow
 
-![][image4]
+```mermaid
+---
+config:
+  look: neo
+  theme: redux-color
+---
+sequenceDiagram
+    participant user as "User"
+    participant sa   as "Shopping Agent"
+    participant cp   as "Credential Provider"
+    participant ma   as "Merchant Agent"
+    participant m    as "Merchant"
+    participant mpp  as "Merchant Payment Processor"
+
+    user ->> sa: 1. Shopping Prompts
+    sa   ->> user: 2. IntentMandate confirmation
+    user --) sa: 3. Confirm
+
+    user ->> sa: 4. (optional) Credential Provider
+    user ->> sa: 5. (optional) Shipping Address
+
+    sa ->> cp: 6. Get Payment Methods
+    cp --) sa: 7. { payment methods }
+
+    sa ->> ma: 8. IntentMandate
+    note over ma: 9. Create CartMandate
+
+    ma ->> m: 10. sign CartMandate
+    m --) ma: 11. { signed CartMandate }
+
+    ma --) sa: 12. { signed CartMandate }
+
+    sa ->> cp: 13. Get user payment options
+    cp --) sa: 14. { payment options }
+
+    sa ->> user: 15a. Show CartMandate
+    sa ->> user: 15b. Payment Options Prompt
+
+    user --) sa: 16. payment method selection
+
+    sa ->> cp: 17. Get payment method token
+    cp --) sa: 18. { token }
+
+    note over sa: 19. Create PaymentMandate
+
+    sa ->> user: 20. Redirect to trusted device surface<br/>{ PaymentMandate, CartMandate }
+    note over user: 21. User confirms purchase<br/>& device creates attestation
+    user --) sa: 22. { attestation }
+
+    note over cp: As part of generating the payment credential,<br/>the signed payment mandate may be passed on<br/>to another party (e.g., the network)<br/>to scope the credential appropriately.
+
+    sa ->> cp: 23. PaymentMandate + attestation
+    sa ->> ma: 24. purchase { PaymentMandate + attestation }
+
+    ma  ->> mpp: 25. initiate payment { PaymentMandate + attestation }
+    mpp ->> cp:  26. request payment credentials { PaymentMandate }
+    cp  --) mpp: 27. { payment credentials }
+
+    note over mpp: 28. Process payment
+    mpp ->> cp: 29. Payment receipt
+    mpp ->> ma: 30. Payment receipt
+    ma  --) sa: 31. Payment receipt
+    sa  ->> user: 32. Purchase completed + receipt
+```
 
 Some salient points of the flow diagram:
 

@@ -1,25 +1,12 @@
 # Agent Payments Protocol (AP2)
 
-[![Apache License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
-
-<!-- markdownlint-disable MD041 -->
-<div style="text-align: center;">
-  <div class="centered-logo-text-group">
-    <img src="docs/assets/ap2-logo-black.svg" alt="Agent Payments Protocol Logo" width="100">
-  </div>
-</div>
-
 This repository contains code samples and demos of the Agent Payments Protocol.
-
-## Intro to AP2 Video
-
-[![A2A Intro Video](https://img.youtube.com/vi/yLTp3ic2j5c/hqdefault.jpg)](https://goo.gle/ap2-video)
 
 ## About the Samples
 
 These samples use the
 [Agent Development Kit (ADK)](https://google.github.io/adk-docs/) and Gemini 2.5
-Pro.
+Flash.
 
 The Agent Payments Protocol doesn't require the use of either. While these were
 used in the samples, you're free to use any tools you prefer to build your
@@ -35,8 +22,8 @@ The scenarios can be found in the **samples/android/scenarios** and
 
 Each scenario contains:
 
-* a README.md file describing the scenario and instructions for running it.
-* a run.sh script to simplify the process of running the scenario locally.
+*   a README.md file describing the scenario and instructions for running it.
+*   a run.sh script to simplify the process of running the scenario locally.
 
 This demonstration features various agents and servers, with most source code
 located in **samples/python/src**. Scenarios that use an Android app as the
@@ -46,17 +33,17 @@ shopping assistant have their source code in **samples/android**.
 
 ### Prerequisites
 
-* Python 3.10 or higher
+*   Python 3.10 or higher
 
-### Setup
+### Setup {#setup}
 
 Ensure you have obtained a Google API key from
 [Google AI Studio](http://aistudio.google.com/apikey). Then declare the
 `GOOGLE_API_KEY` variable in one of two ways.
 
-* Option 1: Declare it as an environment variable: `export
+*   Option 1: Declare it as an environment variable: `export
     GOOGLE_API_KEY=your_key`
-* Option 2: Put it into an .env file at the root of your repository. `echo
+*   Option 2: Put it into an .env file at the root of your repository. `echo
     "GOOGLE_API_KEY=you_key" > .env`
 
 ### How to Run a Scenario
@@ -64,15 +51,15 @@ Ensure you have obtained a Google API key from
 To run a specific scenario, follow the instructions in its README.md. It will
 generally follow this pattern:
 
-1. Navigate to the root of the repository.
+1.  Navigate to the root of the repository.
 
     `cd ap2`
 
-1. Run the run script to install dependencies & start the agents.
+1.  Run the run script to install dependencies & start the agents.
 
     `bash samples/python/scenarios/your-scenario-name/run.sh`
 
-1. Navigate to the Shopping Agent URL and begin engaging.
+1.  Navigate to the Shopping Agent URL and begin engaging.
 
 ### Installing the AP2 Types Package
 
@@ -80,6 +67,6 @@ The protocol's core objects are defined in the [src/ap2/types](src/ap2/types)
 directory. A PyPI package will be published at a later time. Until then, you can
 install the types package directly using this command:
 
-```sh
+```
 uv pip install git+https://github.com/google-agentic-commerce/AP2.git@main
 ```

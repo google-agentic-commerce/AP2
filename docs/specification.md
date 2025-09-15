@@ -322,7 +322,7 @@ sequenceDiagram
 
     sa ->> cp: 23. PaymentMandate + attestation
 
-    note over cp: Tokenization call to Network, if applicable. Request Agent Token from Payment Mandate and any needed supplemental transaction data.
+    note over cp: Tokenization call to Network, if applicable.<br/>Request Agent Token from Payment Mandate and<br/>any needed supplemental transaction data.
 
     sa ->> ma: 24. purchase { PaymentMandate + attestation }
 

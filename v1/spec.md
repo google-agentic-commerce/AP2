@@ -30,7 +30,7 @@ schema:
 {
     "type": "object",
     "name": "AP2ExtensionParameters",
-    "description": "The schema for parameters expressed in AgentExtension.params for the AP2 A2A extension."
+    "description": "The schema for parameters expressed in AgentExtension.params for the AP2 A2A extension.",
     "properties": {
         "roles": {
             "type": "array",
@@ -69,7 +69,7 @@ The following listing shows an AgentCard declaring AP2 extension support.
   "capabilities": {
     "extensions": [
         {
-            "uri": "https://github.com/google-agentic-commerce/ap2/v1",
+            "uri": "https://github.com/google-agentic-commerce/ap2/tree/v0.1",
             "description": "This agent can pay for reservations on the user's behalf",
             "params": {
                 "roles": ["shopper"]
@@ -102,11 +102,11 @@ data types.
 ### IntentMandate Message
 
 To provide an `IntentMandate`, the agent MUST create an IntentMandate Message.
-An IntentMandate Message is a an A2A `Message` profile with the following
+An IntentMandate Message is an A2A `Message` profile with the following
 requirements.
 
 The Message MUST contain a DataPart that contains a key of
-`a2a.mandates.IntentMandate` and a value that adheres to the `IntentMandate`
+`ap2.mandates.IntentMandate` and a value that adheres to the `IntentMandate`
 schema. TODO: Link to the IntentMandate data model.
 
 The Message MAY contain a DataPart that contains a key of `risk_data`, where the
@@ -141,7 +141,7 @@ The following listing shows the JSON rendering of an IntentMandate Message.
 ### CartMandate Artifact
 
 To initiate a request for payment, a Merchant Agent MUST produce a CartMandate
-Artifact. This Artifact has a specific structure to adhere to AP2. A Merchant
+Artifact. The CartMandate Artifact is a profile of an A2A Artifact. A Merchant
 Agent MUST NOT produce a CartMandate until all required payment-impacting
 information has been collected. Payment-impacting information is any information
 provided by a client that changes the CartContents, and therefore the price to
@@ -165,7 +165,7 @@ The following listing shows the JSON representation of a CartMandate Artifact.
         {
             "kind": "data",
             "data": {
-                "a2a.mandates.CartMandate": {
+                "ap2.mandates.CartMandate": {
                     "contents": {
                       "id": "cart_shoes_123",
                       "user_signature_required": false,
@@ -174,8 +174,8 @@ The following listing shows the JSON representation of a CartMandate Artifact.
                           {
                             "supported_methods": "CARD",
                             "data": {
-                              "payment_processor_url":"http://example.com/pay"
-                            },
+                              "payment_processor_url": "http://example.com/pay"
+                            }
                           }
                         ],
                         "details": {
@@ -250,7 +250,7 @@ The following listing shows a JSON rendering of a PaymentMandate Message.
             "data": {
                 "ap2.mandates.PaymentMandate": {
                   "payment_details": {
-                    "cart_mandate": "<user-signed hash of the cart mandate>"
+                    "cart_mandate": "<user-signed hash of the cart mandate>",
                     "payment_request_id": "order_shoes_123",
                     "merchant_agent_card": {
                       "name": "MerchantAgent"

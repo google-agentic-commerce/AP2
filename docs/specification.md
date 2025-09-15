@@ -320,9 +320,10 @@ sequenceDiagram
     note over user: 21. User confirms purchase<br/>& device creates attestation
     user --) sa: 22. { attestation }
 
-    note over cp: As part of generating the payment credential,<br/>the signed payment mandate may be passed on<br/>to another party (e.g., the network)<br/>to scope the credential appropriately.
-
     sa ->> cp: 23. PaymentMandate + attestation
+
+    note over cp: Tokenization call to Network, if applicable. Request Agent Token from Payment Mandate and any needed supplemental transaction data.
+
     sa ->> ma: 24. purchase { PaymentMandate + attestation }
 
     ma  ->> mpp: 25. initiate payment { PaymentMandate + attestation }

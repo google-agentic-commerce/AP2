@@ -278,12 +278,12 @@ config:
   theme: redux-color
 ---
 sequenceDiagram
-    participant user as "User"
-    participant sa   as "Shopping Agent"
-    participant cp   as "Credential Provider"
-    participant ma   as "Merchant Agent"
-    participant m    as "Merchant"
-    participant mpp  as "Merchant Payment Processor"
+    participant user as User
+    participant sa   as Shopping Agent
+    participant cp   as Credential Provider
+    participant ma   as Merchant Agent
+    participant m    as Merchant
+    participant mpp  as Merchant Payment Processor
 
     user ->> sa: 1. Shopping Prompts
     sa   ->> user: 2. IntentMandate confirmation

@@ -38,6 +38,7 @@ and adopt A2A as the standard protocol for AI agent payments.
 - [Lazada](https://www.lazada.com/)
 - [Lightspark](https://www.lightspark.com/)
 - [manus.ai](https://manus.ai/)
+- [Mastercard](https://mastercard.com/)
 - [Mesh Payments](https://www.meshpayments.com/)
 - [MetaMask](https://metamask.io/)
 - [Monee (ShopeePay)](https://shopeepay.com/)

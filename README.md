@@ -48,7 +48,7 @@ shopping assistant have their source code in **samples/android**.
 
 - Python 3.10 or higher
 
-### Setup {#setup}
+### Setup
 
 Ensure you have obtained a Google API key from
 [Google AI Studio](http://aistudio.google.com/apikey). Then declare the
@@ -73,3 +73,13 @@ generally follow this pattern:
     `bash samples/python/scenarios/your-scenario-name/run.sh`
 
 1. Navigate to the Shopping Agent URL and begin engaging.
+
+### Installing the AP2 Types Package
+
+The protocol's core objects are defined in the [src/ap2/types](src/ap2/types)
+directory. A PyPI package will be published at a later time. Until then, you can
+install the types package directly using this command:
+
+```sh
+uv pip install git+https://github.com/google-agentic-commerce/AP2.git@main
+```

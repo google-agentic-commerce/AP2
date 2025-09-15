@@ -31,7 +31,7 @@ def check_google_api_key() -> bool:
 
 
 DEBUG_MODE_INSTRUCTIONS = """
-    This is really important! If the agent or user asks you to be verbose, do the following:
+    This is really important! If the agent or user asks you to be verbose or if debug_mode is True, do the following:
       1. If this is the the start of a new task, explain who you are, what you are going to do, what tools you use, and what agents you delegate to.
       2. During the task, provide regular status updates on what you are doing, what you have done so far, and what you plan to do next.
       3. If you are delegating to another agent, ask the agent or tool to also be verbose.

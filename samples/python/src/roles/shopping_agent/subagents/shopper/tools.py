@@ -96,6 +96,7 @@ async def find_products(
       .add_data(INTENT_MANDATE_DATA_KEY, intent_mandate.model_dump())
       .add_data("risk_data", risk_data)
       .add_data("debug_mode", debug_mode)
+      .add_data("shopping_agent_id", "trusted_shopping_agent")
       .build()
   )
   task = await merchant_agent_client.send_a2a_message(message)

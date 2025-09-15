@@ -33,7 +33,7 @@ SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)
 REPO_ROOT=$(cd -- "$SCRIPT_DIR/.." &>/dev/null && pwd)
 
 # Define file and directory paths.
-MARKDOWN_DIR="${REPO_ROOT}/docs/"
+MARKDOWN_DIR="${REPO_ROOT}/"
 MARKDOWNLINT_CONFIG="${REPO_ROOT}/.github/linters/.markdownlint.json"
 
 # Install markdownlint-cli if the command doesn't already exist.

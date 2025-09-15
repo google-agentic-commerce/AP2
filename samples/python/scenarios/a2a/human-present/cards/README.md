@@ -158,6 +158,7 @@ something like "I think you forgot to display the JSON, remember we're in
 verbose mode!". Typically, after one additional prompt the agents do a better
 job displaying the JSON. If they do forget again, you can always explicitly ask
 to see any data or mandate.
+
 --------------------------------------------------------------------------------
 
 ## What to expect {#expect}

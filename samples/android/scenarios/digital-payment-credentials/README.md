@@ -85,15 +85,17 @@ This sample consists of:
 
 6.  **Install the Digital Wallet App (sideloaded)**
 
-    This demo requires a separate digital wallet application ('CM Wallet') to be
+    This demo requires a separate digital wallet app ('CM Wallet') to be
     installed on the same device that holds the Digital Payment Credentials.
 
-    TODO:
-    [Link to CM Wallet App](https://drive.google.com/file/d/1N_mtKpyBARY_DPucdJqgmnXviOkmsYwP/view?usp=sharing)
+    1.  Download the
+        [latest CM Wallet APK](https://github.com/digitalcredentialsdev/CMWallet/actions?query=branch%3Amain).
 
-    ```
-    adb install <the-place-of-your-cm-app-apk>
-    ```
+    1.  Install the APK:
+
+        ```
+        adb install https://github.com/digitalcredentialsdev/CMWallet/actions/runs/17747780468
+        ```
 
 7.  **Enable the Enhanced Payment Confirmation UI**
 

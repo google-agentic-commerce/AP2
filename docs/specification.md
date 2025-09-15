@@ -565,7 +565,7 @@ At the top of the funnel, the Shopping Agent needs to be able to discover Mercha
 
 ### Delegated Authorization
 
-An agent needs a secure and easy way to get scoped permissions to act on a user's behalf. Early versions can use existing methods like redirects or one-time passcodes. However, the long-term goal is to move beyond these experiences toward solutions that offer more granular, time-bound access controls for agents.
+An agent needs a secure and easy way to get scoped permissions to act on a user's behalf. Early versions can use existing methods like redirects or one-time passcodes. However, the long-term goal is to move toward solutions that offer more granular, time-bound access controls for agents.
 
 ### Issuance of Trusted Public Keys
 

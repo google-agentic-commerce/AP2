@@ -1,7 +1,5 @@
 # AP2 A2A Extension Specification
 
-## Overview
-
 This extension to the A2A protocol enables performing the Agent Payments
 Protocol (AP2) over A2A.
 
@@ -36,6 +34,7 @@ schema:
             "type": "array",
             "name": "AP2 Roles",
             "description": "The roles that this agent performs in the AP2 model.",
+            "minItems":
             "items": {
               "enum": ["merchant", "shopper", "credentials-provider", "payment-processor"]
             }
@@ -52,7 +51,7 @@ AP2Role = "merchant" | "shopper" | "credentials-provider" | "payment-processor"
 
 class AP2ExtensionParameters(BaseModel):
   # The roles this agent performs in the AP2 model. At least one value is required.
-  roles: list[AP2Role]
+  roles: list[AP2Role] = Field(..., min_length=1)
 
 ```
 
@@ -107,7 +106,7 @@ requirements.
 
 The Message MUST contain a DataPart that contains a key of
 `ap2.mandates.IntentMandate` and a value that adheres to the `IntentMandate`
-schema. TODO: Link to the IntentMandate data model.
+schema.
 
 The Message MAY contain a DataPart that contains a key of `risk_data`, where the
 value contains implementation-defined risk signals.
@@ -150,10 +149,10 @@ is included in the CartContents.
 
 The CartMandate Artifact MUST have a DataPart that contains a key of
 `ap2.mandates.CartMandate` with a corresponding object that adheres to the
-CartMandate schema. [TODO: Link to schema in specification].
+CartMandate schema.
 
 The CartMandate Artifact MAY include a DataPart that contains a key of
-`risk_data` and an object that contains implementation-defined risk signal data.
+`risk_data` and a value that contains implementation-defined risk signal data.
 
 The following listing shows the JSON representation of a CartMandate Artifact.
 
@@ -240,7 +239,7 @@ The following listing shows a JSON rendering of a PaymentMandate Message.
 
 ```json
 {
-    "messageId": "e0b84c60-3f5f-4234-adc6-91f2b73b19e5",
+    "messageId": "b5951b1a-8d5b-4ad3-a06f-92bf74e76589",
     "contextId": "sample-payment-context",
     "taskId": "sample-payment-task",
     "role": "user",

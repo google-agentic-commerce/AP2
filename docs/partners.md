@@ -20,7 +20,6 @@ and adopt A2A as the standard protocol for AI agent payments.
 - [Confluent](https://www.confluent.io/)
 - [Crossmint](https://www.crossmint.com/)
 - [Dafiti](https://www.dafiti.com/)
-- [DeepMind](https://deepmind.google/)
 - [Dell](https://www.dell.com/)
 - [DLocal](https://dlocal.com/)
 - [Ebanx](https://www.ebanx.com/)

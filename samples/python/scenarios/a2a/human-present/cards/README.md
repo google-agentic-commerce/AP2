@@ -181,12 +181,6 @@ data:
 
 | Category              | Details Included                                     |
 | :-------------------- | :--------------------------------------------------- |
-| **Raw HTTP Data**     | The **HTTP method** (e.g., `POST`) and **URL** for   |
-:                       : each request, the **JSON request body**, and the :
-:                       : **JSON response body**.                              :
-| **A2A Message Data**  | Any **request instructions** extracted from the      |
-:                       : Agent-to-Agent (A2A) Message's `TextPart`, and any   :
-:                       : data found within the Message's `DataParts`.         :
-| **AP2 Protocol Data** | Any **Mandate objects** (`IntentMandate`,            |
-:                       : `CartMandate`, `PaymentMandate`) that are identified :
-:                       : within a Message's `DataParts`.                      :
+| Raw HTTP Data     | The **HTTP method** (e.g., `POST`) and **URL** for each request, the **JSON request body**, and the **JSON response body**.
+| A2A Message Data  | Any **request instructions** extracted from the A2A Message's TextPart, and any data found within the Message's DataParts.
+| AP2 Protocol Data | Any **Mandate objects** (`IntentMandate`, `CartMandate`, `PaymentMandate`) that are identified within a Message's DataParts.

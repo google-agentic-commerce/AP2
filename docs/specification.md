@@ -1,5 +1,3 @@
-<!-- Copyright 2025 Google LLC. Licensed  under the Apache License, Version 2.0 (the “License”); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://www.apache.org/licenses/LICENSE-2.0 -->
-
 # Agent Payments Protocol (AP2): Building a Secure and Interoperable Future for AI-Driven Payments
 
 ## Executive Summary
@@ -599,3 +597,5 @@ Solving these challenges is a community effort and is essential for unlocking th
 | User Agent a.k.a. Shopping Agent | UA, SA | The AI surface interacts directly with the user, understanding their needs, and coordinating the purchase. | | |
 | Verifiable Credential | VC | An Issuer-signed credential (i.e., a set of Claims) whose authenticity can be verified. | Typically bound to a cryptographic key and used in the issuer-holder-verifier model. | Digital Credential |
 | Verifiable Presentation | VP | A presentation of one or more VCs that includes a cryptographic proof of holder binding, created in response to a request from a Verifier. | Allows a Verifier to confirm that the Holder intended the presentation for them and may reveal only a subset of claims. | |
+
+> Copyright 2025 Google LLC. Licensed  under the Apache License, Version 2.0 (the “License”); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://www.apache.org/licenses/LICENSE-2.0

@@ -17,12 +17,12 @@ vulnerability: today's payment systems were designed for direct human
 interaction. When an autonomous agent initiates a payment, fundamental questions
 arise that current systems cannot answer:
 
--   **Authorization & Auditability**: What verifiable proof exists that the user
+- **Authorization & Auditability**: What verifiable proof exists that the user
     granted the agent specific authority to make a particular purchase?
--   **Authenticity of Intent**: How can a merchant be certain that an agent's
+- **Authenticity of Intent**: How can a merchant be certain that an agent's
     request accurately reflects the user's true intent, free from errors or AI
     "hallucinations"?
--   **Accountability**: In the event of a fraudulent or erroneous transaction,
+- **Accountability**: In the event of a fraudulent or erroneous transaction,
     who is accountable? The user, the agent's developer, the merchant, or the
     payment network?
 

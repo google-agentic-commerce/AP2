@@ -71,7 +71,7 @@ class A2aClient(val name: String, val baseUrl: String, val agentCard: AgentCard?
             contentType(ContentType.Application.Json)
             headers {
               append(HttpHeaders.Accept, "*/*")
-              append("X-A2A-Extensions", "https://github.com/google-agentic-commerce/ap2/v1")
+              append("X-A2A-Extensions", "https://github.com/google-agentic-commerce/AP2/tree/v0.1")
             }
             setBody(request)
           }

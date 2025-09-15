@@ -5,23 +5,27 @@
   "preferredTransport": "JSONRPC",
   "protocolVersion": "0.3.0",
   "version": "1.0.0",
-  "defaultInputModes": ["json"],
-  "defaultOutputModes": ["json"],
+  "defaultInputModes": [
+    "json"
+  ],
+  "defaultOutputModes": [
+    "json"
+  ],
   "capabilities": {
-      "extensions": [
-        {
-          "uri": "https://github.com/google-agentic-commerce/ap2/v1",
-          "description": "Supports the Agent Payments Protocol.",
-          "required": true
-        },
-        {
-          "uri": "https://sample-card-network.github.io/paymentmethod/types/v1",
-          "description": "Supports the Sample Card Network payment method extension",
-          "required": true
-        }
-      ]
+    "extensions": [
+      {
+        "uri": "https://github.com/google-agentic-commerce/AP2/tree/v0.1",
+        "description": "Supports the Agent Payments Protocol.",
+        "required": true
+      },
+      {
+        "uri": "https://sample-card-network.github.io/paymentmethod/types/v1",
+        "description": "Supports the Sample Card Network payment method extension",
+        "required": true
+      }
+    ]
   },
-    "skills": [
+  "skills": [
     {
       "id": "search_catalog",
       "name": "Search Catalog",
@@ -34,9 +38,15 @@
             "description": "A JSON string representing the user's shopping intent."
           }
         },
-        "required": ["shopping_intent"]
+        "required": [
+          "shopping_intent"
+        ]
       },
-      "tags": ["merchant", "search", "catalog"]
+      "tags": [
+        "merchant",
+        "search",
+        "catalog"
+      ]
     }
   ]
 }

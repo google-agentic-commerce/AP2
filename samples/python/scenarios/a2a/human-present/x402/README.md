@@ -26,24 +26,24 @@ the purchase.
 
 This sample consists of:
 
-*   **Shopping Agent:** The main orchestrator that handles user's requests to
+- **Shopping Agent:** The main orchestrator that handles user's requests to
     shop and delegates tasks to specialized agents.
-*   **Merchant Agent:** An agent that handles product queries from the shopping
+- **Merchant Agent:** An agent that handles product queries from the shopping
     agent.
-*   **Merchant Payment Processor Agent:** An agent that takes payments on behalf
+- **Merchant Payment Processor Agent:** An agent that takes payments on behalf
     of the merchant.
-*   **Credentials Provider Agent:** The credentials provider is the holder of a
+- **Credentials Provider Agent:** The credentials provider is the holder of a
     user's payment credentials. As such, it serves two primary roles:
-    *   It provides the shopping agent the list of payment methods available in
+    - It provides the shopping agent the list of payment methods available in
         a user's wallet.
-    *   It facilitates payment between the shopping agent and a merchant's
+    - It facilitates payment between the shopping agent and a merchant's
         payment processor.
 
 ## Key Features
 
 **1. x402 purchase**
 
-*   The Merchant Agent will advertise support for x402 purchases through its
+- The Merchant Agent will advertise support for x402 purchases through its
     agent card and through the CartMandate once shopping is complete.
-*   The preferred payment method in the user's wallet will be an x402 compatible
+- The preferred payment method in the user's wallet will be an x402 compatible
     payment method.

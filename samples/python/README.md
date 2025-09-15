@@ -4,11 +4,11 @@ This directory contains Python samples demonstrating how to use AP2.
 
 ## Getting Started
 
-*   **Explore Scenarios**: To understand what these samples can do, see the
+- **Explore Scenarios**: To understand what these samples can do, see the
     [scenarios](./scenarios) directory for detailed examples.
-*   **Review the Code**: Dive into the implementation by reviewing the code in
+- **Review the Code**: Dive into the implementation by reviewing the code in
     the [src](./src) directory.
-*   **All Samples**: Return to the main [samples](..) directory to see examples
+- **All Samples**: Return to the main [samples](..) directory to see examples
     in other languages.
 
 ### Prerequisites
@@ -20,7 +20,7 @@ This directory contains Python samples demonstrating how to use AP2.
 
 Set up your virtual enviornment and install packages:
 
-```
+```sh
 uv sync
 ```
 

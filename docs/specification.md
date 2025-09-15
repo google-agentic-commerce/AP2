@@ -209,7 +209,7 @@ Example Scenario
 - User says to SA: "Buy 2 tickets to *\<this concert\>* from *\<this merchant\>* as soon as they become available for the Vegas show in July. Your budget is $1000 and we’d like to be as close to the main stage as possible"
 - User signs this as an Intent Mandate allowing the SA to purchase in the user’s absence.
 - Merchant receives this intent mandate and then they can say "I have 3 variations of seating which fulfill this criteria and I don’t know which one the user wants. The intent mandate is not sufficient for me to fulfill this order".
-- Ticketmaster can respond to the SA and say that I want to show the user the final 3 options.
+- The merchant can respond to the SA and say that I want to show the user the final 3 options.
 - SA notifies the user that their presence is needed before the txn can be initiated. User sees the 3 options, picks one and can now sign a "Cart Mandate" which gives the merchant evidence that the user knows exactly what they are getting.
 
 Alternatively, the merchant may have decided to fulfill the order with the cheapest tickets which meet the criteria. This would be up to the merchant and they can decide when they want to bring the user back into session and when they are able to fulfill the order without bringing the user back.

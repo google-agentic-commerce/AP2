@@ -4,7 +4,7 @@
   "capabilities": {
       "extensions": [
         {
-          "uri": "https://github.com/google-agentic-commerce/AP2/tree/v0.1",
+          "uri": "https://github.com/google-agentic-commerce/ap2/v1",
           "description": "Supports the Agent Payments Protocol.",
           "required": true
         },

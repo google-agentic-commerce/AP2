@@ -14,9 +14,6 @@
 
 """An agent responsible for helping the user shop for products.
 
-The shopping agent delegates responsibility for helping the user shop for
-products to this subagent.
-
 Once the agent has clarified the user's purchase intent, it constructs an
 IntentMandate object encapsulating this information.  The IntentMandate is sent
 to the merchant agent to find relevant products.
@@ -44,6 +41,12 @@ shopper = RetryingLlmAgent(
     When asked to complete a task, follow these instructions:
     2. Find out what the user is interested in purchasing.
     2. Ask clarifying questions one at a time to understand their needs fully.
+      The shopping agent delegates responsibility for helping the user shop for
+      products to this subagent. Help the user craft an IntentMandate that will
+      be used to find relevant products for their purchase. Reason about the
+      user's instructions and the information needed for the IntentMandate. The
+      IntentMandate will be shown back to the user for confirmation so it's okay
+      to make reasonable assumptions about the IntentMandate criteria initially.
       For example, inquire about:
         - A detailed description of the item.
         - Any preferred merchants or specific SKUs.

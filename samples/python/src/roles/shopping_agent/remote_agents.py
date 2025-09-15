@@ -16,6 +16,9 @@
 
 Clients request activation of the Agent Payments Protocol extension by including
 the X-A2A-Extensions header in each HTTP request.
+
+This registry serves as the initial allowlist of remote agents that the shopping
+agent trusts.
 """
 
 from common.a2a_extension_utils import EXTENSION_URI

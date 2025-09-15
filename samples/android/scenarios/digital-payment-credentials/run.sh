@@ -3,9 +3,9 @@
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
-REFRESH_FLAG=""
-if [ "$1" == "-r" ]; then
-  REFRESH_FLAG="--refresh-dependencies"
+REFRESH_FLAG="--refresh-dependencies"
+if [ "$1" == "-o" ]; then
+  REFRESH_FLAG=""
 fi
 
 # Get the absolute path of the directory containing this script.

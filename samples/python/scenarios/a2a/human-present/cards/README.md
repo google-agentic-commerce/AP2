@@ -97,7 +97,7 @@ Or you can run each server in its own terminal:
 
 Open a browser and navigate to the shopping agent UI at http://0.0.0.0:8000
 
-## Interacting with the Shopping Agent {#example-interactions}
+## Interacting with the Shopping Agent
 
 This section walks you through a typical interaction with the sample.
 
@@ -129,38 +129,41 @@ This section walks you through a typical interaction with the sample.
 1.  **Purchase Complete**: Once the OTP is provided, the payment will be
     processed, and you'll receive a confirmation message and a digital receipt.
 
-## Advanced Engagement with the Shopping Agent {#advanced-interactions}
+## Enabling Verbose Engagement with the Shopping Agent
 
-If you want to better understand what the agents are doing behind the scenes, or
-see the mandate objects they are creating and sharing, you can ask the Shopping
-Agent to be more verbose.
+If you want to understand what the agents are doing internally or inspect the
+mandate objects they create and share, you can ask the Shopping Agent to run in
+**verbose mode**.
 
-This will instruct the Shopping Agent, and any agents it delegates to, to
-provide more detailed explanations of their actions, including:
+Enabling verbose mode will instruct the Shopping Agent, and any agents it
+delegates to, to provide detailed explanations of their process, including:
 
-*   What they are currently doing.
-*   What their next steps are.
-*   The JSON representation of any data payloads (like IntentMandates,
-    CartMandates, or PaymentMandates) they create, send, or receive.
+*   A description of their current and next steps.
+*   The JSON representation of all data payloads (such as `IntentMandates`,
+    `CartMandates`, or `PaymentMandates`) being created, sent, or received.
 
-Simply change your initial prompt to the Shopping Agent to something like:
-"I'm looking to buy a new pair of shoes. I've never bought from a Shopping Agent
-before. Could you be verbose as we do this, explaining what you're doing, and
-display all data payloads?"
+### How to Activate Verbose Mode
 
-The word `verbose` should be enough. However, the more talkative with the agent
-you are, the more elaborative it is back.
+To activate this mode, simply include the keyword verbose in your initial prompt
+to the Shopping Agent. Example prompt:
 
-Sometimes, the agents will print out a display of the information in the JSON.
-If this happens the first time when presenting the IntentMandate back to the
-user for confirmation. If the JSON is not display, encourage the Agent with
-something like "I think you forgot to display the JSON, remember we're in
-verbose mode!". Typically, after one additional prompt the agents do a better
-job displaying the JSON. If they do forget again, you can always explicitly ask
-to see any data or mandate.
---------------------------------------------------------------------------------
+*"I'm looking to buy a new pair of shoes. Could you be verbose as we do this,
+explaining what you're doing, and display all data payloads?"*
 
-## What to expect {#expect}
+> **💡 TIP: Give elaborate instructions**
+>
+> While the word **verbose** is usually sufficient, providing more elaborate
+> instruction in your prompt tends to result in more detailed and helpful
+> explanations from the agent.
+
+> **💡 TIP: If the JSON is missing...**
+>
+> If the agent is in verbose mode but fails to display the JSON mandate, a quick
+> follow-up prompt is often needed. Just say: **"Remember we're in verbose mode,
+> please display the JSON."** After this reminder, the agent usually becomes
+> more reliable at displaying all data payloads.
+
+## What to expect
 
 When you run the sample, the Shopping Agent's web UI will display a conversation
 where you provide input and receive responses, guiding you through the purchase
@@ -168,4 +171,3 @@ flow. Additionally, the UI will emphasize several of the background tasks,
 including agents communicating with each other.
 
 Open .logs/watch.log to see the server requests and responses,
-

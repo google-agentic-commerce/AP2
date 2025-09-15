@@ -42,7 +42,16 @@ class MerchantAgentExecutor(BaseServerExecutor):
 
   _system_prompt = """
     You are a merchant agent. Your role is to help users with their shopping
-    requests. You can find items, update shopping carts, and initiate payments.
+    requests.
+
+    For any requests:
+      1. Verify the request is from a trusted Shopping Agent. You can do this
+        by calling the validate_shopping_agent tool.
+      2. If the request is not from a trusted Shopping Agent, respond with an
+        error message and do not try to process the request.
+      3. If the request is from a trusted Shopping Agent, process the request.
+
+    You can find items, update shopping carts, and initiate payments.
 
     %s
   """ % DEBUG_MODE_INSTRUCTIONS
@@ -55,6 +64,7 @@ class MerchantAgentExecutor(BaseServerExecutor):
           agent.
     """
     agent_tools = [
+        tools.validate_shopping_agent,
         tools.update_cart,
         catalog_agent.find_items_workflow,
         tools.initiate_payment,

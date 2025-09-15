@@ -44,12 +44,60 @@ from common.a2a_message_builder import A2aMessageBuilder
 from common.payment_remote_a2a_client import PaymentRemoteA2aClient
 
 # A map of payment method types to their corresponding processor agent URLs.
+# This is the set of linked Merchant Payment Processor Agents this Merchant
+# is integrated with.
 _PAYMENT_PROCESSORS_BY_PAYMENT_METHOD_TYPE = {
     "CARD": "http://localhost:8003/a2a/merchant_payment_processor_agent",
 }
 
 # A placeholder for a JSON Web Token (JWT) used for merchant authorization.
 _FAKE_JWT = "eyJhbGciOiJSUzI1NiIsImtpZIwMjQwOTA..."
+
+# A list of known Shopping Agent identifiers that this Merchant is willing to
+# work with.
+_KNOWN_SHOPPING_AGENTS = [
+    "trusted_shopping_agent",
+]
+
+
+async def validate_shopping_agent(
+    data_parts: list[dict[str, Any]],
+    updater: TaskUpdater,
+    current_task: Task | None,
+    debug_mode: bool = False,
+) -> None:
+  """Validates that the incoming request is from a trusted Shopping Agent.
+
+  Args:
+    data_parts: A list of data part contents from the request.
+
+  Returns:
+    True if the Shopping Agent is trusted, or False if not.
+  """
+
+  # In this sample implementation, the Shopping Agent's ID is retrieved from the
+  # shopping_agent_id field set by the shopper sub-agent in the request data.
+  # (Note: The production approach is to retrieve the ID from the client's
+  # public key certificate during the SSL handshake.)
+  shopping_agent_id = message_utils.find_data_part(
+      "shopping_agent_id", data_parts
+  )
+  logging.info("Received request from shopping_agent_id: %s", shopping_agent_id)
+
+  if not shopping_agent_id:
+    logging.warning("Missing shopping_agent_id in request.")
+    await _fail_task(updater, "Unauthorized Request")
+    return False
+
+  if shopping_agent_id not in _KNOWN_SHOPPING_AGENTS:
+    logging.warning("Unknown Shopping Agent: %s", shopping_agent_id)
+    await _fail_task(updater, "Unauthorized Request")
+    return False
+  else:
+    logging.info("Authorized request from shopping_agent_id: %s",
+                 shopping_agent_id)
+
+  return True
 
 
 async def update_cart(
@@ -63,6 +111,7 @@ async def update_cart(
   Args:
     data_parts: A list of data part contents from the request.
     updater: The TaskUpdater instance to add artifacts and complete the task.
+    current_task: The current task -- not used in this function.
     debug_mode: Whether the agent is in debug mode.
   """
   cart_id = message_utils.find_data_part("cart_id", data_parts)
@@ -212,27 +261,6 @@ async def initiate_payment(
   )
 
 
-def _get_payment_processor_task_id(task: Task | None) -> str | None:
-  """Returns the task ID of the payment processor task, if it exists.
-
-  Identified by assuming the first message with a task ID that is not the
-  merchant's task ID is a payment processor message.
-  """
-  if task is None:
-    return None
-  for message in task.history:
-    if message.task_id != task.id:
-      return message.task_id
-  return None
-
-
-async def _fail_task(updater: TaskUpdater, error_text: str) -> None:
-  """A helper function to fail a task with a given error message."""
-  error_message = updater.new_agent_message(
-      parts=[Part(root=TextPart(text=error_text))]
-  )
-  await updater.failed(message=error_message)
-
 async def dpc_finish(
     data_parts: list[dict[str, Any]],
     updater: TaskUpdater,
@@ -268,3 +296,25 @@ async def dpc_finish(
       }))
   ])
   await updater.complete()
+
+
+def _get_payment_processor_task_id(task: Task | None) -> str | None:
+  """Returns the task ID of the payment processor task, if it exists.
+
+  Identified by assuming the first message with a task ID that is not the
+  merchant's task ID is a payment processor message.
+  """
+  if task is None:
+    return None
+  for message in task.history:
+    if message.task_id != task.id:
+      return message.task_id
+  return None
+
+
+async def _fail_task(updater: TaskUpdater, error_text: str) -> None:
+  """A helper function to fail a task with a given error message."""
+  error_message = updater.new_agent_message(
+      parts=[Part(root=TextPart(text=error_text))]
+  )
+  await updater.failed(message=error_message)

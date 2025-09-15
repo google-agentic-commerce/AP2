@@ -1,9 +1,12 @@
 # Partners
 
-Below is a list of partners who are part of the AP2 community and are helping build, codify,
-and adopt A2A as the standard protocol for AI agent payments.
+Below is a list of partners who are part of the AP2 community and are helping
+build, codify, and adopt A2A as the standard protocol for AI agent payments.
 
-> If you're interested in becoming a partner of AP2 and getting your listing added to or updated on this page, let us know by [submitting this form](https://goo.gle/ap2-partner-form), and we'll contact you soon!
+> If you're interested in becoming a partner of AP2 and getting your listing
+> added to or updated on this page, let us know by
+> [submitting this form](https://goo.gle/ap2-partner-form), and we'll contact
+> you soon!
 
 - [1Password](https://1password.com/)
 - [Accenture](https://www.accenture.com/)

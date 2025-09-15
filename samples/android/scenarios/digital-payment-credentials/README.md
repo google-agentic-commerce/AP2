@@ -94,7 +94,7 @@ This sample consists of:
     1.  Install the APK:
 
         ```
-        adb install https://github.com/digitalcredentialsdev/CMWallet/actions/runs/17747780468
+        adb install app-debug.apk
         ```
 
 7.  **Enable the Enhanced Payment Confirmation UI**

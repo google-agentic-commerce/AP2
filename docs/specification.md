@@ -117,7 +117,7 @@ These registries are decentralized and manually curated by the entity owners (*e
 
 #### 3.2.2 Long Term
 
-In the long term, we anticipate that both MCP and A2A protocols will incorporate additional methods for asserting the identities of both the Agent and the User it represents. This will enable Merchant or Shopping Agents to identify a Credentials Provider and facilitate the real-time establishment of trust between them. Consequently, the Credentials Provider can verify that a Shopping Agent is operating on behalf of johndoe@gmail.com, and that a specific merchant endpoint is genuinely representing a real merchant. Similarly, the Credentials Provider should be trusted by the Shopping Agent & Merchant Endpoint to be authentic and to appropriately represent johndoe@gmail.com. This trust framework will leverage and extend established web standards such as HTTPS, DNS ownership, mTLS, and API key-exchange.
+In the long term, we anticipate that both MCP and A2A protocols will incorporate additional methods for asserting the identities of both the Agent and the User it represents. This will enable Merchant or Shopping Agents to identify a Credentials Provider and facilitate the real-time establishment of trust between them. Consequently, the Credentials Provider can verify that a Shopping Agent is operating on behalf of <johndoe@gmail.com>, and that a specific merchant endpoint is genuinely representing a real merchant. Similarly, the Credentials Provider should be trusted by the Shopping Agent & Merchant Endpoint to be authentic and to appropriately represent <johndoe@gmail.com>. This trust framework will leverage and extend established web standards such as HTTPS, DNS ownership, mTLS, and API key-exchange.
 
 ## Section 4: Trust Anchors: Verifiable Credentials & Mandates
 
@@ -598,4 +598,4 @@ Solving these challenges is a community effort and is essential for unlocking th
 | Verifiable Credential | VC | An Issuer-signed credential (i.e., a set of Claims) whose authenticity can be verified. | Typically bound to a cryptographic key and used in the issuer-holder-verifier model. | Digital Credential |
 | Verifiable Presentation | VP | A presentation of one or more VCs that includes a cryptographic proof of holder binding, created in response to a request from a Verifier. | Allows a Verifier to confirm that the Holder intended the presentation for them and may reveal only a subset of claims. | |
 
-> Copyright 2025 Google LLC. Licensed  under the Apache License, Version 2.0 (the “License”); you may not use this file except in compliance with the License. You may obtain a copy of the License at https://www.apache.org/licenses/LICENSE-2.0
+> Copyright 2025 Google LLC. Licensed  under the Apache License, Version 2.0 (the “License”); you may not use this file except in compliance with the License. You may obtain a copy of the License at <https://www.apache.org/licenses/LICENSE-2.0>

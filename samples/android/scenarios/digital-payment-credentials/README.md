@@ -31,7 +31,11 @@ guides the user from product discovery to purchase confirmation.
 
 Complete these one-time setup steps before running the demo.
 
-1.  **Configure Your API Key**
+1.  **Install Android Studio**
+
+If you don't already have Android Studio installed, download it from the [official website](https://developer.android.com/studio). Android Studio provides the necessary tools to build and run the Android app, including the required SDKs and JDK.
+
+2.  **Configure Your API Key**
 
     You need a Google AI API key for the Gemini model to function. This key **must be placed in two locations**:
 
@@ -49,7 +53,7 @@ Complete these one-time setup steps before running the demo.
         sdk.dir=<path-to-your-android-sdk>
         ```
 
-2.  **Set JAVA_HOME**
+3.  **Set JAVA_HOME(Optional)**
 
     The Gradle build requires a Java Development Kit (JDK), typically version 17. Android Studio bundles its own JDK, but your terminal needs the `JAVA_HOME` environment variable to find it. Set this variable to point to a valid JDK installation.
 
@@ -58,12 +62,12 @@ Complete these one-time setup steps before running the demo.
     export JAVA_HOME=<path-to-your-jdk>
     ```
 
-3.  **Python Environment**
+4.  **Python Environment**
 
     Ensure your environment meets the [Python sample prerequisites](http://github.com/payments-agentic-commerce/ap2/samples/python), including
      having tools like `uv` available.
 
-4.  **Sideload the Digital Wallet App**
+5.  **Sideload the Digital Wallet App**
 
     This demo requires a separate digital wallet application ('CM Wallet')
     to be installed on the same device that holds the Digital Payment
@@ -71,7 +75,7 @@ Complete these one-time setup steps before running the demo.
 
     TODO: [Link to CM Wallet App](https://drive.google.com/file/d/1N_mtKpyBARY_DPucdJqgmnXviOkmsYwP/view?usp=sharing)
 
-5.  **Enable the Enhanced Payment Confirmation UI**
+6.  **Enable the Enhanced Payment Confirmation UI**
 
     To experience the most modern and secure payment flow, you must enable
     a required feature flag:

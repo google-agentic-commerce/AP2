@@ -35,8 +35,8 @@ The scenarios can be found in the **samples/android/scenarios** and
 
 Each scenario contains:
 
-- a README.md file describing the scenario and instructions for running it.
-- a run.sh script to simplify the process of running the scenario locally.
+*   a README.md file describing the scenario and instructions for running it.
+*   a run.sh script to simplify the process of running the scenario locally.
 
 This demonstration features various agents and servers, with most source code
 located in **samples/python/src**. Scenarios that use an Android app as the
@@ -46,7 +46,7 @@ shopping assistant have their source code in **samples/android**.
 
 ### Prerequisites
 
-- Python 3.10 or higher
+*   Python 3.10 or higher
 
 ### Setup
 
@@ -54,9 +54,9 @@ Ensure you have obtained a Google API key from
 [Google AI Studio](http://aistudio.google.com/apikey). Then declare the
 `GOOGLE_API_KEY` variable in one of two ways.
 
-- Option 1: Declare it as an environment variable: `export
+*   Option 1: Declare it as an environment variable: `export
     GOOGLE_API_KEY=your_key`
-- Option 2: Put it into an .env file at the root of your repository. `echo
+*   Option 2: Put it into an .env file at the root of your repository. `echo
     "GOOGLE_API_KEY=you_key" > .env`
 
 ### How to Run a Scenario
@@ -64,15 +64,15 @@ Ensure you have obtained a Google API key from
 To run a specific scenario, follow the instructions in its README.md. It will
 generally follow this pattern:
 
-1. Navigate to the root of the repository.
+1.  Navigate to the root of the repository.
 
     `cd ap2`
 
-1. Run the run script to install dependencies & start the agents.
+1.  Run the run script to install dependencies & start the agents.
 
     `bash samples/python/scenarios/your-scenario-name/run.sh`
 
-1. Navigate to the Shopping Agent URL and begin engaging.
+1.  Navigate to the Shopping Agent URL and begin engaging.
 
 ### Installing the AP2 Types Package
 
@@ -80,6 +80,6 @@ The protocol's core objects are defined in the [src/ap2/types](src/ap2/types)
 directory. A PyPI package will be published at a later time. Until then, you can
 install the types package directly using this command:
 
-```sh
+```
 uv pip install git+https://github.com/google-agentic-commerce/AP2.git@main
 ```

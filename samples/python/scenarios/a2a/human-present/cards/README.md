@@ -53,7 +53,7 @@ This sample consists of:
 ### Setup
 
 Ensure you have obtained a Google API key from
-[Google AI Studio](http://aistudio-preprod/apikey). Then declare the
+[Google AI Studio](https://aistudio.google.com/apikey). Then declare the
 GOOGLE_API_KEY variable in one of two ways.
 
 *   Option 1: Declare it as an environment variable: `export
@@ -95,9 +95,10 @@ Or you can run each server in its own terminal:
     uv run --package ap2-samples adk web samples/python/src/roles
     ```
 
-Open a browser and navigate to the shopping agent UI at http://0.0.0.0:8000
+Open a browser and navigate to the shopping agent UI at http://0.0.0.0:8000. You
+may now begin interacting with the Shopping Agent.
 
-## Interacting with the Shopping Agent
+### Interacting with the Shopping Agent
 
 This section walks you through a typical interaction with the sample.
 
@@ -129,7 +130,9 @@ This section walks you through a typical interaction with the sample.
 1.  **Purchase Complete**: Once the OTP is provided, the payment will be
     processed, and you'll receive a confirmation message and a digital receipt.
 
-## Enabling Verbose Engagement with the Shopping Agent
+## Advanced Engagements with the samples
+
+### Enabling Verbose Engagement with the Shopping Agent
 
 If you want to understand what the agents are doing internally or inspect the
 mandate objects they create and share, you can ask the Shopping Agent to run in
@@ -142,7 +145,7 @@ delegates to, to provide detailed explanations of their process, including:
 *   The JSON representation of all data payloads (such as `IntentMandates`,
     `CartMandates`, or `PaymentMandates`) being created, sent, or received.
 
-### How to Activate Verbose Mode
+#### How to Activate Verbose Mode
 
 To activate this mode, simply include the keyword verbose in your initial prompt
 to the Shopping Agent. Example prompt:
@@ -163,11 +166,27 @@ explaining what you're doing, and display all data payloads?"*
 > please display the JSON."** After this reminder, the agent usually becomes
 > more reliable at displaying all data payloads.
 
-## What to expect
+### Viewing Agent Communiation
 
-When you run the sample, the Shopping Agent's web UI will display a conversation
-where you provide input and receive responses, guiding you through the purchase
-flow. Additionally, the UI will emphasize several of the background tasks,
-including agents communicating with each other.
+To help engineers visualize the exact communication occurring between the agent
+servers, a detailed log file is created automatically when the servers start up.
 
-Open .logs/watch.log to see the server requests and responses,
+By default, this log file is named `watch.log` and is located in the `.logs`
+directory.
+
+#### Log Contents
+
+The watch log is a comprehensive trace that includes three main categories of
+data:
+
+| Category              | Details Included                                     |
+| :-------------------- | :--------------------------------------------------- |
+| **Raw HTTP Data**     | The **HTTP method** (e.g., `POST`) and **URL** for   |
+:                       : each request, the **JSON request body**, and the :
+:                       : **JSON response body**.                              :
+| **A2A Message Data**  | Any **request instructions** extracted from the      |
+:                       : Agent-to-Agent (A2A) Message's `TextPart`, and any   :
+:                       : data found within the Message's `DataParts`.         :
+| **AP2 Protocol Data** | Any **Mandate objects** (`IntentMandate`,            |
+:                       : `CartMandate`, `PaymentMandate`) that are identified :
+:                       : within a Message's `DataParts`.                      :

@@ -77,7 +77,9 @@
     - A primary objective is to provide supporting evidence that helps payment
         networks establish accountability and liability principles. In a
         dispute, the network adjudicator (e.g., Card Network) can receive the
-        user-signed.
+        user-signed cart mandate and compare the details of what was agreed upon
+        between the agent and the consumer against the details in the dispute to
+        help determine where liability sits.
 
 1. What prevents an agent from "hallucinating" and making an incorrect
     purchase?

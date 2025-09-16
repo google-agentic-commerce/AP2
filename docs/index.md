@@ -24,11 +24,11 @@ in progress.
 !!! abstract ""
 
     Build agents with
-    **[![ADK Logo](./assets/agent-development-kit.png){class="twemoji lg middle"} ADK](https://google.github.io/adk-docs/)**
+    **[![ADK Logo](https://google.github.io/adk-docs/assets/agent-development-kit.png){class="twemoji lg middle"} ADK](https://google.github.io/adk-docs/)**
     _(or any framework)_, equip with
-    **[![MCP Logo](./assets/mcp.png){class="twemoji lg middle"} MCP](https://modelcontextprotocol.io)**
+    **[![MCP Logo](https://modelcontextprotocol.io/mcp.png){class="twemoji lg middle"} MCP](https://modelcontextprotocol.io)**
     _(or any tool)_, collaborate via
-    **[![A2A Logo](./assets/a2a-logo-black.svg){class="twemoji sm middle"} A2A](https://a2a-protocol.org)**, and use
+    **[![A2A Logo](https://a2a-protocol.org/latest/assets/a2a-logo-black.svg){class="twemoji sm middle"} A2A](https://a2a-protocol.org)**, and use
     **![AP2 Logo](./assets/ap2-logo-black.svg){class="twemoji sm middle"} AP2** to secure payments with gen AI agents.
 <!-- prettier-ignore-end -->
 

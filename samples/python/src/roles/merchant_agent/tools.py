@@ -53,52 +53,6 @@ _PAYMENT_PROCESSORS_BY_PAYMENT_METHOD_TYPE = {
 # A placeholder for a JSON Web Token (JWT) used for merchant authorization.
 _FAKE_JWT = "eyJhbGciOiJSUzI1NiIsImtpZIwMjQwOTA..."
 
-# A list of known Shopping Agent identifiers that this Merchant is willing to
-# work with.
-_KNOWN_SHOPPING_AGENTS = [
-    "trusted_shopping_agent",
-]
-
-
-async def validate_shopping_agent(
-    data_parts: list[dict[str, Any]],
-    updater: TaskUpdater,
-    current_task: Task | None,
-    debug_mode: bool = False,
-) -> None:
-  """Validates that the incoming request is from a trusted Shopping Agent.
-
-  Args:
-    data_parts: A list of data part contents from the request.
-
-  Returns:
-    True if the Shopping Agent is trusted, or False if not.
-  """
-
-  # In this sample implementation, the Shopping Agent's ID is retrieved from the
-  # shopping_agent_id field set by the shopper sub-agent in the request data.
-  # (Note: The production approach is to retrieve the ID from the client's
-  # public key certificate during the SSL handshake.)
-  shopping_agent_id = message_utils.find_data_part(
-      "shopping_agent_id", data_parts
-  )
-  logging.info("Received request from shopping_agent_id: %s", shopping_agent_id)
-
-  if not shopping_agent_id:
-    logging.warning("Missing shopping_agent_id in request.")
-    await _fail_task(updater, "Unauthorized Request")
-    return False
-
-  if shopping_agent_id not in _KNOWN_SHOPPING_AGENTS:
-    logging.warning("Unknown Shopping Agent: %s", shopping_agent_id)
-    await _fail_task(updater, "Unauthorized Request")
-    return False
-  else:
-    logging.info("Authorized request from shopping_agent_id: %s",
-                 shopping_agent_id)
-
-  return True
-
 
 async def update_cart(
     data_parts: list[dict[str, Any]],

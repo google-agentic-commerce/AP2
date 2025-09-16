@@ -35,7 +35,7 @@ private const val TAG = "ChatRepository"
 class ChatRepository(private val context: Context) {
 
   private val toolContext = ToolContext()
-  private lateinit var shoppingTools: ShoppingTools
+  private var shoppingTools: ShoppingTools? = null
 
   private val _history = MutableStateFlow<List<Content>>(emptyList())
 
@@ -174,7 +174,8 @@ class ChatRepository(private val context: Context) {
         }
       }
     } catch (e: Exception) {
-      Log.e(TAG, "An error occurred in getResponse", e)
+      val stackTrace = e.stackTraceToString()
+      Log.e(TAG, "An error occurred in getResponse: ${e.message}\n$stackTrace")
       onStatusUpdate("An error occurred.")
       return Result.failure(e)
     }
@@ -188,6 +189,17 @@ class ChatRepository(private val context: Context) {
     val jsonResult = JSONObject()
     val tools = shoppingTools
 
+    if (tools == null) {
+      Log.d(TAG, "No shopping tools available")
+      jsonResult.put("status", "error")
+      jsonResult.put(
+        "message",
+        "Not connected to the merchant_agent. Please make sure you " +
+          "have the right url, and re-connect from Settings",
+      )
+      return jsonResult
+    }
+
     when (name) {
       "find_products" -> {
         val description = args["description"] as? String ?: ""
@@ -198,6 +210,7 @@ class ChatRepository(private val context: Context) {
             "response_text",
             "Sorry, I couldn't find any products matching that description.",
           )
+          return jsonResult
         }
         toolContext.state.productOptions = cartMandateList
         jsonResult.put("status", "success")
@@ -207,24 +220,22 @@ class ChatRepository(private val context: Context) {
           }
         jsonResult.put("response_text", "I found a few options for you:\n$productListString")
       }
-
       "select_product" -> {
         val itemName = args["itemName"] as? String ?: ""
         Log.d(TAG, "Finding product: $itemName")
         val selectedProduct = getItemFromCartMandate(itemName, toolContext.state.productOptions)
-        if (selectedProduct != null) {
-          toolContext.state.cartMandate = selectedProduct
-          jsonResult.put("status", "success")
-          jsonResult.put(
-            "response_text",
-            "Selected ${selectedProduct.contents.paymentRequest.details.displayItems[0].label}",
-          )
-        } else {
+        if (selectedProduct == null) {
           jsonResult.put("status", "error")
           jsonResult.put("response_text", "Could not find item $itemName")
+          return jsonResult
         }
+        toolContext.state.cartMandate = selectedProduct
+        jsonResult.put("status", "success")
+        jsonResult.put(
+          "response_text",
+          "Selected ${selectedProduct.contents.paymentRequest.details.displayItems[0].label}",
+        )
       }
-
       "get_shipping_address" -> {
         val address = ContactAddress("456 Oak Ave", "Otherville", "NY", "54321")
         toolContext.state.shippingAddress = address
@@ -234,25 +245,22 @@ class ChatRepository(private val context: Context) {
         jsonResult.put("state", address.state)
         jsonResult.put("zipCode", address.zipCode)
       }
-
       "update_cart" -> {
         val cart = toolContext.state.cartMandate!!
         val address = toolContext.state.shippingAddress!!
         val cartMandate = tools.updateCart(cart.contents.id, address, toolContext)
-        if (cartMandate != null) {
-          toolContext.state.cartMandate = cartMandate
-          jsonResult.put("status", "success")
-        } else {
+        if (cartMandate == null) {
           jsonResult.put("status", "error")
           jsonResult.put("response_text", "Could not update cart")
+          return jsonResult
         }
+        toolContext.state.cartMandate = cartMandate
+        jsonResult.put("status", "success")
       }
-
       "retrieve_dpc_options" -> {
         val result = tools.retrieveDpcOptions(toolContext, activity!!)
         handlePaymentResult(result, jsonResult)
       }
-
       else -> {
         Log.e(TAG, "Unknown tool: $name")
         jsonResult.put("status", "error")

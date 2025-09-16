@@ -20,6 +20,10 @@ import kotlinx.serialization.serializer
 
 /** Utility class for building A2A messages. Supports multiple parts. */
 class A2aMessageBuilder {
+  companion object {
+    val SHOPPING_AGENT_ID = "trusted_shopping_agent"
+  }
+
   val parts = mutableListOf<Part>()
   private var contextId: String? = null
 
@@ -63,6 +67,7 @@ class A2aMessageBuilder {
 
   /** Builds the final Message object. */
   fun build(): Message {
+    this.addData("shopping_agent_id", SHOPPING_AGENT_ID)
     return Message(
       messageId = UUID.randomUUID().toString().replace("-", ""),
       contextId = this.contextId,

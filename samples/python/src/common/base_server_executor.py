@@ -50,7 +50,6 @@ from common.validation import validate_payment_mandate_signature
 DataPartContent = dict[str, Any]
 Tool = Callable[[list[DataPartContent], TaskUpdater, Task | None], Any]
 
-
 class BaseServerExecutor(AgentExecutor, abc.ABC):
   """A baseline A2A AgentExecutor to be utilized by agents."""
 
@@ -114,6 +113,7 @@ class BaseServerExecutor(AgentExecutor, abc.ABC):
         task_id=context.task_id or str(uuid.uuid4()),
         context_id=context.context_id or str(uuid.uuid4()),
     )
+
     logging.info(
         "Server working on (context_id, task_id): (%s, %s)",
         updater.context_id,

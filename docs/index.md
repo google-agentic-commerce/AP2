@@ -14,16 +14,23 @@ hide:
 ## What is AP2?
 
 **Agent Payments Protocol (AP2) is an open protocol for the emerging Agent
-Economy.** It's designed to enable secure, reliable, and interoperable AI-driven
+Economy.** It's designed to enable secure, reliable, and interoperable agent
 commerce for developers, merchants, and the payments industry. The protocol is
-available today as an extension for the open-source
-[Agent2Agent (A2A) protocol](https://a2a-protocol.org/) and relies on Agents
-implementing tools via the
-[Model Context Protocol (MCP)](https://modelcontextprotocol.io/).
+available as an extension for the open-source
+[Agent2Agent (A2A) protocol](https://a2a-protocol.org/), with more integtrations
+in progress.
 
-For a detailed overview, see our [AP2 Overview](topics/what-is-ap2.md).
+<!-- prettier-ignore-start -->
+!!! abstract ""
 
----
+    Build agents with
+    **[![ADK Logo](./assets/agent-development-kit.png){class="twemoji lg middle"} ADK](https://google.github.io/adk-docs/)**
+    _(or any framework)_, equip with
+    **[![MCP Logo](./assets/mcp.png){class="twemoji lg middle"} MCP](https://modelcontextprotocol.io)**
+    _(or any tool)_, collaborate via
+    **[![A2A Logo](./assets/a2a-logo-black.svg){class="twemoji sm middle"} A2A](https://a2a-protocol.org)**, and use
+    **![AP2 Logo](./assets/ap2-logo-black.svg){class="twemoji sm middle"} AP2** to secure payments with gen AI agents.
+<!-- prettier-ignore-end -->
 
 <div class="grid cards" markdown>
 
@@ -33,14 +40,23 @@ For a detailed overview, see our [AP2 Overview](topics/what-is-ap2.md).
 
       <iframe width="560" height="315" src="https://www.youtube.com/embed/yLTp3ic2j5c?si=kfASyAVW8QpzUTho" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
--   :material-file-document-outline:{ .lg .middle } **Dive into the
-    Specification**
+-   :material-file-document-outline:{ .lg .middle } **Read the docs**
 
     ***
 
-    Explore the detailed technical definition of the AP2 protocol.
+    [:octicons-arrow-right-24: Google Cloud announcement of AP2](https://cloud.google.com/blog/products/ai-machine-learning/announcing-agents-to-payments-ap2-protocol)
 
-    [:octicons-arrow-right-24: Protocol Specification](./specification.md)
+    Explore the detailed technical definition of the AP2 protocol
+
+    [:octicons-arrow-right-24: Agent Payments Protocol Specification](./specification.md)
+
+    Review key topics
+
+    [:octicons-arrow-right-24: Overview](topics/what-is-ap2.md)<br>
+    [:octicons-arrow-right-24: Core Concepts](topics/core-concepts.md)<br>
+    [:octicons-arrow-right-24: AP2, A2A and MCP](topics/ap2-a2a-and-mcp.md)<br>
+    [:octicons-arrow-right-24: AP2 and x402](topics/ap2-and-x402.md)<br>
+    [:octicons-arrow-right-24: Privacy and Security](topics/privacy-and-security.md)<br>
 
 </div>
 

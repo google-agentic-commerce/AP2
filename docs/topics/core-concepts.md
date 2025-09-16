@@ -17,7 +17,7 @@ fair ecosystem.
     deterministic, non-repudiable proof of intent from the user, directly
     addressing the risk of agent error or "hallucination."
 -   **Clear Transaction Accountability**: For the payments ecosystem to embrace
-    agentic commerce, there can be no ambiguity regarding transaction
+    agentic payments, there can be no ambiguity regarding transaction
     accountability. The protocol provides supporting evidence that helps payment
     networks establish clear and fair principles for accountability and dispute
     resolution. By creating a non-repudiable, cryptographic audit trail for
@@ -29,7 +29,7 @@ fair ecosystem.
 The protocol defines a clear separation of concerns by assigning distinct roles
 to each actor in the ecosystem:
 
--   **The User**: The individual who delegates a commerce task to an agent.
+-   **The User**: The individual who delegates a payments task to an agent.
 -   **User Agent (UA) / Shopping Agent (SA)**: The AI surface the user interacts
     with (e.g., Gemini, ChatGPT). It understands the user's needs, builds a
     cart, and obtains the user's authorization.

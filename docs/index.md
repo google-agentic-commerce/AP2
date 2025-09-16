@@ -17,7 +17,7 @@ hide:
 Economy.** It's designed to enable secure, reliable, and interoperable agent
 commerce for developers, merchants, and the payments industry. The protocol is
 available as an extension for the open-source
-[Agent2Agent (A2A) protocol](https://a2a-protocol.org/), with more integtrations
+[Agent2Agent (A2A) protocol](https://a2a-protocol.org/), with more integrations
 in progress.
 
 <!-- prettier-ignore-start -->

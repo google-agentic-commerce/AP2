@@ -18,9 +18,9 @@ The Agent Payments Protocol (AP2) is designed as an optional extension for
 open-source protocols like A2A and MCP, allowing developers to build upon
 existing work to create a secure and reliable framework for AI-driven payments.
 
--   AP2 is required to standardize the communication payments details like
+- AP2 is required to standardize the communication payments details like
     mandates.
--   A2A is required to standardize intra-agent communication, as soon as you
+- A2A is required to standardize intra-agent communication, as soon as you
     have more than one agent you need A2A.
 
 AP2 directly extends the Agent-to-Agent (A2A) protocol for multi-agent payments

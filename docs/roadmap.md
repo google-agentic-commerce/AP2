@@ -11,11 +11,11 @@ for human-present scenarios Support for user and merchant-initiated step-up
 challenges Detailed sequence diagram and reference implementation using A2A
 protocol
 
--   [x] AP2 specifications v0.1 (human present, pull payments)
--   [ ] AP2 A2A extension v0.1
--   [ ] AP2 MCP server v0.1
--   [ ] AP2 python SDK v0.1
--   [ ] AP2 android SDK v0.1
+- [x] AP2 specifications v0.1 (human present, pull payments)
+- [ ] AP2 A2A extension v0.1
+- [ ] AP2 MCP server v0.1
+- [ ] AP2 python SDK v0.1
+- [ ] AP2 android SDK v0.1
 
 **V1.x:** Subsequent versions will expand the protocol's capabilities based on
 community feedback and evolving needs. Potential areas of focus include: Full

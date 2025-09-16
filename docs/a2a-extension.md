@@ -38,7 +38,7 @@ schema:
       "type": "array",
       "name": "AP2 Roles",
       "description": "The roles that this agent performs in the AP2 model.",
-      "minItems":
+      "minItems": 1,
       "items": {
         "enum": ["merchant", "shopper", "credentials-provider", "payment-processor"]
       }

@@ -1,0 +1,30 @@
+{
+  "name": "merchant_payment_processor_agent",
+  "description": "An agent that processes card payments on behalf of a merchant.",
+  "capabilities": {
+      "extensions": [
+        {
+          "uri": "https://github.com/google-agentic-commerce/ap2/v1",
+          "description": "Supports the Agent Payments Protocol.",
+          "required": true
+        },
+        {
+          "uri": "https://sample-card-network.github.io/paymentmethod/types/v1",
+          "description": "Supports the Sample Card Network payment method extension",
+          "required": true
+        }
+      ]
+  },
+  "skills": [
+    {
+      "id": "card-processor",
+      "name": "Card Processor",
+      "description": "Processes card payments.",
+      "tags": ["payment", "card"]
+    }
+  ],
+  "defaultInputModes": ["text/plain"],
+  "defaultOutputModes": ["application/json"],
+  "url": "http://localhost:8003/a2a/merchant_payment_processor_agent",
+  "version": "1.0.0"
+}

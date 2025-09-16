@@ -1,0 +1,42 @@
+{
+  "name": "MerchantAgent",
+  "description": "A sales assistant agent for a merchant.",
+  "url": "http://localhost:8001/a2a/merchant_agent",
+  "preferredTransport": "JSONRPC",
+  "protocolVersion": "0.3.0",
+  "version": "1.0.0",
+  "defaultInputModes": ["json"],
+  "defaultOutputModes": ["json"],
+  "capabilities": {
+      "extensions": [
+        {
+          "uri": "https://github.com/google-agentic-commerce/ap2/v1",
+          "description": "Supports the Agent Payments Protocol.",
+          "required": true
+        },
+        {
+          "uri": "https://sample-card-network.github.io/paymentmethod/types/v1",
+          "description": "Supports the Sample Card Network payment method extension",
+          "required": true
+        }
+      ]
+  },
+    "skills": [
+    {
+      "id": "search_catalog",
+      "name": "Search Catalog",
+      "description": "Searches the merchant's catalog based on a shopping intent & returns a cart containing the top results.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "shopping_intent": {
+            "type": "string",
+            "description": "A JSON string representing the user's shopping intent."
+          }
+        },
+        "required": ["shopping_intent"]
+      },
+      "tags": ["merchant", "search", "catalog"]
+    }
+  ]
+}

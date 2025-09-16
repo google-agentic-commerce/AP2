@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ap2-samples"
+version = "0.1"
+description = "Samples demonstrating the Agent Payments Protocol"
+dependencies = [
+    "a2a-sdk",
+    "absl-py",
+    "flask",
+    "flask-cors",
+    "google-adk",
+    "google-genai",
+    "httpx",
+    "requests",
+    "ap2"
+]
+keywords = ["payments", "a2a", "ap2"]
+readme = "README.md"
+requires-python = ">=3.10"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.uv.sources]
+ap2 = { workspace = true }

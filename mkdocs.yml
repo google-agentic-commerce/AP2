@@ -1,0 +1,125 @@
+site_name: AP2 - Agent Payments Protocol Documentation
+site_url: https://ap2-protocol.org/
+site_description: >
+  The Agent Payments Protocol (AP2) is a solution for enabling gen AI agents to make payments on
+  behalf of users, safely, securely, and in a decentralized and privacy protecting manner.
+  This protocol is a part of the broader ecosystem, which includes agentic protocols like A2A and
+  MCP, and encompasses the global nature of payments.
+
+extra:
+  analytics:
+    provider: google
+    property: G-KXMYBJWNQ7
+
+# Navigation
+nav:
+  - Home: index.md
+  - Topics:
+      - AP2 Overview: topics/what-is-ap2.md
+      - Core Concepts: topics/core-concepts.md
+      - AP2, A2A and MCP: topics/ap2-a2a-and-mcp.md
+      - AP2 and x402: topics/ap2-and-x402.md
+      - Privacy and Security: topics/privacy-and-security.md
+  - AP2 specification: specification.md
+  - A2A extension for AP2: a2a-extension.md
+  - Glossary: glossary.md
+  - FAQ: faq.md
+  - Roadmap: roadmap.md
+  - Partners: partners.md
+  - Samples:
+      - Human Present Cards: https://github.com/google-agentic-commerce/AP2/tree/main/samples/python/scenarios/a2a/human-present/cards/
+      - Human Present x402: https://github.com/google-agentic-commerce/AP2/tree/main/samples/python/scenarios/a2a/human-present/x402/
+      - Digital Payment Credentials Android: https://github.com/google-agentic-commerce/AP2/tree/main/samples/android/scenarios/digital-payment-credentials/run.sh
+
+# Repository
+repo_name: google-agentic-commerce/AP2
+repo_url: https://github.com/google-agentic-commerce/AP2
+
+# Copyright
+copyright: Copyright 2025 Google. Licensed under the Apache License, Version 2.0.
+
+# Custom CSS
+extra_css:
+  - stylesheets/custom.css
+
+# Configuration
+theme:
+  name: material
+  custom_dir: .mkdocs/overrides
+  font:
+    text: Google Sans
+    code: Roboto Mono
+  logo: assets/ap2-logo-white.svg
+  favicon: assets/ap2-logo-black.svg
+  icon:
+    repo: fontawesome/brands/github
+    admonition:
+      note: fontawesome/solid/note-sticky
+      abstract: fontawesome/solid/book
+      info: fontawesome/solid/circle-info
+      tip: fontawesome/solid/bullhorn
+      success: fontawesome/solid/check
+      question: fontawesome/solid/circle-question
+      warning: fontawesome/solid/triangle-exclamation
+      failure: fontawesome/solid/bomb
+      danger: fontawesome/solid/skull
+      bug: fontawesome/solid/robot
+      example: fontawesome/solid/flask
+      quote: fontawesome/solid/quote-left
+  palette:
+    - scheme: default
+      primary: pink
+      accent: white
+  features:
+    - announce.dismiss
+    - content.code.annotate
+    - content.code.copy
+    - content.code.select
+    - content.tabs.link
+    - navigation.footer
+    - navigation.indexes
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.path
+    - navigation.top
+    - navigation.tracking
+    - toc.follow
+    - versioning:
+        provider: mike
+
+# Extensions
+markdown_extensions:
+  - meta
+  - footnotes
+  - admonition
+  - attr_list
+  - md_in_html
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets:
+      url_download: true
+      dedent_subsections: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  - toc:
+      permalink: true
+
+# Plugins
+plugins:
+  - search
+  - macros

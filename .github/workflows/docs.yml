@@ -62,4 +62,4 @@ jobs:
       - name: Deploy development version from main branch
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          mkdocs gh-deploy --force
+          mkdocs gh-deploy

@@ -1,6 +1,7 @@
 # Agent Payments Protocol (AP2)
 
 [![Apache License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/google-agentic-commerce/AP2)
 
 <!-- markdownlint-disable MD041 -->
 <p align="center">

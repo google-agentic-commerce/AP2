@@ -24,6 +24,7 @@ nav:
   - Specification: specification.md
   - FAQ: faq.md
   - Partners: partners.md
+  - TempTest: tmptest.md
   - Samples:
       - Human Present Cards: https://github.com/google-agentic-commerce/AP2/tree/main/samples/python/scenarios/a2a/human-present/cards/
       - Human Present x402: https://github.com/google-agentic-commerce/AP2/tree/main/samples/python/scenarios/a2a/human-present/x402/

@@ -69,9 +69,9 @@ A Cart Mandate contains:
 <div class="grid cards">
     <figure markdown="span" class="card thumb">
         <a href="/assets/GMSCoreDPCScreen-legacy.png">
-            <img src="/assets/GMSCoreDPCScreen-legacy.png" alt="Android Digital Payments Credentials Screen"/>
+            <img src="/assets/GMSCoreDPCScreen-legacy.png" alt="Android Digital Payments Credentials Screen (current UI)"/>
         </a>
-    <figcaption>Android Confirmation (current UI)</figcaption>
+        <figcaption>Android Confirmation (current UI)</figcaption>
     </figure>
     <figure markdown="span" class="card thumb">
         <a href="/assets/GMSCoreDPCScreen-future.png">

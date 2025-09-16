@@ -12,7 +12,7 @@ transactions that may involve such digital currencies.
     [google-agentic-commerce/a2a-x402](https://github.com/google-agentic-commerce/a2a-x402/)
     which is an implementation of A2A in conjunction with the x402 standard. We
     will be aligning this closely with AP2 over time to make it easy to compose
-    solutions which include all payment methods, including stablecoins.
+    solutions which include all payment methods, including digital currencies.
 <!-- prettier-ignore-end -->
 
 ## Payment Agnosticism and Future-Proof Design
@@ -21,9 +21,9 @@ AP2 is an open, interoperable protocol specifically engineered to enable AI
 agents to securely interact and complete payments autonomously. A core principle
 of AP2 is its payment-method-agnostic and future-proof design. The initial
 version supports common "pull" payment methods like credit/debit cards, with a
-roadmap to include "push" payments like real-time bank transfers (e.g., UPI and
-PIX) and digital currencies. This flexible approach ensures that AP2 can evolve
-to support various ways people pay.
+roadmap to include "push" payments like real-time bank transfers and digital
+currencies. This flexible approach ensures that AP2 can evolve to support
+various ways people pay.
 
 ## Engineering Trust for Agentic Transactions
 
@@ -47,4 +47,4 @@ to demonstrate AP2 and x402 working together in practical implementations.
 In essence, **AP2 provides the overarching secure, interoperable protocol and
 trust mechanisms necessary for AI agents to make payments**, while x402
 represents a type of emerging payment method that AP2 is specifically designed
-to accommodate and support securely within the agentic commerce ecosystem.
+to accommodate and support securely within the agentic payments ecosystem.

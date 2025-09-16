@@ -5,17 +5,10 @@ credentials (DPC).
 
 ## Scenario
 
-This repository contains a demonstration of a conversational shopping assistant
-application for Android. The app showcases a modern, end-to-end user experience,
-from natural language product discovery to a secure payment flow using Digital
-Payment Credentials (DPC).
-
-The core of the application is powered by the Google Generative AI SDK (Gemini),
-which drives the conversational agent. Communication between the application and
-the backend merchant services is handled using the A2A (App-to-App) protocol.
-For the payment process, the app integrates with Digital Payment Credentials
-(DPC) through the Android Credential Manager API to provide a seamless and
-secure transaction experience.
+This repository demonstrates a conversational Android shopping assistant. It
+features a full user experience, from natural language product discovery
+(powered by Gemini) to secure payment using Digital Payment Credentials (DPC).
+All backend communication is handled via the A2A protocol.
 
 ## Key Actors
 
@@ -27,7 +20,7 @@ This sample consists of:
 
 ## Key Features
 
--   Purchase with a **Digital Payment Credential (DPC):** A modern, secure
+*   Purchase with a **Digital Payment Credential (DPC):** A modern, secure
     payment flow using the Android Credential Manager that allows signing over
     the user's intent displayed on a trusted surface.
 
@@ -54,30 +47,31 @@ This sample consists of:
         export GOOGLE_API_KEY=your_key
         ```
 
-    1.  Add it to the local.properties file in
-        [/samples/android/shopping_assistant](/samples/android/shopping_assistant).
+    1.  Add it to the local.properties file.
 
         ```
-        echo "GOOGLE_API_KEY=your_key" >> /samples/android/shopping_assistant
+        echo "GOOGLE_API_KEY=your_key" >> samples/android/shopping_assistant/local.properties
         ```
 
-3.  **Add the Android SDK path to the local.properties file in
-    [/samples/android/shopping_assistant](/samples/android/shopping_assistant).**
+3.  **Add the Android SDK path to the local.properties file.**
 
     You can find this path in Android Studio under `Settings > Languages &
     Frameworks > Android SDK`
 
-    ~~~
-    echo "sdk.dir=your_path >> /samples/android/shopping_assistant```
-    ~~~
+    ```
+    echo "sdk.dir=your_path" >> samples/android/shopping_assistant/local.properties
+    ```
 
 4.  **Set JAVA_HOME environment variable**
 
     The Java Development Kit (JDK) is typically installed with Android Studio,
     but does not set the JAVA_HOME environment variable. Be sure it is set.
 
+    You can find this path in Android Studio under `Settings > Build, Execution,
+    Deployment > Build Tools > Gradle`
+
     ```
-    export JAVA_HOME=your_jdk_path
+    export JAVA_HOME=your_path
     ```
 
 5.  **Ensure your environment meets

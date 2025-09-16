@@ -49,7 +49,7 @@ shopping assistant have their source code in **samples/android**.
 
 *   Python 3.10 or higher
 
-### Setup {#setup}
+### Setup 
 
 Ensure you have obtained a Google API key from
 [Google AI Studio](http://aistudio.google.com/apikey). Then declare the

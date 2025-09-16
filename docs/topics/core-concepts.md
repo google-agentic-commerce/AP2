@@ -42,14 +42,14 @@ to each actor in the ecosystem:
 - **Network and Issuer**: The payment network and the financial institution
     that issued the user's payment credentials.
 
-## Trust Anchors: Verifiable Credentials (VCs)
+## Trust Anchors: Verifiable Digital Credentials (VDCs)
 
-The central innovation of AP2 is the use of **Verifiable Credentials (VCs)** to
-engineer trust. VCs are tamper-evident, portable, and cryptographically signed
+The central innovation of AP2 is the use of **verifiable digital credentials (VDCs)** to
+engineer trust. VDCs are tamper-evident, portable, and cryptographically signed
 digital objects that serve as the building blocks of a transaction. They are the
 language of trust exchanged between agents.
 
-There are three primary types of VCs:
+There are three primary types of VDCs:
 
 ### 1. The Cart Mandate (Human Present)
 
@@ -99,7 +99,7 @@ A User-Signed Intent Mandate contains:
 
 ### 3. The Payment Mandate
 
-This is a separate VC shared with the payment network and issuer. Its purpose is
+This is a separate VDC shared with the payment network and issuer. Its purpose is
 to provide visibility into the agentic nature of the transaction, helping the
 network and issuer build trust and assess risk. It contains signals for AI agent
 presence and the transaction modality (Human Present vs. Not Present).

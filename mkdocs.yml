@@ -21,7 +21,8 @@ nav:
       - AP2 and x402: topics/ap2-and-x402.md
       - Privacy and Security: topics/privacy-and-security.md
       - Life of a Transaction: topics/life-of-a-transaction.md
-  - Specification: specification.md
+  - AP2 specification: specification.md
+  - A2A extension for AP2: a2a-extension.md
   - Glossary: glossary.md
   - FAQ: faq.md
   - Roadmap: roadmap.md

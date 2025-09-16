@@ -1,7 +1,11 @@
-# AP2 A2A Extension Specification
+# A2A Extension for AP2
 
-This extension to the A2A protocol enables performing the Agent Payments
-Protocol (AP2) over A2A.
+!!! info
+
+    This is an [Agent2Agent (A2A) extension](https://a2a-protocol.org/latest/topics/extensions/)
+    implementing the Agent Payments Protocol (AP2).
+
+    `v0.1-alpha` (see [roadmap](roadmap.md))
 
 ## Extension URI
 

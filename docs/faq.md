@@ -56,7 +56,7 @@
         compose solutions which include all payment methods, including
         stablecoins.
 
-1. What are verifiable credentials?
+1. What are verifiable digital credentials?
 
     - These are standardized, cryptographically secure data objects (like the
       Cart Mandate and Intent Mandate) that serve as tamper-evident,
@@ -76,10 +76,10 @@
 
     - A primary objective is to provide supporting evidence that helps payment
       networks establish accountability and liability principles. In a dispute,
-      the network adjudicator (e.g., Card Network) can use the user-signed
-      cart mandate and compare the details of what was agreed upon between the
-      agent and the consumer against the details in the dispute to help
-      determine transaction accountability.
+      the network adjudicator (e.g., Card Network) can use the user-signed cart
+      mandate and compare the details of what was agreed upon between the agent
+      and the consumer against the details in the dispute to help determine
+      transaction accountability.
 
 1. What prevents an agent from "hallucinating" and making an incorrect purchase?
 

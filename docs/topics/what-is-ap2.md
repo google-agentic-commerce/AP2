@@ -46,3 +46,5 @@ It creates a common, trusted language for all participants, ensuring that any
 compliant agent can securely transact with any compliant merchant. By
 establishing a secure and reliable framework for AI-driven commerce, AP2 paves
 the way for a competitive and innovative marketplace.
+
+![Agent Payments Protocol Graphic](../assets/ap2_graphic.png)

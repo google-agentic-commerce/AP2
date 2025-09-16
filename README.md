@@ -5,8 +5,7 @@
 
 <!-- markdownlint-disable MD041 -->
 <p align="center">
-  <img src="docs/assets/ap2-logo-black.svg#gh-light-mode-only" alt="Agent Payments Protocol Logo" width="100">
-  <img src="docs/assets/ap2-logo-white.svg#gh-dark-mode-only" alt="Agent Payments Protocol Logo" width="100">
+  <img src="docs/assets/ap2_graphic.png" alt="Agent Payments Protocol Graphic">
 </p>
 
 This repository contains code samples and demos of the Agent Payments Protocol.

@@ -77,21 +77,7 @@ This sample consists of:
 5.  **Ensure your environment meets
     the [Python sample prerequisites](../../../python).**
 
-6.  **Install the Digital Wallet App (sideloaded)**
-
-    This demo requires a separate digital wallet app ('CM Wallet') to be
-    installed on the same device that holds the Digital Payment Credentials.
-
-    1.  Download the
-        [latest CM Wallet APK](https://github.com/digitalcredentialsdev/CMWallet/actions?query=branch%3Amain).
-
-    1.  Install the APK:
-
-        ```
-        adb install app-debug.apk
-        ```
-
-7.  **Enable the Enhanced Payment Confirmation UI**
+6.  **Enable the Enhanced Payment Confirmation UI**
 
     To experience the most modern and secure payment flow, you must enable a
     required feature flag:
@@ -99,6 +85,21 @@ This sample consists of:
     **Enroll in the
     [Google Play Services Beta Program](https://developers.google.com/android/guides/beta-program):**
     Ensure the Google Account on your test device is enrolled.
+
+7.  **Install the Digital Wallet App (sideloaded)**
+
+    This demo requires a separate digital wallet app ('CM Wallet') to be
+    installed on the same device that holds the Digital Payment Credentials.
+
+    1.  Download the
+        [latest CM Wallet APK](https://github.com/digitalcredentialsdev/CMWallet/actions?query=branch%3Amain).
+
+    1.  Install the APK and start the app:
+
+        ```
+        adb install app-debug.apk
+        adb shell am start -n "com.credman.cmwallet/.MainActivity"
+        ```
 
 ### Execution
 

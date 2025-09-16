@@ -3,18 +3,16 @@
 [![Apache License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 
 <!-- markdownlint-disable MD041 -->
-<div style="text-align: center;">
-  <div class="centered-logo-text-group">
-    <img src="docs/assets/ap2-logo-black.svg" alt="Agent Payments Protocol Logo" width="100">
-  </div>
-</div>
+<p align="center">
+  <img src="docs/assets/ap2-logo-black.svg#gh-light-mode-only" alt="Agent Payments Protocol Logo" width="100">
+  <img src="docs/assets/ap2-logo-white.svg#gh-dark-mode-only" alt="Agent Payments Protocol Logo" width="100">
+</p>
 
 This repository contains code samples and demos of the Agent Payments Protocol.
 
 ## Intro to AP2 Video
 
 [![A2A Intro Video](https://img.youtube.com/vi/yLTp3ic2j5c/hqdefault.jpg)](https://goo.gle/ap2-video)
-
 
 ## About the Samples
 
@@ -49,7 +47,7 @@ shopping assistant have their source code in **samples/android**.
 
 *   Python 3.10 or higher
 
-### Setup 
+### Setup
 
 Ensure you have obtained a Google API key from
 [Google AI Studio](http://aistudio.google.com/apikey). Then declare the

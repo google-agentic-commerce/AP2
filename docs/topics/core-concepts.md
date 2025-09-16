@@ -66,6 +66,21 @@ A Cart Mandate contains:
     currency).
 -   A container for risk-related signals.
 
+<div class="grid cards">
+    <figure markdown="span" class="card thumb">
+        <a href="/assets/GMSCoreDPCScreen-legacy.png">
+            <img src="/assets/GMSCoreDPCScreen-legacy.png" alt="Android Digital Payments Credentials Screen"/>
+        </a>
+    <figcaption>Android Confirmation (current UI)</figcaption>
+    </figure>
+    <figure markdown="span" class="card thumb">
+        <a href="/assets/GMSCoreDPCScreen-future.png">
+            <img src="/assets/GMSCoreDPCScreen-future.png" alt="Android Digital Payments Credentials Screen (coming soon)"/>
+        </a>
+        <figcaption>Android Confirmation (coming soon)</figcaption>
+    </figure>
+</div>
+
 ### 2. The User-Signed Intent Mandate (Human Not Present)
 
 The User-Signed Intent Mandate is used for scenarios where the user is not

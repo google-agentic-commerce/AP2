@@ -788,7 +788,7 @@ Some salient points of the flow diagram:
 }
 ```
 
-#### Sample CartMandate
+#### Sample `CartMandate`
 
 ```json
 {
@@ -841,7 +841,7 @@ Some salient points of the flow diagram:
 }
 ```
 
-#### Sample PaymentMandate
+#### Sample `PaymentMandate`
 
 ```json
 {

@@ -67,33 +67,33 @@ The following listing shows an AgentCard declaring AP2 extension support.
 
 ```json
 {
-  "name": "Travel Agent",
-  "description": "This agent can book all necessary parts of a vacation",
-  "capabilities": {
-    "extensions": [
-        {
-            "uri": "https://github.com/google-agentic-commerce/ap2/tree/v0.1",
-            "description": "This agent can pay for reservations on the user's behalf",
-            "params": {
-                "roles": ["shopper"]
+    "name": "Travel Agent",
+    "description": "This agent can book all necessary parts of a vacation",
+    "capabilities": {
+        "extensions": [
+            {
+                "uri": "https://github.com/google-agentic-commerce/ap2/tree/v0.1",
+                "description": "This agent can pay for reservations on the user's behalf",
+                "params": {
+                    "roles": ["shopper"]
+                }
             }
+        ]
+    },
+    "skills": [
+        {
+            "id": "plan_vacation",
+            "name": "Plan Vacation",
+            "description": "Plan a fun vacation, creating a full itinerary",
+            "tags": []
+        },
+        {
+            "id": "book_itinerary",
+            "name": "Book Itinerary",
+            "description": "Place reservations for all components of an itinerary (flights, hotels, rentals, restaurants, etc.)",
+            "tags": []
         }
     ]
-  },
-  "skills": [
-    {
-        "id": "plan_vacation",
-        "name": "Plan Vacation",
-        "description": "Plan a fun vacation, creating a full itinerary",
-        "tags": []
-    },
-    {
-        "id": "book_itinerary",
-        "name": "Book Itinerary",
-        "description": "Place reservations for all components of an itinerary (flights, hotels, rentals, restaurants, etc.)",
-        "tags": []
-    }
-  ]
 }
 ```
 
@@ -170,48 +170,48 @@ The following listing shows the JSON representation of a CartMandate Artifact.
             "data": {
                 "ap2.mandates.CartMandate": {
                     "contents": {
-                      "id": "cart_shoes_123",
-                      "user_signature_required": false,
-                      "payment_request": {
-                        "method_data": [
-                          {
-                            "supported_methods": "CARD",
-                            "data": {
-                              "payment_processor_url": "http://example.com/pay"
+                        "id": "cart_shoes_123",
+                        "user_signature_required": false,
+                        "payment_request": {
+                            "method_data": [
+                                {
+                                    "supported_methods": "CARD",
+                                    "data": {
+                                        "payment_processor_url": "http://example.com/pay"
+                                    }
+                                }
+                            ],
+                            "details": {
+                                "id": "order_shoes_123",
+                                "displayItems": [
+                                    {
+                                        "label": "Nike Air Max 90",
+                                        "amount": {
+                                            "currency": "USD",
+                                            "value": 120.0
+                                        },
+                                        "pending": null
+                                    }
+                                ],
+                                "shipping_options": null,
+                                "modifiers": null,
+                                "total": {
+                                    "label": "Total",
+                                    "amount": {
+                                        "currency": "USD",
+                                        "value": 120.0
+                                    },
+                                    "pending": null
+                                }
+                            },
+                            "options": {
+                                "requestPayerName": false,
+                                "requestPayerEmail": false,
+                                "requestPayerPhone": false,
+                                "requestShipping": true,
+                                "shippingType": null
                             }
-                          }
-                        ],
-                        "details": {
-                          "id": "order_shoes_123",
-                          "displayItems": [
-                            {
-                              "label": "Nike Air Max 90",
-                              "amount": {
-                                "currency": "USD",
-                                "value": 120.0,
-                              },
-                              "pending": null,
-                            }
-                          ],
-                          "shipping_options": null,
-                          "modifiers": null,
-                          "total": {
-                            "label": "Total",
-                              "amount": {
-                                "currency": "USD",
-                                "value": 120.0,
-                              },
-                              "pending": null,
-                          },
-                        },
-                        "options": {
-                          "requestPayerName": false,
-                          "requestPayerEmail": false,
-                          "requestPayerPhone": false,
-                          "requestShipping": true,
-                          "shippingType": null,
-                        },
-                      },
+                        }
                     },
                     "merchant_signature": "sig_merchant_shoes_abc1",
                     "timestamp": "2025-08-26T19:36:36.377022Z"
@@ -252,28 +252,28 @@ The following listing shows a JSON rendering of a PaymentMandate Message.
             "kind": "data",
             "data": {
                 "ap2.mandates.PaymentMandate": {
-                  "payment_details": {
-                    "cart_mandate": "<user-signed hash of the cart mandate>",
-                    "payment_request_id": "order_shoes_123",
-                    "merchant_agent_card": {
-                      "name": "MerchantAgent"
+                    "payment_details": {
+                        "cart_mandate": "<user-signed hash of the cart mandate>",
+                        "payment_request_id": "order_shoes_123",
+                        "merchant_agent_card": {
+                            "name": "MerchantAgent"
+                        },
+                        "payment_method": {
+                            "supported_methods": "CARD",
+                            "data": {
+                                "token": "xyz789"
+                            }
+                        },
+                        "amount": {
+                            "currency": "USD",
+                            "value": 120.0
+                        },
+                        "risk_info": {
+                            "device_imei": "abc123"
+                        },
+                        "display_info": "<image bytes>"
                     },
-                    "payment_method": {
-                      "supported_methods": "CARD",
-                      "data": {
-                        "token": "xyz789"
-                      },
-                    },
-                    "amount": {
-                      "currency": "USD",
-                      "value": 120.0,
-                    },
-                    "risk_info": {
-                      "device_imei": "abc123"
-                    },
-                    "display_info": "<image bytes>"
-                  },
-                  "creation_time": "2025-08-26T19:36:36.377022Z"
+                    "creation_time": "2025-08-26T19:36:36.377022Z"
                 }
             }
         }

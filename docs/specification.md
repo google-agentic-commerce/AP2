@@ -701,32 +701,32 @@ Some salient points of the flow diagram:
 
 ```json
 {
-  "name": "MerchantAgent",
-  "description": "A sales assistant agent for a merchant.",
-  "capabilities": {
-    "extensions": [
-      {
-        "description": "Supports the A2A payments extension.",
-        "required": true,
-        "uri": "https://google-a2a.github.io/A2A/ext/payments/v1",
-      },
-      {
-        "description": "Supports the Visa payment method extension",
-        "required": true,
-        "uri": "https://visa.github.io/paymentmethod/types/v1",
-      },
-    ]
-  },
-  "skills": [
-    {
-      "id": "search_catalog",
-      "name": "Search Catalog",
-      "description": "Finds items in the merchant's catalog",
-      "tags": ["merchant", "search", "catalog"],
-    }
-  ],
-  "url": "http://example.com/a2a/merchant_agent",
-  "version": "1.0.0",
+    "name": "MerchantAgent",
+    "description": "A sales assistant agent for a merchant.",
+    "capabilities": {
+        "extensions": [
+            {
+                "description": "Supports the A2A payments extension.",
+                "required": true,
+                "uri": "https://google-a2a.github.io/A2A/ext/payments/v1"
+            },
+            {
+                "description": "Supports the Visa payment method extension",
+                "required": true,
+                "uri": "https://visa.github.io/paymentmethod/types/v1"
+            }
+        ]
+    },
+    "skills": [
+        {
+            "id": "search_catalog",
+            "name": "Search Catalog",
+            "description": "Finds items in the merchant's catalog",
+            "tags": ["merchant", "search", "catalog"]
+        }
+    ],
+    "url": "http://example.com/a2a/merchant_agent",
+    "version": "1.0.0"
 }
 ```
 
@@ -734,57 +734,57 @@ Some salient points of the flow diagram:
 
 ```json
 {
-  "name": "CredentialProvider",
-  "description": "An agent that holds a user's payment credentials.",
-  "capabilities": {
-    "extensions": [
-      {
-        "description": "Supports the A2A payments extension.",
-        "required": true,
-        "uri": "https://google-a2a.github.io/A2A/extensions/payments/v1",
-      },
-      {
-        "description": "Supports the Visa payment method extension",
-        "required": true,
-        "uri": "https://visa.github.io/paymentmethod/types/v1",
-      },
-    ]
-  },
-  "security": [
-    {
-      "oauth2": ["get_payment_methods"]
-    }
-  ],
-  "securitySchemes": {
-    "oauth2": {
-      "flows": {
-        "authorizationCode": {
-          "authorizationUrl": "http://example.com/auth",
-          "scopes": {
-            "get_payment_methods": "description",
-          },
-          "tokenUrl": "http://127.0.0.1:8080/token",
+    "name": "CredentialProvider",
+    "description": "An agent that holds a user's payment credentials.",
+    "capabilities": {
+        "extensions": [
+            {
+                "description": "Supports the A2A payments extension.",
+                "required": true,
+                "uri": "https://google-a2a.github.io/A2A/extensions/payments/v1"
+            },
+            {
+                "description": "Supports the Visa payment method extension",
+                "required": true,
+                "uri": "https://visa.github.io/paymentmethod/types/v1"
+            }
+        ]
+    },
+    "security": [
+        {
+            "oauth2": ["get_payment_methods"]
         }
-      },
-      "type": "oauth2",
-    }
-  },
-  "skills": [
-    {
-      "id": "get_eligible_payment_methods",
-      "description": "Provides a list of payment methods for a purchase.",
-      "name": "Get Eligible Payment Methods",
-      "tags": ["eligible", "payment", "methods"],
+    ],
+    "securitySchemes": {
+        "oauth2": {
+            "flows": {
+                "authorizationCode": {
+                    "authorizationUrl": "http://example.com/auth",
+                    "scopes": {
+                        "get_payment_methods": "description"
+                    },
+                    "tokenUrl": "http://127.0.0.1:8080/token"
+                }
+            },
+            "type": "oauth2"
+        }
     },
-    {
-      "id": "get_account_shipping_address",
-      "description": "Fetches the shipping address in the user's account.",
-      "name": "Get Shipping Address",
-      "tags": ["account", "shipping"],
-    },
-  ],
-  "url": "http://example.com/a2a/credential_provider",
-  "version": "1.0.0",
+    "skills": [
+        {
+            "id": "get_eligible_payment_methods",
+            "description": "Provides a list of payment methods for a purchase.",
+            "name": "Get Eligible Payment Methods",
+            "tags": ["eligible", "payment", "methods"]
+        },
+        {
+            "id": "get_account_shipping_address",
+            "description": "Fetches the shipping address in the user's account.",
+            "name": "Get Shipping Address",
+            "tags": ["account", "shipping"]
+        }
+    ],
+    "url": "http://example.com/a2a/credential_provider",
+    "version": "1.0.0"
 }
 ```
 
@@ -792,52 +792,52 @@ Some salient points of the flow diagram:
 
 ```json
 {
-  "contents": {
-    "id": "cart_shoes_123",
-    "user_signature_required": false,
-    "payment_request": {
-      "method_data": [
-        {
-          "supported_methods": "CARD",
-          "data": {
-            "payment_processor_url":"http://example.com/pay"
-          },
+    "contents": {
+        "id": "cart_shoes_123",
+        "user_signature_required": false,
+        "payment_request": {
+            "method_data": [
+                {
+                    "supported_methods": "CARD",
+                    "data": {
+                        "payment_processor_url": "http://example.com/pay"
+                    }
+                }
+            ],
+            "details": {
+                "id": "order_shoes_123",
+                "displayItems": [
+                    {
+                        "label": "Nike Air Max 90",
+                        "amount": {
+                            "currency": "USD",
+                            "value": 120.0
+                        },
+                        "pending": null
+                    }
+                ],
+                "shipping_options": null,
+                "modifiers": null,
+                "total": {
+                    "label": "Total",
+                    "amount": {
+                        "currency": "USD",
+                        "value": 120.0
+                    },
+                    "pending": null
+                }
+            },
+            "options": {
+                "requestPayerName": false,
+                "requestPayerEmail": false,
+                "requestPayerPhone": false,
+                "requestShipping": true,
+                "shippingType": null
+            }
         }
-      ],
-      "details": {
-        "id": "order_shoes_123",
-        "displayItems": [
-          {
-            "label": "Nike Air Max 90",
-            "amount": {
-              "currency": "USD",
-              "value": 120.0,
-            },
-            "pending": null,
-          }
-        ],
-        "shipping_options": null,
-        "modifiers": null,
-        "total": {
-          "label": "Total",
-            "amount": {
-              "currency": "USD",
-              "value": 120.0,
-            },
-            "pending": null,
-        },
-      },
-      "options": {
-        "requestPayerName": false,
-        "requestPayerEmail": false,
-        "requestPayerPhone": false,
-        "requestShipping": true,
-        "shippingType": null,
-      },
     },
-  },
-  "merchant_signature": "sig_merchant_shoes_abc1",
-  "timestamp": "2025-08-26T19:36:36.377022Z",
+    "merchant_signature": "sig_merchant_shoes_abc1",
+    "timestamp": "2025-08-26T19:36:36.377022Z"
 }
 ```
 

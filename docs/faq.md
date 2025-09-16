@@ -35,7 +35,7 @@
       may already have ways to invoke fake payment methods which do not require
       real money movement.
 
-1. Is there a MCP server or a SDK which is ready for <my framework of choice>?
+1. Is there a MCP server or a SDK which is ready for "my framework of choice"?
 
     - We are working on an SDK and a MCP server right now, in collaboration with
       payment service providers. Check back soon.
@@ -76,10 +76,10 @@
 
     - A primary objective is to provide supporting evidence that helps payment
       networks establish accountability and liability principles. In a dispute,
-      the network adjudicator (e.g., Card Network) can receive the user-signed
+      the network adjudicator (e.g., Card Network) can use the user-signed
       cart mandate and compare the details of what was agreed upon between the
       agent and the consumer against the details in the dispute to help
-      determine where liability sits.
+      determine transaction accountability.
 
 1. What prevents an agent from "hallucinating" and making an incorrect purchase?
 

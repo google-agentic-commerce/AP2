@@ -185,7 +185,7 @@ The following listing shows the JSON representation of a CartMandate Artifact.
                 "id": "order_shoes_123",
                 "displayItems": [
                   {
-                    "label": "Nike Air Max 90",
+                    "label": "Cool Shoes Max",
                     "amount": {
                       "currency": "USD",
                       "value": 120.0

@@ -38,3 +38,4 @@ jobs:
           VALIDATE_YAML_PRETTIER: false
           VALIDATE_GIT_COMMITLINT: false
           VALIDATE_GITHUB_ACTIONS_ZIZMOR: false
+          VALIDATE_JSCPD: false

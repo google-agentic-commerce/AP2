@@ -6,17 +6,17 @@ fair ecosystem.
 
 ## Guiding Principles
 
--   **Openness and Interoperability**: AP2 is an open, non-proprietary extension
+- **Openness and Interoperability**: AP2 is an open, non-proprietary extension
     for agent-to-agent protocols, fostering a competitive environment where any
     compliant agent can work with any compliant merchant.
--   **User Control and Privacy**: The user is always the ultimate authority. The
+- **User Control and Privacy**: The user is always the ultimate authority. The
     protocol is designed with privacy at its core, using a role-based
     architecture and encryption to protect sensitive user data and payment
     details.
--   **Verifiable Intent, Not Inferred Action**: Trust is anchored to
+- **Verifiable Intent, Not Inferred Action**: Trust is anchored to
     deterministic, non-repudiable proof of intent from the user, directly
     addressing the risk of agent error or "hallucination."
--   **Clear Transaction Accountability**: For the payments ecosystem to embrace
+- **Clear Transaction Accountability**: For the payments ecosystem to embrace
     agentic payments, there can be no ambiguity regarding transaction
     accountability. The protocol provides supporting evidence that helps payment
     networks establish clear and fair principles for accountability and dispute
@@ -29,17 +29,17 @@ fair ecosystem.
 The protocol defines a clear separation of concerns by assigning distinct roles
 to each actor in the ecosystem:
 
--   **The User**: The individual who delegates a payments task to an agent.
--   **User Agent (UA) / Shopping Agent (SA)**: The AI surface the user interacts
+- **The User**: The individual who delegates a payments task to an agent.
+- **User Agent (UA) / Shopping Agent (SA)**: The AI surface the user interacts
     with (e.g., Gemini, ChatGPT). It understands the user's needs, builds a
     cart, and obtains the user's authorization.
--   **Credentials Provider (CP)**: A specialized entity (e.g., a digital wallet)
+- **Credentials Provider (CP)**: A specialized entity (e.g., a digital wallet)
     that securely manages the user's payment credentials and methods.
--   **Merchant Endpoint (ME)**: An interface or agent operating on behalf of the
+- **Merchant Endpoint (ME)**: An interface or agent operating on behalf of the
     merchant to showcase products and negotiate a cart.
--   **Merchant Payment Processor (MPP)**: The entity that constructs the final
+- **Merchant Payment Processor (MPP)**: The entity that constructs the final
     transaction authorization message for the payment network.
--   **Network and Issuer**: The payment network and the financial institution
+- **Network and Issuer**: The payment network and the financial institution
     that issued the user's payment credentials.
 
 ## Trust Anchors: Verifiable Credentials (VCs)
@@ -60,11 +60,26 @@ authorization to a specific transaction.
 
 A Cart Mandate contains:
 
--   Verifiable identities for the payer and payee.
--   A tokenized representation of the specific payment method.
--   The final, exact transaction details (products, destination, amount,
+- Verifiable identities for the payer and payee.
+- A tokenized representation of the specific payment method.
+- The final, exact transaction details (products, destination, amount,
     currency).
--   A container for risk-related signals.
+- A container for risk-related signals.
+
+<div class="grid cards">
+    <figure markdown="span" class="card thumb">
+        <a href="/assets/GMSCoreDPCScreen-legacy.png">
+            <img src="/assets/GMSCoreDPCScreen-legacy.png" alt="Android Digital Payments Credentials Screen"/>
+        </a>
+        <figcaption>Android Confirmation (current UI)</figcaption>
+    </figure>
+    <figure markdown="span" class="card thumb">
+        <a href="/assets/GMSCoreDPCScreen-future.png">
+            <img src="/assets/GMSCoreDPCScreen-future.png" alt="Android Digital Payments Credentials Screen (coming soon)"/>
+        </a>
+        <figcaption>Android Confirmation (coming soon)</figcaption>
+    </figure>
+</div>
 
 ### 2. The User-Signed Intent Mandate (Human Not Present)
 
@@ -75,12 +90,12 @@ the agent authority to act within defined constraints.
 
 A User-Signed Intent Mandate contains:
 
--   Verifiable identities for the payer and payee.
--   A list or category of authorized payment methods.
--   The shopping intent, including parameters like product categories, and other
+- Verifiable identities for the payer and payee.
+- A list or category of authorized payment methods.
+- The shopping intent, including parameters like product categories, and other
     criteria.
--   The agent's natural language understanding of the user's prompt.
--   An expiration time (Time-to-Live).
+- The agent's natural language understanding of the user's prompt.
+- An expiration time (Time-to-Live).
 
 ### 3. The Payment Mandate
 

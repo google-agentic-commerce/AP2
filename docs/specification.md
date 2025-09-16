@@ -34,26 +34,26 @@ open protocol.
 The development and rollout of the protocol are envisioned in a phased approach,
 allowing the ecosystem to build, test, and adopt capabilities incrementally.
 
--   **V0.1**: The initial specification focuses on establishing the core
+- **V0.1**: The initial specification focuses on establishing the core
     architecture and enabling the most common use cases. Key features include:
-    -   Support for "pull" payment methods (e.g., credit/debit cards)
-    -   Well-defined data payloads to support transparent accountability based
+    - Support for "pull" payment methods (e.g., credit/debit cards)
+    - Well-defined data payloads to support transparent accountability based
         on the VC framework
-    -   Support for human-present scenarios
-    -   Support for user and merchant-initiated step-up challenges
-    -   Detailed sequence diagram and reference implementation using
+    - Support for human-present scenarios
+    - Support for user and merchant-initiated step-up challenges
+    - Detailed sequence diagram and reference implementation using
         [A2A protocol](https://a2a-protocol.org/)
--   **V1.x**: Subsequent versions will expand the protocol's capabilities based
+- **V1.x**: Subsequent versions will expand the protocol's capabilities based
     on community feedback and evolving needs. Potential areas of focus include:
-    -   Full support for "push" payments and all payment methods (e.g.,
+    - Full support for "push" payments and all payment methods (e.g.,
         real-time bank transfers, e-wallets etc.)
-    -   Standardized flows for recurring payments and subscriptions
-    -   Support for human-not-present scenarios
-    -   Detailed sequence diagrams for MCP-based implementations
--   **Long-Term Vision**: Longer term, we plan the protocol to incorporate more
+    - Standardized flows for recurring payments and subscriptions
+    - Support for human-not-present scenarios
+    - Detailed sequence diagrams for MCP-based implementations
+- **Long-Term Vision**: Longer term, we plan the protocol to incorporate more
     intelligence and flexibility, including:
-    -   Native support for complex, multi-merchant transaction topologies
-    -   Support for real-time negotiations between buyer and seller agents
+    - Native support for complex, multi-merchant transaction topologies
+    - Support for real-time negotiations between buyer and seller agents
 
 We believe that a collaborative approach is essential to creating a protocol
 that is robust, secure, and meets the diverse needs of the entire ecosystem. We
@@ -87,15 +87,15 @@ human involvement.
 Autonomous agents shatter this assumption. When an agent initiates a payment,
 fundamental questions arise that current systems are ill-equipped to answer:
 
--   Authorization & Auditability: What verifiable proof demonstrates that the
+- Authorization & Auditability: What verifiable proof demonstrates that the
     user granted the agent the specific authority to make this particular
     purchase?
--   Authenticity of Intent: How can a merchant or payment processor be certain
+- Authenticity of Intent: How can a merchant or payment processor be certain
     that the agent's request accurately reflects the human user's true intent?
--   Agent Error and "Hallucination": How does the system protect against agent
+- Agent Error and "Hallucination": How does the system protect against agent
     errors, such as misinterpreting a user's request or "hallucinating" product
     details, which could lead to incorrect purchases?
--   Accountability: In the event of a fraudulent or erroneous transaction, who
+- Accountability: In the event of a fraudulent or erroneous transaction, who
     is accountable? The user who delegated the task? The developer of the
     shopping agent? The merchant who accepted the order? Or the payment network
     that processed it?
@@ -114,12 +114,12 @@ might develop bespoke integrations for their specific agents, and payment
 providers might create siloed ecosystems that do not interoperate. This
 fragmentation would have severe negative consequences:
 
--   For Users: A confusing and inconsistent experience, where their preferred
+- For Users: A confusing and inconsistent experience, where their preferred
     agent may only work with a limited set of merchants or payment methods.
--   For Merchants: High development and maintenance costs to support multiple,
+- For Merchants: High development and maintenance costs to support multiple,
     non-standard agent payment integrations, creating a significant barrier to
     entry for small and medium-sized businesses.
--   For the Payments Ecosystem: An inability to collect common signals across
+- For the Payments Ecosystem: An inability to collect common signals across
     all agent transactions in order to consistently mitigate fraud, leading to
     higher costs and suppressed transaction approval rates.
 
@@ -187,34 +187,34 @@ separation of concerns that enhances security and simplifies integration.
 
 The agent payments ecosystem consists of the following key roles:
 
--   **The User**: The human individual who initiates a commerce task by
+- **The User**: The human individual who initiates a commerce task by
     delegating it to their Agent. The User is the ultimate source of intent and
     financial authority.
--   **The User Agent (UA) or Shopping Agent (SA)** : This is the AI Surface that
+- **The User Agent (UA) or Shopping Agent (SA)** : This is the AI Surface that
     the user directly interacts with. The User Agent (UA) may delegate the
     commerce task to another AI Agent (say, the Shopping Agent or “SA”). Its
     primary functions include understanding the user's needs, discovering
     products, interacting with merchants to build a cart, and obtaining the
     user's signed authorization to initiate a payment related task.
--   **The User’s Credentials Provider (CP)**: A specialized entity responsible
+- **The User’s Credentials Provider (CP)**: A specialized entity responsible
     for the secure management and execution of payments credentials (e.g. a
     digital Wallet). It holds knowledge of the User's available payment methods,
     gets user consent (if deemed necessary) to share credentials with the SA,
     selects the optimal payment method based on user preferences and transaction
     context, and handles payment scenarios like errors, declines and transaction
     challenges gracefully.
--   **The Remote or Merchant Endpoint (ME)**: A web interface, MCP endpoint or
+- **The Remote or Merchant Endpoint (ME)**: A web interface, MCP endpoint or
     an AI agent operating on behalf of an entity which expects to receive a
     payment in return for offering products or services. Its objectives are to
     showcase products/services, provide information, negotiate the contents of a
     cart with a Shopping Agent, and confirm that it has enough information about
     the user’s intent to deliver the right products/services.
--   **The Merchant Payment Processor Endpoint (MPP)**: The Merchant Payment
+- **The Merchant Payment Processor Endpoint (MPP)**: The Merchant Payment
     Processor (web, API, MCP or AI Agent) may be the same as the Merchant if the
     Merchant has all the capabilities to fulfill this role. The MPP constructs
     the txn auth message which can be sent to the payment ecosystem for
     authorization.
--   **Network and Issuer**: The provider of the payment network and issuer of
+- **Network and Issuer**: The provider of the payment network and issuer of
     payment credentials to the human user. The Credentials Provider may need to
     interact with the network for issuance of specific tokens for AI agent
     transactions and the Merchant/PSP may submit these transactions for
@@ -229,11 +229,11 @@ The agent payments ecosystem consists of the following key roles:
 In the immediate future, payment ecosystem trust will be established through
 manually curated allow lists of approved agents.
 
--   The Shopping Agent may choose to work with a trusted registry of Credential
+- The Shopping Agent may choose to work with a trusted registry of Credential
     Providers
--   The Credential Provider may choose to work with a trusted registry of
+- The Credential Provider may choose to work with a trusted registry of
     Shopping Agents
--   The Shopping Agent will define which merchants it can safely support. This
+- The Shopping Agent will define which merchants it can safely support. This
     may be through pre-established integrations or real-time discovery via
     web-crawling or other agentic capabilities. Inversely, merchants may also
     have a trust registry of Shopping Agents.
@@ -290,16 +290,16 @@ containing critical parameters that define the scope of the transaction.
 
 A Cart Mandate contains the following bound information:
 
--   Payer and Payee Information: Verifiable identities for the user, the
+- Payer and Payee Information: Verifiable identities for the user, the
     merchant, and their respective Credential Providers.
--   Payment Method: A tokenized representation of the single, specific payment
+- Payment Method: A tokenized representation of the single, specific payment
     method to be charged, as selected by the Credentials Provider and confirmed
     by the user.
--   Risk Payload: A container for risk-related signals required by merchants,
+- Risk Payload: A container for risk-related signals required by merchants,
     payment processors and issuers
--   Transaction Details: The final, exact transaction products, destination
+- Transaction Details: The final, exact transaction products, destination
     (email or physical address), amount and currency.
--   If applicable, the conditions under which the purchase can be refundable
+- If applicable, the conditions under which the purchase can be refundable
 
 #### 4.1.2 The Intent Mandate
 
@@ -314,18 +314,18 @@ hardware-backed key on their device.
 An Intent Mandate may contain the following bound information (_not that some of
 it may vary depending on human-present and human-not-present scenario_):
 
--   Payer and Payee Information: Verifiable identities for the user, the
+- Payer and Payee Information: Verifiable identities for the user, the
     merchant, and their respective Credential Providers.
--   Chargeable Payment Methods: A list or category of payment methods the user
+- Chargeable Payment Methods: A list or category of payment methods the user
     has authorized for the transaction.
--   Risk Payload: A container for risk-related signals required by merchants,
+- Risk Payload: A container for risk-related signals required by merchants,
     payment processors and issuers
--   Shopping Intent: Parameters defining the purchase, such as product
+- Shopping Intent: Parameters defining the purchase, such as product
     categories, or specific SKUs and relevant purchase decision criteria like
     refundability.
--   Prompt Playback: The Agent’s understanding of the User’s prompt in natural
+- Prompt Playback: The Agent’s understanding of the User’s prompt in natural
     language.
--   Time-to-Live (TTL): An expiration time for the mandate's validity.
+- Time-to-Live (TTL): An expiration time for the mandate's validity.
 
 #### 4.1.3 The Payment Mandate for AI Agent Visibility to Payments Ecosystem
 
@@ -338,12 +338,12 @@ transaction authorization messages. The PaymentMandate’s goal is to help the
 network/issuer build trust into the agentic transaction and it contains the
 below information.
 
--   AI Agent presence and transaction modality (Human Present v/s Not Present)
+- AI Agent presence and transaction modality (Human Present v/s Not Present)
     signals must always be shared
--   With user consent, the issuer and/or network may contractually enforce rules
+- With user consent, the issuer and/or network may contractually enforce rules
     which require the sharing of additional information present in Cart and/or
     Intent Mandates for purposes such as fraud prevention.
--   At time of disputes, merchants may use the full cart and/or intent mandates
+- At time of disputes, merchants may use the full cart and/or intent mandates
     as evidence during representment with the network/issuer as defined by
     network rules.
 
@@ -366,11 +366,11 @@ Human delegates a task to an AI Agent which requires a payment to be made (say,
 shopping) and human is available when the payment has to be authorized. A
 typical (but not only) way this may happen is as below:
 
--   Setup: The User may set up a connection between their preferred Shopping
+- Setup: The User may set up a connection between their preferred Shopping
     Agent & any of the supported Credential Providers. This may require the User
     to authenticate themselves on a surface owned by the Credential Provider.
 
--   Discovery & Negotiation: The User provides a shopping task to their chosen
+- Discovery & Negotiation: The User provides a shopping task to their chosen
     AI Agent (_which may activate a specialized Shopping Agent to complete the
     task_). The Shopping Agent interacts with one or more Merchants to assemble
     a cart that satisfies the User's request. This may include the ability for
@@ -378,53 +378,53 @@ typical (but not only) way this may happen is as below:
     (_via the integration between the Shopping Agent & Merchant_) which the
     Shopping Agent should represent to the user .
 
--   Merchant Validates Cart: A SKU or set of SKUs are authorized by the User for
+- Merchant Validates Cart: A SKU or set of SKUs are authorized by the User for
     purchase. This is communicated by the Shopping Agent to the Merchant to
     initiate order creation. The Merchant must sign the Cart that they create
     for a user, signaling that they will fulfill this cart.
 
--   Provide Payment Methods: The Shopping Agent may provide the payment context
+- Provide Payment Methods: The Shopping Agent may provide the payment context
     to the Credentials Provider and request an applicable payment method (shared
     as a reference or in encrypted form), along with any loyalty/discount
     information which may be relevant for the payment method selection (_say,
     card points which can be redeemed towards the txn_).
 
--   Show Cart: The Shopping Agent presents the final cart and applicable payment
+- Show Cart: The Shopping Agent presents the final cart and applicable payment
     method to the user in a trusted surface and the user can approve it via an
     authentication process.
 
--   Sign & Pay: The user’s signed approval must create a cryptographically
+- Sign & Pay: The user’s signed approval must create a cryptographically
     signed “Cart Mandate”. This mandate contains the explicit goods being
     purchased & their confirmation of purchase. It is shared with the Merchant
     so they can use this as evidence in case of disputes. Separately, the
     PaymentMandate (_containing agent involvement & Human-Present signals_) may
     be shared with the network & issuer for transaction authorization.
 
--   Payment Execution: The payment subset of the “Cart Mandate” must be conveyed
+- Payment Execution: The payment subset of the “Cart Mandate” must be conveyed
     to the Credential provider and Merchant to complete the transaction. There
     may be multiple ways this might happen. For example,
 
-    -   The Shopping Agent (SA) may request Credentials Provider to complete a
+    - The Shopping Agent (SA) may request Credentials Provider to complete a
         payment with the Merchant OR,
-    -   the SA may submit an order with the merchant, triggering a payment
+    - the SA may submit an order with the merchant, triggering a payment
         authorization flow where the merchant/PSP requests payment method from
         the Credentials Provider.
 
--   Send Transaction to Issuer: The Merchant or PSP routes the transaction to
+- Send Transaction to Issuer: The Merchant or PSP routes the transaction to
     the issuer or the network within which the payment method operates. The
     transaction packet may be appended with AI agent presence signals ensuring
     network/issuer get visibility into agentic transactions.
 
--   Challenge: Any party (issuer, credential provider, merchant etc.) may choose
+- Challenge: Any party (issuer, credential provider, merchant etc.) may choose
     to challenge the transaction through existing mechanisms like 3DS2. This
     challenge needs to be presented to the user by the User Agent (_an example
     of this would be a hosted 3DS_) and may require a redirect to a trusted
     surface to complete.
 
--   Resolve Challenge: The user should have a way to resolve the challenge on a
+- Resolve Challenge: The user should have a way to resolve the challenge on a
     trusted surface (say, banking app, website etc.)
 
--   Authorize Transaction: The issuer approves the payment and confirms success
+- Authorize Transaction: The issuer approves the payment and confirms success
     back. This is communicated to the User and the Merchant so that the order
     can be fulfilled. A payment receipt is shared with the Credential Provider
     confirming the transaction result. In case of a decline, that can also be
@@ -466,19 +466,19 @@ Key changes from the Human Present modality are noted below:
 
 Example Scenario
 
--   User says to SA: "Buy 2 tickets to _\<this concert\>_ from _\<this
+- User says to SA: "Buy 2 tickets to _\<this concert\>_ from _\<this
     merchant\>_ as soon as they become available for the Vegas show in July.
     Your budget is $1000 and we’d like to be as close to the main stage as
     possible"
--   User signs this as an Intent Mandate allowing the SA to purchase in the
+- User signs this as an Intent Mandate allowing the SA to purchase in the
     user’s absence.
--   Merchant receives this intent mandate and then they can say "I have 3
+- Merchant receives this intent mandate and then they can say "I have 3
     variations of seating which fulfill this criteria and I don’t know which one
     the user wants. The intent mandate is not sufficient for me to fulfill this
     order".
--   The merchant can respond to the SA and say that I want to show the user the
+- The merchant can respond to the SA and say that I want to show the user the
     final 3 options.
--   SA notifies the user that their presence is needed before the txn can be
+- SA notifies the user that their presence is needed before the txn can be
     initiated. User sees the 3 options, picks one and can now sign a "Cart
     Mandate" which gives the merchant evidence that the user knows exactly what
     they are getting.
@@ -667,30 +667,30 @@ sequenceDiagram
 
 Some salient points of the flow diagram:
 
--   Step 4: The user may need to provide a shipping address or the Shopping
+- Step 4: The user may need to provide a shipping address or the Shopping
     Agent may already have it based on the user's preferences/settings. This is
     to ensure the price in the cart is final. All selections that may alter a
     cart price must be completed prior to the CartMandate being able to be
     created.
--   Step 6: The cart mandate is first signed by the merchant entity (not an
+- Step 6: The cart mandate is first signed by the merchant entity (not an
     Agent) to guarantee they will fulfill the order based on the SKU, price and
     shipping information. This ensures that the user sees a cart (in step 12)
     which the merchant has confirmed to fulfill.
--   Step 10: Payment Options may be received from a Credentials Provider or may
+- Step 10: Payment Options may be received from a Credentials Provider or may
     be supplied by the merchant directly in case they already stored payment
     method information.
--   Step 13: The user may be required to step up their payment method through a
+- Step 13: The user may be required to step up their payment method through a
     security/tokenization flow if the payment network has specific
     security/tokenization requirements for AI Agent transactions.
--   Step 14: The PaymentMandate contains information that can be appended to the
+- Step 14: The PaymentMandate contains information that can be appended to the
     existing transaction authorization packet which will provide visibility to
     PSP/Networks/Issuers that the transaction had AI Agent involvement and its
     modality (Human Present or Human Not Present).
-    -   Note that this is distinct from the “Cart Mandate” which contains all
+    - Note that this is distinct from the “Cart Mandate” which contains all
         the information which a merchant requires to fulfill the order.
--   Step 15: This is the load bearing step where the user verifies everything
+- Step 15: This is the load bearing step where the user verifies everything
     and proceed to make a purchase
--   Step 21: While not shown in the diagram we expect the PSP to send the
+- Step 21: While not shown in the diagram we expect the PSP to send the
     transaction authorization message (along with the PaymentMandate) to
     supporting networks/issuers, allowing these parties to reason over the
     transactions and make a decision (approve/deny/challenge).
@@ -896,18 +896,18 @@ Since the user now interacts with a Shopping Agent, which in turn interacts with
 Credential Providers and Merchants, there are a few novel implications to
 consider:
 
--   User Asynchronicity: The user may no longer be in-session for the entire
+- User Asynchronicity: The user may no longer be in-session for the entire
     payment journey.
--   Delegated Trust: Actors must now trust an agent to initiate a payment on the
+- Delegated Trust: Actors must now trust an agent to initiate a payment on the
     user's behalf.
--   Mandate-Merchant Matching: Mandates for purchases must be accurately matched
+- Mandate-Merchant Matching: Mandates for purchases must be accurately matched
     to the intended merchant.
--   Temporal Gaps: Payment method tokens may be generated significantly before a
+- Temporal Gaps: Payment method tokens may be generated significantly before a
     transaction is executed, creating a window of opportunity for misuse.
--   Indirect Trust Establishment: The Credential Provider may not have a direct
+- Indirect Trust Establishment: The Credential Provider may not have a direct
     engagement with the merchant and must rely on the Shopping Agent to
     establish trust.
--   Agent Identity: The Shopping Agent's ID becomes synonymous with a bot's
+- Agent Identity: The Shopping Agent's ID becomes synonymous with a bot's
     identity, which requires new methods of verification and trust.
 
 These changes require each actor to reevaluate how they establish trust and

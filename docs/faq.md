@@ -91,9 +91,9 @@
 
 1. Why was crypto and Web3 support included from day one?
 
-    - Supporting a broad range of payment types, including emerging methods like
-      stablecoins, ensures the protocol is future-proof. This collaboration with
-      partners like Coinbase, Ethereum Foundation, and Metamask validates AP2's
+    - Supporting a broad range of payment types, including digital payment
+      methods ensures the protocol is future-proof. Collaboration with partners
+      like Coinbase, Ethereum Foundation, and Metamask validates AP2's
       flexibility and bridges the gap between the traditional and Web3
       economies, enabling novel use cases like micropayments.
 

@@ -30,21 +30,21 @@ schema:
 
 ```json
 {
-    "type": "object",
-    "name": "AP2ExtensionParameters",
-    "description": "The schema for parameters expressed in AgentExtension.params for the AP2 A2A extension.",
-    "properties": {
-        "roles": {
-            "type": "array",
-            "name": "AP2 Roles",
-            "description": "The roles that this agent performs in the AP2 model.",
-            "minItems":
-            "items": {
-              "enum": ["merchant", "shopper", "credentials-provider", "payment-processor"]
-            }
-        }
-    },
-    "required": ["roles"]
+  "type": "object",
+  "name": "AP2ExtensionParameters",
+  "description": "The schema for parameters expressed in AgentExtension.params for the AP2 A2A extension.",
+  "properties": {
+    "roles": {
+      "type": "array",
+      "name": "AP2 Roles",
+      "description": "The roles that this agent performs in the AP2 model.",
+      "minItems":
+      "items": {
+        "enum": ["merchant", "shopper", "credentials-provider", "payment-processor"]
+      }
+    }
+  },
+  "required": ["roles"]
 }
 ```
 
@@ -67,33 +67,33 @@ The following listing shows an AgentCard declaring AP2 extension support.
 
 ```json
 {
-    "name": "Travel Agent",
-    "description": "This agent can book all necessary parts of a vacation",
-    "capabilities": {
-        "extensions": [
-            {
-                "uri": "https://github.com/google-agentic-commerce/ap2/tree/v0.1",
-                "description": "This agent can pay for reservations on the user's behalf",
-                "params": {
-                    "roles": ["shopper"]
-                }
-            }
-        ]
-    },
-    "skills": [
-        {
-            "id": "plan_vacation",
-            "name": "Plan Vacation",
-            "description": "Plan a fun vacation, creating a full itinerary",
-            "tags": []
-        },
-        {
-            "id": "book_itinerary",
-            "name": "Book Itinerary",
-            "description": "Place reservations for all components of an itinerary (flights, hotels, rentals, restaurants, etc.)",
-            "tags": []
+  "name": "Travel Agent",
+  "description": "This agent can book all necessary parts of a vacation",
+  "capabilities": {
+    "extensions": [
+      {
+        "uri": "https://github.com/google-agentic-commerce/ap2/tree/v0.1",
+        "description": "This agent can pay for reservations on the user's behalf",
+        "params": {
+          "roles": ["shopper"]
         }
+      }
     ]
+  },
+  "skills": [
+    {
+      "id": "plan_vacation",
+      "name": "Plan Vacation",
+      "description": "Plan a fun vacation, creating a full itinerary",
+      "tags": []
+    },
+    {
+      "id": "book_itinerary",
+      "name": "Book Itinerary",
+      "description": "Place reservations for all components of an itinerary (flights, hotels, rentals, restaurants, etc.)",
+      "tags": []
+    }
+  ]
 }
 ```
 
@@ -119,25 +119,25 @@ The following listing shows the JSON rendering of an IntentMandate Message.
 
 ```json
 {
-    "messageId": "e0b84c60-3f5f-4234-adc6-91f2b73b19e5",
-    "contextId": "sample-payment-context",
-    "taskId": "sample-payment-task",
-    "role": "user",
-    "parts": [
-        {
-            "kind": "data",
-            "data": {
-                "ap2.mandates.IntentMandate": {
-                    "user_cart_confirmation_required": false,
-                    "natural_language_description": "I'd like some cool red shoes in my size",
-                    "merchants": null,
-                    "skus": null,
-                    "required_refundability": true,
-                    "intent_expiry": "2025-09-16T15:00:00Z"
-                }
-            }
+  "messageId": "e0b84c60-3f5f-4234-adc6-91f2b73b19e5",
+  "contextId": "sample-payment-context",
+  "taskId": "sample-payment-task",
+  "role": "user",
+  "parts": [
+    {
+      "kind": "data",
+      "data": {
+        "ap2.mandates.IntentMandate": {
+          "user_cart_confirmation_required": false,
+          "natural_language_description": "I'd like some cool red shoes in my size",
+          "merchants": null,
+          "skus": null,
+          "required_refundability": true,
+          "intent_expiry": "2025-09-16T15:00:00Z"
         }
-    ]
+      }
+    }
+  ]
 }
 ```
 
@@ -162,69 +162,69 @@ The following listing shows the JSON representation of a CartMandate Artifact.
 
 ```json
 {
-    "name": "Fancy Cart Details",
-    "artifactId": "artifact_001",
-    "parts": [
-        {
-            "kind": "data",
-            "data": {
-                "ap2.mandates.CartMandate": {
-                    "contents": {
-                        "id": "cart_shoes_123",
-                        "user_signature_required": false,
-                        "payment_request": {
-                            "method_data": [
-                                {
-                                    "supported_methods": "CARD",
-                                    "data": {
-                                        "payment_processor_url": "http://example.com/pay"
-                                    }
-                                }
-                            ],
-                            "details": {
-                                "id": "order_shoes_123",
-                                "displayItems": [
-                                    {
-                                        "label": "Nike Air Max 90",
-                                        "amount": {
-                                            "currency": "USD",
-                                            "value": 120.0
-                                        },
-                                        "pending": null
-                                    }
-                                ],
-                                "shipping_options": null,
-                                "modifiers": null,
-                                "total": {
-                                    "label": "Total",
-                                    "amount": {
-                                        "currency": "USD",
-                                        "value": 120.0
-                                    },
-                                    "pending": null
-                                }
-                            },
-                            "options": {
-                                "requestPayerName": false,
-                                "requestPayerEmail": false,
-                                "requestPayerPhone": false,
-                                "requestShipping": true,
-                                "shippingType": null
-                            }
-                        }
-                    },
-                    "merchant_signature": "sig_merchant_shoes_abc1",
-                    "timestamp": "2025-08-26T19:36:36.377022Z"
+  "name": "Fancy Cart Details",
+  "artifactId": "artifact_001",
+  "parts": [
+    {
+      "kind": "data",
+      "data": {
+        "ap2.mandates.CartMandate": {
+          "contents": {
+            "id": "cart_shoes_123",
+            "user_signature_required": false,
+            "payment_request": {
+              "method_data": [
+                {
+                  "supported_methods": "CARD",
+                  "data": {
+                    "payment_processor_url": "http://example.com/pay"
+                  }
                 }
+              ],
+              "details": {
+                "id": "order_shoes_123",
+                "displayItems": [
+                  {
+                    "label": "Nike Air Max 90",
+                    "amount": {
+                      "currency": "USD",
+                      "value": 120.0
+                    },
+                    "pending": null
+                  }
+                ],
+                "shipping_options": null,
+                "modifiers": null,
+                "total": {
+                  "label": "Total",
+                  "amount": {
+                    "currency": "USD",
+                    "value": 120.0
+                  },
+                  "pending": null
+                }
+              },
+              "options": {
+                "requestPayerName": false,
+                "requestPayerEmail": false,
+                "requestPayerPhone": false,
+                "requestShipping": true,
+                "shippingType": null
+              }
             }
-        },
-        {
-            "kind": "data",
-            "data": {
-                "risk_data": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...fake_risk_data"
-            }
+          },
+          "merchant_signature": "sig_merchant_shoes_abc1",
+          "timestamp": "2025-08-26T19:36:36.377022Z"
         }
-    ]
+      }
+    },
+    {
+      "kind": "data",
+      "data": {
+        "risk_data": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...fake_risk_data"
+      }
+    }
+  ]
 }
 ```
 
@@ -243,40 +243,40 @@ The following listing shows a JSON rendering of a PaymentMandate Message.
 
 ```json
 {
-    "messageId": "b5951b1a-8d5b-4ad3-a06f-92bf74e76589",
-    "contextId": "sample-payment-context",
-    "taskId": "sample-payment-task",
-    "role": "user",
-    "parts": [
-        {
-            "kind": "data",
-            "data": {
-                "ap2.mandates.PaymentMandate": {
-                    "payment_details": {
-                        "cart_mandate": "<user-signed hash of the cart mandate>",
-                        "payment_request_id": "order_shoes_123",
-                        "merchant_agent_card": {
-                            "name": "MerchantAgent"
-                        },
-                        "payment_method": {
-                            "supported_methods": "CARD",
-                            "data": {
-                                "token": "xyz789"
-                            }
-                        },
-                        "amount": {
-                            "currency": "USD",
-                            "value": 120.0
-                        },
-                        "risk_info": {
-                            "device_imei": "abc123"
-                        },
-                        "display_info": "<image bytes>"
-                    },
-                    "creation_time": "2025-08-26T19:36:36.377022Z"
-                }
-            }
+  "messageId": "b5951b1a-8d5b-4ad3-a06f-92bf74e76589",
+  "contextId": "sample-payment-context",
+  "taskId": "sample-payment-task",
+  "role": "user",
+  "parts": [
+    {
+      "kind": "data",
+      "data": {
+        "ap2.mandates.PaymentMandate": {
+          "payment_details": {
+            "cart_mandate": "<user-signed hash of the cart mandate>",
+            "payment_request_id": "order_shoes_123",
+            "merchant_agent_card": {
+              "name": "MerchantAgent"
+            },
+            "payment_method": {
+              "supported_methods": "CARD",
+              "data": {
+                "token": "xyz789"
+              }
+            },
+            "amount": {
+              "currency": "USD",
+              "value": 120.0
+            },
+            "risk_info": {
+              "device_imei": "abc123"
+            },
+            "display_info": "<image bytes>"
+          },
+          "creation_time": "2025-08-26T19:36:36.377022Z"
         }
-    ]
+      }
+    }
+  ]
 }
 ```

@@ -16,7 +16,7 @@ protocol
 -   [ ] AP2 python SDK v0.1
 -   [ ] AP2 android SDK v0.1
 -   [ ] AP2 A2A extension spec v0.1
--   [ ] AP2 A2A extension v0.1
+-   [ ] AP2 A2A extension implementation v0.1
 -   [ ] AP2 MCP server v0.1
 
 **V1.x:** Subsequent versions will expand the protocol's capabilities based on

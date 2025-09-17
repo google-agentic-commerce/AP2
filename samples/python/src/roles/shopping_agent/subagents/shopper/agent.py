@@ -54,7 +54,7 @@ shopper = RetryingLlmAgent(
     3. After you have gathered what you believe is sufficient information,
       use the 'create_intent_mandate' tool with the collected information
       (user's description, and any other details they provided). Do not include
-      any user guidance on price in the intent mandate. Use user's preferene for
+      any user guidance on price in the intent mandate. Use user's preference for
       the price as a filter when recommending products for the user to select
       from.
     4. Present the IntentMandate to the user in a clear, well-formatted summary.

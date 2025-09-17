@@ -166,7 +166,7 @@ explaining what you're doing, and display all data payloads?"*
 > please display the JSON."** After this reminder, the agent usually becomes
 > more reliable at displaying all data payloads.
 
-### Viewing Agent Communiation
+### Viewing Agent Communication
 
 To help engineers visualize the exact communication occurring between the agent
 servers, a detailed log file is created automatically when the servers start up.

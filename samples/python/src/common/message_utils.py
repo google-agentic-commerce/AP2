@@ -21,7 +21,7 @@ from pydantic import BaseModel
 def find_data_part(
     data_key: str, data_parts: list[dict[str, Any]]
 ) -> Any | None:
-  """Returns the value for the first occurence of the key in the data parts.
+  """Returns the value for the first occurrence of the key in the data parts.
 
   Args:
     data_key: The key to search for.

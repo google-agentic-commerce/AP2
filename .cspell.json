@@ -8,6 +8,7 @@
     ".cspell/**",
     ".gemini/**",
     ".vscode/**",
+    ".cspell.json",
   ],
   "dictionaryDefinitions": [
     {

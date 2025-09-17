@@ -29,7 +29,7 @@ def find_canonical_objects(
   """Finds all canonical objects of the given type in the artifacts.
 
   Args:
-    artifacts: a list of the artifacts to be search.
+    artifacts: a list of the artifacts to be searched.
     data_key: The key of the DataPart to search for.
     model: The model of the canonical object to search for.
 

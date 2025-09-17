@@ -111,7 +111,15 @@ async def _create_and_add_cart_mandate_artifact(
               data={
                   "network": ["mastercard", "paypal", "amex"],
               },
-          )
+          ),
+          PaymentMethodData(
+              supported_methods="x402:cashu-token",
+              data={
+                  "network": ["bitcoin-testnet"],
+                  "mintUrl": "https://nofees.testnut.cashu.space/",
+                  "unit": "sat",
+              },
+          ),
       ],
       details=PaymentDetailsInit(
           id=f"order_{item_count}",

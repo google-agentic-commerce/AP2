@@ -35,6 +35,13 @@ framework for accountability and addressing the "crisis of trust" inherent in
 autonomous AI agent payments. This secure foundation is crucial for any payment
 method where validating agent authority and user intent is paramount.
 
+As part of this effort we have begun prototyping a Cashu-backed `cashu-token`
+scheme. The current implementation threads Cashu proofs through x402 so agents
+can spend blinded ecash alongside existing card rails while continuing to rely
+on AP2 mandates for non-repudiation. The sample configuration targets the
+bitcoin testnet mint at `https://nofees.testnut.cashu.space/`, with
+`https://mint.minibits.cash/Bitcoin` positioned as the default mainnet mint.
+
 ## Industry Collaboration and Implementation
 
 AP2 is being developed in collaboration with prominent partners in the payments

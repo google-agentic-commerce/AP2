@@ -224,7 +224,8 @@ def _get_eligible_payment_method_aliases(
   return {
       "payment_method_aliases": _get_payment_method_aliases(
           eligible_payment_methods
-      )
+      ),
+      "payment_methods": eligible_payment_methods,
   }
 
 
@@ -242,6 +243,19 @@ def _payment_method_is_eligible(
     True if the payment_method is eligible according to the payment method,
     False otherwise.
   """
+  if merchant_criteria.supported_methods == "x402:cashu-token":
+    if payment_method.get("type", "") != "CASHU":
+      return False
+    required_mint = merchant_criteria.data.get("mintUrl") if merchant_criteria.data else None
+    if required_mint and payment_method.get("mint_url") != required_mint:
+      return False
+    required_networks = merchant_criteria.data.get("network", []) if merchant_criteria.data else []
+    if required_networks:
+      method_network = payment_method.get("network")
+      if method_network not in required_networks:
+        return False
+    return True
+
   if payment_method.get("type", "") != merchant_criteria.supported_methods:
     return False
 

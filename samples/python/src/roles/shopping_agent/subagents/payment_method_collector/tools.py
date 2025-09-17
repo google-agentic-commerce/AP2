@@ -57,6 +57,9 @@ async def get_payment_methods(
       message_builder.build()
   )
   payment_methods = artifact_utils.get_first_data_part(task.artifacts)
+  tool_context.state["eligible_payment_methods"] = payment_methods.get(
+      "payment_methods", []
+  )
   return payment_methods
 
 

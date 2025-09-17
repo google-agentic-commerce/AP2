@@ -170,9 +170,25 @@ def create_payment_mandate(
 
   payment_request = cart_mandate.contents.payment_request
   shipping_address = tool_context.state["shipping_address"]
+  eligible_methods = tool_context.state.get("eligible_payment_methods", [])
+  selected_method = next(
+      (
+          method
+          for method in eligible_methods
+          if method.get("alias") == payment_method_alias
+      ),
+      {},
+  )
+  tool_context.state["selected_payment_method"] = selected_method
+
+  if selected_method.get("type") == "CASHU":
+    method_name = "x402:cashu-token"
+  else:
+    method_name = "CARD"
+
   payment_response = PaymentResponse(
       request_id=payment_request.details.id,
-      method_name="CARD",
+      method_name=method_name,
       details={
           "token": tool_context.state["payment_credential_token"],
       },

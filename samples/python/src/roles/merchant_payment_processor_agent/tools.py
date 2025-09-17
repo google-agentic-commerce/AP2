@@ -19,8 +19,11 @@ shopping and purchasing process.
 """
 
 
+import json
 import logging
 from typing import Any
+
+import httpx
 
 from a2a.server.tasks.task_updater import TaskUpdater
 from a2a.types import DataPart
@@ -175,14 +178,44 @@ async def _complete_payment(
       payment_mandate, updater, debug_mode
   )
 
-  logging.info(
-      "Calling issuer to complete payment for %s with payment credential %s...",
-      payment_mandate_id,
-      payment_credential,
+  method_name = (
+      payment_mandate.payment_mandate_contents.payment_response.method_name
   )
-  # Call issuer to complete the payment
+
+  settle_receipt: dict[str, Any] | None = None
+
+  try:
+    if method_name == "x402:cashu-token":
+      settle_receipt = await _handle_cashu_payment(
+          payment_mandate, payment_credential
+      )
+    else:
+      logging.info(
+          "Calling issuer to complete payment for %s with payment credential %s...",
+          payment_mandate_id,
+          payment_credential,
+      )
+      # Call issuer to complete the payment
+  except Exception as exc:  # pylint: disable=broad-except
+    logging.exception("Cashu settlement failed for %s", payment_mandate_id)
+    failure_payload = {"status": "failed", "reason": str(exc)}
+    failure_message = updater.new_agent_message(
+        _create_text_parts(json.dumps(failure_payload))
+    )
+    await updater.failed(message=failure_message)
+    return
+
+  logging.info(
+      "Payment for %s completed with method %s",
+      payment_mandate_id,
+      method_name,
+  )
+  success_payload = {"status": "success"}
+  if settle_receipt and settle_receipt.get("transaction"):
+    success_payload["transaction"] = settle_receipt["transaction"]
+
   success_message = updater.new_agent_message(
-      parts=_create_text_parts("{'status': 'success'}")
+      parts=_create_text_parts(json.dumps(success_payload))
   )
   await updater.complete(message=success_message)
 
@@ -240,3 +273,111 @@ async def _request_payment_credential(
 def _create_text_parts(*texts: str) -> list[Part]:
   """Helper to create text parts."""
   return [Part(root=TextPart(text=text)) for text in texts]
+
+
+async def _handle_cashu_payment(
+    payment_mandate: PaymentMandate,
+    payment_credential: dict[str, Any],
+) -> dict[str, Any]:
+  """Verifies and settles a Cashu payment using an x402 facilitator."""
+
+  proofs = payment_credential.get("proofs", [])
+  if not proofs:
+    raise ValueError("No proofs supplied for cashu-token payment")
+
+  mint_url = payment_credential.get("mint_url")
+  if not mint_url:
+    raise ValueError("Cashu payment credential missing mint_url")
+
+  facilitator_url = payment_credential.get("facilitator_url") or "https://x402.org/facilitator"
+  facilitator_url = facilitator_url.rstrip("/")
+
+  network = payment_credential.get("network", "bitcoin-testnet")
+  pay_to = payment_credential.get("pay_to", "cashu:merchant")
+  unit = payment_credential.get("unit", "sat")
+  max_timeout = int(payment_credential.get("max_timeout_seconds", 600))
+
+  normalized_proofs: list[dict[str, Any]] = []
+  total_amount = 0
+  for proof in proofs:
+    amount = int(proof.get("amount", 0))
+    if amount <= 0:
+      raise ValueError("Cashu proof amount must be positive")
+    normalized_proofs.append(
+        {
+          "amount": amount,
+          "secret": proof.get("secret"),
+          "C": proof.get("C"),
+          "id": proof.get("id"),
+        }
+    )
+    total_amount += amount
+
+  payment_payload = {
+      "x402Version": 1,
+      "scheme": "cashu-token",
+      "network": network,
+      "payload": {
+          "mint": mint_url,
+          "proofs": normalized_proofs,
+      },
+  }
+
+  requirement_resource = (
+      f"urn:ap2:payment:{payment_mandate.payment_mandate_contents.payment_details_id}"
+  )
+  requirement_description = (
+      payment_mandate.payment_mandate_contents.payment_details_total.label
+      if payment_mandate.payment_mandate_contents.payment_details_total
+      else "ap2-cashu-payment"
+  )
+
+  payment_requirements = {
+      "scheme": "cashu-token",
+      "network": network,
+      "maxAmountRequired": str(total_amount),
+      "resource": requirement_resource,
+      "description": requirement_description,
+      "mimeType": "application/json",
+      "payTo": pay_to,
+      "maxTimeoutSeconds": max_timeout,
+      "asset": payment_credential.get("asset", "SAT"),
+      "extra": {
+          "mintUrl": mint_url,
+          "unit": unit,
+      },
+  }
+
+  request_body = {
+      "x402Version": 1,
+      "paymentPayload": payment_payload,
+      "paymentRequirements": payment_requirements,
+  }
+
+  async with httpx.AsyncClient(timeout=30.0) as client:
+    verify_response = await client.post(
+        f"{facilitator_url}/verify", json=request_body, follow_redirects=True
+    )
+    verify_response.raise_for_status()
+    verify_body = verify_response.json()
+    if not verify_body.get("isValid", False):
+      raise ValueError(
+          f"Facilitator rejected Cashu payment: {verify_body.get('invalidReason')}"
+      )
+
+    settle_response = await client.post(
+        f"{facilitator_url}/settle", json=request_body, follow_redirects=True
+    )
+    settle_response.raise_for_status()
+    settle_body = settle_response.json()
+    if not settle_body.get("success", False):
+      raise ValueError(
+          f"Facilitator could not settle Cashu payment: {settle_body.get('errorReason')}"
+      )
+
+  logging.info(
+      "[cashu-token] Facilitator settled mandate %s with transaction %s",
+      payment_mandate.payment_mandate_contents.payment_mandate_id,
+      settle_body.get("transaction"),
+  )
+  return settle_body

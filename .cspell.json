@@ -3,6 +3,13 @@
   "language": "en",
   "caseSensitive": true,
   "useGitignore": true,
+  "ignorePaths": [
+    ".github/**",
+    ".cspell/**",
+    ".gemini/**",
+    ".vscode/**",
+    ".cspell.json"
+  ],
   "dictionaryDefinitions": [
     {
         "name": "custom-words",

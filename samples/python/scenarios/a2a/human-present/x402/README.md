@@ -43,7 +43,12 @@ This sample consists of:
 
 **1. x402 purchase**
 
-*   The Merchant Agent will advertise support for x402 purchases through its
-    agent card and through the CartMandate once shopping is complete.
-*   The preferred payment method in the user's wallet will be an x402 compatible
-    payment method.
+*   The Merchant Agent now advertises a Cashu-backed x402 capability alongside
+    traditional card rails. When the shopper selects the "Cashu demo wallet"
+    option, the Shopping Agent routes the interaction through the x402
+    `cashu-token` scheme.
+*   The Credentials Provider surfaces a sample Cashu wallet containing blinded
+    proofs issued by the public test mint at
+    `https://nofees.testnut.cashu.space/`. The Merchant Payment Processor receives those
+    proofs and, in a future iteration, will forward them to a Cashu-aware x402
+    facilitator for verification and settlement.

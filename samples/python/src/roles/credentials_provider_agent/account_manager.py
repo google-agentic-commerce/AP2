@@ -71,6 +71,31 @@ _account_db = {
                 "account_identifier": "foo@bar.com",
                 "alias": "Bugs's PayPal account",
             },
+            "cashu_wallet1": {
+                "type": "CASHU",
+                "alias": "Cashu demo wallet",
+                "mint_url": "https://nofees.testnut.cashu.space/",
+                "facilitator_url": "https://x402.org/facilitator",
+                "network": "bitcoin-testnet",
+                "pay_to": "cashu:nofees.testnut.cashu.space/merchant-demo",
+                "unit": "sat",
+                "max_timeout_seconds": 600,
+                "balance": 120000,
+                "proofs": [
+                    {
+                        "amount": 60000,
+                        "secret": "demo-secret-1",
+                        "C": "demo-commitment-1",
+                        "id": "keyset-2025-01",
+                    },
+                    {
+                        "amount": 60000,
+                        "secret": "demo-secret-2",
+                        "C": "demo-commitment-2",
+                        "id": "keyset-2025-01",
+                    },
+                ],
+            },
         },
     },
     "daffyduck@gmail.com": {

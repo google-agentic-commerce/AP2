@@ -49,6 +49,7 @@ This sample consists of:
     `cashu-token` scheme.
 *   The Credentials Provider surfaces a sample Cashu wallet containing blinded
     proofs issued by the public test mint at
-    `https://nofees.testnut.cashu.space/`. The Merchant Payment Processor receives those
-    proofs and, in a future iteration, will forward them to a Cashu-aware x402
-    facilitator for verification and settlement.
+    `https://nofees.testnut.cashu.space/`. Tokens are now surfaced using the
+    NUT-24 `cashuB` transport so the Merchant Payment Processor can forward
+    them directly to a Cashu-aware x402 facilitator for verification and
+    settlement.

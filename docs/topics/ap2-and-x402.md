@@ -38,8 +38,12 @@ method where validating agent authority and user intent is paramount.
 As part of this effort we have begun prototyping a Cashu-backed `cashu-token`
 scheme. The current implementation threads Cashu proofs through x402 so agents
 can spend blinded ecash alongside existing card rails while continuing to rely
-on AP2 mandates for non-repudiation. The sample configuration targets the
-bitcoin testnet mint at `https://nofees.testnut.cashu.space/`, with
+on AP2 mandates for non-repudiation. The latest iteration aligns with
+[NUT-24](https://github.com/cashubtc/nuts/blob/main/24.md) by accepting
+multiple mint endpoints per mandate, forwarding `cashuB`-encoded tokens, and
+preserving optional NUT-10 locking metadata on the wire. The sample
+configuration targets the bitcoin testnet mint at
+`https://nofees.testnut.cashu.space/`, with
 `https://mint.minibits.cash/Bitcoin` positioned as the default mainnet mint.
 
 ## Industry Collaboration and Implementation

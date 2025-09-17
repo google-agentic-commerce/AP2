@@ -75,25 +75,49 @@ _account_db = {
                 "type": "CASHU",
                 "alias": "Cashu demo wallet",
                 "mint_url": "https://nofees.testnut.cashu.space/",
+                "mints": ["https://nofees.testnut.cashu.space/"],
                 "facilitator_url": "https://x402.org/facilitator",
                 "network": "bitcoin-testnet",
                 "pay_to": "cashu:nofees.testnut.cashu.space/merchant-demo",
                 "unit": "sat",
                 "max_timeout_seconds": 600,
                 "balance": 120000,
+                "tokens": [
+                    {
+                        "mint": "https://nofees.testnut.cashu.space/",
+                        "unit": "sat",
+                        "proofs": [
+                            {
+                                "amount": 60000,
+                                "secret": "demo-secret-1",
+                                "C": "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
+                                "id": "001122aabbccdd",
+                            },
+                            {
+                                "amount": 60000,
+                                "secret": "demo-secret-2",
+                                "C": "fedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321",
+                                "id": "001122aabbccdd",
+                            },
+                        ],
+                    }
+                ],
                 "proofs": [
                     {
                         "amount": 60000,
                         "secret": "demo-secret-1",
-                        "C": "demo-commitment-1",
-                        "id": "keyset-2025-01",
+                        "C": "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
+                        "id": "001122aabbccdd",
                     },
                     {
                         "amount": 60000,
                         "secret": "demo-secret-2",
-                        "C": "demo-commitment-2",
-                        "id": "keyset-2025-01",
+                        "C": "fedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321",
+                        "id": "001122aabbccdd",
                     },
+                ],
+                "encoded_tokens": [
+                    "cashuBexample",
                 ],
             },
         },

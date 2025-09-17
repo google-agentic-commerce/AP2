@@ -281,14 +281,6 @@ async def _handle_cashu_payment(
 ) -> dict[str, Any]:
   """Verifies and settles a Cashu payment using an x402 facilitator."""
 
-  proofs = payment_credential.get("proofs", [])
-  if not proofs:
-    raise ValueError("No proofs supplied for cashu-token payment")
-
-  mint_url = payment_credential.get("mint_url")
-  if not mint_url:
-    raise ValueError("Cashu payment credential missing mint_url")
-
   facilitator_url = payment_credential.get("facilitator_url") or "https://x402.org/facilitator"
   facilitator_url = facilitator_url.rstrip("/")
 
@@ -297,29 +289,74 @@ async def _handle_cashu_payment(
   unit = payment_credential.get("unit", "sat")
   max_timeout = int(payment_credential.get("max_timeout_seconds", 600))
 
-  normalized_proofs: list[dict[str, Any]] = []
-  total_amount = 0
-  for proof in proofs:
-    amount = int(proof.get("amount", 0))
-    if amount <= 0:
-      raise ValueError("Cashu proof amount must be positive")
-    normalized_proofs.append(
+  raw_tokens = payment_credential.get("tokens")
+  if raw_tokens is None:
+    proofs = payment_credential.get("proofs", [])
+    mint_url = payment_credential.get("mint_url")
+    if not mint_url:
+      raise ValueError("Cashu payment credential missing mint_url")
+    if not proofs:
+      raise ValueError("No proofs supplied for cashu-token payment")
+    raw_tokens = [
         {
-          "amount": amount,
-          "secret": proof.get("secret"),
-          "C": proof.get("C"),
-          "id": proof.get("id"),
+            "mint": mint_url,
+            "proofs": proofs,
+        }
+    ]
+
+  encoded_tokens = payment_credential.get("encoded") or payment_credential.get("encoded_tokens")
+  if not encoded_tokens:
+    raise ValueError("Cashu payment credential missing encoded token values")
+
+  normalized_tokens: list[dict[str, Any]] = []
+  total_amount = 0
+  for token in raw_tokens:
+    mint_url = token.get("mint")
+    if not mint_url:
+      raise ValueError("Cashu token entry missing mint URL")
+    proofs = token.get("proofs", [])
+    if not proofs:
+      raise ValueError("Cashu token entry must include proofs")
+
+    normalized_proofs: list[dict[str, Any]] = []
+    for proof in proofs:
+      amount = int(proof.get("amount", 0))
+      if amount <= 0:
+        raise ValueError("Cashu proof amount must be positive")
+      normalized_proofs.append(
+          {
+              "amount": amount,
+              "secret": proof.get("secret"),
+              "C": proof.get("C"),
+              "id": proof.get("id"),
+              **({"dleq": proof.get("dleq")} if proof.get("dleq") else {}),
+              **({"witness": proof.get("witness")} if proof.get("witness") else {}),
+          }
+      )
+      total_amount += amount
+
+    normalized_tokens.append(
+        {
+            "mint": mint_url,
+            "proofs": normalized_proofs,
+            **({"memo": token.get("memo")} if token.get("memo") else {}),
+            **({"unit": token.get("unit") or unit}),
         }
     )
-    total_amount += amount
+
+  if len(encoded_tokens) != len(normalized_tokens):
+    raise ValueError("Encoded tokens must align with provided token entries")
 
   payment_payload = {
       "x402Version": 1,
       "scheme": "cashu-token",
       "network": network,
       "payload": {
-          "mint": mint_url,
-          "proofs": normalized_proofs,
+          "tokens": normalized_tokens,
+          "encoded": encoded_tokens,
+          **({"memo": payment_credential.get("memo")} if payment_credential.get("memo") else {}),
+          **({"unit": unit} if unit else {}),
+          **({"locks": payment_credential.get("locks")} if payment_credential.get("locks") else {}),
       },
   }
 
@@ -332,6 +369,21 @@ async def _handle_cashu_payment(
       else "ap2-cashu-payment"
   )
 
+  accepted_mints = payment_credential.get("mints")
+  if not accepted_mints:
+    accepted_mints = [token["mint"] for token in normalized_tokens]
+
+  extra: dict[str, Any] = {
+      "mints": accepted_mints,
+      "unit": unit,
+  }
+  if facilitator_url:
+    extra["facilitatorUrl"] = facilitator_url
+  if payment_credential.get("keyset_ids"):
+    extra["keysetIds"] = payment_credential["keyset_ids"]
+  if payment_credential.get("locks"):
+    extra["nut10"] = payment_credential["locks"]
+
   payment_requirements = {
       "scheme": "cashu-token",
       "network": network,
@@ -342,10 +394,7 @@ async def _handle_cashu_payment(
       "payTo": pay_to,
       "maxTimeoutSeconds": max_timeout,
       "asset": payment_credential.get("asset", "SAT"),
-      "extra": {
-          "mintUrl": mint_url,
-          "unit": unit,
-      },
+      "extra": extra,
   }
 
   request_body = {

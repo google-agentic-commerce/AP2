@@ -73,7 +73,7 @@ def _load_logger():
     _logger.addHandler(create_file_handler())
 
 
-def _log_request_instructions(text_parts: list[str]) -> None:
+def _log_request_instuctions(text_parts: list[str]) -> None:
   """Logs the request instructions from the text parts."""
   _logger.info("\n")
   _logger.info("[Request Instructions]")

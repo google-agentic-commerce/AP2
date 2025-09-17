@@ -131,9 +131,7 @@ class _LoggingMiddleware(BaseHTTPMiddleware):
     # If the extension header is present, log a notice.
     extension_header = request.headers.get("X-A2A-Extensions")
     if extension_header:
-      self._logger.info("\n")
-      self._logger.info("[Extension Header]")
-      self._logger.info("X-A2A-Extensions: %s", extension_header)
+      self._logger.info("\n[Extension Header]\nX-A2A-Extensions: %s", extension_header)
 
     response = await call_next(request)
 

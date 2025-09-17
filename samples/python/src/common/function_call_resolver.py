@@ -32,7 +32,7 @@ Tool = Callable[[list[DataPartContent], TaskUpdater, Task | None], Any]
 
 
 class FunctionCallResolver:
-  """Resolves resolves a natural language prompt to the name of a tool."""
+  """Resolves a natural language prompt to the name of a tool."""
 
   def __init__(
       self,

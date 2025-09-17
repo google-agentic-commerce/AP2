@@ -246,10 +246,11 @@ def _payment_method_is_eligible(
   if merchant_criteria.supported_methods == "x402:cashu-token":
     if payment_method.get("type", "") != "CASHU":
       return False
-    required_mint = merchant_criteria.data.get("mintUrl") if merchant_criteria.data else None
+    data = merchant_criteria.data or {}
+    required_mint = data.get("mintUrl")
     if required_mint and payment_method.get("mint_url") != required_mint:
       return False
-    required_networks = merchant_criteria.data.get("network", []) if merchant_criteria.data else []
+    required_networks = data.get("network", [])
     if required_networks:
       method_network = payment_method.get("network")
       if method_network not in required_networks:

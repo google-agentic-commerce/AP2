@@ -102,20 +102,6 @@ _account_db = {
                         ],
                     }
                 ],
-                "proofs": [
-                    {
-                        "amount": 60000,
-                        "secret": "demo-secret-1",
-                        "C": "abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
-                        "id": "001122aabbccdd",
-                    },
-                    {
-                        "amount": 60000,
-                        "secret": "demo-secret-2",
-                        "C": "fedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321",
-                        "id": "001122aabbccdd",
-                    },
-                ],
                 "encoded_tokens": [
                     "cashuBexample",
                 ],

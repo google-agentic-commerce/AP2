@@ -41,6 +41,14 @@ from common.a2a_message_builder import A2aMessageBuilder
 from common.payment_remote_a2a_client import PaymentRemoteA2aClient
 
 
+_FALLBACK_FACILITATOR_URL = "https://x402.org/facilitator"
+_DEFAULT_CASHU_NETWORK = "bitcoin-testnet"
+_DEFAULT_CASHU_PAY_TO = "cashu:merchant"
+_DEFAULT_CASHU_UNIT = "sat"
+_DEFAULT_CASHU_TIMEOUT = 600
+_DEFAULT_CASHU_ASSET = "SAT"
+
+
 async def initiate_payment(
     data_parts: list[dict[str, Any]],
     updater: TaskUpdater,
@@ -196,8 +204,27 @@ async def _complete_payment(
           payment_credential,
       )
       # Call issuer to complete the payment
-  except Exception as exc:  # pylint: disable=broad-except
+  except ValueError as exc:
     logging.exception("Cashu settlement failed for %s", payment_mandate_id)
+    failure_payload = {"status": "failed", "reason": str(exc)}
+    failure_message = updater.new_agent_message(
+        _create_text_parts(json.dumps(failure_payload))
+    )
+    await updater.failed(message=failure_message)
+    return
+  except httpx.HTTPError as exc:
+    logging.exception("Facilitator request failed for %s", payment_mandate_id)
+    failure_payload = {
+        "status": "failed",
+        "reason": f"Facilitator request error: {exc}",
+    }
+    failure_message = updater.new_agent_message(
+        _create_text_parts(json.dumps(failure_payload))
+    )
+    await updater.failed(message=failure_message)
+    return
+  except Exception as exc:  # pylint: disable=broad-except
+    logging.exception("Unexpected error completing payment for %s", payment_mandate_id)
     failure_payload = {"status": "failed", "reason": str(exc)}
     failure_message = updater.new_agent_message(
         _create_text_parts(json.dumps(failure_payload))
@@ -281,13 +308,18 @@ async def _handle_cashu_payment(
 ) -> dict[str, Any]:
   """Verifies and settles a Cashu payment using an x402 facilitator."""
 
-  facilitator_url = payment_credential.get("facilitator_url") or "https://x402.org/facilitator"
+  facilitator_url = payment_credential.get("facilitator_url")
+  if facilitator_url is None:
+    facilitator_url = _FALLBACK_FACILITATOR_URL
   facilitator_url = facilitator_url.rstrip("/")
 
-  network = payment_credential.get("network", "bitcoin-testnet")
-  pay_to = payment_credential.get("pay_to", "cashu:merchant")
-  unit = payment_credential.get("unit", "sat")
-  max_timeout = int(payment_credential.get("max_timeout_seconds", 600))
+  network = payment_credential.get("network") or _DEFAULT_CASHU_NETWORK
+  pay_to = payment_credential.get("pay_to") or _DEFAULT_CASHU_PAY_TO
+  unit = payment_credential.get("unit") or _DEFAULT_CASHU_UNIT
+  max_timeout_value = payment_credential.get("max_timeout_seconds")
+  if max_timeout_value is None:
+    max_timeout_value = _DEFAULT_CASHU_TIMEOUT
+  max_timeout = int(max_timeout_value)
 
   raw_tokens = payment_credential.get("tokens")
   if raw_tokens is None:
@@ -304,7 +336,9 @@ async def _handle_cashu_payment(
         }
     ]
 
-  encoded_tokens = payment_credential.get("encoded") or payment_credential.get("encoded_tokens")
+  encoded_tokens = payment_credential.get("encoded")
+  if encoded_tokens is None:
+    encoded_tokens = payment_credential.get("encoded_tokens")
   if not encoded_tokens:
     raise ValueError("Cashu payment credential missing encoded token values")
 
@@ -323,16 +357,17 @@ async def _handle_cashu_payment(
       amount = int(proof.get("amount", 0))
       if amount <= 0:
         raise ValueError("Cashu proof amount must be positive")
-      normalized_proofs.append(
-          {
-              "amount": amount,
-              "secret": proof.get("secret"),
-              "C": proof.get("C"),
-              "id": proof.get("id"),
-              **({"dleq": proof.get("dleq")} if proof.get("dleq") else {}),
-              **({"witness": proof.get("witness")} if proof.get("witness") else {}),
-          }
-      )
+      proof_data = {
+          "amount": amount,
+          "secret": proof.get("secret"),
+          "C": proof.get("C"),
+          "id": proof.get("id"),
+      }
+      if dleq := proof.get("dleq"):
+        proof_data["dleq"] = dleq
+      if witness := proof.get("witness"):
+        proof_data["witness"] = witness
+      normalized_proofs.append(proof_data)
       total_amount += amount
 
     normalized_tokens.append(
@@ -393,7 +428,7 @@ async def _handle_cashu_payment(
       "mimeType": "application/json",
       "payTo": pay_to,
       "maxTimeoutSeconds": max_timeout,
-      "asset": payment_credential.get("asset", "SAT"),
+      "asset": payment_credential.get("asset") or _DEFAULT_CASHU_ASSET,
       "extra": extra,
   }
 

@@ -3,7 +3,15 @@
   "language": "en",
   "caseSensitive": true,
   "useGitignore": true,
+  "dictionaryDefinitions": [
+    {
+        "name": "custom-words",
+        "path": "./.cspell/custom-words.txt",
+        "addWords": true
+    }
+  ],
   "dictionaries": [
+    "custom-words",
     "aws",
     "bash-words",
     "companies",

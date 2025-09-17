@@ -5,6 +5,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
   pull-requests: write
 
 name: release-please
@@ -17,3 +18,4 @@ jobs:
         with:
           token: ${{ secrets.BOT_TOKEN }}
           release-type: simple
+          config-file: .github/release-please-config.json

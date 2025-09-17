@@ -2,6 +2,9 @@
 set -e
 set -o pipefail
 
+ALLOW_FILE=".cspell/custom-words.txt"
+sort -u -o "${ALLOW_FILE}" "${ALLOW_FILE}"
+
 # --- Argument Parsing ---
 # Initialize flags
 FORMAT_ALL=false

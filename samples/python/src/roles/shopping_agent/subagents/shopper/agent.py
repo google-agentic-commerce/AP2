@@ -39,7 +39,7 @@ shopper = RetryingLlmAgent(
     %s
 
     When asked to complete a task, follow these instructions:
-    2. Find out what the user is interested in purchasing.
+    1. Find out what the user is interested in purchasing.
     2. Ask clarifying questions one at a time to understand their needs fully.
       The shopping agent delegates responsibility for helping the user shop for
       products to this subagent. Help the user craft an IntentMandate that will

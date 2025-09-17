@@ -9,7 +9,7 @@ was not designed for a future where autonomous, non-human agents act on a user's
 behalf, or transact with each other. Current payment protocols, built on the
 assumption of direct human initiated interaction with trusted interfaces, lack
 the mechanisms to securely validate an agent's authenticity and authority to
-transact. This exposes a long standing defense against online fraud, creates
+transact. This exposes a long-standing defense against online fraud, creates
 ambiguity around transaction liability, and threatens adoption, not only of
 agent commerce, but also negatively impacts existing digital commerce.
 
@@ -67,7 +67,7 @@ discussions.
 The evolution of digital interaction is entering a new phase, moving beyond
 direct manipulation of UIs to conversational and delegated task execution. AI
 agents are rapidly becoming primary actors, capable of understanding complex
-user requests and executing multi-step tasks autonomously. In commerce, this
+user requests and executing multistep tasks autonomously. In commerce, this
 translates into a paradigm shift where agents will manage everything from
 routine purchases and subscription management to complex product research, price
 negotiation, and dynamic order bundling across multiple vendors. This new era of

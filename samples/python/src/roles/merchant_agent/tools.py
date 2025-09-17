@@ -151,7 +151,7 @@ async def initiate_payment(
 
   Args:
     data_parts: The data parts from the request, expected to contain a
-      PaymentMandate and optionally an challenge response.
+      PaymentMandate and optionally a challenge response.
     updater: The TaskUpdater instance for updating the task state.
     current_task: The current task, used to find the processor's task ID.
     debug_mode: Whether the agent is in debug mode.

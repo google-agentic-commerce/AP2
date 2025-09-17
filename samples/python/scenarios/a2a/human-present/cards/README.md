@@ -38,7 +38,7 @@ This sample consists of:
 
 **1. Card purchase with DPAN**
 
-*   The merchant agent will advertise support for card purchases through it's
+*   The merchant agent will advertise support for card purchases through its
     agent card and through the CartMandate once shopping is complete.
 *   The preferred payment method in the user's wallet will be a tokenized (DPAN)
     card.
@@ -123,7 +123,7 @@ This section walks you through a typical interaction with the sample.
     will show you a list of available payment methods from the Credentials
     Provider Agent. You will select a payment method.
 1.  **PaymentMandate creation**: The Shopping Agent will package the cart and
-    transaction information in a PaymentMandate and ask the you to sign the
+    transaction information in a PaymentMandate and ask you to sign the
     mandate. It will initiate payment using the PaymentMandate.
 1.  **OTP Challenge**: The Merchant Payment Processor will then request an OTP,
     and you'll be asked to provide a mock OTP to the agent. Use `123`

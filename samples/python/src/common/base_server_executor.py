@@ -25,7 +25,6 @@ watch_log.py for more details.
 
 import abc
 import logging
-import os
 from typing import Any, Callable, Tuple
 import uuid
 
@@ -37,7 +36,6 @@ from a2a.types import Part
 from a2a.types import Task
 from a2a.types import TextPart
 from a2a.utils import message
-from google import genai
 from ap2.types.mandate import PAYMENT_MANDATE_DATA_KEY
 from ap2.types.mandate import PaymentMandate
 from common import message_utils

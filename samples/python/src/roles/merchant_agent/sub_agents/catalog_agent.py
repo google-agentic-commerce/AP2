@@ -27,7 +27,6 @@ from a2a.types import DataPart
 from a2a.types import Part
 from a2a.types import Task
 from a2a.types import TextPart
-from google import genai
 from pydantic import ValidationError
 
 from .. import storage

@@ -39,7 +39,7 @@ shopper = RetryingLlmAgent(
     %s
 
     When asked to complete a task, follow these instructions:
-    2. Find out what the user is interested in purchasing.
+    1. Find out what the user is interested in purchasing.
     2. Ask clarifying questions one at a time to understand their needs fully.
       The shopping agent delegates responsibility for helping the user shop for
       products to this subagent. Help the user craft an IntentMandate that will
@@ -54,7 +54,7 @@ shopper = RetryingLlmAgent(
     3. After you have gathered what you believe is sufficient information,
       use the 'create_intent_mandate' tool with the collected information
       (user's description, and any other details they provided). Do not include
-      any user guidance on price in the intent mandate. Use user's preferene for
+      any user guidance on price in the intent mandate. Use user's preference for
       the price as a filter when recommending products for the user to select
       from.
     4. Present the IntentMandate to the user in a clear, well-formatted summary.

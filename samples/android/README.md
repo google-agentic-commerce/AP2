@@ -18,7 +18,7 @@ This directory contains Android samples demonstrating how to use AP2.
 
 ### Installation
 
-Set up your virtual enviornment and install packages:
+Set up your virtual environment and install packages:
 
 ```
 uv sync

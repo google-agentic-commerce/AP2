@@ -38,7 +38,7 @@ This sample consists of:
 
 **1. Card purchase with DPAN**
 
-*   The merchant agent will advertise support for card purchases through it's
+*   The merchant agent will advertise support for card purchases through its
     agent card and through the CartMandate once shopping is complete.
 *   The preferred payment method in the user's wallet will be a tokenized (DPAN)
     card.
@@ -123,7 +123,7 @@ This section walks you through a typical interaction with the sample.
     will show you a list of available payment methods from the Credentials
     Provider Agent. You will select a payment method.
 1.  **PaymentMandate creation**: The Shopping Agent will package the cart and
-    transaction information in a PaymentMandate and ask the you to sign the
+    transaction information in a PaymentMandate and ask you to sign the
     mandate. It will initiate payment using the PaymentMandate.
 1.  **OTP Challenge**: The Merchant Payment Processor will then request an OTP,
     and you'll be asked to provide a mock OTP to the agent. Use `123`
@@ -166,7 +166,7 @@ explaining what you're doing, and display all data payloads?"*
 > please display the JSON."** After this reminder, the agent usually becomes
 > more reliable at displaying all data payloads.
 
-### Viewing Agent Communiation
+### Viewing Agent Communication
 
 To help engineers visualize the exact communication occurring between the agent
 servers, a detailed log file is created automatically when the servers start up.

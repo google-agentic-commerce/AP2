@@ -37,6 +37,7 @@ from a2a.types import Task
 from a2a.types import TextPart
 from a2a.utils import message
 from ap2.types.mandate import PAYMENT_MANDATE_DATA_KEY
+from google import genai
 from ap2.types.mandate import PaymentMandate
 from common import message_utils
 from common import system_utils
@@ -69,6 +70,7 @@ class BaseServerExecutor(AgentExecutor, abc.ABC):
     else:
       self._supported_extension_uris = set()
     self._client = system_utils.create_genai_client()
+    self._client = genai.Client()
     self._tools = tools
     self._tool_resolver = FunctionCallResolver(
         self._client, self._tools, system_prompt

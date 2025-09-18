@@ -27,6 +27,7 @@ from a2a.types import DataPart
 from a2a.types import Part
 from a2a.types import Task
 from a2a.types import TextPart
+from google import genai
 from pydantic import ValidationError
 
 from .. import storage
@@ -41,7 +42,6 @@ from ap2.types.payment_request import PaymentMethodData
 from ap2.types.payment_request import PaymentOptions
 from ap2.types.payment_request import PaymentRequest
 from common import message_utils
-from common import system_utils
 from common.system_utils import DEBUG_MODE_INSTRUCTIONS
 
 
@@ -51,7 +51,7 @@ async def find_items_workflow(
     current_task: Task | None,
 ) -> None:
   """Finds products that match the user's IntentMandate."""
-  llm_client = system_utils.create_genai_client()
+  llm_client = genai.Client()
 
   intent_mandate = message_utils.parse_canonical_object(
       INTENT_MANDATE_DATA_KEY, data_parts, IntentMandate

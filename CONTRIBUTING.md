@@ -20,10 +20,10 @@ sign a new one.
 
 ### Review our Community Guidelines
 
-This project follows [Google's Open Source Community
-Guidelines](https://opensource.google/conduct/).
+This project follows
+[Google's Open Source Community Guidelines](https://opensource.google/conduct/).
 
-## Contribution process
+## Contribution process.
 
 ### Code Reviews
 

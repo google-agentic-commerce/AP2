@@ -31,7 +31,6 @@ if [ -z "${GOOGLE_API_KEY}" ] && [ "${USE_VERTEX}" != "true" ]; then
   exit 1
 fi
 
-
 # Set up and activate a virtual environment.
 echo "Setting up the Python virtual environment..."
 

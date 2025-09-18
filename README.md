@@ -77,7 +77,7 @@ If you're using Google Cloud Platform or prefer Vertex AI authentication, you ca
     ```sh
     export GOOGLE_GENAI_USE_VERTEXAI=true
     export GOOGLE_CLOUD_PROJECT=your-project-id
-    export GOOGLE_CLOUD_LOCATION=us-central1  # or your preferred region
+    export GOOGLE_CLOUD_LOCATION=global  # or your preferred region
     ```
 
 2. Ensure your application has the necessary permissions and ADC is configured:

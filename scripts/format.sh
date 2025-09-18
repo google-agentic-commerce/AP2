@@ -59,6 +59,35 @@ echo "Formatting markdown files..."
 
 markdownlint "${MARKDOWN_DIR}" --config "${MARKDOWNLINT_CONFIG}" --fix
 
+# --- Helper Function ---
+# Runs a command on a list of files.
+# $1: A string containing the list of files (newline-separated).
+# $2...: The command and its arguments to run.
+run_formatter() {
+  local files_to_format="$1"
+  shift # Remove the file list from the arguments
+  if [ -n "$files_to_format" ]; then
+    printf '%s\n' "$files_to_format" | tr '\n' '\0' | xargs -0 -r "$@"
+  fi
+}
+
+echo "Formatting shell files..."
+# Check if shfmt is installed before proceeding.
+if ! command -v shfmt &>/dev/null; then
+  echo "Warning: shfmt is not installed. Skipping shell script formatting."
+else
+  SHELL_FILES="$(git -C "${REPO_ROOT}" ls-files -- '*.sh')"
+
+  if [ -z "$SHELL_FILES" ]; then
+    echo "No shell files found to format."
+  else
+    echo "Formatting the following shell files:"
+    echo "$SHELL_FILES"
+    run_formatter "$SHELL_FILES" shfmt -w
+    echo "Shell file formatting complete."
+  fi
+fi
+
 CHANGED_FILES=""
 
 if $FORMAT_ALL; then
@@ -80,18 +109,6 @@ if [ -z "$CHANGED_FILES" ]; then
   echo "No changed or tracked Python files to format."
   exit 0
 fi
-
-# --- Helper Function ---
-# Runs a command on a list of files passed via stdin.
-# $1: A string containing the list of files (space-separated).
-# $2...: The command and its arguments to run.
-run_formatter() {
-  local files_to_format="$1"
-  shift # Remove the file list from the arguments
-  if [ -n "$files_to_format" ]; then
-    echo "$files_to_format" | xargs -r "$@"
-  fi
-}
 
 # --- Python File Formatting ---
 if [ -n "$CHANGED_FILES" ]; then

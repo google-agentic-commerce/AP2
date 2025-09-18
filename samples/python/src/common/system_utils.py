@@ -15,7 +15,7 @@
 """Helper functions related to the system."""
 
 import os
-from pathlib import Path
+from google import genai
 
 
 def check_google_api_key() -> bool:
@@ -53,6 +53,38 @@ def check_vertex_ai_env() -> bool:
   ), "The environment variable 'GOOGLE_CLOUD_LOCATION' is not set."
 
   return os.getenv("GOOGLE_CLOUD_PROJECT") is not None and os.getenv("GOOGLE_CLOUD_LOCATION") is not None
+
+def create_genai_client() -> genai.Client:
+  """Creates a properly authenticated genai.Client.
+
+  Tries Google API key authentication first, then falls back to Vertex AI ADC.
+  Ensures a client is always returned if valid credentials are found.
+
+  Returns:
+    genai.Client: Authenticated client instance
+
+  Raises:
+    ValueError: If no valid authentication method is found or configured correctly
+  """
+  try:
+    check_google_api_key()
+    return genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
+  except AssertionError:
+    try:
+      if check_vertex_ai_enabled():
+        check_vertex_ai_env()
+        return genai.Client(vertexai=True)
+      else:
+        raise ValueError(
+            "No valid authentication method found. GOOGLE_API_KEY is not set and "
+            "GOOGLE_GENAI_USE_VERTEXAI is not 'true'."
+        )
+    except (AssertionError, ValueError) as e:
+      raise ValueError(
+          "Authentication failed: GOOGLE_API_KEY is not set, and Vertex AI is not "
+          "configured correctly."
+      ) from e
+
 
 DEBUG_MODE_INSTRUCTIONS = """
     This is really important! If the agent or user asks you to be verbose or if debug_mode is True, do the following:

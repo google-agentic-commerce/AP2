@@ -60,14 +60,14 @@ echo "Formatting markdown files..."
 markdownlint "${MARKDOWN_DIR}" --config "${MARKDOWNLINT_CONFIG}" --fix
 
 # --- Helper Function ---
-# Runs a command on a list of files passed via stdin.
-# $1: A string containing the list of files (space-separated).
+# Runs a command on a list of files.
+# $1: A string containing the list of files (newline-separated).
 # $2...: The command and its arguments to run.
 run_formatter() {
   local files_to_format="$1"
   shift # Remove the file list from the arguments
   if [ -n "$files_to_format" ]; then
-    echo "$files_to_format" | xargs -r "$@"
+    printf '%s\n' "$files_to_format" | tr '\n' '\0' | xargs -0 -r "$@"
   fi
 }
 
@@ -76,7 +76,7 @@ echo "Formatting shell files..."
 if ! command -v shfmt &>/dev/null; then
   echo "Warning: shfmt is not installed. Skipping shell script formatting."
 else
-  SHELL_FILES=$(git -C "${REPO_ROOT}" ls-files -- '*.sh')
+  SHELL_FILES="$(git -C "${REPO_ROOT}" ls-files -- '*.sh')"
 
   if [ -z "$SHELL_FILES" ]; then
     echo "No shell files found to format."

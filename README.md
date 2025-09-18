@@ -48,55 +48,58 @@ shopping assistant have their source code in [**`samples/android`**](samples/and
 
 ### Setup
 
-You can authenticate using either Google API Key or Vertex AI. Choose one of the following methods:
+You can authenticate using either a Google API Key or Vertex AI.
+
+For either method, you can set the required credentials as environment variables in your shell or place them in a `.env` file at the root of your project.
 
 #### Option 1: Google API Key (Recommended for development)
 
-Ensure you have obtained a Google API key from
-[Google AI Studio](http://aistudio.google.com/apikey). Then declare the
-`GOOGLE_API_KEY` variable in one of two ways.
+1. Obtain a Google API key from [Google AI Studio](http://aistudio.google.com/apikey).
+2. Set the `GOOGLE_API_KEY` environment variable.
 
-1. Declare it as an environment variable:
+    - **As an environment variable:**
 
-    ```sh
-    export GOOGLE_API_KEY=your_key
-    ```
+        ```sh
+        export GOOGLE_API_KEY='your_key'
+        ```
 
-2. Put it into an `.env` file at the root of your repository.
+    - **In a `.env` file:**
 
-    ```sh
-    echo "GOOGLE_API_KEY=your_key" > .env
-    ```
+        ```sh
+        GOOGLE_API_KEY='your_key'
+        ```
 
-#### Option 2: Vertex AI with Application Default Credentials (Recommended for production)
+#### Option 2: [Vertex AI](https://cloud.google.com/vertex-ai) (Recommended for production)
 
-If you're using Google Cloud Platform or prefer Vertex AI authentication, you can use Application Default Credentials (ADC) instead of an API key.
+1. **Configure your environment to use Vertex AI.**
+    - **As environment variables:**
 
-1. Set up your Google Cloud environment:
+        ```sh
+        export GOOGLE_GENAI_USE_VERTEXAI=true
+        export GOOGLE_CLOUD_PROJECT='your-project-id'
+        export GOOGLE_CLOUD_LOCATION='global' # or your preferred region
+        ```
 
-    ```sh
-    export GOOGLE_GENAI_USE_VERTEXAI=true
-    export GOOGLE_CLOUD_PROJECT=your-project-id
-    export GOOGLE_CLOUD_LOCATION=global  # or your preferred region
-    ```
+    - **In a `.env` file:**
 
-2. Ensure your application has the necessary permissions and ADC is configured:
+        ```sh
+        GOOGLE_GENAI_USE_VERTEXAI=true
+        GOOGLE_CLOUD_PROJECT='your-project-id'
+        GOOGLE_CLOUD_LOCATION='global'
+        ```
 
-    ```sh
-    # If using gcloud CLI
-    gcloud auth application-default login
-    
-    # Or if using a service account
-    export GOOGLE_APPLICATION_CREDENTIALS=path/to/your/service-account-key.json
-    ```
+2. **Authenticate your application.**
+    - **Using the [`gcloud` CLI](https://cloud.google.com/sdk/docs/install):**
 
-3. Put the configuration into an `.env` file at the root of your repository:
+        ```sh
+        gcloud auth application-default login
+        ```
 
-    ```sh
-    echo "GOOGLE_GENAI_USE_VERTEXAI=true" > .env
-    echo "GOOGLE_CLOUD_PROJECT=your-project-id" >> .env
-    echo "GOOGLE_CLOUD_LOCATION=us-central1" >> .env
-    ```
+    - **Using a Service Account:**
+
+        ```sh
+        export GOOGLE_APPLICATION_CREDENTIALS='/path/to/your/service-account-key.json'
+        ```
 
 ### How to Run a Scenario
 

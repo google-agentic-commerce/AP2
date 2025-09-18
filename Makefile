@@ -156,7 +156,7 @@ act-all: ## Run all workflows locally with act
 	act -W .github/workflows/test.yml --rm
 	act -W .github/workflows/linter.yaml --rm
 
-# Fork-specific commands (similar to your Justfile fork commands)
+# Fork-specific commands for testing new tests against your own fork to ensure they don't break CI
 act-test-fork: ## Run test workflow against fork
 	@if [ -z "$(REPO)" ]; then \
 		echo "Usage: make act-test-fork REPO=github.com/username/AP2"; \

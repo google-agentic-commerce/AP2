@@ -40,7 +40,7 @@ jobs:
         run: uv run pytest tests/integration -v -m "not slow"
 
       - name: Upload coverage reports
-        if: matrix.python-version == '3.11'
+        if: matrix.python-version == '3.11' && !env.ACT
         uses: codecov/codecov-action@v5
         with:
           file: ./coverage.xml

@@ -40,7 +40,6 @@ from ap2.types.mandate import PAYMENT_MANDATE_DATA_KEY
 from google import genai
 from ap2.types.mandate import PaymentMandate
 from common import message_utils
-from common import system_utils
 from common import watch_log
 from common.a2a_extension_utils import EXTENSION_URI
 from common.function_call_resolver import FunctionCallResolver
@@ -69,7 +68,6 @@ class BaseServerExecutor(AgentExecutor, abc.ABC):
       self._supported_extension_uris = {ext.uri for ext in supported_extensions}
     else:
       self._supported_extension_uris = set()
-    self._client = system_utils.create_genai_client()
     self._client = genai.Client()
     self._tools = tools
     self._tool_resolver = FunctionCallResolver(

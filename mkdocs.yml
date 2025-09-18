@@ -25,6 +25,8 @@ nav:
       - Life of a Transaction: topics/life-of-a-transaction.md
   - AP2 specification: specification.md
   - A2A extension for AP2: a2a-extension.md
+  - Development:
+      - Local Testing Guide: development/local-testing.md
   - Glossary: glossary.md
   - FAQ: faq.md
   - Roadmap: roadmap.md

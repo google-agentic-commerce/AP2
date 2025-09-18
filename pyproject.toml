@@ -12,10 +12,39 @@ dependencies = [
 keywords = ["payments", "a2a", "ap2"]
 license = { text = "Apache-2.0" }
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.uv.workspace]
 members = ["samples/python"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "-v",
+    "--strict-markers",
+    "--tb=short"
+]
+markers = [
+    "unit: Unit tests",
+    "integration: Integration tests",
+    "scenario: End-to-end scenario tests",
+    "slow: Slow running tests"
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning"
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.0.0",
+    "pytest-mock>=3.10.0"
+]

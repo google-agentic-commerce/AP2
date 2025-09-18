@@ -155,6 +155,8 @@ act-all: ## Run all workflows locally with act
 	@echo "Running all workflows locally..."
 	act -W .github/workflows/test.yml --rm
 	act -W .github/workflows/linter.yaml --rm
+	act -W .github/workflows/spellcheck.yaml --rm
+	act -W .github/workflows/docs.yml --rm
 
 # Fork-specific commands for testing new tests against your own fork to ensure they don't break CI
 act-test-fork: ## Run test workflow against fork
@@ -193,6 +195,7 @@ act-all-fork: ## Run all workflows against fork
 	@echo "Running all workflows against fork $(REPO)..."
 	act -W .github/workflows/test.yml --rm --env GITHUB_REPOSITORY=$(REPO)
 	act -W .github/workflows/linter.yaml --rm --env GITHUB_REPOSITORY=$(REPO)
+	act -W .github/workflows/spellcheck.yaml --rm --env GITHUB_REPOSITORY=$(REPO)
 	act -W .github/workflows/docs.yml --rm --env GITHUB_REPOSITORY=$(REPO)
 
 act-clean: ## Clean up act containers

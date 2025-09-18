@@ -1,14 +1,11 @@
 """Unit tests for AP2 mandate types."""
 
 import pytest
-# from datetime import datetime, timezone
 
 from ap2.types.mandate import (
     IntentMandate,
     CartContents,
-    # CartMandate,
     PaymentMandateContents,
-    # PaymentMandate
 )
 from ap2.types.payment_request import (
     PaymentCurrencyAmount,

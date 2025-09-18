@@ -37,7 +37,7 @@ to each actor in the ecosystem:
     that securely manages the user's payment credentials and methods.
 - **Merchant Endpoint (ME)**: An interface or agent operating on behalf of the
     merchant to showcase products and negotiate a cart.
-- **Merchant Payment Processor (MPP)**: The entity that constructs the final
+- **Merchant Payment Processor Endpoint (MPP)**: The entity that constructs the final
     transaction authorization message for the payment network.
 - **Network and Issuer**: The payment network and the financial institution
     that issued the user's payment credentials.

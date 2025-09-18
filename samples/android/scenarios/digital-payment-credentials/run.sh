@@ -11,7 +11,6 @@ fi
 # Get the absolute path of the directory containing this script.
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
-
 # Navigate to the root of the agenticpayments repository.
 REPO_ROOT=$(cd "$SCRIPT_DIR/../../../../" && pwd)
 
@@ -45,4 +44,3 @@ fi
 # Start the merchant server
 echo "Starting the merchant server..."
 uv run --package ap2-samples python -m roles.merchant_agent
-

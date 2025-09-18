@@ -53,8 +53,15 @@ async def find_items_workflow(
     current_task: Task | None,
 ) -> None:
   """Finds products that match the user's IntentMandate."""
-  system_utils.check_google_api_key()
-  llm_client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
+  try:
+    system_utils.check_google_api_key()
+    llm_client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
+  except AssertionError as err:
+    if system_utils.check_vertex_ai_enabled():
+      system_utils.check_vertex_ai_env()
+      llm_client = genai.Client(vertexai=True)
+    else:
+      raise err
 
   intent_mandate = message_utils.parse_canonical_object(
       INTENT_MANDATE_DATA_KEY, data_parts, IntentMandate

@@ -70,8 +70,13 @@ class BaseServerExecutor(AgentExecutor, abc.ABC):
       self._supported_extension_uris = {ext.uri for ext in supported_extensions}
     else:
       self._supported_extension_uris = set()
-    system_utils.check_google_api_key()
-    self._client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
+    try:
+      system_utils.check_google_api_key()
+      self._client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
+    except AssertionError:
+      if system_utils.check_vertex_ai_enabled():
+        system_utils.check_vertex_ai_env()
+        self._client = genai.Client(vertexai=True)
     self._tools = tools
     self._tool_resolver = FunctionCallResolver(
         self._client, self._tools, system_prompt

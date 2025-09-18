@@ -29,6 +29,30 @@ def check_google_api_key() -> bool:
       "GOOGLE_API_KEY"
   ), "The environment variable 'GOOGLE_API_KEY' is empty."
 
+def check_vertex_ai_enabled() -> bool:
+  """Checks if the GOOGLE_GENAI_USE_VERTEXAI environment variable is true."""
+
+  assert (
+    "GOOGLE_GENAI_USE_VERTEXAI" in os.environ
+  ), "The environment variable 'GOOGLE_GENAI_USE_VERTEXAI' is not set."
+
+  assert os.getenv(
+    "GOOGLE_GENAI_USE_VERTEXAI"
+  ), "The environment variable 'GOOGLE_GENAI_USE_VERTEXAI' is empty."
+
+  return os.getenv("GOOGLE_GENAI_USE_VERTEXAI") == "true"
+
+def check_vertex_ai_env() -> bool:
+  """Checks if the GOOGLE_CLOUD_PROJECT and GOOGLE_CLOUD_LOCATION environment variables are set."""
+  assert (
+    "GOOGLE_CLOUD_PROJECT" in os.environ
+  ), "The environment variable 'GOOGLE_CLOUD_PROJECT' is not set."
+
+  assert (
+    "GOOGLE_CLOUD_LOCATION" in os.environ
+  ), "The environment variable 'GOOGLE_CLOUD_LOCATION' is not set."
+
+  return os.getenv("GOOGLE_CLOUD_PROJECT") is not None and os.getenv("GOOGLE_CLOUD_LOCATION") is not None
 
 DEBUG_MODE_INSTRUCTIONS = """
     This is really important! If the agent or user asks you to be verbose or if debug_mode is True, do the following:

@@ -24,8 +24,10 @@ if [ -f .env ]; then
   set +a
 fi
 
-if [ -z "${GOOGLE_API_KEY}" ]; then
+USE_VERTEX=$(printf "%s" "${GOOGLE_GENAI_USE_VERTEXAI}" | tr '[:upper:]' '[:lower:]')
+if [ -z "${GOOGLE_API_KEY}" ] && [ "${USE_VERTEX}" != "true" ]; then
   echo "Please set your GOOGLE_API_KEY environment variable before running."
+  echo "Alternatively, set GOOGLE_GENAI_USE_VERTEXAI=true to use Vertex AI with ADC."
   exit 1
 fi
 
@@ -81,7 +83,7 @@ echo ""
 echo "Starting remote servers and agents as background processes..."
 
 # uv sync is explicitly run before starting any agents.
-# Prevent servers starting in parallel from colliding by trying to sync again. 
+# Prevent servers starting in parallel from colliding by trying to sync again.
 UV_RUN_CMD="uv run --no-sync"
 
 if [ -f ".env" ]; then

@@ -152,7 +152,7 @@ class PaymentDetailsModifier(BaseModel):
       None,
       description="Additional PaymentItems applicable for this payment method.",
   )
-  data: Optional[Any] = Field(
+  data: Optional[dict[str, Any]] = Field(
       None, description="Payment method specific data for the modifier."
   )
 

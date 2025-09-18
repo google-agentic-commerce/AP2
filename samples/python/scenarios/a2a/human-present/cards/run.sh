@@ -68,10 +68,12 @@ trap cleanup EXIT
 
 # Explicitly sync to ensures the virtual environment is up to date.
 echo "Syncing virtual environment with uv sync..."
-uv sync --package ap2-samples && echo "Virtual environment synced successfully." || {
+if uv sync --package ap2-samples; then
+  echo "Virtual environment synced successfully."
+else
   echo "Error: uv sync failed. Aborting deployment."
   exit 1
-}
+fi
 
 # Clear old logs.
 echo "Clearing the logs directory..."

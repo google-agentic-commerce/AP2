@@ -20,7 +20,6 @@ This agent fabricates catalog content based on the user's request.
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
-import os
 from typing import Any
 
 from a2a.server.tasks.task_updater import TaskUpdater
@@ -43,7 +42,6 @@ from ap2.types.payment_request import PaymentMethodData
 from ap2.types.payment_request import PaymentOptions
 from ap2.types.payment_request import PaymentRequest
 from common import message_utils
-from common import system_utils
 from common.system_utils import DEBUG_MODE_INSTRUCTIONS
 
 
@@ -53,8 +51,7 @@ async def find_items_workflow(
     current_task: Task | None,
 ) -> None:
   """Finds products that match the user's IntentMandate."""
-  system_utils.check_google_api_key()
-  llm_client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
+  llm_client = genai.Client()
 
   intent_mandate = message_utils.parse_canonical_object(
       INTENT_MANDATE_DATA_KEY, data_parts, IntentMandate

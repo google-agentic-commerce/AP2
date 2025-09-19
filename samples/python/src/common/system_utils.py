@@ -42,7 +42,7 @@ def create_genai_client() -> genai.Client:
   api_key = os.getenv("GOOGLE_API_KEY")
   if api_key:
     return genai.Client(api_key=api_key)
-
+ 
   return genai.Client(vertexai=True)
 
 

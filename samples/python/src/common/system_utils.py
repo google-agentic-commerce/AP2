@@ -14,22 +14,6 @@
 
 """Helper functions related to the system."""
 
-import os
-from pathlib import Path
-
-
-def check_google_api_key() -> bool:
-  """Checks if the GOOGLE_API_KEY environment variable is set."""
-
-  assert (
-      "GOOGLE_API_KEY" in os.environ
-  ), "The environment variable 'GOOGLE_API_KEY' is not set."
-
-  assert os.getenv(
-      "GOOGLE_API_KEY"
-  ), "The environment variable 'GOOGLE_API_KEY' is empty."
-
-
 DEBUG_MODE_INSTRUCTIONS = """
     This is really important! If the agent or user asks you to be verbose or if debug_mode is True, do the following:
       1. If this is the the start of a new task, explain who you are, what you are going to do, what tools you use, and what agents you delegate to.

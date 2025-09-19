@@ -25,7 +25,6 @@ watch_log.py for more details.
 
 import abc
 import logging
-import os
 from typing import Any, Callable, Tuple
 import uuid
 
@@ -37,11 +36,10 @@ from a2a.types import Part
 from a2a.types import Task
 from a2a.types import TextPart
 from a2a.utils import message
-from google import genai
 from ap2.types.mandate import PAYMENT_MANDATE_DATA_KEY
+from google import genai
 from ap2.types.mandate import PaymentMandate
 from common import message_utils
-from common import system_utils
 from common import watch_log
 from common.a2a_extension_utils import EXTENSION_URI
 from common.function_call_resolver import FunctionCallResolver
@@ -70,8 +68,7 @@ class BaseServerExecutor(AgentExecutor, abc.ABC):
       self._supported_extension_uris = {ext.uri for ext in supported_extensions}
     else:
       self._supported_extension_uris = set()
-    system_utils.check_google_api_key()
-    self._client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
+    self._client = genai.Client()
     self._tools = tools
     self._tool_resolver = FunctionCallResolver(
         self._client, self._tools, system_prompt

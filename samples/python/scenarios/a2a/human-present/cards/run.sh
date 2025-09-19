@@ -24,8 +24,7 @@ if [ -f .env ]; then
   set +a
 fi
 
-USE_VERTEX=$(printf "%s" "${GOOGLE_GENAI_USE_VERTEXAI}" | tr '[:upper:]' '[:lower:]')
-if [ -z "${GOOGLE_API_KEY}" ] && [ "${USE_VERTEX}" != "true" ]; then
+if [ -z "${GOOGLE_API_KEY}" ] && [ -z "${GOOGLE_GENAI_USE_VERTEXAI}" ]; then
   echo "Please set your GOOGLE_API_KEY environment variable before running."
   echo "Alternatively, set GOOGLE_GENAI_USE_VERTEXAI=true to use Vertex AI with ADC."
   exit 1

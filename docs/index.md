@@ -108,26 +108,26 @@ create a secure and fair ecosystem:
 
 ---
 
-## Key Concept: Verifiable Credentials (VCs)
+## Key Concept: Verifiable Digital Credentials (VDCs)
 
-The Agent Payments Protocol engineers trust into the system using **Verifiable
-Credentials (VCs)**. VCs are tamper-evident, cryptographically signed digital
+The Agent Payments Protocol engineers trust into the system using **verifiable
+digital credentials (VDCs)**. VDCs are tamper-evident, cryptographically signed digital
 objects that serve as the building blocks of a transaction. They are the data
 payloads that agents create and exchange. There are three primary types:
 
-- **The Intent Mandate:** This VC captures the conditions under which an AI
+- **The Intent Mandate:** This VDC captures the conditions under which an AI
     Agent can make a purchase on behalf of the user, particularly in
     "human-not-present" scenarios. It provides the agent with authority to
     execute a transaction within defined constraints.
-- **The Cart Mandate:** This VC captures the user's final, explicit
+- **The Cart Mandate:** This VDC captures the user's final, explicit
     authorization for a specific cart, including the exact items and price, in
     "human-present" scenarios. The user's cryptographic signature on this
     mandate provides non-repudiable proof of their intent.
-- **The Payment Mandate:** A separate VC shared with the payment network and
+- **The Payment Mandate:** A separate VDC shared with the payment network and
     issuer, designed to signal AI agent involvement and user presence
     (human-present or not) to help assess transaction context.
 
-These VCs operate within a defined role-based architecture and can handle both
+These VDCs operate within a defined role-based architecture and can handle both
 "human-present" and "human-not-present" transaction types.
 
 Learn more in [Core Concepts](topics/core-concepts.md).

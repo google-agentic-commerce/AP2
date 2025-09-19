@@ -48,21 +48,58 @@ shopping assistant have their source code in [**`samples/android`**](samples/and
 
 ### Setup
 
-Ensure you have obtained a Google API key from
-[Google AI Studio](http://aistudio.google.com/apikey). Then declare the
-`GOOGLE_API_KEY` variable in one of two ways.
+You can authenticate using either a Google API Key or Vertex AI.
 
-1. Declare it as an environment variable:
+For either method, you can set the required credentials as environment variables in your shell or place them in a `.env` file at the root of your project.
 
-    ```sh
-    export GOOGLE_API_KEY=your_key
-    ```
+#### Option 1: Google API Key (Recommended for development)
 
-1. Put it into an `.env` file at the root of your repository.
+1. Obtain a Google API key from [Google AI Studio](http://aistudio.google.com/apikey).
+2. Set the `GOOGLE_API_KEY` environment variable.
 
-    ```sh
-    echo "GOOGLE_API_KEY=your_key" > .env
-    ```
+    - **As an environment variable:**
+
+        ```sh
+        export GOOGLE_API_KEY='your_key'
+        ```
+
+    - **In a `.env` file:**
+
+        ```sh
+        GOOGLE_API_KEY='your_key'
+        ```
+
+#### Option 2: [Vertex AI](https://cloud.google.com/vertex-ai) (Recommended for production)
+
+1. **Configure your environment to use Vertex AI.**
+    - **As environment variables:**
+
+        ```sh
+        export GOOGLE_GENAI_USE_VERTEXAI=true
+        export GOOGLE_CLOUD_PROJECT='your-project-id'
+        export GOOGLE_CLOUD_LOCATION='global' # or your preferred region
+        ```
+
+    - **In a `.env` file:**
+
+        ```sh
+        GOOGLE_GENAI_USE_VERTEXAI=true
+        GOOGLE_CLOUD_PROJECT='your-project-id'
+        GOOGLE_CLOUD_LOCATION='global'
+        ```
+
+2. **Authenticate your application.**
+    - **Using the [`gcloud` CLI](https://cloud.google.com/sdk/docs/install):**
+
+        ```sh
+        gcloud auth application-default login
+        ```
+
+    - **Using a Service Account:**
+
+        ```sh
+        export GOOGLE_APPLICATION_CREDENTIALS='/path/to/your/service-account-key.json'
+        ```
 
 ### How to Run a Scenario
 

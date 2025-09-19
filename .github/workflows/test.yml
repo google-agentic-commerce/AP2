@@ -1,0 +1,111 @@
+name: Test
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    name: Test Suite
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.11", "3.12"]
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Set up Python ${{ matrix.python-version }}
+        run: uv python install ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          uv sync --package ap2-samples --extra test
+          uv pip install -e .
+
+      - name: Run unit tests
+        run: uv run pytest tests/unit -v --cov-report=xml --cov-report=term
+
+      - name: Run integration tests
+        run: uv run pytest tests/integration -v -m "not slow"
+
+      - name: Upload coverage reports
+        if: matrix.python-version == '3.11' && !env.ACT
+        uses: codecov/codecov-action@v5
+        with:
+          file: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+
+  test-scenarios:
+    name: Scenario Tests
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v5
+
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Set up Python 3.11
+        run: uv python install 3.11
+
+      - name: Install dependencies
+        run: |
+          uv sync --package ap2-samples --extra test
+          uv pip install -e .
+
+      - name: Run scenario import tests
+        run: uv run pytest tests/scenarios -v --tb=short
+
+  lint-and-format:
+    name: Lint and Format Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Set up Python 3.11
+        run: uv python install 3.11
+
+      - name: Install dependencies
+        run: |
+          uv sync --package ap2-samples --extra test
+          uv pip install -e .
+
+      - name: Check code formatting with ruff (warnings only)
+        run: |
+          echo "Running ruff check (currently allows failures for initial setup)"
+          uv run ruff check --output-format=github . || echo "Ruff found issues - these will be addressed in follow-up PRs"
+          echo "Running ruff format check (currently allows failures for initial setup)"
+          uv run ruff format --check . || echo "Format issues found - these will be addressed in follow-up PRs"
+
+      - name: Run type checking (if mypy config exists)
+        run: |
+          if [ -f "pyproject.toml" ] && grep -q "mypy" pyproject.toml; then
+            uv run mypy src/ --ignore-missing-imports || echo "Type checking issues found - these will be addressed in follow-up PRs"
+          else
+            echo "No mypy configuration found, skipping type check"
+          fi

@@ -17,12 +17,22 @@ dependencies = [
     "requests",
     "ap2"
 ]
+
 keywords = ["payments", "a2a", "ap2"]
 readme = "README.md"
-requires-python = ">=3.10"
+requires-python = ">=3.11"
+
+[project.optional-dependencies]
+test = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.0.0",
+    "pytest-mock>=3.10.0",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.uv.sources]
 ap2 = { workspace = true }
+

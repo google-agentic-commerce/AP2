@@ -58,7 +58,7 @@ Ensure you have obtained a Google API key from
     export GOOGLE_API_KEY=your_key
     ```
 
-1. Put it into an `.env` file at the root of your repository.
+2. Put it into an `.env` file at the root of your repository.
 
     ```sh
     echo "GOOGLE_API_KEY=your_key" > .env

@@ -38,7 +38,7 @@ allowing the ecosystem to build, test, and adopt capabilities incrementally.
     architecture and enabling the most common use cases. Key features include:
     - Support for "pull" payment methods (e.g., credit/debit cards)
     - Well-defined data payloads to support transparent accountability based
-        on the VC framework
+        on the VDC framework
     - Support for human-present scenarios
     - Support for user and merchant-initiated step-up challenges
     - Detailed sequence diagram and reference implementation using
@@ -262,19 +262,19 @@ authentic and to appropriately represent <johndoe@gmail.com>. This trust
 framework will leverage and extend established web standards such as HTTPS, DNS
 ownership, mTLS, and API key-exchange.
 
-## Section 4: Trust Anchors: Verifiable Credentials & Mandates
+## Section 4: Trust Anchors: Verifiable Digital Credentials & Mandates
 
 The central innovation of this protocol is the mechanism by which it engineers
 trust into a distributed and potentially adversarial environment. This is
 accomplished through the interplay of a set of standardized, cryptographically
-secure data objects known as Verifiable Credentials (VCs).
+secure data objects known as verifiable digital credentials (VDCs).
 
-### 4.1 The Language of Trust: Verifiable Credentials (VCs)
+### 4.1 The Language of Trust: Verifiable Digital Credentials (VDCs)
 
-Verifiable Credentials are the standardized data structures used to convey
+Verifiable digital credentials are the standardized data structures used to convey
 trusted information between agents. They are tamper-evident, non-disputable,
 portable, and cryptographically signed digital objects that serve as the
-building blocks of a transaction. The primary VCs in this framework are the Cart
+building blocks of a transaction. The primary VDCs in this framework are the Cart
 Mandate, the Intent Mandate and the Payment Mandate.
 
 #### 4.1.1 The Cart Mandate
@@ -303,7 +303,7 @@ A Cart Mandate contains the following bound information:
 
 #### 4.1.2 The Intent Mandate
 
-The Intent Mandate is a separate verifiable credential which is critical for
+The Intent Mandate is a separate verifiable digital credential which is critical for
 scenarios where the human is not present at actual transaction time
 ([see how this plugs into the “human not present” journey](#52-human-not-present-transaction)).
 It serves as the final, non-repudiable authorization to execute a purchase in
@@ -331,7 +331,7 @@ it may vary depending on human-present and human-not-present scenario_):
 
 While the Cart and Intent mandates are required by the merchant to fulfill the
 order, separately the protocol provides additional visibility into the agentic
-transaction to the payments ecosystem. For this purpose, a verifiable credential
+transaction to the payments ecosystem. For this purpose, a verifiable digital credential
 “PaymentMandate” (_bound to Cart/Intent mandate but containing separate
 information_) may be shared with the network/issuer along with the standard
 transaction authorization messages. The PaymentMandate’s goal is to help the
@@ -578,12 +578,12 @@ Table 6.1: New Evidence in Common Scenarios
 
 | Scenario Type               | Description                                                                                                                                                                | Key Evidence                                                                                                                         |
 | :-------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------- |
-| First-Party Misuse          | The legitimate user initiates a purchase but later claims it was fraudulent to obtain a refund.                                                                            | User-signed Cart Mandate or Intent Mandate Verifiable Credential (VC)                                                                |
-| Mispick, Approved by User   | The Shopping Agent selects the wrong item (e.g., blue shoes instead of red), but the user explicitly approves the final cart containing the wrong item.                    | The cart mandate VC, signed by the user's device key, shows the incorrect item.                                                      |
+| First-Party Misuse          | The legitimate user initiates a purchase but later claims it was fraudulent to obtain a refund.                                                                            | User-signed Cart Mandate or Intent Mandate Verifiable Digital Credential (VDC)                                                                |
+| Mispick, Approved by User   | The Shopping Agent selects the wrong item (e.g., blue shoes instead of red), but the user explicitly approves the final cart containing the wrong item.                    | The cart mandate VDC, signed by the user's device key, shows the incorrect item.                                                      |
 | Mispick, Unapproved by User | The Shopping Agent autonomously purchases an item that violates the user's signed Intent Mandate (e.g., exceeds budget or is the wrong item).                              | The Intent Mandate vs. the cart transaction details should show the discrepancy.                                                     |
 | Merchant Non-Fulfillment    | The merchant accepts payment for an order but fails to ship the goods or render the service.                                                                               | A valid Cart/Intent Mandate and payment confirmation vs. the absence of a valid shipping/fulfillment confirmation from the merchant. |
 | Account Takeover (ATO)      | A fraudster gains control of a user's account and uses their AI Agent to make unauthorized purchases with pre-existing payment methods in the user’s Credentials Provider. | Analysis of authentication signals during the session and mandate signing.                                                           |
-| Man-in-the-Middle Attack    | An attacker intercepts and alters a transaction payload in transit (e.g., changes the shipping address).                                                                   | Verification of digital signatures and payload integrity. The signed VCs are designed to make this infeasible.                       |
+| Man-in-the-Middle Attack    | An attacker intercepts and alters a transaction payload in transit (e.g., changes the shipping address).                                                                   | Verification of digital signatures and payload integrity. The signed VDCs are designed to make this infeasible.                       |
 
 ## Section 7: Technical Implementation
 
@@ -1007,8 +1007,8 @@ the full, secure potential of agent commerce.
 | Strong Customer Authentication         | SCA                              | A process required by regulatory frameworks for online identification and transaction initiation in financial services.                                                               | Central to the Payments Rulebook, ensuring security and dynamic linking of transactions.                                        | Strong User Authentication, Integrated SCA                                                                                                                 |
 | User                                   |                                  | The human initiating the task and providing financial authority.                                                                                                                      |                                                                                                                                 |                                                                                                                                                            |
 | User Agent a.k.a. Shopping Agent       | UA, SA                           | The AI surface interacts directly with the user, understanding their needs, and coordinating the purchase.                                                                            |                                                                                                                                 |                                                                                                                                                            |
-| Verifiable Credential                  | VC                               | An Issuer-signed credential (i.e., a set of Claims) whose authenticity can be verified.                                                                                               | Typically bound to a cryptographic key and used in the issuer-holder-verifier model.                                            | Digital Credential                                                                                                                                         |
-| Verifiable Presentation                | VP                               | A presentation of one or more VCs that includes a cryptographic proof of holder binding, created in response to a request from a Verifier.                                            | Allows a Verifier to confirm that the Holder intended the presentation for them and may reveal only a subset of claims.         |                                                                                                                                                            |
+| Verifiable digital credential                  | VDC                               | An Issuer-signed credential (i.e., a set of Claims) whose authenticity can be verified.                                                                                               | Typically bound to a cryptographic key and used in the issuer-holder-verifier model.                                            | Digital Credential, Verifiable Credential                                                                                                                                         |
+| Verifiable presentation                | VP                               | A presentation of one or more VDCs that includes a cryptographic proof of holder binding, created in response to a request from a Verifier.                                            | Allows a Verifier to confirm that the Holder intended the presentation for them and may reveal only a subset of claims.         |                                                                                                                                                            |
 
 > Copyright 2025 Google LLC. Licensed under the Apache License, Version 2.0 (the
 > “License”); you may not use this file except in compliance with the License.

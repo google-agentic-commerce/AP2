@@ -667,7 +667,7 @@ sequenceDiagram
 
 Some salient points of the flow diagram:
 
-- Step 6: The user may need to provide a shipping address or the Shopping
+- Step 5: The user may need to provide a shipping address or the Shopping
     Agent may already have it based on the user's preferences/settings. This is
     to ensure the price in the cart is final. All selections that may alter a
     cart price must be completed prior to the CartMandate being able to be

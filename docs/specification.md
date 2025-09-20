@@ -667,30 +667,30 @@ sequenceDiagram
 
 Some salient points of the flow diagram:
 
-- Step 4: The user may need to provide a shipping address or the Shopping
+- Step 6: The user may need to provide a shipping address or the Shopping
     Agent may already have it based on the user's preferences/settings. This is
     to ensure the price in the cart is final. All selections that may alter a
     cart price must be completed prior to the CartMandate being able to be
     created.
-- Step 6: The cart mandate is first signed by the merchant entity (not an
+- Step 11: The cart mandate is first signed by the merchant entity (not an
     Agent) to guarantee they will fulfill the order based on the SKU, price and
     shipping information. This ensures that the user sees a cart (in step 12)
     which the merchant has confirmed to fulfill.
-- Step 10: Payment Options may be received from a Credentials Provider or may
+- Step 14: Payment Options may be received from a Credentials Provider or may
     be supplied by the merchant directly in case they already stored payment
     method information.
-- Step 13: The user may be required to step up their payment method through a
+- Step 16: The user may be required to step up their payment method through a
     security/tokenization flow if the payment network has specific
     security/tokenization requirements for AI Agent transactions.
-- Step 14: The PaymentMandate contains information that can be appended to the
+- Step 19: The PaymentMandate contains information that can be appended to the
     existing transaction authorization packet which will provide visibility to
     PSP/Networks/Issuers that the transaction had AI Agent involvement and its
     modality (Human Present or Human Not Present).
     - Note that this is distinct from the “Cart Mandate” which contains all
         the information which a merchant requires to fulfill the order.
-- Step 15: This is the load bearing step where the user verifies everything
+- Step 21: This is the load bearing step where the user verifies everything
     and proceed to make a purchase
-- Step 21: While not shown in the diagram we expect the PSP to send the
+- Step 28: While not shown in the diagram we expect the PSP to send the
     transaction authorization message (along with the PaymentMandate) to
     supporting networks/issuers, allowing these parties to reason over the
     transactions and make a decision (approve/deny/challenge).

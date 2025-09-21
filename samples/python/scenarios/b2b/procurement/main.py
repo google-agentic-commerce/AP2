@@ -116,9 +116,9 @@ def create_intent(payload: IntentIn):
         requires_refundability=False,
         intent_expiry=(datetime.now(timezone.utc) + timedelta(minutes=30)).isoformat(),
     )
-    mand = intent_mandate.model_dump()
-    save_mandate("intent", mand, intent_id)
-    return {"intent_id": intent_id, "mandate": mand, "candidates": candidates}
+    mandate_dict= intent_mandate.model_dump()
+    save_mandate("intent", mandate_dict, intent_id)
+    return {"intent_id": intent_id, "mandate": mandate_dict, "candidates": candidates}
 
 
 @app.post("/cart")

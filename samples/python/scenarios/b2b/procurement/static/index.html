@@ -100,8 +100,8 @@ function showCartForApproval(cart_id, cart_mandate){
   paymentArea.innerHTML = `
     <h4>Payment (demo)</h4>
     <div class="notice">Demo only — do not use real card data</div>
-    <label>Card number: <input id="cardnum-${cart_id}" placeholder="4242 4242 4242 4242"/></label><br/>
-    <label>Card holder: <input id="cardname-${cart_id}" placeholder="Alice"/></label><br/>
+    <label>Card number: <input id="card_num-${cart_id}" placeholder="4242 4242 4242 4242"/></label><br/>
+    <label>Card holder: <input id="card_name-${cart_id}" placeholder="Alice"/></label><br/>
     <label>Expiry (MM/YY): <input id="expiry-${cart_id}" placeholder="01/30"/></label>
     <label>CVV: <input id="cvv-${cart_id}" placeholder="123" style="width:80px"/></label><br/>
     <button id="pay-btn-${cart_id}">Pay (send OTP)</button>
@@ -131,8 +131,8 @@ function showCartForApproval(cart_id, cart_mandate){
     const payload = {
       cart_id,
       method: "card",
-      card_number: document.getElementById(`cardnum-${cart_id}`).value,
-      card_holder: document.getElementById(`cardname-${cart_id}`).value,
+      card_number: document.getElementById(`card_num-${cart_id}`).value,
+      card_holder: document.getElementById(`card_name-${cart_id}`).value,
       expiry: document.getElementById(`expiry-${cart_id}`).value,
       cvv: document.getElementById(`cvv-${cart_id}`).value
     };

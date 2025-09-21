@@ -2,6 +2,7 @@
 import json
 import uuid
 import secrets
+import re
 from pathlib import Path
 from datetime import datetime, timedelta, timezone
 from typing import Optional, Dict
@@ -11,7 +12,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
-# AP2 types (from your repo)
+# AP2 types
 from ap2.types.mandate import (
     IntentMandate,
     CartContents,
@@ -93,20 +94,16 @@ OTP_STORE: Dict[str, Dict] = {}
 @app.post("/intent")
 def create_intent(payload: IntentIn):
     """Create an AP2 IntentMandate and return candidate catalog items."""
-    # simple budget parse (e.g., "under 1200" or "under $1200")
-    import re
-
+    # parse "under 1200" or "under $1200"
     m = re.search(r"under\s*\$?(\d+)", payload.query.lower())
     budget = int(m.group(1)) if m else None
     category = "laptop" if "laptop" in payload.query.lower() else None
 
-    candidates = []
-    for item in CATALOG:
-        if category and category not in item.get("category", ""):
-            continue
-        if budget and item.get("price", 0) > budget:
-            continue
-        candidates.append(item)
+    candidates = [
+        item for item in CATALOG
+        if (not category or category in item.get("category", ""))
+        and (not budget or item.get("price", 0) <= budget)
+    ]
     if not candidates:
         candidates = CATALOG[:3]
 
@@ -119,9 +116,8 @@ def create_intent(payload: IntentIn):
         requires_refundability=False,
         intent_expiry=(datetime.now(timezone.utc) + timedelta(minutes=30)).isoformat(),
     )
-    mand = intent_mandate.dict()
+    mand = intent_mandate.model_dump()
     save_mandate("intent", mand, intent_id)
-    print(f"[MANDATE] intent {intent_id}")
     return {"intent_id": intent_id, "mandate": mand, "candidates": candidates}
 
 
@@ -132,7 +128,6 @@ def create_cart(body: CartIn):
     if not item:
         raise HTTPException(status_code=404, detail="Item not found")
 
-    # Build PaymentRequest (W3C-like)
     amount = PaymentCurrencyAmount(currency="USD", value=item["price"])
     payment_item = PaymentItem(label=item["title"], amount=amount)
     payment_details = PaymentDetailsInit(
@@ -152,9 +147,8 @@ def create_cart(body: CartIn):
     )
 
     cart_mandate = CartMandate(contents=contents)
-    mand_dict = cart_mandate.dict()
+    mand_dict = cart_mandate.model_dump()
     save_mandate("cart", mand_dict, contents.id)
-    print(f"[MANDATE] cart {contents.id}")
     return {"cart_id": contents.id, "mandate": mand_dict}
 
 
@@ -165,12 +159,8 @@ def initiate_payment(body: PaymentRequestIn):
     if not cart_path.exists():
         raise HTTPException(status_code=404, detail="Cart mandate not found (save cart first)")
 
-    # store minimal info for confirm step
     otp_token = secrets.token_urlsafe(12)
     OTP_STORE[otp_token] = {"cart_id": body.cart_id, "method": body.method}
-    print(f"[OTP] generated token={otp_token} for cart={body.cart_id}")
-
-    # In a real system you'd send an OTP via SMS/email; here we simulate OTP = "123"
     return {
         "otp_required": True,
         "otp_token": otp_token,
@@ -194,14 +184,15 @@ def confirm_payment(body: PaymentConfirmIn):
         raise HTTPException(status_code=404, detail="Cart mandate not found")
 
     cart_json = json.loads(cart_path.read_text(encoding="utf-8"))
-    # get total amount from cart
     try:
         total_info = cart_json["contents"]["payment_request"]["details"]["total"]
         amount_val = float(total_info["amount"]["value"])
-    except Exception:
-        amount_val = 0.0
+    except (KeyError, TypeError, ValueError) as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Malformed cart mandate file: {e}"
+        )
 
-    # simulate transaction
     tx = {"transaction_id": str(uuid.uuid4()), "amount": amount_val, "status": "success", "method": entry["method"]}
 
     response = PaymentResponse(
@@ -222,13 +213,10 @@ def confirm_payment(body: PaymentConfirmIn):
     )
 
     payment_mandate = PaymentMandate(payment_mandate_contents=pmc)
-    mand_dict = payment_mandate.dict()
+    mand_dict = payment_mandate.model_dump()
     saved = save_mandate("payment", mand_dict, pmc.payment_mandate_id)
-    print(f"[MANDATE] payment {pmc.payment_mandate_id} for cart {cart_id}")
 
-    # cleanup OTP (demo)
     del OTP_STORE[body.otp_token]
-
     return {
         "status": "Payment approved and order placed (demo)",
         "transaction": tx,
@@ -237,7 +225,6 @@ def confirm_payment(body: PaymentConfirmIn):
     }
 
 
-# Serve UI root
 @app.get("/")
 def root():
     index_file = SCENARIO_DIR / "static" / "index.html"

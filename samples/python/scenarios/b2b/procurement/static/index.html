@@ -14,7 +14,7 @@
 <body>
   <h1>B2B Procurement Agent (AP2)</h1>
   <div class="card">
-    <label>User: <input id="user" value="Jyotsna"/></label>
+    <label>User: <input id="user" value="alice"/></label>
     <br/><br/>
     <input id="query" style="width:70%" placeholder="E.g. Request a laptop under $1200"/>
     <button id="intentBtn">Create Intent</button>
@@ -37,13 +37,9 @@ document.getElementById('intentBtn').onclick = async () => {
   const query = document.getElementById('query').value;
   if (!query) return alert('Enter a request');
   const resp = await fetch('/intent', {
-    method:'POST', headers:{'content-type':'application/json'},
+    method:'POST', headers:{'Content-Type':'application/json'},
     body: JSON.stringify({user, query})
   });
-  if (!resp.ok) {
-    const e = await resp.json().catch(()=>({detail:'error'}));
-    return alert('Error creating intent: ' + (e.detail || JSON.stringify(e)));
-  }
   const j = await resp.json();
   log(j.mandate);
   showCandidates(j.candidates, j.intent_id);
@@ -55,17 +51,29 @@ function showCandidates(candidates, intent_id){
   candidates.forEach(it=>{
     const el = document.createElement('div');
     el.className = 'card';
-    el.innerHTML = `<b>${it.title}</b> ($${it.price})<br/>Vendor: ${it.vendor}<br/>
-      <button>Select & Create Cart</button>`;
-    el.querySelector('button').onclick = async ()=>{
+
+    const title = document.createElement('b');
+    title.textContent = `${it.title} ($${it.price})`;
+    const vendor = document.createElement('div');
+    vendor.textContent = `Vendor: ${it.vendor}`;
+
+    const btn = document.createElement('button');
+    btn.textContent = "Select & Create Cart";
+    btn.onclick = async ()=>{
       const resp = await fetch('/cart', {
-        method:'POST', headers:{'content-type':'application/json'},
+        method:'POST', headers:{'Content-Type':'application/json'},
         body: JSON.stringify({intent_id, item_id: it.id})
       });
       const j = await resp.json();
       log(j.mandate);
       showCartForApproval(j.cart_id, j.mandate);
     };
+
+    el.appendChild(title);
+    el.appendChild(document.createElement('br'));
+    el.appendChild(vendor);
+    el.appendChild(document.createElement('br'));
+    el.appendChild(btn);
     container.appendChild(el);
   });
 }
@@ -78,26 +86,44 @@ function showCartForApproval(cart_id, cart_mandate){
   const details = cart_mandate.contents.payment_request.details;
   const item = details.display_items[0];
 
-  el.innerHTML = `<h3>Cart Proposal</h3>
-    <b>${item.label}</b> - $${item.amount.value}<br/>
-    Vendor: ${cart_mandate.contents.merchant_name}<br/>
-    <div id="payment-area-${cart_id}">
-      <h4>Payment (demo)</h4>
-      <div class="notice">Demo only — do not use real card data</div>
-      <label>Card number: <input id="cardnum-${cart_id}" placeholder="4242 4242 4242 4242"/></label><br/>
-      <label>Card holder: <input id="cardname-${cart_id}" placeholder="Alice"/></label><br/>
-      <label>Expiry (MM/YY): <input id="expiry-${cart_id}" placeholder="01/30"/></label>
-      <label>CVV: <input id="cvv-${cart_id}" placeholder="123" style="width:80px"/></label><br/>
-      <button id="pay-btn-${cart_id}">Pay (send OTP)</button>
-    </div>
+  const header = document.createElement('h3');
+  header.textContent = "Cart Proposal";
 
-    <div id="otp-area-${cart_id}" style="display:none;">
-      <label>Enter OTP (demo OTP is 123): <input id="otp-${cart_id}" /></label>
-      <button id="confirm-otp-${cart_id}">Confirm OTP</button>
-    </div>
+  const itemInfo = document.createElement('div');
+  itemInfo.textContent = `${item.label} - $${item.amount.value}`;
 
-    <div id="result-${cart_id}"></div>
+  const vendor = document.createElement('div');
+  vendor.textContent = `Vendor: ${cart_mandate.contents.merchant_name}`;
+
+  const paymentArea = document.createElement('div');
+  paymentArea.id = `payment-area-${cart_id}`;
+  paymentArea.innerHTML = `
+    <h4>Payment (demo)</h4>
+    <div class="notice">Demo only — do not use real card data</div>
+    <label>Card number: <input id="cardnum-${cart_id}" placeholder="4242 4242 4242 4242"/></label><br/>
+    <label>Card holder: <input id="cardname-${cart_id}" placeholder="Alice"/></label><br/>
+    <label>Expiry (MM/YY): <input id="expiry-${cart_id}" placeholder="01/30"/></label>
+    <label>CVV: <input id="cvv-${cart_id}" placeholder="123" style="width:80px"/></label><br/>
+    <button id="pay-btn-${cart_id}">Pay (send OTP)</button>
   `;
+
+  const otpArea = document.createElement('div');
+  otpArea.id = `otp-area-${cart_id}`;
+  otpArea.style.display = 'none';
+  otpArea.innerHTML = `
+    <label>Enter OTP (demo OTP is 123): <input id="otp-${cart_id}" /></label>
+    <button id="confirm-otp-${cart_id}">Confirm OTP</button>
+  `;
+
+  const result = document.createElement('div');
+  result.id = `result-${cart_id}`;
+
+  el.appendChild(header);
+  el.appendChild(itemInfo);
+  el.appendChild(vendor);
+  el.appendChild(paymentArea);
+  el.appendChild(otpArea);
+  el.appendChild(result);
 
   container.prepend(el);
 
@@ -111,39 +137,26 @@ function showCartForApproval(cart_id, cart_mandate){
       cvv: document.getElementById(`cvv-${cart_id}`).value
     };
     const resp = await fetch('/payment', {
-      method: 'POST',
-      headers: {'content-type':'application/json'},
+      method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify(payload)
     });
-    if (!resp.ok) {
-      const e = await resp.json().catch(()=>({detail:'error'}));
-      return alert('Payment init failed: ' + (e.detail || JSON.stringify(e)));
-    }
     const j = await resp.json();
     document.getElementById(`payment-area-${cart_id}`).style.display = 'none';
     document.getElementById(`otp-area-${cart_id}`).style.display = 'block';
     el.dataset.otpToken = j.otp_token;
-    const info = document.getElementById(`result-${cart_id}`);
-    info.textContent = j.notice || "OTP sent (demo)";
+    result.textContent = j.notice || "OTP sent (demo)";
   };
 
   document.getElementById(`confirm-otp-${cart_id}`).onclick = async () => {
     const otpToken = el.dataset.otpToken;
     const otpVal = document.getElementById(`otp-${cart_id}`).value;
     const resp = await fetch('/payment/confirm', {
-      method:'POST',
-      headers:{'content-type':'application/json'},
+      method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({otp_token: otpToken, otp: otpVal})
     });
-    if (!resp.ok) {
-      const err = await resp.json().catch(()=>({detail:"Unknown error"}));
-      alert("Payment failed: " + (err.detail || JSON.stringify(err)));
-      return;
-    }
     const j = await resp.json();
     log(j.payment);
-    const info = document.getElementById(`result-${cart_id}`);
-    info.innerHTML = `<b>${j.status}</b><br/>Transaction: ${j.transaction.transaction_id}<br/>Saved: ${j.saved_file}`;
+    result.textContent = `${j.status} | Transaction: ${j.transaction.transaction_id}`;
     document.getElementById(`otp-area-${cart_id}`).style.display = 'none';
   };
 }

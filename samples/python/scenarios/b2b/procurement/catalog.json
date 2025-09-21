@@ -1,0 +1,23 @@
+[
+  {
+    "id": "item-001",
+    "title": "Dell XPS 13 (i7, 16GB RAM)",
+    "category": "laptop",
+    "price": 1150,
+    "vendor": "TechVendor Ltd."
+  },
+  {
+    "id": "item-002",
+    "title": "Office Chair - Ergonomic Mesh",
+    "category": "furniture",
+    "price": 329,
+    "vendor": "FurnishCorp"
+  },
+  {
+    "id": "item-003",
+    "title": "Slack Enterprise License (per user / yr)",
+    "category": "software",
+    "price": 180,
+    "vendor": "Slack Reseller"
+  }
+]

@@ -14,8 +14,8 @@ This flow highlights a core security feature of AP2: ensuring an agent's actions
 
 ## Key Actors
 
-*   **Flight Shopping Agent:** A conversational ADK agent that interacts with the user, creates the `IntentMandate`, and attempts the purchases.
-*   **Flight Merchant Agent:** An A2A server-based agent that receives purchase requests and rigorously validates them against the signed `IntentMandate`.
+* **Flight Shopping Agent:** A conversational ADK agent that interacts with the user, creates the `IntentMandate`, and attempts the purchases.
+* **Flight Merchant Agent:** An A2A server-based agent that receives purchase requests and rigorously validates them against the signed `IntentMandate`.
 
 ## Executing the Example
 
@@ -58,22 +58,22 @@ This demo simulates a **human-not-present** scenario. After you approve the `Int
 
 **4. What to Expect in the Terminal:**
 
-*   **Mandate Approval:** The agent will generate a structured `IntentMandate` based on your request and display it in the terminal. You will be prompted to approve and "sign" it by typing 'y' and pressing Enter.
-*   **Autonomous Execution Begins:** Once you approve, the agent will inform you it is proceeding autonomously.
-*   **Simulated Hallucination:** This is the core of the demo. The agent is programmed to first **deliberately attempt to book a flight to the wrong destination (Dublin)**. You will see a message indicating this attempt.
-*   **Transaction Blocked:** The remote merchant agent will detect that the attempted booking for Dublin violates the signed mandate (which specified Paris). You will see a **FAILURE** message in the terminal explaining that the purchase was blocked due to a destination mismatch.
-*   **Correct Booking:** The agent will then proceed to book the correct flight to Paris. This attempt will match the mandate.
-*   **Success:** You will see a **SUCCESS** message indicating the purchase was approved by the merchant.
-*   **Ready for Next Command:** The agent will then notify you that it has completed the tasks and is ready for your next command.
+* **Mandate Approval:** The agent will generate a structured `IntentMandate` based on your request and display it in the terminal. You will be prompted to approve and "sign" it by typing 'y' and pressing Enter.
+* **Autonomous Execution Begins:** Once you approve, the agent will inform you it is proceeding autonomously.
+* **Simulated Hallucination:** This is the core of the demo. The agent is programmed to first **deliberately attempt to book a flight to the wrong destination (Dublin)**. You will see a message indicating this attempt.
+* **Transaction Blocked:** The remote merchant agent will detect that the attempted booking for Dublin violates the signed mandate (which specified Paris). You will see a **FAILURE** message in the terminal explaining that the purchase was blocked due to a destination mismatch.
+* **Correct Booking:** The agent will then proceed to book the correct flight to Paris. This attempt will match the mandate.
+* **Success:** You will see a **SUCCESS** message indicating the purchase was approved by the merchant.
+* **Ready for Next Command:** The agent will then notify you that it has completed the tasks and is ready for your next command.
 
 **5. What to Expect in the Logs:**
 
 As the demo runs, the background merchant agent's activity is recorded in `.logs/flight_merchant.log`. You can open this file to see the validation process from the merchant's perspective. You will see:
 
-*   The incoming purchase request for "Dublin".
-*   The validation logic detecting the mismatch against the mandate's "Paris" constraint.
-*   The incoming purchase request for "Paris".
-*   The successful validation and approval.
+* The incoming purchase request for "Dublin".
+* The validation logic detecting the mismatch against the mandate's "Paris" constraint.
+* The incoming purchase request for "Paris".
+* The successful validation and approval.
 
 **6. Exit the CLI:**
 

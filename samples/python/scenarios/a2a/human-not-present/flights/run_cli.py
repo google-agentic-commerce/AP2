@@ -25,7 +25,7 @@ from pathlib import Path
 logging.getLogger("google_genai").setLevel(logging.ERROR)
 
 # Add the project's `src` directory to the Python path.
-project_root = Path(__file__).resolve().parents[5]
+project_root = Path(__file__).resolve().parents[6]
 src_path = project_root / "samples" / "python" / "src"
 sys.path.insert(0, str(src_path))
 

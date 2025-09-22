@@ -190,24 +190,142 @@ class TestEnhancedValidator:
         assert any(error['error_code'] == AP2ErrorCode.INVALID_FIELD_FORMAT.value 
                   for error in result.errors)
     
-    def test_validate_payment_mandate_signature_valid(self):
-        """Test validation of valid payment mandate signature."""
-        # Create a mock user authorization with required fields
-        mock_auth = Mock()
-        mock_auth.__dict__ = {
-            'signature': 'valid_signature_123',
-            'timestamp': '2025-09-22T10:00:00Z'
-        }
+    def test_validate_payment_mandate_signature_valid_jwt(self):
+        """Test validation of valid payment mandate signature with proper JWT."""
+        # Create a valid JWT-like token (base64url encoded header.payload.signature)
+        import base64
+        import json
         
-        payment_mandate = PaymentMandate(user_authorization=mock_auth)
+        # Create JWT parts
+        header = {"alg": "ES256K", "typ": "JWT"}
+        payload = {
+            "aud": "payment-processor",
+            "nonce": "random-nonce-123",
+            "exp": 1727000000,
+            "transaction_data": ["hash1", "hash2"],
+            "sd_hash": "issuer-jwt-hash"
+        }
+        signature = "mock-signature"
+        
+        # Encode as base64url (simplified for testing)
+        def base64url_encode(data):
+            if isinstance(data, dict):
+                data = json.dumps(data, separators=(',', ':')).encode()
+            elif isinstance(data, str):
+                data = data.encode()
+            return base64.urlsafe_b64encode(data).decode().rstrip('=')
+        
+        jwt_token = f"{base64url_encode(header)}.{base64url_encode(payload)}.{base64url_encode(signature)}"
+        
+        payment_mandate = PaymentMandate(
+            payment_mandate_contents=self.sample_mandate_contents,
+            user_authorization=jwt_token
+        )
         result = self.validator.validate_payment_mandate_signature(payment_mandate)
         
         assert result.is_valid
         assert len(result.errors) == 0
+        assert len(result.warnings) >= 1  # Should have SD-JWT warning
+    
+    def test_validate_payment_mandate_signature_invalid_type(self):
+        """Test validation of payment mandate with non-string authorization."""
+        # This was the bug - treating as object instead of string
+        mock_auth = {"signature": "test", "timestamp": "2025-09-22T10:00:00Z"}
+        
+        payment_mandate = PaymentMandate(
+            payment_mandate_contents=self.sample_mandate_contents,
+            user_authorization=mock_auth  # Dict instead of string - this should fail
+        )
+        result = self.validator.validate_payment_mandate_signature(payment_mandate)
+        
+        assert not result.is_valid
+        assert len(result.errors) == 1
+        assert result.errors[0]['error_code'] == AP2ErrorCode.INVALID_FIELD_FORMAT.value
+        assert "must be a base64url-encoded string" in result.errors[0]['message']
+    
+    def test_validate_payment_mandate_signature_invalid_jwt_format(self):
+        """Test validation of payment mandate with invalid JWT format."""
+        # Invalid JWT - only 2 parts instead of 3
+        invalid_jwt = "header.payload"
+        
+        payment_mandate = PaymentMandate(
+            payment_mandate_contents=self.sample_mandate_contents,
+            user_authorization=invalid_jwt
+        )
+        result = self.validator.validate_payment_mandate_signature(payment_mandate)
+        
+        assert not result.is_valid
+        assert len(result.errors) == 1
+        assert result.errors[0]['error_code'] == AP2ErrorCode.INVALID_FIELD_FORMAT.value
+        assert "expected 3 parts" in result.errors[0]['message']
+    
+    def test_validate_payment_mandate_signature_missing_transaction_data(self):
+        """Test validation of JWT missing required transaction_data claim."""
+        import base64
+        import json
+        
+        # Create JWT without transaction_data
+        header = {"alg": "ES256K", "typ": "JWT"}
+        payload = {"aud": "payment-processor", "nonce": "test"}  # Missing transaction_data
+        signature = "mock-signature"
+        
+        def base64url_encode(data):
+            if isinstance(data, dict):
+                data = json.dumps(data, separators=(',', ':')).encode()
+            elif isinstance(data, str):
+                data = data.encode()
+            return base64.urlsafe_b64encode(data).decode().rstrip('=')
+        
+        jwt_token = f"{base64url_encode(header)}.{base64url_encode(payload)}.{base64url_encode(signature)}"
+        
+        payment_mandate = PaymentMandate(
+            payment_mandate_contents=self.sample_mandate_contents,
+            user_authorization=jwt_token
+        )
+        result = self.validator.validate_payment_mandate_signature(payment_mandate)
+        
+        assert not result.is_valid
+        assert len(result.errors) == 1
+        assert result.errors[0]['error_code'] == AP2ErrorCode.MISSING_REQUIRED_FIELD.value
+        assert "transaction_data" in result.errors[0]['message']
+    
+    def test_validate_payment_mandate_signature_insecure_algorithm(self):
+        """Test validation rejects insecure 'none' algorithm."""
+        import base64
+        import json
+        
+        # Create JWT with insecure algorithm
+        header = {"alg": "none", "typ": "JWT"}  # Insecure!
+        payload = {"transaction_data": ["hash1"], "aud": "test"}
+        signature = ""  # No signature for 'none' algorithm
+        
+        def base64url_encode(data):
+            if isinstance(data, dict):
+                data = json.dumps(data, separators=(',', ':')).encode()
+            elif isinstance(data, str):
+                data = data.encode()
+            return base64.urlsafe_b64encode(data).decode().rstrip('=')
+        
+        jwt_token = f"{base64url_encode(header)}.{base64url_encode(payload)}."
+        
+        payment_mandate = PaymentMandate(
+            payment_mandate_contents=self.sample_mandate_contents,
+            user_authorization=jwt_token
+        )
+        result = self.validator.validate_payment_mandate_signature(payment_mandate)
+        
+        assert not result.is_valid
+        assert any(error['error_code'] == AP2ErrorCode.SIGNATURE_INVALID.value 
+                  for error in result.errors)
+        assert any("Insecure algorithm 'none' not allowed" in error['message'] 
+                  for error in result.errors)
     
     def test_validate_payment_mandate_signature_missing_auth(self):
         """Test validation of payment mandate with missing authorization."""
-        payment_mandate = PaymentMandate(user_authorization=None)
+        payment_mandate = PaymentMandate(
+            payment_mandate_contents=self.sample_mandate_contents,
+            user_authorization=None
+        )
         result = self.validator.validate_payment_mandate_signature(payment_mandate)
         
         assert not result.is_valid
@@ -215,29 +333,53 @@ class TestEnhancedValidator:
         assert result.errors[0]['error_code'] == AP2ErrorCode.AUTHORIZATION_FAILED.value
         assert "authorization not found" in result.errors[0]['message']
     
-    def test_validate_payment_mandate_signature_missing_signature(self):
-        """Test validation of payment mandate with missing signature."""
-        mock_auth = Mock()
-        mock_auth.__dict__ = {'timestamp': '2025-09-22T10:00:00Z'}  # No signature
+    def test_validate_payment_mandate_signature_empty_jwt_signature(self):
+        """Test validation of JWT with empty signature."""
+        import base64
+        import json
         
-        payment_mandate = PaymentMandate(user_authorization=mock_auth)
+        # Create JWT with empty signature
+        header = {"alg": "ES256K", "typ": "JWT"}
+        payload = {"transaction_data": ["hash1"], "aud": "test"}
+        signature = ""  # Empty signature
+        
+        def base64url_encode(data):
+            if isinstance(data, dict):
+                data = json.dumps(data, separators=(',', ':')).encode()
+            elif isinstance(data, str):
+                data = data.encode()
+            return base64.urlsafe_b64encode(data).decode().rstrip('=')
+        
+        jwt_token = f"{base64url_encode(header)}.{base64url_encode(payload)}."
+        
+        payment_mandate = PaymentMandate(
+            payment_mandate_contents=self.sample_mandate_contents,
+            user_authorization=jwt_token
+        )
         result = self.validator.validate_payment_mandate_signature(payment_mandate)
         
         assert not result.is_valid
-        assert len(result.errors) == 1
-        assert result.errors[0]['error_code'] == AP2ErrorCode.SIGNATURE_INVALID.value
+        assert any(error['error_code'] == AP2ErrorCode.SIGNATURE_INVALID.value 
+                  for error in result.errors)
+        assert any("signature cannot be empty" in error['message'] 
+                  for error in result.errors)
     
-    def test_validate_payment_mandate_signature_missing_timestamp_warning(self):
-        """Test validation warns about missing timestamp."""
-        mock_auth = Mock()
-        mock_auth.__dict__ = {'signature': 'valid_signature_123'}  # No timestamp
+    def test_validate_authorization_token_invalid_characters(self):
+        """Test validation of authorization token with invalid characters."""
+        # Invalid token with spaces and special characters
+        invalid_token = "invalid token with spaces!"
         
-        payment_mandate = PaymentMandate(user_authorization=mock_auth)
+        payment_mandate = PaymentMandate(
+            payment_mandate_contents=self.sample_mandate_contents,
+            user_authorization=invalid_token
+        )
         result = self.validator.validate_payment_mandate_signature(payment_mandate)
         
-        assert result.is_valid  # Valid but with warning
-        assert len(result.warnings) == 1
-        assert "timestamp" in result.warnings[0]
+        assert not result.is_valid
+        assert any(error['error_code'] == AP2ErrorCode.INVALID_FIELD_FORMAT.value 
+                  for error in result.errors)
+        assert any("invalid characters" in error['message'] 
+                  for error in result.errors)
 
 
 class TestAP2ValidationError:

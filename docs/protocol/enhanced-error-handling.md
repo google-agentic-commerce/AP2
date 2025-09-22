@@ -49,6 +49,39 @@ Introduced `AP2ErrorCode` enum with categorized error codes:
 - Boolean validity status
 - List of errors with detailed information
 - List of warnings for non-critical issues
+
+### 5. Critical Security Enhancement: PaymentMandate Authorization Validation
+
+**SECURITY FIX**: A critical vulnerability was identified and fixed in PaymentMandate validation where `user_authorization` was incorrectly treated as a parsed object instead of a base64url-encoded string.
+
+#### The Issue
+The previous validation logic assumed `user_authorization` was an object with `__dict__` attributes, but according to the AP2 specification, it should be:
+> "a base64_url-encoded verifiable presentation of a verifiable credential signing over the cart_mandate and payment_mandate_hashes"
+
+#### The Fix
+The enhanced validation now:
+1. **Validates String Type**: Ensures `user_authorization` is a string, not an object
+2. **Parses JWT Structure**: Properly decodes base64url and validates JWT format
+3. **Enforces Required Claims**: Validates presence of `transaction_data` and other security claims
+4. **Prevents Algorithm Attacks**: Rejects insecure algorithms like `none`
+5. **Provides Security Guidance**: Clear error messages for proper token format
+
+#### Required Token Format
+```json
+{
+  "header": {
+    "alg": "ES256K",
+    "typ": "JWT"
+  },
+  "payload": {
+    "aud": "payment-processor",
+    "nonce": "secure-nonce-123", 
+    "exp": 1727000000,
+    "transaction_data": ["cart_hash", "mandate_hash"]
+  }
+}
+```
+Encoded as: `base64url(header).base64url(payload).base64url(signature)`
 - Easy serialization for API responses
 
 ## Implementation Details

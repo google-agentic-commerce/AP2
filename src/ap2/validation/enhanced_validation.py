@@ -20,6 +20,8 @@ and responses with standardized error codes and detailed error information.
 
 import logging
 import re
+import base64
+import json
 from enum import Enum
 from typing import Any, Dict, List, Optional, Union
 
@@ -320,6 +322,202 @@ class EnhancedValidator:
         
         return result
     
+    def _validate_authorization_token(self, token: str) -> ValidationResult:
+        """Validate a base64url-encoded authorization token (JWT or SD-JWT-VC).
+        
+        Args:
+            token: The base64url-encoded authorization token
+            
+        Returns:
+            ValidationResult with validation details
+        """
+        result = ValidationResult(is_valid=True)
+        
+        # Basic format validation
+        if not token or not isinstance(token, str):
+            result.add_error(AP2ValidationError(
+                "Authorization token must be a non-empty string",
+                AP2ErrorCode.INVALID_FIELD_FORMAT,
+                field_path="user_authorization"
+            ))
+            return result
+        
+        # Check for valid base64url characters
+        if not re.match(r'^[A-Za-z0-9_-]+$', token.replace('.', '')):
+            result.add_error(AP2ValidationError(
+                "Authorization token contains invalid characters for base64url encoding",
+                AP2ErrorCode.INVALID_FIELD_FORMAT,
+                field_path="user_authorization",
+                suggestions=[
+                    "Ensure token is properly base64url encoded",
+                    "Valid characters: A-Z, a-z, 0-9, -, _, and . (for JWT separators)"
+                ]
+            ))
+            return result
+        
+        # For JWT format, expect 3 parts separated by dots
+        parts = token.split('.')
+        if len(parts) == 3:
+            # Standard JWT format
+            return self._validate_jwt_structure(parts, result)
+        elif len(parts) >= 4:
+            # Potentially SD-JWT-VC format (issuer JWT + disclosures + key binding)
+            result.add_warning("Detected potential SD-JWT-VC format with multiple parts")
+            # Validate the first part as issuer JWT
+            jwt_parts = parts[:3]
+            return self._validate_jwt_structure(jwt_parts, result)
+        else:
+            result.add_error(AP2ValidationError(
+                f"Invalid JWT format: expected 3 parts separated by '.', got {len(parts)}",
+                AP2ErrorCode.INVALID_FIELD_FORMAT,
+                field_path="user_authorization",
+                suggestions=[
+                    "Ensure JWT has header.payload.signature format",
+                    "For SD-JWT-VC, ensure proper structure with issuer JWT"
+                ]
+            ))
+        
+        return result
+    
+    def _validate_jwt_structure(self, parts: List[str], result: ValidationResult) -> ValidationResult:
+        """Validate the structure of JWT parts.
+        
+        Args:
+            parts: List of JWT parts [header, payload, signature]
+            result: ValidationResult to append errors to
+            
+        Returns:
+            Updated ValidationResult
+        """
+        try:
+            # Validate header
+            header_data = self._decode_jwt_part(parts[0])
+            if not isinstance(header_data, dict):
+                result.add_error(AP2ValidationError(
+                    "JWT header must be a JSON object",
+                    AP2ErrorCode.INVALID_FIELD_FORMAT,
+                    field_path="user_authorization.header"
+                ))
+            else:
+                # Check required header fields
+                if 'alg' not in header_data:
+                    result.add_error(AP2ValidationError(
+                        "JWT header missing required 'alg' field",
+                        AP2ErrorCode.MISSING_REQUIRED_FIELD,
+                        field_path="user_authorization.header.alg",
+                        suggestions=["Include algorithm specification (e.g., 'ES256K', 'RS256')"]
+                    ))
+                
+                # Validate algorithm
+                if 'alg' in header_data and header_data['alg'] in ['none', 'None']:
+                    result.add_error(AP2ValidationError(
+                        "Insecure algorithm 'none' not allowed in authorization tokens",
+                        AP2ErrorCode.SIGNATURE_INVALID,
+                        field_path="user_authorization.header.alg",
+                        suggestions=["Use a secure signing algorithm like ES256K or RS256"]
+                    ))
+            
+            # Validate payload
+            payload_data = self._decode_jwt_part(parts[1])
+            if not isinstance(payload_data, dict):
+                result.add_error(AP2ValidationError(
+                    "JWT payload must be a JSON object",
+                    AP2ErrorCode.INVALID_FIELD_FORMAT,
+                    field_path="user_authorization.payload"
+                ))
+            else:
+                # Check for required claims based on mandate documentation
+                self._validate_mandate_claims(payload_data, result)
+            
+            # Validate signature exists and is not empty
+            if not parts[2]:
+                result.add_error(AP2ValidationError(
+                    "JWT signature cannot be empty",
+                    AP2ErrorCode.SIGNATURE_INVALID,
+                    field_path="user_authorization.signature",
+                    suggestions=["Ensure token is properly signed with a valid private key"]
+                ))
+            
+        except Exception as e:
+            result.add_error(AP2ValidationError(
+                f"Failed to parse JWT structure: {str(e)}",
+                AP2ErrorCode.INVALID_FIELD_FORMAT,
+                field_path="user_authorization",
+                suggestions=[
+                    "Ensure token is properly base64url encoded",
+                    "Verify JWT structure is valid"
+                ]
+            ))
+        
+        return result
+    
+    def _decode_jwt_part(self, part: str) -> Dict[str, Any]:
+        """Decode a base64url-encoded JWT part.
+        
+        Args:
+            part: The base64url-encoded part
+            
+        Returns:
+            Decoded JSON object
+            
+        Raises:
+            Exception: If decoding fails
+        """
+        # Add padding if needed for base64 decoding
+        padding = 4 - (len(part) % 4)
+        if padding != 4:
+            part += '=' * padding
+        
+        # Convert base64url to standard base64
+        part = part.replace('-', '+').replace('_', '/')
+        
+        # Decode and parse JSON
+        decoded_bytes = base64.b64decode(part)
+        return json.loads(decoded_bytes.decode('utf-8'))
+    
+    def _validate_mandate_claims(self, payload: Dict[str, Any], result: ValidationResult) -> None:
+        """Validate claims specific to payment mandate authorization.
+        
+        Args:
+            payload: The JWT payload
+            result: ValidationResult to append errors to
+        """
+        # Check for transaction_data claim (required for mandate authorization)
+        if 'transaction_data' not in payload:
+            result.add_error(AP2ValidationError(
+                "Missing required 'transaction_data' claim in authorization token",
+                AP2ErrorCode.MISSING_REQUIRED_FIELD,
+                field_path="user_authorization.payload.transaction_data",
+                suggestions=[
+                    "Include transaction_data with hashes of CartMandate and PaymentMandateContents",
+                    "Refer to AP2 specification for proper mandate authorization format"
+                ]
+            ))
+        elif not isinstance(payload['transaction_data'], list):
+            result.add_error(AP2ValidationError(
+                "transaction_data must be an array of secure hashes",
+                AP2ErrorCode.INVALID_FIELD_FORMAT,
+                field_path="user_authorization.payload.transaction_data",
+                suggestions=["Provide an array containing hashes of mandate objects"]
+            ))
+        
+        # Check for audience claim
+        if 'aud' not in payload:
+            result.add_warning("Missing 'aud' (audience) claim - recommended for security")
+        
+        # Check for nonce (important for replay protection)
+        if 'nonce' not in payload:
+            result.add_warning("Missing 'nonce' claim - recommended for replay protection")
+        
+        # Check for expiration
+        if 'exp' not in payload:
+            result.add_warning("Missing 'exp' (expiration) claim - recommended for time-bound authorization")
+        
+        # Validate SD-JWT specific claims if present
+        if 'sd_hash' in payload:
+            result.add_warning("Detected SD-JWT-VC format with selective disclosure")
+            # Additional SD-JWT validation could be added here
+    
     def validate_payment_mandate_signature(self, payment_mandate: PaymentMandate) -> ValidationResult:
         """Enhanced validation for PaymentMandate signature.
         
@@ -342,22 +540,24 @@ class EnhancedValidator:
                 ]
             ))
         else:
-            # Additional signature validation logic would go here
-            # For demonstration, we'll add some basic checks
-            
-            # Check if authorization has required fields (assuming it's a dict)
-            if hasattr(payment_mandate.user_authorization, '__dict__'):
-                auth_dict = payment_mandate.user_authorization.__dict__
-                if 'signature' not in auth_dict:
-                    result.add_error(AP2ValidationError(
-                        "Missing signature in user authorization",
-                        AP2ErrorCode.SIGNATURE_INVALID,
-                        field_path="user_authorization.signature",
-                        suggestions=["Include a valid digital signature"]
-                    ))
-                
-                if 'timestamp' not in auth_dict:
-                    result.add_warning("Missing timestamp in user authorization")
+            # Validate that user_authorization is a base64url-encoded string
+            if not isinstance(payment_mandate.user_authorization, str):
+                result.add_error(AP2ValidationError(
+                    f"User authorization must be a base64url-encoded string, got {type(payment_mandate.user_authorization).__name__}",
+                    AP2ErrorCode.INVALID_FIELD_FORMAT,
+                    field_path="user_authorization",
+                    invalid_value=str(type(payment_mandate.user_authorization)),
+                    suggestions=[
+                        "Provide user_authorization as a base64url-encoded JWT or SD-JWT-VC string",
+                        "Ensure the authorization is properly encoded before validation"
+                    ]
+                ))
+            else:
+                # Validate base64url format and JWT structure
+                auth_validation = self._validate_authorization_token(payment_mandate.user_authorization)
+                if not auth_validation.is_valid:
+                    result.errors.extend(auth_validation.errors)
+                    result.warnings.extend(auth_validation.warnings)
         
         # Update overall validity
         result.is_valid = len(result.errors) == 0

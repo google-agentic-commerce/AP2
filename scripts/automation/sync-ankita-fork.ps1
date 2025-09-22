@@ -171,7 +171,7 @@ function Test-NewBranches {
 # Show sync summary
 function Show-Summary {
     Write-Host ""
-    Write-Host "📊 Sync Summary" -ForegroundColor Cyan
+    Write-Host "Sync Summary" -ForegroundColor Cyan
     Write-Host "===============" -ForegroundColor Cyan
     
     # Show last commit from upstream
@@ -228,11 +228,11 @@ function Main {
         return
     }
     
-    Write-Host "🚀 Starting AP2 fork sync process..." -ForegroundColor Cyan
+    Write-Host "Starting AP2 fork sync process..." -ForegroundColor Cyan
     Write-Host ""
     
     # Display current status
-    Write-Host "🔄 AP2 Fork Sync Status" -ForegroundColor Cyan
+    Write-Host "AP2 Fork Sync Status" -ForegroundColor Cyan
     Write-Host "=======================" -ForegroundColor Cyan
     Write-Host "Upstream: $UPSTREAM_REPO"
     Write-Host "Fork: $FORK_REPO"
@@ -330,7 +330,7 @@ function Main {
     # Show summary
     Show-Summary
     
-    Write-Success "Fork sync completed successfully! 🎉"
+    Write-Success "Fork sync completed successfully!"
 }
 
 # Run main function

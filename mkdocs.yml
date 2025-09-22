@@ -52,8 +52,8 @@ theme:
   font:
     text: Google Sans
     code: Roboto Mono
-  logo: assets/ap2-logo-white.svg
-  favicon: assets/ap2-logo-black.svg
+  logo: /assets/ap2-logo-white.svg
+  favicon: /assets/ap2-logo-black.svg
   icon:
     repo: fontawesome/brands/github
     admonition:
@@ -128,3 +128,35 @@ markdown_extensions:
 plugins:
   - search
   - macros
+  - i18n:
+      docs_structure: folder
+      fallback_to_default: true
+      reconfigure_material: true
+      reconfigure_search: true
+      languages:
+        - locale: en
+          default: true
+          name: English
+          build: true
+        - locale: zh
+          name: 中文
+          build: true
+          nav_translations:
+            Home: 首页
+            Topics: 主题
+            "AP2 Overview": "AP2 概述"
+            "Core Concepts": "核心概念"
+            "AP2, A2A and MCP": "AP2、A2A 和 MCP"
+            "AP2 and x402": "AP2 和 x402"
+            "Privacy and Security": "隐私和安全"
+            "Life of a Transaction": "交易生命周期"
+            "AP2 specification": "AP2 规范"
+            "A2A extension for AP2": "AP2 的 A2A 扩展"
+            Glossary: 词汇表
+            FAQ: 常见问题
+            Roadmap: 路线图
+            Partners: 合作伙伴
+            Samples: 示例
+            "Human Present Cards": "现场人工确认卡片支付"
+            "Human Present x402": "现场人工确认 x402"
+            "Digital Payment Credentials Android": "Android 数字支付凭证"

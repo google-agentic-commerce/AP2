@@ -16,8 +16,8 @@
 from typing import Any
 
 from a2a.server.tasks.task_updater import TaskUpdater
-from a2a.types import DataPart, Part, Task, TextPart
-from ap2.types.mandate import INTENT_MANDATE_DATA_KEY, IntentMandate
+from a2a.types import Part, Task, TextPart
+from ap2.types.mandate import INTENT_MANDATE_DATA_KEY
 from common import message_utils
 from rich.console import Console
 from rich.panel import Panel

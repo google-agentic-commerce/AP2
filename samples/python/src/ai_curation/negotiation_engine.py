@@ -18,6 +18,7 @@ This module provides intelligent negotiation capabilities, dynamic pricing,
 and advanced bundling strategies to maximize conversions and AOV.
 """
 
+import json
 import logging
 import random
 from datetime import datetime, timezone, timedelta

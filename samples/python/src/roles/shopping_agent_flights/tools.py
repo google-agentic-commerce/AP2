@@ -14,8 +14,6 @@
 
 """Tools for the flight shopping agent."""
 from datetime import datetime, timedelta, timezone
-
-# --- CHANGE: Import our new structured mandate ---
 from .custom_mandate import FlightConstraints, StructuredIntentMandate
 
 from ap2.types.mandate import INTENT_MANDATE_DATA_KEY
@@ -28,7 +26,6 @@ from rich.panel import Panel
 from rich.prompt import Confirm
 
 
-# --- CHANGE: Update the tool signature to accept structured parameters ---
 def create_and_sign_intent_mandate(
     destination: str,
     max_price: int,
@@ -42,7 +39,6 @@ def create_and_sign_intent_mandate(
         " IntentMandate..."
     )
 
-    # --- CHANGE: Populate the new structured mandate ---
     mandate = StructuredIntentMandate(
         natural_language_description=(
             f"A flight to {destination} for no more than {max_price}"

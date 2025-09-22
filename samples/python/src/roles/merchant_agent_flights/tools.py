@@ -24,7 +24,6 @@ from rich.panel import Panel
 
 
 
-# --- CHANGE: Import the structured mandate to validate against it ---
 from roles.shopping_agent_flights.custom_mandate import StructuredIntentMandate
 
 
@@ -61,7 +60,6 @@ async def process_purchase_request(
             " against [yellow]structured[/yellow] IntentMandate fields..."
         )
 
-        # --- CHANGE: Validate against structured constraints ---
         # 1. Validate destination
         mandate_destination = structured_mandate.constraints.destination
         if flight_details["destination"].lower() != mandate_destination.lower():

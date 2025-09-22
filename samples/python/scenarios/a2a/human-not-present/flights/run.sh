@@ -37,7 +37,6 @@ cleanup() {
 }
 trap cleanup EXIT
 
-# --- THIS IS THE FIX for the log file ---
 # Ensure the .logs directory exists before starting the merchant server
 mkdir -p "$LOG_DIR"
 rm -f "$LOG_DIR"/*

@@ -1,4 +1,4 @@
-# AP2 Sample: User Authorization using Digitial Payment Credentials
+# AP2 Sample: User Authorization using Digital Payment Credentials
 
 This sample demonstrates user authentication of a purchase using digital payment
 credentials (DPC).

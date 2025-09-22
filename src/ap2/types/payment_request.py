@@ -73,7 +73,7 @@ class PaymentShippingOption(BaseModel):
   """
 
   id: str = Field(
-      ..., description="A uniqueidentifier for the shipping option."
+      ..., description="A unique identifier for the shipping option."
   )
   label: str = Field(
       ..., description="A human-readable description of the shipping option."
@@ -152,7 +152,7 @@ class PaymentDetailsModifier(BaseModel):
       None,
       description="Additional PaymentItems applicable for this payment method.",
   )
-  data: Optional[Any] = Field(
+  data: Optional[dict[str, Any]] = Field(
       None, description="Payment method specific data for the modifier."
   )
 

@@ -11,11 +11,14 @@
             }
         ]
     },
+    "defaultInputModes": ["json"],
+    "defaultOutputModes": ["json"],
     "skills": [
         {
             "id": "process_purchase",
             "name": "Process Flight Purchase",
-            "description": "Processes a flight purchase request by validating it against a signed IntentMandate."
+            "description": "Processes a flight purchase request by validating it against a signed IntentMandate.",
+            "tags": ["flight", "purchase", "validation"]
         }
     ],
     "version": "1.0.0"

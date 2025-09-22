@@ -1,5 +1,5 @@
 # Fork Sync Configuration and Setup Guide
-# For AnkitaParakh/AP2-shopping-concierge
+# For <your-github-username>/AP2-shopping-concierge
 
 ## 🔄 Fork Sync Setup Complete!
 

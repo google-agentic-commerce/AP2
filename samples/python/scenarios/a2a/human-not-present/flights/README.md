@@ -81,7 +81,7 @@ python samples/python/scenarios/a2a/human-not-present/flights/run_cli.py
 
 `run_cli.py` writes the merchant agent’s logs to:
 
-```
+```text
 .logs/flight_merchant.log
 ```
 

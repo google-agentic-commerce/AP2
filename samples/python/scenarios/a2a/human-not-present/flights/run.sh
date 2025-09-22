@@ -4,6 +4,7 @@ set -e
 
 # Get the directory of this script to find the custom CLI runner
 SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+LOG_DIR=".logs" # Define the log directory
 
 if [ -f .env ]; then
   set -a
@@ -17,22 +18,37 @@ if [ -z "${GOOGLE_API_KEY}" ]; then
 fi
 
 # --- Environment Setup ---
-# This ensures a clean, project-specific environment for every run
-# without deleting the shared, global package cache.
 echo "Setting up a clean Python virtual environment..."
-deactivate || true # Deactivate if active, ignore error if not
+deactivate || true
 rm -rf .venv
 uv venv
 source .venv/bin/activate
 echo "Virtual environment activated."
-
-# A single, reliable command to install everything.
-# This will be VERY FAST on subsequent runs because it uses the uv cache.
 echo "Syncing virtual environment with all dependencies (using cache)..."
 uv sync --package ap2-samples
 
+# This function is called automatically when the script exits
+cleanup() {
+    echo ""
+    echo "--> Shutting down background merchant agent..."
+    kill "$merchant_pid" 2>/dev/null
+    wait "$merchant_pid" 2>/dev/null
+    echo "--> Cleanup complete."
+}
+trap cleanup EXIT
+
+# --- THIS IS THE FIX for the log file ---
+# Ensure the .logs directory exists before starting the merchant server
+mkdir -p "$LOG_DIR"
+rm -f "$LOG_DIR"/*
+# ----------------------------------------
+
+# Start the flight merchant agent in the background.
+echo "--> Starting Flight Merchant Agent in the background (log: $LOG_DIR/flight_merchant.log)..."
+.venv/bin/python -m roles.merchant_agent_flights > "$LOG_DIR/flight_merchant.log" 2>&1 &
+merchant_pid=$!
+sleep 3
+
 echo ""
 echo "Starting the custom CLI for the Flight Shopping Demo..."
-
-# Execute the custom Python runner script directly using the venv's python.
 .venv/bin/python "${SCRIPT_DIR}/run_cli.py"

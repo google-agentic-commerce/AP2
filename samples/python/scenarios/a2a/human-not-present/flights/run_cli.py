@@ -18,7 +18,9 @@ import logging
 import subprocess
 import sys
 import time
+
 from pathlib import Path
+
 
 logging.getLogger("google_genai").setLevel(logging.ERROR)
 
@@ -27,16 +29,14 @@ project_root = Path(__file__).resolve().parents[5]
 src_path = project_root / "samples" / "python" / "src"
 sys.path.insert(0, str(src_path))
 
-from google.adk.agents.llm_agent import LlmAgent
 from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService, Session
 from google.genai.types import Content, Part
-
 from rich.console import Console
 from rich.panel import Panel
 from rich.prompt import Prompt
-
 from roles.shopping_agent_flights.agent import flight_shopping_agent
+
 
 logging.basicConfig(level=logging.WARNING)
 

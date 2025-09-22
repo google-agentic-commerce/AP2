@@ -7,14 +7,14 @@ SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 LOG_DIR=".logs" # Define the log directory
 
 if [ -f .env ]; then
-  set -a
-  source .env
-  set +a
+	set -a
+	source .env
+	set +a
 fi
 
 if [ -z "${GOOGLE_API_KEY}" ]; then
-  echo "Please set your GOOGLE_API_KEY environment variable before running."
-  exit 1
+	echo "Please set your GOOGLE_API_KEY environment variable before running."
+	exit 1
 fi
 
 # --- Environment Setup ---
@@ -29,11 +29,11 @@ uv sync --package ap2-samples
 
 # This function is called automatically when the script exits
 cleanup() {
-    echo ""
-    echo "--> Shutting down background merchant agent..."
-    kill "$merchant_pid" 2>/dev/null
-    wait "$merchant_pid" 2>/dev/null
-    echo "--> Cleanup complete."
+	echo ""
+	echo "--> Shutting down background merchant agent..."
+	kill "$merchant_pid" 2>/dev/null
+	wait "$merchant_pid" 2>/dev/null
+	echo "--> Cleanup complete."
 }
 trap cleanup EXIT
 
@@ -44,7 +44,7 @@ rm -f "$LOG_DIR"/*
 
 # Start the flight merchant agent in the background.
 echo "--> Starting Flight Merchant Agent in the background (log: $LOG_DIR/flight_merchant.log)..."
-.venv/bin/python -m roles.merchant_agent_flights > "$LOG_DIR/flight_merchant.log" 2>&1 &
+.venv/bin/python -m roles.merchant_agent_flights >"$LOG_DIR/flight_merchant.log" 2>&1 &
 merchant_pid=$!
 sleep 3
 

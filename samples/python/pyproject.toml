@@ -15,7 +15,8 @@ dependencies = [
     "google-genai",
     "httpx",
     "requests",
-    "ap2"
+    "ap2",
+    "rich"
 ]
 keywords = ["payments", "a2a", "ap2"]
 readme = "README.md"

@@ -6,7 +6,7 @@ allowing the ecosystem to build, test, and adopt capabilities incrementally.
 **V0.1: (September 2025)** The initial specification focuses on establishing the
 core architecture and enabling the most common use cases. Key features include:
 Support for "pull" payment methods (e.g., credit/debit cards) Well-defined data
-payloads to support transparent accountability based on the VC framework Support
+payloads to support transparent accountability based on the VDC framework Support
 for human-present scenarios Support for user and merchant-initiated step-up
 challenges Detailed sequence diagram and reference implementation using A2A
 protocol

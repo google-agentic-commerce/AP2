@@ -50,7 +50,7 @@ def log_a2a_message_parts(
   _load_logger()
 
   """Logs the A2A message parts to the watch.log file."""
-  _log_request_instuctions(text_parts)
+  _log_request_instructions(text_parts)
   _log_mandates(data_parts)
   _log_extra_data(data_parts)
 
@@ -73,7 +73,7 @@ def _load_logger():
     _logger.addHandler(create_file_handler())
 
 
-def _log_request_instuctions(text_parts: list[str]) -> None:
+def _log_request_instructions(text_parts: list[str]) -> None:
   """Logs the request instructions from the text parts."""
   _logger.info("\n")
   _logger.info("[Request Instructions]")

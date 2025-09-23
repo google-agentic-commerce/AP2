@@ -92,3 +92,28 @@ install the types package directly using this command:
 ```sh
 uv pip install git+https://github.com/google-agentic-commerce/AP2.git@main
 ```
+
+## Documentation
+
+The AP2 documentation is available at [https://ap2-protocol.org/](https://ap2-protocol.org/)
+
+### Running Documentation Locally
+
+For local development or offline access, you can serve the documentation on your machine:
+
+```sh
+# From the project root
+bash scripts/serve-docs.sh
+```
+
+This will start a local server at http://127.0.0.1:8000 with live reload enabled.
+
+Alternatively, you can manually run:
+
+```sh
+# Install dependencies (only needed once)
+pip install mkdocs mkdocs-material mkdocs-macros-plugin
+
+# Serve the documentation
+mkdocs serve --dev-addr 127.0.0.1:8000
+```

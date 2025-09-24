@@ -21,6 +21,8 @@ from typing import Optional
 from ap2.types.payment_request import PaymentItem
 from ap2.types.payment_request import PaymentRequest
 from ap2.types.payment_request import PaymentResponse
+from ap2.types.session_auth import SessionAuthorization
+from ap2.types.spending_rules import SpendingRuleSet
 from pydantic import BaseModel
 from pydantic import Field
 
@@ -32,8 +34,8 @@ PAYMENT_MANDATE_DATA_KEY = "ap2.mandates.PaymentMandate"
 class IntentMandate(BaseModel):
   """Represents the user's purchase intent.
 
-  These are the initial fields utilized in the human-present flow. For
-  human-not-present flows, additional fields will be added to this mandate.
+  Supports both human-present and human-not-present flows through
+  session-based authorization and programmable spending rules.
   """
 
   user_cart_confirmation_required: bool = Field(
@@ -41,7 +43,7 @@ class IntentMandate(BaseModel):
       description=(
           "If false, the agent can make purchases on the user's behalf once all"
           " purchase conditions have been satisfied. This must be true if the"
-          " intent mandate is not signed by the user."
+          " intent mandate is not signed by the user or lacks session authorization."
       ),
   )
   natural_language_description: str = Field(
@@ -73,6 +75,52 @@ class IntentMandate(BaseModel):
   intent_expiry: str = Field(
       ...,
       description="When the intent mandate expires, in ISO 8601 format.",
+  )
+
+  # Human-not-present flow extensions
+  session_authorization: Optional[SessionAuthorization] = Field(
+      None,
+      description=(
+          "Session-based authorization for autonomous agent transactions. "
+          "Required for human-not-present flows where user_cart_confirmation_required=False."
+      ),
+  )
+  spending_rules: SpendingRuleSet = Field(
+      default_factory=SpendingRuleSet,
+      description=(
+          "Programmable spending constraints that agents must respect. "
+          "These rules are enforced before any transaction execution."
+      ),
+  )
+  agent_did: Optional[str] = Field(
+      None,
+      description=(
+          "Decentralized identifier (DID) of the agent authorized to execute this intent. "
+          "Required for human-not-present flows to establish cryptographic agent identity."
+      ),
+  )
+  revocation_registry_uri: Optional[str] = Field(
+      None,
+      description=(
+          "URI for real-time mandate revocation checking. Allows users to "
+          "instantly revoke agent authorization if needed."
+      ),
+  )
+  delegation_depth: int = Field(
+      default=1,
+      description=(
+          "Maximum depth of agent delegation allowed. 1 means only the primary "
+          "agent can act, 2 allows one level of sub-delegation, etc."
+      ),
+      ge=1,
+      le=5,
+  )
+  requires_consensus: bool = Field(
+      default=False,
+      description=(
+          "If true, requires consensus from multiple authorized agents "
+          "before executing high-value transactions."
+      ),
   )
 
 

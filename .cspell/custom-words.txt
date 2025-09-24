@@ -9,8 +9,12 @@ agenticpayments
 androidx
 appname
 ASGI
+Bexample
 Blackhawk
 BVNK
+cashu
+Cashu
+CASHU
 classpath
 CLASSPATH
 cmwallet
@@ -25,10 +29,12 @@ Dcql
 DCQL
 deviceauth
 Dfile
+dleq
 Dorg
 DPAN
 Drawables
 Ebanx
+ecash
 emvco
 endlocal
 esac
@@ -65,6 +71,7 @@ KXMYBJWNQ
 Lazada
 Lightspark
 linenums
+mainnet
 mastercard
 micropayments
 Mispick
@@ -73,6 +80,7 @@ msys
 MSYS
 multistep
 Mysten
+nofees
 octicons
 okhttp
 Otherville
@@ -102,6 +110,7 @@ sideloaded
 skus
 stablecoins
 superfences
+testnut
 viewmodel
 vulnz
 Wallex

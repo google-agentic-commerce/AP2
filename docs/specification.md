@@ -41,6 +41,8 @@ allowing the ecosystem to build, test, and adopt capabilities incrementally.
         on the VDC framework
     - Support for human-present scenarios
     - Support for user and merchant-initiated step-up challenges
+    - **Enhanced support for human-not-present scenarios** with session-based
+        authorization and programmable spending rules
     - Detailed sequence diagram and reference implementation using
         [A2A protocol](https://a2a-protocol.org/)
 - **V1.x**: Subsequent versions will expand the protocol's capabilities based
@@ -48,7 +50,7 @@ allowing the ecosystem to build, test, and adopt capabilities incrementally.
     - Full support for "push" payments and all payment methods (e.g.,
         real-time bank transfers, e-wallets etc.)
     - Standardized flows for recurring payments and subscriptions
-    - Support for human-not-present scenarios
+    - Advanced autonomous agent coordination and multi-party transactions
     - Detailed sequence diagrams for MCP-based implementations
 - **Long-Term Vision**: Longer term, we plan the protocol to incorporate more
     intelligence and flexibility, including:

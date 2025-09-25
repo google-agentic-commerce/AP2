@@ -1,0 +1,292 @@
+# AI Shopping Concierge - Production Docker Compose
+# This file is for production deployment
+
+version: '3.8'
+
+services:
+  # Main application
+  ai-shopping-concierge:
+    image: ghcr.io/your-username/ai-shopping-concierge:latest
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=production
+      - DEBUG=false
+      - DATABASE_URL=postgresql+asyncpg://postgres:${DB_PASSWORD}@db:5432/ai_shopping_concierge
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379/0
+      - GOOGLE_AI_API_KEY=${GOOGLE_AI_API_KEY}
+      - WHATSAPP_ACCESS_TOKEN=${WHATSAPP_ACCESS_TOKEN}
+      - WHATSAPP_VERIFY_TOKEN=${WHATSAPP_VERIFY_TOKEN}
+      - WHATSAPP_PHONE_NUMBER_ID=${WHATSAPP_PHONE_NUMBER_ID}
+      - AP2_MERCHANT_ID=${AP2_MERCHANT_ID}
+      - AP2_API_KEY=${AP2_API_KEY}
+      - STRIPE_API_KEY=${STRIPE_API_KEY}
+      - PAYPAL_CLIENT_ID=${PAYPAL_CLIENT_ID}
+      - PAYPAL_CLIENT_SECRET=${PAYPAL_CLIENT_SECRET}
+      - SECRET_KEY=${SECRET_KEY}
+      - SENTRY_DSN=${SENTRY_DSN}
+    volumes:
+      - ./logs:/app/logs
+      - ./config:/app/config:ro
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    deploy:
+      replicas: 3
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # PostgreSQL database with backup
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: ai_shopping_concierge
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backup:/backup
+      - ./deployment/postgres/postgresql.conf:/etc/postgresql/postgresql.conf:ro
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 2G
+        reservations:
+          cpus: '1.0'
+          memory: 1G
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d ai_shopping_concierge"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    command: >
+      postgres
+      -c max_connections=200
+      -c shared_buffers=256MB
+      -c effective_cache_size=1GB
+      -c work_mem=4MB
+      -c maintenance_work_mem=64MB
+
+  # Redis with persistence
+  redis:
+    image: redis:7-alpine
+    command: >
+      redis-server
+      --requirepass ${REDIS_PASSWORD}
+      --appendonly yes
+      --appendfsync everysec
+      --maxmemory 1gb
+      --maxmemory-policy allkeys-lru
+      --save 900 1
+      --save 300 10
+      --save 60 10000
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 512M
+    healthcheck:
+      test: ["CMD", "redis-cli", "--no-auth-warning", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # Nginx reverse proxy with SSL
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deployment/nginx/nginx.production.conf:/etc/nginx/nginx.conf:ro
+      - ./deployment/ssl:/etc/ssl:ro
+      - ./deployment/nginx/html:/usr/share/nginx/html:ro
+    depends_on:
+      - ai-shopping-concierge
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Database backup service
+  db-backup:
+    image: postgres:15-alpine
+    environment:
+      PGPASSWORD: ${DB_PASSWORD}
+    volumes:
+      - ./backup:/backup
+      - ./deployment/scripts/backup.sh:/backup.sh:ro
+    depends_on:
+      - db
+    restart: "no"
+    deploy:
+      replicas: 0
+    command: >
+      sh -c "
+        while true; do
+          sleep 86400
+          /backup.sh
+        done
+      "
+
+  # Log aggregator
+  fluentd:
+    image: fluent/fluentd:v1.16-debian-1
+    volumes:
+      - ./logs:/fluentd/log
+      - ./deployment/fluentd/fluent.conf:/fluentd/etc/fluent.conf:ro
+    ports:
+      - "24224:24224"
+      - "24224:24224/udp"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 256M
+
+  # Monitoring - Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/etc/prometheus/console_libraries'
+      - '--web.console.templates=/etc/prometheus/consoles'
+      - '--storage.tsdb.retention.time=720h'
+      - '--web.enable-lifecycle'
+      - '--web.external-url=https://your-domain.com/prometheus/'
+    volumes:
+      - ./deployment/prometheus/prometheus.production.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+
+  # Monitoring - Grafana
+  grafana:
+    image: grafana/grafana:latest
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
+      GF_USERS_ALLOW_SIGN_UP: false
+      GF_SERVER_ROOT_URL: https://your-domain.com/grafana/
+      GF_SERVER_SERVE_FROM_SUB_PATH: true
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./deployment/grafana/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./deployment/grafana/datasources:/etc/grafana/provisioning/datasources:ro
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+  # Security - Fail2ban
+  fail2ban:
+    image: lscr.io/linuxserver/fail2ban:latest
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: UTC
+    volumes:
+      - fail2ban_data:/config
+      - ./logs:/logs:ro
+      - ./deployment/fail2ban:/config/fail2ban:ro
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    network_mode: host
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /data/postgres
+  
+  redis_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /data/redis
+  
+  prometheus_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /data/prometheus
+  
+  grafana_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /data/grafana
+  
+  fail2ban_data:
+    driver: local
+
+networks:
+  default:
+    name: ai-shopping-concierge-prod
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

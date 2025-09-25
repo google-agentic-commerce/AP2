@@ -46,28 +46,6 @@ shopping assistant have their source code in [**`samples/android`**](samples/and
 
 - Python 3.10 or higher
 - [`uv`](https://docs.astral.sh/uv/getting-started/installation/) package manager
-### Install [uv](https://docs.astral.sh/uv/getting-started/installation/) (if not installed on your machine)
-
-The AP2 Python scenarios use "uv" for dependency management (instead of pip/venv). Please install it once before running any scenario:
-
-- For installing on macOS / Linux
-
-	```sh
-  curl -LsSf https://astral.sh/uv/install.sh | sh
-  ```
-
-- For Windows machine (PowerShell)
-
-  ```sh
-  powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
-  ```
-
-- You can also verify your version with the below command:
-
-    ```sh
-    uv --version
-    ```
-
 ### Setup
 
 You can authenticate using either a Google API Key or Vertex AI.

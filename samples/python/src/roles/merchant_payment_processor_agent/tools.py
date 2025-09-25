@@ -53,16 +53,38 @@ async def initiate_payment(
     await updater.failed(message=updater.new_agent_message(parts=error_message))
     return
 
-  challenge_response = (
-      message_utils.find_data_part("challenge_response", data_parts) or ""
-  )
-  await _handle_payment_mandate(
-      PaymentMandate.model_validate(payment_mandate),
-      challenge_response,
-      updater,
-      current_task,
-      debug_mode,
-  )
+  payment_mandate_obj = PaymentMandate.model_validate(payment_mandate)
+  payment_method_type = payment_mandate_obj.payment_mandate_contents.payment_response.method_name
+
+  # Route to appropriate handler based on payment method type
+  if payment_method_type == "CARD":
+    challenge_response = (
+        message_utils.find_data_part("challenge_response", data_parts) or ""
+    )
+    await _handle_payment_mandate(
+        payment_mandate_obj,
+        challenge_response,
+        updater,
+        current_task,
+        debug_mode,
+    )
+  elif payment_method_type == "BANK_ACCOUNT":
+    await _handle_bank_payment(
+        payment_mandate_obj,
+        updater,
+        current_task,
+        debug_mode,
+    )
+  elif payment_method_type == "DIGITAL_WALLET":
+    await _handle_digital_wallet_payment(
+        payment_mandate_obj,
+        updater,
+        current_task,
+        debug_mode,
+    )
+  else:
+    error_message = _create_text_parts(f"Unsupported payment method: {payment_method_type}")
+    await updater.failed(message=updater.new_agent_message(parts=error_message))
 
 
 async def _handle_payment_mandate(
@@ -235,6 +257,162 @@ async def _request_payment_credential(
   payment_credential = artifact_utils.get_first_data_part(task.artifacts)
 
   return payment_credential
+
+
+async def _handle_bank_payment(
+    payment_mandate: PaymentMandate,
+    updater: TaskUpdater,
+    current_task: Task | None,
+    debug_mode: bool = False,
+) -> None:
+  """Handles bank account payment processing.
+
+  Args:
+    payment_mandate: The payment mandate containing bank account details.
+    updater: The task updater for managing task state.
+    current_task: The current task, or None if it's a new payment.
+    debug_mode: Whether the agent is in debug mode.
+  """
+  if current_task is None:
+    await _raise_bank_verification(updater)
+    return
+
+  if current_task.status.state == TaskState.input_required:
+    await _verify_bank_account_and_complete_payment(
+        payment_mandate,
+        updater,
+        debug_mode,
+    )
+    return
+
+
+async def _handle_digital_wallet_payment(
+    payment_mandate: PaymentMandate,
+    updater: TaskUpdater,
+    current_task: Task | None,
+    debug_mode: bool = False,
+) -> None:
+  """Handles digital wallet payment processing.
+
+  Args:
+    payment_mandate: The payment mandate containing digital wallet details.
+    updater: The task updater for managing task state.
+    current_task: The current task, or None if it's a new payment.
+    debug_mode: Whether the agent is in debug mode.
+  """
+  # Digital wallet payments are typically instant, but we should still validate
+  # the wallet credentials before processing
+  try:
+    payment_method = await _request_payment_credential(payment_mandate, updater, debug_mode)
+    await _complete_digital_wallet_payment(payment_mandate, updater, debug_mode)
+  except Exception as e:
+    error_message = _create_text_parts(f"Digital wallet payment failed: {str(e)}")
+    await updater.failed(message=updater.new_agent_message(parts=error_message))
+
+
+async def _raise_bank_verification(updater: TaskUpdater) -> None:
+  """Initiates bank account verification process.
+
+  This function simulates the bank account verification flow by requesting
+  user input for routing and account numbers. In a real implementation,
+  this would integrate with banking APIs for verification.
+  """
+  verification_data = {
+      "type": "bank_verification",
+      "display_text": (
+          "Please verify your bank account by entering the routing number "
+          "and account number. (Demo: use routing '123456789' and account '111')"
+      ),
+  }
+  text_part = TextPart(
+      text="Please provide bank account verification to complete the payment."
+  )
+  data_part = DataPart(data={"verification": verification_data})
+  message = updater.new_agent_message(
+      parts=[Part(root=text_part), Part(root=data_part)]
+  )
+  await updater.requires_input(message=message)
+
+
+async def _verify_bank_account_and_complete_payment(
+    payment_mandate: PaymentMandate,
+    updater: TaskUpdater,
+    debug_mode: bool = False,
+) -> None:
+  """Verifies bank account and completes the payment."""
+  # For demo purposes, we'll simulate successful verification
+  # In a real implementation, this would validate against the bank account data
+  # from the credentials provider
+
+  # Get the bank account details from the payment mandate
+  payment_method = await _request_payment_credential(payment_mandate, updater, debug_mode)
+
+  # Demo verification logic - check if account number matches
+  account_number = payment_method.get("account_number", "")
+
+  if account_number == "111":  # This matches the demo bank account
+    await _complete_bank_payment(payment_mandate, updater, debug_mode)
+  else:
+    error_message = _create_text_parts("Bank account verification failed. Invalid account number.")
+    await updater.failed(message=updater.new_agent_message(parts=error_message))
+
+
+async def _complete_bank_payment(
+    payment_mandate: PaymentMandate,
+    updater: TaskUpdater,
+    debug_mode: bool = False,
+) -> None:
+  """Completes the bank payment processing."""
+  payment_mandate_id = (
+      payment_mandate.payment_mandate_contents.payment_mandate_id
+  )
+
+  logging.info(
+      "Processing bank transfer for mandate %s...",
+      payment_mandate_id,
+  )
+
+  # Simulate bank transfer processing
+  transaction_id = f"bank_tx_{payment_mandate_id[-8:]}"
+  success_message = updater.new_agent_message(
+      parts=_create_text_parts(f"{{'status': 'success', 'method': 'bank_transfer', 'transaction_id': '{transaction_id}', 'mandate_id': '{payment_mandate_id}'}}")
+  )
+  await updater.complete(message=success_message)
+
+  logging.info(
+      "Bank transfer completed successfully for mandate %s, transaction %s",
+      payment_mandate_id,
+      transaction_id,
+  )
+
+
+async def _complete_digital_wallet_payment(
+    payment_mandate: PaymentMandate,
+    updater: TaskUpdater,
+    debug_mode: bool = False,
+) -> None:
+  """Completes the digital wallet payment processing."""
+  payment_mandate_id = (
+      payment_mandate.payment_mandate_contents.payment_mandate_id
+  )
+
+  logging.info(
+      "Processing digital wallet payment for mandate %s...",
+      payment_mandate_id,
+  )
+
+  # Simulate instant digital wallet processing
+  transaction_id = f"wallet_tx_{payment_mandate_id[-8:]}"
+  success_message = updater.new_agent_message(
+      parts=_create_text_parts(f"{{'status': 'success', 'method': 'digital_wallet', 'transaction_id': '{transaction_id}', 'mandate_id': '{payment_mandate_id}'}}")
+  )
+  await updater.complete(message=success_message)
+
+  logging.info(
+      "Digital wallet payment completed successfully for mandate %s, transaction %s",
+      payment_mandate_id,
+      transaction_id,
+  )
 
 
 def _create_text_parts(*texts: str) -> list[Part]:

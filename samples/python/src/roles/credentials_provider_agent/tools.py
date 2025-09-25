@@ -242,9 +242,27 @@ def _payment_method_is_eligible(
     True if the payment_method is eligible according to the payment method,
     False otherwise.
   """
+  # First check if the payment method type matches
   if payment_method.get("type", "") != merchant_criteria.supported_methods:
     return False
 
+  # Handle different payment method types
+  payment_type = payment_method.get("type", "")
+
+  if payment_type == "CARD":
+    return _is_card_eligible(payment_method, merchant_criteria)
+  elif payment_type == "BANK_ACCOUNT":
+    return _is_bank_account_eligible(payment_method, merchant_criteria)
+  elif payment_type == "DIGITAL_WALLET":
+    return _is_digital_wallet_eligible(payment_method, merchant_criteria)
+
+  return False
+
+
+def _is_card_eligible(
+    payment_method: dict[str, Any], merchant_criteria: PaymentMethodData
+) -> bool:
+  """Checks if a card payment method is eligible."""
   merchant_supported_networks = [
       network.casefold()
       for network in merchant_criteria.data.get("network", [])
@@ -258,3 +276,27 @@ def _payment_method_is_eligible(
       if network_info.get("name", "").casefold() == supported_network:
         return True
   return False
+
+
+def _is_bank_account_eligible(
+    payment_method: dict[str, Any], merchant_criteria: PaymentMethodData
+) -> bool:
+  """Checks if a bank account payment method is eligible."""
+  # For BANK_ACCOUNT, we just need type match (already checked above)
+  # Bank accounts don't need network matching like cards do
+  return True
+
+
+def _is_digital_wallet_eligible(
+    payment_method: dict[str, Any], merchant_criteria: PaymentMethodData
+) -> bool:
+  """Checks if a digital wallet payment method is eligible."""
+  merchant_supported_brands = [
+      brand.casefold()
+      for brand in merchant_criteria.data.get("brands", [])
+  ]
+  if not merchant_supported_brands:
+    return False
+
+  payment_wallet_brand = payment_method.get("brand", "").casefold()
+  return payment_wallet_brand in merchant_supported_brands

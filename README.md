@@ -45,6 +45,7 @@ shopping assistant have their source code in [**`samples/android`**](samples/and
 ### Prerequisites
 
 - Python 3.10 or higher
+- [`uv`](https://docs.astral.sh/uv/getting-started/installation/) package manager
 
 ### Setup
 

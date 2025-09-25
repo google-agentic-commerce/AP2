@@ -1,0 +1,25 @@
+{
+    "name": "FlightMerchantAgent",
+    "description": "An agent that sells flights and validates purchase requests against signed mandates.",
+    "url": "http://localhost:8004/a2a/flights_merchant",
+    "capabilities": {
+        "extensions": [
+            {
+                "uri": "https://github.com/google-agentic-commerce/ap2/v1",
+                "description": "Supports the Agent Payments Protocol.",
+                "required": true
+            }
+        ]
+    },
+    "defaultInputModes": ["json"],
+    "defaultOutputModes": ["json"],
+    "skills": [
+        {
+            "id": "process_purchase",
+            "name": "Process Flight Purchase",
+            "description": "Processes a flight purchase request by validating it against a signed IntentMandate.",
+            "tags": ["flight", "purchase", "validation"]
+        }
+    ],
+    "version": "1.0.0"
+}

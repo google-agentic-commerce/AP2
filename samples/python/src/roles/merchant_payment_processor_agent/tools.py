@@ -304,6 +304,11 @@ async def _handle_digital_wallet_payment(
   # the wallet credentials before processing
   try:
     payment_method = await _request_payment_credential(payment_mandate, updater, debug_mode)
+    
+    # Validate digital wallet credentials
+    if not payment_method or not payment_method.get("brand"):
+      raise ValueError("Invalid digital wallet credentials")
+    
     await _complete_digital_wallet_payment(payment_mandate, updater, debug_mode)
   except Exception as e:
     error_message = _create_text_parts(f"Digital wallet payment failed: {str(e)}")

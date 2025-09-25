@@ -18,8 +18,6 @@ Each agent uses individual tools to handle distinct tasks throughout the
 shopping and purchasing process.
 """
 
-import base64
-import json
 import logging
 
 from pydantic import ValidationError

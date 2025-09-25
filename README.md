@@ -45,7 +45,7 @@ shopping assistant have their source code in [**`samples/android`**](samples/and
 ### Prerequisites
 
 - Python 3.10 or higher
-
+- [`uv`](https://docs.astral.sh/uv/getting-started/installation/) package manager
 ### Install [uv](https://docs.astral.sh/uv/getting-started/installation/) (if not installed on your machine)
 
 The AP2 Python scenarios use "uv" for dependency management (instead of pip/venv). Please install it once before running any scenario:

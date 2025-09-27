@@ -111,6 +111,19 @@ async def _create_and_add_cart_mandate_artifact(
               data={
                   "network": ["mastercard", "paypal", "amex"],
               },
+          ),
+          PaymentMethodData(
+              supported_methods="BANK_ACCOUNT",
+              data={
+                  "networks": ["ACH", "wire_transfer"],
+                  "verification_required": True,
+              },
+          ),
+          PaymentMethodData(
+              supported_methods="DIGITAL_WALLET",
+              data={
+                  "brands": ["PayPal", "Apple Pay"],
+              },
           )
       ],
       details=PaymentDetailsInit(

@@ -40,7 +40,7 @@ schema:
       "description": "The roles that this agent performs in the AP2 model.",
       "minItems": 1,
       "items": {
-        "enum": ["merchant", "shopper", "credentials-provider", "payment-processor"]
+        "enum": ["merchant", "shopper", "credentials-provider", "payment-processor", "micropayment-provider", "streaming-payment-consumer"]
       }
     }
   },
@@ -51,7 +51,7 @@ schema:
 This schema is also expressed by the following Pydantic type definition:
 
 ```py
-AP2Role = "merchant" | "shopper" | "credentials-provider" | "payment-processor"
+AP2Role = "merchant" | "shopper" | "credentials-provider" | "payment-processor" | "micropayment-provider" | "streaming-payment-consumer"
 
 class AP2ExtensionParameters(BaseModel):
   # The roles this agent performs in the AP2 model. At least one value is required.
@@ -94,6 +94,122 @@ The following listing shows an AgentCard declaring AP2 extension support.
       "tags": []
     }
   ]
+}
+```
+
+## Micropayment Channel Capabilities
+
+Agents that support micropayment channels can advertise their capabilities through additional parameters in the AgentCard extension. This enables high-frequency, sub-cent transactions for AI inference, data streaming, and other pay-per-use services.
+
+### Micropayment Provider Example
+
+```json
+{
+  "name": "AI Inference Service",
+  "description": "High-performance AI model with pay-per-token pricing",
+  "capabilities": {
+    "extensions": [
+      {
+        "uri": "https://github.com/google-agentic-commerce/ap2/tree/v0.1",
+        "description": "Micropayment channels for AI inference",
+        "params": {
+          "roles": ["merchant", "micropayment-provider"],
+          "payment_channels": {
+            "supported": true,
+            "min_deposit": "1.0",
+            "rate_per_call": "0.001",
+            "rate_per_token": "0.0001",
+            "supported_currencies": ["USDC", "PYUSD", "ETH"],
+            "blockchain_networks": ["ethereum", "polygon", "kite"],
+            "max_channel_duration": "86400",
+            "checkpoint_frequency": "30",
+            "streaming_payments": true
+          }
+        }
+      }
+    ]
+  }
+}
+```
+
+### Streaming Payment Consumer Example
+
+```json
+{
+  "name": "Data Analytics Agent",
+  "description": "Consumes real-time data feeds with streaming payments",
+  "capabilities": {
+    "extensions": [
+      {
+        "uri": "https://github.com/google-agentic-commerce/ap2/tree/v0.1",
+        "description": "Streaming payments for data consumption",
+        "params": {
+          "roles": ["shopper", "streaming-payment-consumer"],
+          "payment_streams": {
+            "max_concurrent_streams": 5,
+            "supported_rate_types": ["per_second", "per_byte", "per_request"],
+            "auto_pause_threshold": "10.0",
+            "preferred_currencies": ["USDC", "DAI"],
+            "quality_requirements": {
+              "max_latency_ms": 100,
+              "min_throughput_mbps": 10
+            }
+          }
+        }
+      }
+    ]
+  }
+}
+```
+
+### Payment Channel Parameters Schema
+
+The `payment_channels` object in the extension params supports the following schema:
+
+```json
+{
+  "type": "object",
+  "name": "PaymentChannelCapabilities",
+  "properties": {
+    "supported": {
+      "type": "boolean",
+      "description": "Whether payment channels are supported"
+    },
+    "min_deposit": {
+      "type": "string",
+      "description": "Minimum deposit required to open a channel"
+    },
+    "rate_per_call": {
+      "type": "string",
+      "description": "Cost per API call or request"
+    },
+    "rate_per_token": {
+      "type": "string",
+      "description": "Cost per AI token for inference services"
+    },
+    "supported_currencies": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "List of supported payment currencies"
+    },
+    "blockchain_networks": {
+      "type": "array",
+      "items": {"type": "string"},
+      "description": "Supported blockchain networks"
+    },
+    "max_channel_duration": {
+      "type": "string",
+      "description": "Maximum channel duration in seconds"
+    },
+    "checkpoint_frequency": {
+      "type": "string",
+      "description": "How often to create payment checkpoints (seconds)"
+    },
+    "streaming_payments": {
+      "type": "boolean",
+      "description": "Whether streaming payments are supported"
+    }
+  }
 }
 ```
 

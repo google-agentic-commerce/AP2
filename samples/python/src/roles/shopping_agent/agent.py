@@ -19,21 +19,24 @@ The shopping agent's role is to engage with a user to:
 2. Help complete the purchase of their chosen items.
 
 The Google ADK powers this shopping agent, chosen for its simplicity and
-efficiency in developing robust LLM agents. 
+efficiency in developing robust LLM agents.
 """
+
+from common.retrying_llm_agent import RetryingLlmAgent
+from common.system_utils import DEBUG_MODE_INSTRUCTIONS
 
 from . import tools
 from .subagents.payment_method_collector.agent import payment_method_collector
-from .subagents.shipping_address_collector.agent import shipping_address_collector
+from .subagents.shipping_address_collector.agent import (
+    shipping_address_collector,
+)
 from .subagents.shopper.agent import shopper
-from common.retrying_llm_agent import RetryingLlmAgent
-from common.system_utils import DEBUG_MODE_INSTRUCTIONS
 
 
 root_agent = RetryingLlmAgent(
     max_retries=5,
-    model="gemini-2.5-flash",
-    name="root_agent",
+    model='gemini-2.5-flash',
+    name='root_agent',
     instruction="""
           You are a shopping agent responsible for helping users find and
           purchase products from merchants.
@@ -107,7 +110,8 @@ root_agent = RetryingLlmAgent(
           1. Respond to the user with this message:
              "Hi, I'm your shopping assistant. How can I help you?  For example,
              you can say 'I want to buy a pair of shoes'"
-          """ % DEBUG_MODE_INSTRUCTIONS,
+          """
+    % DEBUG_MODE_INSTRUCTIONS,
     tools=[
         tools.create_payment_mandate,
         tools.initiate_payment,

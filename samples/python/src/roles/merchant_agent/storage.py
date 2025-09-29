@@ -19,29 +19,27 @@ journey. This storage system is used to persist CartMandates between
 interactions between the shopper and merchant agents.
 """
 
-from typing import Optional
-
 from ap2.types.mandate import CartMandate
 
 
-def get_cart_mandate(cart_id: str) -> Optional[CartMandate]:
-  """Get a cart mandate by cart ID."""
-  return _store.get(cart_id)
+def get_cart_mandate(cart_id: str) -> CartMandate | None:
+    """Get a cart mandate by cart ID."""
+    return _store.get(cart_id)
 
 
 def set_cart_mandate(cart_id: str, cart_mandate: CartMandate) -> None:
-  """Set a cart mandate by cart ID."""
-  _store[cart_id] = cart_mandate
+    """Set a cart mandate by cart ID."""
+    _store[cart_id] = cart_mandate
 
 
 def set_risk_data(context_id: str, risk_data: str) -> None:
-  """Set risk data by context ID."""
-  _store[context_id] = risk_data
+    """Set risk data by context ID."""
+    _store[context_id] = risk_data
 
 
-def get_risk_data(context_id: str) -> Optional[str]:
-  """Get risk data by context ID."""
-  return _store.get(context_id)
+def get_risk_data(context_id: str) -> str | None:
+    """Get risk data by context ID."""
+    return _store.get(context_id)
 
 
 _store = {}

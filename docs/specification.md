@@ -812,8 +812,7 @@ Some salient points of the flow diagram:
             "amount": {
               "currency": "USD",
               "value": 120.0
-            },
-            "pending": null
+            }
           }
         ],
         "shipping_options": null,
@@ -823,8 +822,7 @@ Some salient points of the flow diagram:
           "amount": {
             "currency": "USD",
             "value": 120.0
-          },
-          "pending": null
+          }
         }
       },
       "options": {
@@ -854,7 +852,6 @@ Some salient points of the flow diagram:
         "currency": "USD",
         "value": 120.0
       },
-      "pending": null,
       "refund_period": 30
     },
     "payment_response": {
@@ -872,7 +869,6 @@ Some salient points of the flow diagram:
     "merchant_agent": "MerchantAgent",
     "timestamp": "2025-08-26T19:36:36.377022Z"
   },
-  // JWS compact serialization of verifiable presentation
   "user_authorization": "eyJhbGciOiJFUzI1NksiLCJraWQiOiJkaWQ6ZXhhbXBsZ..."
 }
 ```

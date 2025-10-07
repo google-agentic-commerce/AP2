@@ -1,12 +1,19 @@
 {
-    "extends": ["stylelint-config-standard"],
+    "extends": [
+        "stylelint-config-standard"
+    ],
     "rules": {
         "custom-property-pattern": null
     },
     "overrides": [
         {
-            "extends": ["stylelint-config-recommended-scss"],
-            "files": ["*.scss", "**/*.scss"],
+            "extends": [
+                "stylelint-config-recommended-scss"
+            ],
+            "files": [
+                "*.scss",
+                "**/*.scss"
+            ],
             "customSyntax": "postcss-scss"
         }
     ]

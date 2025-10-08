@@ -40,7 +40,7 @@ fi
 
 # Detect the correct activation script path based on the operating system
 case "$OSTYPE" in
-  msys*|cygwin*)
+  msys* | cygwin*)
     # Windows (Git Bash, MSYS2, or Cygwin)
     source .venv/Scripts/activate
     ;;

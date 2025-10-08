@@ -279,7 +279,6 @@ The following listing shows a JSON rendering of a PaymentMandate Message.
             "merchant_agent": "MerchantAgent",
             "timestamp": "2025-08-26T19:36:36.377022Z"
           },
-          // JWS compact serialization of verifiable presentation
           "user_authorization": "eyJhbGciOiJFUzI1NksiLCJraWQiOiJkaWQ6ZXhhbXBsZ..."
         }
       }

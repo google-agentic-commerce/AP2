@@ -68,7 +68,7 @@
       "type": "string",
       "enum": [
         "mandate_creation",
-        "mandate_enforcement", 
+        "mandate_enforcement",
         "mandate_execution",
         "mandate_violation",
         "mandate_resolution"

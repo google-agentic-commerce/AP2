@@ -155,7 +155,7 @@ To view the AP2 documentation locally with live reloading:
 
     ```sh
     # Install documentation dependencies
-    uv pip install -r requirements-docs.txt
+    python3 -m pip install -r requirements-docs.txt
     
     # Start the documentation server
     mkdocs serve

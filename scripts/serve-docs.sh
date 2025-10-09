@@ -105,7 +105,7 @@ start_server() {
 # Cleanup function
 cleanup() {
     echo ""
-    print_status "Shutting down documentation server..."
+    print_status "Server process terminated."
     print_success "Documentation server stopped"
 }
 

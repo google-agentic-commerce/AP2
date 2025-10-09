@@ -182,5 +182,6 @@ You can get started today by:
 - Downloading and running our **code samples**.
 - **Experimenting with the protocol** and its different agent roles.
 - Contributing your feedback and **code** to the public repository.
+- **Running the documentation locally** for development: `bash scripts/serve-docs.sh`
 
 [Visit the GitHub Repository](https://github.com/google-agentic-commerce/AP2)

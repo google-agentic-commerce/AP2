@@ -23,6 +23,35 @@ sign a new one.
 This project follows [Google's Open Source Community
 Guidelines](https://opensource.google/conduct/).
 
+## Development Setup
+
+### Documentation Development
+
+To work on the project documentation locally:
+
+1. **Quick Start** - Use the helper script:
+   ```bash
+   bash scripts/serve-docs.sh
+   ```
+
+2. **Manual Setup**:
+   ```bash
+   # Install documentation dependencies
+   uv pip install -r requirements-docs.txt
+   
+   # Start the documentation server
+   mkdocs serve
+   ```
+
+The documentation server will start at `http://127.0.0.1:8000` with live reloading enabled. Any changes you make to documentation files will automatically refresh in your browser.
+
+### Code Development
+
+For code contributions, see the main [README.md](README.md) for setup instructions including:
+- Python environment setup
+- Agent Development Kit (ADK) installation
+- Sample scenarios and running instructions
+
 ## Contribution process
 
 ### Code Reviews

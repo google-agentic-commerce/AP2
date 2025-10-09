@@ -461,6 +461,7 @@ class AP2ErrorHandler:
         message: str,
         details: Optional[Dict[str, Any]] = None,
         mandate_id: Optional[str] = None,
+        mandate_type: Optional[Union[str, MandateType]] = None,
         correlation_id: Optional[str] = None
     ) -> Dict[str, Any]:
         """
@@ -474,6 +475,7 @@ class AP2ErrorHandler:
             message: Human-readable error message
             details: Error-specific details
             mandate_id: ID of mandate associated with error
+            mandate_type: Type of mandate (required if mandate_id provided)
             correlation_id: Correlation ID for tracing
 
         Returns:
@@ -481,6 +483,10 @@ class AP2ErrorHandler:
         """
         if isinstance(severity, ErrorSeverity):
             severity = severity.value
+
+        # Validate mandate parameters
+        if mandate_id and not mandate_type:
+            raise ValueError("mandate_type is required when mandate_id is provided")
 
         timestamp = datetime.now(timezone.utc).isoformat()
         correlation_id = correlation_id or str(uuid.uuid4())
@@ -505,12 +511,16 @@ class AP2ErrorHandler:
         }
 
         # Log the error event if mandate_id is provided
-        if mandate_id:
+        if mandate_id and mandate_type:
+            # Convert mandate_type to MandateType enum if it's a string
+            if isinstance(mandate_type, str):
+                mandate_type = MandateType(mandate_type)
+                
             self.audit_logger.log_mandate_event(
                 event_category=EventCategory.MANDATE_VIOLATION,
                 event_action=error_type,
                 mandate_id=mandate_id,
-                mandate_type=MandateType.INTENT_MANDATE,  # Could be derived from context
+                mandate_type=mandate_type,  # Use the provided mandate_type
                 event_result="error",
                 event_details={
                     "error_code": error_code,
@@ -528,6 +538,7 @@ class AP2ErrorHandler:
         self,
         violation_type: str,
         mandate_id: str,
+        mandate_type: Union[str, MandateType],
         expected_value: Any,
         actual_value: Any,
         severity: Union[str, ErrorSeverity] = ErrorSeverity.HIGH
@@ -538,6 +549,7 @@ class AP2ErrorHandler:
         Args:
             violation_type: Type of violation
             mandate_id: ID of violated mandate
+            mandate_type: Type of the violated mandate
             expected_value: Expected value per mandate
             actual_value: Actual attempted value
             severity: Severity of the violation
@@ -589,7 +601,8 @@ class AP2ErrorHandler:
             severity=severity,
             message=message,
             details=details,
-            mandate_id=mandate_id
+            mandate_id=mandate_id,
+            mandate_type=mandate_type
         )
 
     def _get_compliance_context(self, severity: str) -> Dict[str, bool]:
@@ -645,6 +658,7 @@ def demo_audit_logging():
     error_response = error_handler.create_mandate_violation_error(
         violation_type="price_exceeded",
         mandate_id="intent_abc123",
+        mandate_type=MandateType.INTENT_MANDATE,
         expected_value=150.00,
         actual_value=199.99,
         severity=ErrorSeverity.HIGH

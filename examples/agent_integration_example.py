@@ -200,7 +200,8 @@ class EnhancedMerchantAgentTools:
                     "mandate_id": mandate_id,
                     "risk_assessment": "blocked_due_to_missing_data"
                 },
-                mandate_id=mandate_id
+                mandate_id=mandate_id,
+                mandate_type=MandateType.PAYMENT_MANDATE
             )
 
             await self._fail_task_enhanced(
@@ -284,6 +285,7 @@ class EnhancedMerchantAgentTools:
             error_response = self.error_handler.create_mandate_violation_error(
                 violation_type="price_exceeded",
                 mandate_id=mandate_id,
+                mandate_type=MandateType.PAYMENT_MANDATE,
                 expected_value=max_amount,
                 actual_value=payment_amount,
                 severity=ErrorSeverity.HIGH

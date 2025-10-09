@@ -20,8 +20,8 @@ A credentials provider has several roles:
 3. Provide a payment credential token for a specific payment method.
 4. Provide payment credentials to a processor for completion of a payment.
 
-In order to clearly demonstrate the use of the Agent Payments Protocol A2A 
-extension, this agent was built directly using the A2A framework. 
+In order to clearly demonstrate the use of the Agent Payments Protocol A2A
+extension, this agent was built directly using the A2A framework.
 
 The core logic of how an A2A agent processes requests and generates responses is
 handled by an AgentExecutor. The BaseServerExecutor handles the common task of
@@ -31,16 +31,17 @@ invoking it to complete a task.
 
 from typing import Any
 
-from . import tools
 from common.base_server_executor import BaseServerExecutor
 from common.system_utils import DEBUG_MODE_INSTRUCTIONS
 
+from . import tools
 
 
 class CredentialsProviderExecutor(BaseServerExecutor):
-  """AgentExecutor for the credentials provider agent."""
+    """AgentExecutor for the credentials provider agent."""
 
-  _system_prompt = """
+    _system_prompt = (
+        """
     You are a credentials provider agent acting as a secure digital wallet.
     Your job is to manage a user's payment methods and shipping addresses.
 
@@ -49,21 +50,22 @@ class CredentialsProviderExecutor(BaseServerExecutor):
     Do not engage in conversation.
 
     %s
-  """ % DEBUG_MODE_INSTRUCTIONS
+  """
+        % DEBUG_MODE_INSTRUCTIONS
+    )
 
-  def __init__(self, supported_extensions: list[dict[str, Any]] = None):
-    """Initializes the CredentialsProviderExecutor.
+    def __init__(self, supported_extensions: list[dict[str, Any]] = None):
+        """Initializes the CredentialsProviderExecutor.
 
-    Args:
-        supported_extensions: A list of extension objects supported by the
-          agent.
-    """
-
-    agent_tools = [
-        tools.handle_create_payment_credential_token,
-        tools.handle_get_payment_method_raw_credentials,
-        tools.handle_get_shipping_address,
-        tools.handle_search_payment_methods,
-        tools.handle_signed_payment_mandate,
-    ]
-    super().__init__(supported_extensions, agent_tools, self._system_prompt)
+        Args:
+            supported_extensions: A list of extension objects supported by the
+              agent.
+        """
+        agent_tools = [
+            tools.handle_create_payment_credential_token,
+            tools.handle_get_payment_method_raw_credentials,
+            tools.handle_get_shipping_address,
+            tools.handle_search_payment_methods,
+            tools.handle_signed_payment_mandate,
+        ]
+        super().__init__(supported_extensions, agent_tools, self._system_prompt)

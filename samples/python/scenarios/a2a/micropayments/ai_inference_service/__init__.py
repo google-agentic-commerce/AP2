@@ -12,6 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Utility class for storing A2A related objects."""
-
-EXTENSION_URI = 'https://github.com/google-agentic-commerce/ap2/v1'
+"""AI inference service with micropayment channels."""

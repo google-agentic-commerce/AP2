@@ -24,14 +24,15 @@ multiple CartMandate objects, assuming the user will select one of the options.
 This is just one of many possible approaches.
 """
 
-from . import tools
 from common.retrying_llm_agent import RetryingLlmAgent
 from common.system_utils import DEBUG_MODE_INSTRUCTIONS
 
+from . import tools
+
 
 shopper = RetryingLlmAgent(
-    model="gemini-2.5-flash",
-    name="shopper",
+    model='gemini-2.5-flash',
+    name='shopper',
     max_retries=5,
     instruction="""
     You are an agent responsible for helping the user shop for products.
@@ -98,7 +99,8 @@ shopper = RetryingLlmAgent(
     9. Monitor the tool's output. If the cart ID is not found, you must inform
       the user and prompt them to try again. If the selection is successful,
       signal a successful update and hand off the process to the root_agent.
-    """ % DEBUG_MODE_INSTRUCTIONS,
+    """
+    % DEBUG_MODE_INSTRUCTIONS,
     tools=[
         tools.create_intent_mandate,
         tools.find_products,

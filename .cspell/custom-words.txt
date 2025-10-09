@@ -110,3 +110,13 @@ Worldpay
 Xdock
 XVCJ
 Zalora
+adidas
+Chargeback
+creds
+gdpr
+merch
+nike
+Oxley
+postgresql
+Sarbanes
+Touchpoints

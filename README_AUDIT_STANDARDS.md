@@ -19,7 +19,7 @@ This proposal provides:
 
 ## 📁 Repository Structure
 
-```
+```text
 AUDIT_LOG_STANDARDS.md          # Main specification document
 schemas/
 ├── audit-event.json            # JSON Schema for audit events
@@ -32,18 +32,21 @@ examples/
 ## 🔍 Key Features
 
 ### Audit Event Schema
+
 - **Mandate Lifecycle Tracking**: Creation, enforcement, execution, violations, resolution
 - **Multi-Participant Support**: Shopping agents, merchants, credentials providers, payment processors
 - **Security & Privacy**: Cryptographic signatures, integrity hashes, PII redaction
 - **Compliance Ready**: PCI DSS, SOX, GDPR considerations built-in
 
 ### Error Response Schema
+
 - **Structured Error Codes**: `AP2-{Category}{SubCategory}{Number}` format
 - **Severity Levels**: Critical, High, Medium, Low with compliance implications
 - **Actionable Guidance**: Suggested actions and resolution steps
 - **Technical Context**: Correlation IDs, stack traces, system context
 
 ### Privacy Features
+
 - **Selective Disclosure**: Share only necessary information across participants
 - **Zero-Knowledge Proofs**: Prove constraints without revealing sensitive data
 - **Retention Management**: Automated compliance with data retention requirements
@@ -51,6 +54,7 @@ examples/
 ## 🏗️ Implementation Approach
 
 ### Phase 1: Foundation
+
 ```python
 from examples.audit_logger_implementation import AP2AuditLogger, AP2ErrorHandler
 
@@ -77,7 +81,9 @@ error_response = error_handler.create_error_response(
 ```
 
 ### Phase 2: Integration
+
 The implementation supports both:
+
 - **Full Enhancement**: Complete audit logging with structured errors
 - **Minimal Integration**: Backward-compatible enhancement of existing code
 
@@ -86,16 +92,19 @@ See `examples/agent_integration_example.py` for detailed integration patterns.
 ## 📊 Industry Standards Compliance
 
 ### Payment Card Industry (PCI DSS)
+
 - ✅ Requirement 10: Comprehensive audit trails
 - ✅ User identification and event tracking
 - ✅ Secure log storage with tamper protection
 
 ### Sarbanes-Oxley (SOX)
+
 - ✅ Internal controls documentation
 - ✅ Non-repudiation and chronological integrity
 - ✅ Financial transaction reporting
 
 ### General Data Protection Regulation (GDPR)
+
 - ✅ Privacy by design
 - ✅ Data minimization and purpose limitation
 - ✅ Right to be forgotten compliance
@@ -103,11 +112,13 @@ See `examples/agent_integration_example.py` for detailed integration patterns.
 ## 🔐 Security Features
 
 ### Cryptographic Integrity
+
 - **Digital Signatures**: Each audit entry signed by generating participant
 - **Integrity Hashes**: SHA-256 hashes prevent tampering
 - **Chain Verification**: Link audit events across participants
 
 ### Privacy Protection
+
 - **PII Redaction**: Automatic removal of personally identifiable information
 - **Data Classification**: Appropriate handling based on sensitivity levels
 - **Access Controls**: Role-based access to audit information
@@ -115,6 +126,7 @@ See `examples/agent_integration_example.py` for detailed integration patterns.
 ## 🎭 Example Scenarios
 
 ### Successful Payment Flow
+
 ```python
 # 1. Intent creation
 logger.log_mandate_event("mandate_creation", "intent_submitted", ...)
@@ -133,6 +145,7 @@ logger.log_mandate_event("mandate_resolution", "payment_confirmed", ...)
 ```
 
 ### Mandate Violation Handling
+
 ```python
 # Detect violation
 logger.log_mandate_violation(
@@ -172,16 +185,19 @@ This is a **community-driven proposal** addressing Issue #46. The standards are:
 ## 📈 Benefits
 
 ### For Developers
+
 - **Consistent Logging**: Standardized format across all AP2 implementations
 - **Better Debugging**: Structured errors with actionable guidance
 - **Compliance Automation**: Built-in regulatory requirement handling
 
 ### For Organizations
+
 - **Trust & Transparency**: Comprehensive audit trails for all transactions
 - **Risk Management**: Early detection of constraint violations and fraud
 - **Regulatory Compliance**: Automated reporting and retention management
 
 ### For the AP2 Ecosystem
+
 - **Interoperability**: Consistent audit data exchange between participants
 - **Quality Assurance**: Standardized error handling and resolution
 - **Community Growth**: Lower barrier to entry with clear guidance

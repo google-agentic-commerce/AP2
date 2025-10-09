@@ -11,6 +11,7 @@ The Agent Payments Protocol requires robust audit logging to ensure accountabili
 Currently, AP2 demonstrates mandate types and payment flows but lacks standardized audit logging and error reporting for mandate-related actions. Without consistent logging standards, developers implement varying approaches, potentially weakening trust guarantees and compliance capabilities.
 
 This document proposes:
+
 - **Standardized audit log schema** for mandate lifecycle events
 - **Comprehensive error taxonomy** for mandate enforcement scenarios
 - **Privacy-preserving patterns** for cross-participant audit verification
@@ -21,16 +22,19 @@ This document proposes:
 ### Payment Industry Requirements
 
 #### PCI DSS (Payment Card Industry Data Security Standard)
+
 - **Requirement 10**: Track and monitor all access to network resources and cardholder data
 - **Log Elements**: User identification, type of event, date/time, success/failure, origination of event, identity of affected data/system/resource
 - **Retention**: Minimum 1 year, with 3 months immediately available for analysis
 
 #### SOX (Sarbanes-Oxley Act) Compliance
+
 - **Section 404**: Internal controls over financial reporting
 - **Requirements**: Detailed transaction logs, segregation of duties tracking, change management audit trails
 - **Focus**: Non-repudiation, tamper-evidence, chronological integrity
 
 #### ISO 20022 Financial Messaging
+
 - **Message Structure**: Standardized business components for payment messages
 - **Audit Requirements**: Transaction traceability, error reporting, status tracking
 - **Components**: Message identification, timestamps, participant identification, transaction details
@@ -38,16 +42,19 @@ This document proposes:
 ### Existing Payment Protocol Patterns
 
 #### Swift MT Messages
+
 - **Format**: Structured message blocks with mandatory fields
 - **Audit Trail**: Each message transformation logged with timestamps and participant details
 - **Error Codes**: Standardized reject codes (e.g., MT195, MT196)
 
 #### ACH (Automated Clearing House)
+
 - **Audit Logs**: Batch-level and transaction-level tracking
 - **Error Taxonomy**: Return codes (R01-R85) with specific violation categories
 - **Settlement**: End-to-end transaction lifecycle logging
 
 #### Real-Time Payment Systems (FedNow, RTP)
+
 - **Immutable Logs**: Cryptographically secured audit trails
 - **Real-time Monitoring**: Immediate fraud detection and compliance checking
 - **Participant Accountability**: Clear attribution and responsibility tracking
@@ -59,6 +66,7 @@ This document proposes:
 Based on codebase analysis, AP2 defines three core mandate types:
 
 #### 1. Intent Mandate
+
 ```python
 class IntentMandate(BaseModel):
     user_cart_confirmation_required: bool
@@ -70,12 +78,14 @@ class IntentMandate(BaseModel):
 ```
 
 **Audit Touchpoints:**
+
 - Creation with user consent
 - Merchant acceptance/rejection
 - Expiration handling
 - Constraint violation detection
 
 #### 2. Cart Mandate
+
 ```python
 class CartMandate(BaseModel):
     contents: CartContents
@@ -83,12 +93,14 @@ class CartMandate(BaseModel):
 ```
 
 **Audit Touchpoints:**
+
 - Cart content finalization
 - Merchant signing/authorization
 - Price/inventory changes
 - User confirmation required events
 
 #### 3. Payment Mandate
+
 ```python
 class PaymentMandate(BaseModel):
     payment_mandate_contents: PaymentMandateContents
@@ -96,6 +108,7 @@ class PaymentMandate(BaseModel):
 ```
 
 **Audit Touchpoints:**
+
 - Payment authorization
 - Network/issuer submission
 - Challenge/response flows
@@ -122,6 +135,7 @@ async def _fail_task(updater: TaskUpdater, error_text: str) -> None:
 ```
 
 **Gaps Identified:**
+
 - No structured error codes
 - Inconsistent error messaging
 - Limited categorization
@@ -212,6 +226,7 @@ async def _fail_task(updater: TaskUpdater, error_text: str) -> None:
 ### Event Details Schema by Category
 
 #### Mandate Creation Events
+
 ```json
 {
   "event_details": {
@@ -244,6 +259,7 @@ async def _fail_task(updater: TaskUpdater, error_text: str) -> None:
 ```
 
 #### Mandate Violation Events
+
 ```json
 {
   "event_details": {
@@ -269,6 +285,7 @@ async def _fail_task(updater: TaskUpdater, error_text: str) -> None:
 ```
 
 #### Payment Execution Events
+
 ```json
 {
   "event_details": {
@@ -302,7 +319,8 @@ async def _fail_task(updater: TaskUpdater, error_text: str) -> None:
 
 Format: `AP2-{Category}{SubCategory}{ErrorNumber}`
 
-#### Categories:
+#### Categories
+
 - **MND**: Mandate-related errors
 - **PAY**: Payment processing errors
 - **AUT**: Authentication/authorization errors
@@ -313,6 +331,7 @@ Format: `AP2-{Category}{SubCategory}{ErrorNumber}`
 ### Mandate Error Codes (MND)
 
 #### Creation Errors (MND-CR-xxx)
+
 - `AP2-MND-CR-001`: Invalid mandate format
 - `AP2-MND-CR-002`: Missing required user consent
 - `AP2-MND-CR-003`: Merchant signature validation failed
@@ -320,6 +339,7 @@ Format: `AP2-{Category}{SubCategory}{ErrorNumber}`
 - `AP2-MND-CR-005`: Amount limits exceeded during creation
 
 #### Enforcement Errors (MND-EN-xxx)
+
 - `AP2-MND-EN-001`: Price constraint violation
 - `AP2-MND-EN-002`: Unauthorized merchant attempted
 - `AP2-MND-EN-003`: Mandate has expired
@@ -330,6 +350,7 @@ Format: `AP2-{Category}{SubCategory}{ErrorNumber}`
 - `AP2-MND-EN-008`: User consent revoked
 
 #### Execution Errors (MND-EX-xxx)
+
 - `AP2-MND-EX-001`: Payment method unavailable
 - `AP2-MND-EX-002`: Insufficient funds
 - `AP2-MND-EX-003`: Network timeout during processing
@@ -377,24 +398,28 @@ Format: `AP2-{Category}{SubCategory}{ErrorNumber}`
 ### Error Severity Levels
 
 #### Critical (System/Security)
+
 - Authentication failures
 - Cryptographic signature failures
 - Data integrity violations
 - Security policy violations
 
 #### High (Business/Compliance)
+
 - Mandate constraint violations
 - Regulatory compliance failures
 - Fraud detection triggers
 - Payment processing failures
 
 #### Medium (Operational)
+
 - Network timeouts
 - Temporary service unavailability
 - Configuration issues
 - Performance degradation
 
 #### Low (Informational)
+
 - Validation warnings
 - Best practice violations
 - Performance metrics
@@ -405,6 +430,7 @@ Format: `AP2-{Category}{SubCategory}{ErrorNumber}`
 ### Cross-Participant Verification Model
 
 #### Selective Disclosure Pattern
+
 ```json
 {
   "shared_log_entry": {
@@ -438,6 +464,7 @@ Format: `AP2-{Category}{SubCategory}{ErrorNumber}`
 ### Multi-Party Log Verification
 
 #### Distributed Audit Trail
+
 ```json
 {
   "distributed_log_entry": {
@@ -467,6 +494,7 @@ Format: `AP2-{Category}{SubCategory}{ErrorNumber}`
 ### Agent Implementation Patterns
 
 #### Shopping Agent Logging
+
 ```python
 from datetime import datetime
 from typing import Dict, Any
@@ -604,7 +632,7 @@ from typing import Dict, Any, List
 ```
 
 class ShoppingAgentWithAudit:
-    def __init__(self):
+    def **init**(self):
         self.audit_logger = AP2AuditLogger("shopping_agent_001", "shopping_agent")
 
     async def create_intent_mandate(self, user_intent: str, constraints: Dict[str, Any]) -> IntentMandate:
@@ -644,7 +672,8 @@ class ShoppingAgentWithAudit:
             )
 
         return is_valid
-```
+
+```python
 
 #### Error Handling Integration
 ```python
@@ -1076,24 +1105,28 @@ async def cross_participant_verification():
 ## Migration Strategy
 
 ### Phase 1: Foundation (Weeks 1-2)
+
 - Implement core audit logging schema
 - Add basic event logging to existing agents
 - Create configuration management system
 - Develop simple error code integration
 
 ### Phase 2: Enhancement (Weeks 3-4)
+
 - Add comprehensive error taxonomy
 - Implement privacy-preserving features
 - Create cross-participant verification
 - Develop monitoring and alerting
 
 ### Phase 3: Integration (Weeks 5-6)
+
 - Full integration with all AP2 agents
 - Performance optimization
 - Compliance validation
 - Documentation and training
 
 ### Phase 4: Advanced Features (Future)
+
 - Zero-knowledge audit proofs
 - Real-time fraud detection
 - Advanced analytics and reporting
@@ -1102,6 +1135,7 @@ async def cross_participant_verification():
 ## Compliance Considerations
 
 ### PCI DSS Requirements
+
 - **Requirement 10.1**: Implement audit trails to link all access to system components
 - **Requirement 10.2**: Implement automated audit trails for all system components
 - **Requirement 10.3**: Record specific audit log entries for all systems
@@ -1109,11 +1143,13 @@ async def cross_participant_verification():
 - **Requirement 10.5**: Secure audit trails to prevent unauthorized access
 
 ### SOX Compliance
+
 - **Section 302**: Corporate responsibility for financial reports
 - **Section 404**: Management assessment of internal controls
 - **Section 409**: Real-time financial disclosure requirements
 
 ### GDPR Considerations
+
 - **Article 25**: Data protection by design and by default
 - **Article 32**: Security of processing
 - **Article 35**: Data protection impact assessment
@@ -1121,21 +1157,25 @@ async def cross_participant_verification():
 ## Future Enhancements
 
 ### Zero-Knowledge Audit Proofs
+
 - Range proofs for amount validation without disclosure
 - Membership proofs for merchant authorization
 - Timestamp proofs for mandate validity
 
 ### Machine Learning Integration
+
 - Anomaly detection for fraud prevention
 - Pattern recognition for compliance violations
 - Predictive analytics for risk assessment
 
 ### Blockchain Integration
+
 - Immutable audit trails
 - Multi-party consensus mechanisms
 - Smart contract automation
 
 ### Regulatory Automation
+
 - Automated compliance reporting
 - Real-time regulatory notifications
 - Cross-jurisdiction requirement handling

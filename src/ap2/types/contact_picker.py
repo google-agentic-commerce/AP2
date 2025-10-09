@@ -23,27 +23,27 @@ Specification:
 https://www.w3.org/TR/contact-picker/
 """
 
-from typing import Optional
 
 from pydantic import BaseModel
 
-CONTACT_ADDRESS_DATA_KEY = "contact_picker.ContactAddress"
+
+CONTACT_ADDRESS_DATA_KEY = 'contact_picker.ContactAddress'
 
 
 class ContactAddress(BaseModel):
-  """The ContactAddress interface represents a physical address.
+    """The ContactAddress interface represents a physical address.
 
-  Specification:
-  https://www.w3.org/TR/contact-picker/#contact-address
-  """
+    Specification:
+    https://www.w3.org/TR/contact-picker/#contact-address
+    """
 
-  city: Optional[str] = None
-  country: Optional[str] = None
-  dependent_locality: Optional[str] = None
-  organization: Optional[str] = None
-  phone_number: Optional[str] = None
-  postal_code: Optional[str] = None
-  recipient: Optional[str] = None
-  region: Optional[str] = None
-  sorting_code: Optional[str] = None
-  address_line: Optional[list[str]] = None
+    city: str | None = None
+    country: str | None = None
+    dependent_locality: str | None = None
+    organization: str | None = None
+    phone_number: str | None = None
+    postal_code: str | None = None
+    recipient: str | None = None
+    region: str | None = None
+    sorting_code: str | None = None
+    address_line: list[str] | None = None

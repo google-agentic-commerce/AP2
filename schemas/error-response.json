@@ -171,7 +171,7 @@
           "description": "Whether this error requires compliance reporting"
         },
         "retention_required": {
-          "type": "boolean", 
+          "type": "boolean",
           "description": "Whether this error must be retained for compliance"
         },
         "audit_trail_needed": {

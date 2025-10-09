@@ -725,12 +725,25 @@ class AP2ErrorHandler:
 # Integration with existing agent code:
 async def _fail_task_with_audit(
     updater: TaskUpdater,
+    audit_logger: AP2AuditLogger,
     error_code: str,
     error_message: str,
     mandate_id: str = None,
+    mandate_type: str = None,
     error_details: Dict[str, Any] = None
 ) -> None:
-    """Enhanced version of existing _fail_task with audit logging."""
+    """
+    Enhanced version of existing _fail_task with audit logging.
+
+    Args:
+        updater: TaskUpdater for failing the task
+        audit_logger: AP2AuditLogger instance for logging audit events
+        error_code: Structured error code (e.g., AP2-MND-EN-001)
+        error_message: Human-readable error message
+        mandate_id: Optional mandate ID for audit context
+        mandate_type: Optional mandate type (required if mandate_id provided)
+        error_details: Optional additional error details
+    """
 
     error_handler = AP2ErrorHandler(audit_logger)
 
@@ -742,7 +755,8 @@ async def _fail_task_with_audit(
         severity="medium",
         message=error_message,
         details=error_details,
-        mandate_id=mandate_id
+        mandate_id=mandate_id,
+        mandate_type=mandate_type
     )
 
     # Create task failure with structured error

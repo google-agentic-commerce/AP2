@@ -73,7 +73,7 @@ check_package_manager() {
 # Install documentation dependencies
 install_dependencies() {
     print_status "Installing documentation dependencies..."
-    
+
     if [ ! -f "requirements-docs.txt" ]; then
         print_error "requirements-docs.txt not found"
         exit 1
@@ -84,7 +84,7 @@ install_dependencies() {
     else
         pip install -r requirements-docs.txt
     fi
-    
+
     print_success "Dependencies installed successfully"
 }
 
@@ -94,7 +94,7 @@ start_server() {
     print_status "Documentation will be available at: http://127.0.0.1:8000"
     print_status "Press Ctrl+C to stop the server"
     echo ""
-    
+
     # Start MkDocs with live reloading
     # Start MkDocs with live reloading
     local cmd_prefix=""
@@ -127,7 +127,7 @@ setup_checks() {
 # Main execution
 main() {
     setup_checks
-    
+
     # Ask user if they want to install/update dependencies
     echo ""
     read -p "Install/update documentation dependencies? (y/N): " -n 1 -r
@@ -138,7 +138,7 @@ main() {
         print_warning "Skipping dependency installation"
         print_status "If you encounter issues, run: $PACKAGE_MANAGER install -r requirements-docs.txt"
     fi
-    
+
     echo ""
     print_success "Setup complete!"
     echo ""

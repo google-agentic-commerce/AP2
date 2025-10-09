@@ -29,6 +29,10 @@ from common.retrying_llm_agent import RetryingLlmAgent
 from common.system_utils import DEBUG_MODE_INSTRUCTIONS
 
 
+# Module-level constants
+_GEMINI_MODEL = "gemini-2.5-flash"
+
+
 async def search_catalog(shopping_intent: str) -> str:
     """Search the merchant's catalog based on shopping intent.
 
@@ -40,7 +44,7 @@ async def search_catalog(shopping_intent: str) -> str:
     """
     # This is a simplified wrapper around the catalog agent for ADK compatibility
     # In production, this would delegate to the full find_items_workflow
-    
+
     intent_text = shopping_intent
     try:
         # If the shopping intent is a JSON object, try to extract the 'query' field.
@@ -69,7 +73,7 @@ async def search_catalog(shopping_intent: str) -> str:
 
 root_agent = RetryingLlmAgent(
     max_retries=3,
-    model="gemini-2.5-flash",
+    model=_GEMINI_MODEL,
     name="merchant_agent",
     instruction="""
           You are a merchant agent responsible for helping customers find

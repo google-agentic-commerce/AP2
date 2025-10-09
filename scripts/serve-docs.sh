@@ -3,7 +3,7 @@
 # Local Documentation Server Helper Script
 # This script sets up and starts a local MkDocs server for AP2 documentation
 
-set -e
+set -euo pipefail
 
 # Colors for output
 RED='\033[0;31m'

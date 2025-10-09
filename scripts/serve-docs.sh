@@ -96,11 +96,12 @@ start_server() {
     echo ""
     
     # Start MkDocs with live reloading
+    # Start MkDocs with live reloading
+    local cmd_prefix=""
     if [ "$PACKAGE_MANAGER" = "uv" ]; then
-        uv run mkdocs serve --dev-addr=127.0.0.1:8000
-    else
-        mkdocs serve --dev-addr=127.0.0.1:8000
+        cmd_prefix="uv run "
     fi
+    ${cmd_prefix}mkdocs serve --dev-addr=127.0.0.1:8000
 }
 
 # Cleanup function

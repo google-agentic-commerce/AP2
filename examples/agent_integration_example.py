@@ -307,9 +307,6 @@ class EnhancedMerchantAgentTools:
     ) -> None:
         """Complete payment processing with comprehensive audit logging."""
 
-        # Simulate payment processing time
-        processing_start = datetime.now(timezone.utc)
-
         # Log payment completion
         processing_time_ms = 1250  # Simulated processing time
         authorization_code = f"AUTH_{uuid.uuid4().hex[:8].upper()}"

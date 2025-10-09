@@ -599,6 +599,10 @@ class AP2AuditLogger:
 
 # Usage examples in existing AP2 agents:
 
+```python
+from typing import Dict, Any, List
+```
+
 class ShoppingAgentWithAudit:
     def __init__(self):
         self.audit_logger = AP2AuditLogger("shopping_agent_001", "shopping_agent")

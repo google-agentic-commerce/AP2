@@ -116,9 +116,10 @@ class EnhancedMerchantAgentTools:
 
         # Validate and parse payment mandate
         try:
+            # Require payment_mandate_id - no fallback to random UUID for security/audit reasons
             payment_mandate = PaymentMandate(
                 PaymentMandateContents(
-                    payment_mandate_id=payment_mandate_data.get("payment_mandate_id", str(uuid.uuid4())),
+                    payment_mandate_id=payment_mandate_data["payment_mandate_id"],  # Direct access - let KeyError be raised
                     payment_details_total=payment_mandate_data.get("payment_details_total", {})
                 )
             )
@@ -136,6 +137,28 @@ class EnhancedMerchantAgentTools:
                     "mandate_structure": "valid"
                 }
             )
+
+        except KeyError as e:
+            # Specific handling for missing payment_mandate_id (security critical)
+            error_response = self.error_handler.create_error_response(
+                error_code="AP2-MND-CR-002",
+                error_category="mandate_creation", 
+                error_type="missing_mandate_id",
+                severity=ErrorSeverity.CRITICAL,
+                message=f"Missing required field in payment mandate: {str(e)}",
+                details={
+                    "missing_field": str(e),
+                    "received_data_keys": list(payment_mandate_data.keys()) if payment_mandate_data else [],
+                    "security_note": "mandate_id is required for audit trail integrity"
+                }
+            )
+
+            await self._fail_task_enhanced(
+                updater,
+                error_response,
+                session_id=session_id
+            )
+            return
 
         except Exception as e:
             # Log validation failure with structured error

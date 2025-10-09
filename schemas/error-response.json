@@ -77,7 +77,7 @@
           "type": "string",
           "enum": [
             "maximum_amount",
-            "minimum_amount", 
+            "minimum_amount",
             "allowed_merchants",
             "allowed_skus",
             "expiry_date",

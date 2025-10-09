@@ -527,6 +527,7 @@ class AP2AuditLogger:
         self,
         violation_type: str,
         mandate_id: str,
+        mandate_type: str,
         expected_value: Any,
         actual_value: Any,
         severity: str = "medium",
@@ -548,7 +549,7 @@ class AP2AuditLogger:
             event_category="mandate_violation",
             event_action=violation_type,
             mandate_id=mandate_id,
-            mandate_type="intent_mandate",  # or derived from context
+            mandate_type=mandate_type,  # Pass the actual mandate type
             event_result="violation_detected",
             event_details=event_details
         )
@@ -615,7 +616,7 @@ class ShoppingAgentWithAudit:
             event_category="mandate_creation",
             event_action="intent_submitted",
             mandate_id=str(uuid.uuid4()),  # Generated mandate ID
-            mandate_type="intent_mandate",
+            mandate_type="intent_mandate",  # Specific to this function - creates intent mandates
             event_details={
                 "user_intent": user_intent,
                 "constraints": constraints,
@@ -655,7 +656,8 @@ class AP2ErrorHandler:
         severity: str,
         message: str,
         details: Dict[str, Any] = None,
-        mandate_id: str = None
+        mandate_id: str = None,
+        mandate_type: str = None
     ) -> Dict[str, Any]:
         """
         Creates standardized error response with audit logging.
@@ -676,12 +678,13 @@ class AP2ErrorHandler:
         }
 
         # Log the error event
-        if mandate_id:
+        # Log error event for audit trail if mandate context is available
+        if mandate_id and mandate_type:
             self.audit_logger.log_mandate_event(
                 event_category="mandate_violation",
                 event_action=error_type,
                 mandate_id=mandate_id,
-                mandate_type="derived_from_context",
+                mandate_type=mandate_type,  # Use the provided mandate type
                 event_result="error",
                 event_details={
                     "error_code": error_code,
@@ -894,11 +897,12 @@ async def complete_payment_scenario():
 
     # 1. Intent Creation
     intent_mandate_id = "intent_abc123"
+    mandate_type = "intent_mandate"  # Determined by the creation context
     audit_logger.log_mandate_event(
         event_category="mandate_creation",
         event_action="intent_submitted",
         mandate_id=intent_mandate_id,
-        mandate_type="intent_mandate",
+        mandate_type=mandate_type,  # Use variable to show proper parameterization
         event_details={
             "natural_language_description": "High top red basketball shoes",
             "max_amount": 150.00,

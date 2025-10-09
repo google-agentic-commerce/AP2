@@ -515,7 +515,7 @@ class AP2ErrorHandler:
             # Convert mandate_type to MandateType enum if it's a string
             if isinstance(mandate_type, str):
                 mandate_type = MandateType(mandate_type)
-                
+
             self.audit_logger.log_mandate_event(
                 event_category=EventCategory.MANDATE_VIOLATION,
                 event_action=error_type,
@@ -541,7 +541,8 @@ class AP2ErrorHandler:
         mandate_type: Union[str, MandateType],
         expected_value: Any,
         actual_value: Any,
-        severity: Union[str, ErrorSeverity] = ErrorSeverity.HIGH
+        severity: Union[str, ErrorSeverity] = ErrorSeverity.HIGH,
+        currency: Optional[str] = None
     ) -> Dict[str, Any]:
         """
         Create error response specifically for mandate violations.
@@ -553,6 +554,7 @@ class AP2ErrorHandler:
             expected_value: Expected value per mandate
             actual_value: Actual attempted value
             severity: Severity of the violation
+            currency: Currency code (e.g., 'USD', 'EUR', 'GBP') from mandate context
 
         Returns:
             Dictionary containing structured error response
@@ -577,12 +579,15 @@ class AP2ErrorHandler:
 
         # Add specific details based on violation type
         if violation_type == "price_exceeded" and isinstance(expected_value, (int, float)):
-            details.update({
+            price_details = {
                 "mandate_limit": expected_value,
                 "attempted_amount": actual_value,
-                "violation_amount": actual_value - expected_value,
-                "currency": "USD"  # Should be provided from context
-            })
+                "violation_amount": actual_value - expected_value
+            }
+            # Only include currency if provided (should come from mandate context)
+            if currency:
+                price_details["currency"] = currency
+            details.update(price_details)
 
         message_map = {
             "price_exceeded": "Transaction amount exceeds mandate maximum",
@@ -661,7 +666,20 @@ def demo_audit_logging():
         mandate_type=MandateType.INTENT_MANDATE,
         expected_value=150.00,
         actual_value=199.99,
-        severity=ErrorSeverity.HIGH
+        severity=ErrorSeverity.HIGH,
+        currency="USD"  # In real usage, extract from mandate context
+    )
+
+    # Example: International transaction with EUR currency
+    print("\n3b. Creating international currency violation...")
+    intl_error_response = error_handler.create_mandate_violation_error(
+        violation_type="price_exceeded",
+        mandate_id="intent_eur456",
+        mandate_type=MandateType.INTENT_MANDATE,
+        expected_value=100.00,
+        actual_value=125.50,
+        severity=ErrorSeverity.HIGH,
+        currency="EUR"  # Properly derived from mandate context
     )
 
     # 4. Log payment execution

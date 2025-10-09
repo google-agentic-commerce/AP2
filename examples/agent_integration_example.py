@@ -142,7 +142,7 @@ class EnhancedMerchantAgentTools:
             # Specific handling for missing payment_mandate_id (security critical)
             error_response = self.error_handler.create_error_response(
                 error_code="AP2-MND-CR-002",
-                error_category="mandate_creation", 
+                error_category="mandate_creation",
                 error_type="missing_mandate_id",
                 severity=ErrorSeverity.CRITICAL,
                 message=f"Missing required field in payment mandate: {str(e)}",
@@ -270,7 +270,7 @@ class EnhancedMerchantAgentTools:
     ) -> Optional[Dict[str, Any]]:
         """
         Validate payment against mandate constraints with audit logging.
-        
+
         This demonstrates how constraint validation can be enhanced with
         structured violation logging.
 
@@ -281,6 +281,9 @@ class EnhancedMerchantAgentTools:
         max_amount = 500.00
 
         if payment_amount > max_amount:
+            # TODO: Extract currency from payment mandate context
+            # currency = payment_mandate.payment_mandate_contents.payment_details_total.get("currency_code", "USD")
+
             # Create structured error response. The error handler will log the violation.
             return self.error_handler.create_mandate_violation_error(
                 violation_type="price_exceeded",
@@ -288,7 +291,8 @@ class EnhancedMerchantAgentTools:
                 mandate_type=MandateType.PAYMENT_MANDATE,
                 expected_value=max_amount,
                 actual_value=payment_amount,
-                severity=ErrorSeverity.HIGH
+                severity=ErrorSeverity.HIGH,
+                currency="USD"  # Should be extracted from mandate context in real implementation
             )
 
         return None

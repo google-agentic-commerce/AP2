@@ -37,7 +37,7 @@ To work on the project documentation locally:
 2. **Manual Setup**:
    ```bash
    # Install documentation dependencies
-   uv pip install -r requirements-docs.txt
+   python3 -m pip install -r requirements-docs.txt
    
    # Start the documentation server
    mkdocs serve

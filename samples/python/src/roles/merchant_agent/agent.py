@@ -33,10 +33,10 @@ from common.system_utils import DEBUG_MODE_INSTRUCTIONS
 
 async def search_catalog(shopping_intent: str) -> str:
     """Search the merchant's catalog based on shopping intent.
-    
+
     Args:
         shopping_intent: A JSON string or text describing what the user wants to buy
-        
+
     Returns:
         A string describing the search results and available products
     """
@@ -49,7 +49,7 @@ async def search_catalog(shopping_intent: str) -> str:
             intent_text = intent_data.get('query', shopping_intent)
         else:
             intent_text = shopping_intent
-            
+
         # For now, return a helpful response - in a full implementation,
         # this would call the catalog_agent.find_items_workflow
         return f"""I found several products matching "{intent_text}". Here are some options:
@@ -59,20 +59,20 @@ async def search_catalog(shopping_intent: str) -> str:
         - Wireless Bluetooth Headphones - $79.99 (On sale)
         - Organic Cotton T-Shirt - $24.99 (Multiple colors)
         - Laptop Backpack - $49.99 (Water-resistant)
-        
+
         Would you like more details about any of these items, or would you like me to search for something more specific?
-        
-        Note: This is the ADK web interface demo. For full catalog functionality, 
+
+        Note: This is the ADK web interface demo. For full catalog functionality,
         use the A2A server mode with other agents."""
-        
+
     except json.JSONDecodeError:
         return f"""I found products related to "{shopping_intent}". Let me show you what's available:
-        
+
         🛍️ Available Products:
         - Featured items matching your search
         - Popular products in this category
         - Special offers and deals
-        
+
         Please let me know if you'd like specific product details or have other questions!"""
 
 
@@ -81,7 +81,7 @@ root_agent = RetryingLlmAgent(
     model="gemini-2.5-flash",
     name="merchant_agent",
     instruction="""
-          You are a merchant agent responsible for helping customers find 
+          You are a merchant agent responsible for helping customers find
           products and providing information about your catalog.
 
           Follow these instructions based on the customer's request:
@@ -117,7 +117,7 @@ root_agent = RetryingLlmAgent(
           - "I'm looking for running shoes" → Use search_catalog tool
           - "Do you have laptops under $1000?" → Search and filter results
           - "What's your return policy?" → Provide merchant policy information
-          
+
           Note: You are running in ADK web interface mode. For full AP2 functionality
           including payment processing, the A2A server mode should be used with
           all four agents (shopping, merchant, credentials, payment processor).

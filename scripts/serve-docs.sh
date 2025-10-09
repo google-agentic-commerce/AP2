@@ -74,11 +74,12 @@ check_package_manager() {
 install_dependencies() {
     print_status "Installing documentation dependencies..."
     
+    if [ ! -f "requirements-docs.txt" ]; then
+        print_error "requirements-docs.txt not found"
+        exit 1
+    fi
+
     if [ "$PACKAGE_MANAGER" = "uv" ]; then
-        if [ ! -f "requirements-docs.txt" ]; then
-            print_error "requirements-docs.txt not found"
-            exit 1
-        fi
         uv pip install -r requirements-docs.txt
     else
         pip install -r requirements-docs.txt

@@ -130,3 +130,45 @@ install the types package directly using this command:
 ```sh
 uv pip install git+https://github.com/google-agentic-commerce/AP2.git@main
 ```
+
+## Documentation
+
+### Viewing Documentation Locally
+
+To view the AP2 documentation locally with live reloading:
+
+1. **Quick Start** (Recommended):
+
+    ```sh
+    bash scripts/serve-docs.sh
+    ```
+
+    This helper script will:
+    - Check for required dependencies
+    - Install MkDocs and documentation dependencies
+    - Start a local server at `http://127.0.0.1:8000`
+    - Enable live reloading for documentation changes
+
+2. **Manual Setup**:
+
+    If you prefer to set up manually:
+
+    ```sh
+    # Install documentation dependencies
+    uv pip install -r requirements-docs.txt
+    
+    # Start the documentation server
+    mkdocs serve
+    ```
+
+3. **Help and Options**:
+
+    ```sh
+    # View help
+    bash scripts/serve-docs.sh --help
+    
+    # Install dependencies only (don't start server)
+    bash scripts/serve-docs.sh --install-only
+    ```
+
+The documentation server supports live reloading - any changes you make to documentation files will automatically refresh in your browser.

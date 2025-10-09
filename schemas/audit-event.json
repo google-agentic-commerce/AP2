@@ -1,0 +1,273 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://agentpayments.org/schemas/audit-event.json",
+  "title": "AP2 Audit Event Schema",
+  "description": "Standard schema for Agent Payments Protocol audit log events",
+  "type": "object",
+  "required": [
+    "audit_log_version",
+    "event_id", 
+    "timestamp",
+    "event_type",
+    "mandate_type",
+    "mandate_id",
+    "participant_id",
+    "participant_type",
+    "event_category",
+    "event_action",
+    "event_result"
+  ],
+  "properties": {
+    "audit_log_version": {
+      "type": "string",
+      "enum": ["1.0"],
+      "description": "Version of the audit log schema"
+    },
+    "event_id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique identifier for this audit event"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp when the event occurred"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": ["mandate_lifecycle_event"],
+      "description": "Type of audit event"
+    },
+    "mandate_type": {
+      "type": "string",
+      "enum": ["intent_mandate", "cart_mandate", "payment_mandate"],
+      "description": "Type of mandate involved in the event"
+    },
+    "mandate_id": {
+      "type": "string",
+      "description": "Unique identifier for the mandate"
+    },
+    "participant_id": {
+      "type": "string",
+      "description": "Identifier of the participant generating this log entry"
+    },
+    "participant_type": {
+      "type": "string",
+      "enum": ["shopping_agent", "merchant_agent", "credentials_provider", "payment_processor"],
+      "description": "Type of participant generating this log entry"
+    },
+    "session_id": {
+      "type": ["string", "null"],
+      "description": "Session identifier for grouping related events"
+    },
+    "transaction_id": {
+      "type": ["string", "null"],
+      "description": "Transaction identifier for payment-related events"
+    },
+    "event_category": {
+      "type": "string",
+      "enum": [
+        "mandate_creation",
+        "mandate_enforcement", 
+        "mandate_execution",
+        "mandate_violation",
+        "mandate_resolution"
+      ],
+      "description": "High-level category of the event"
+    },
+    "event_action": {
+      "type": "string",
+      "description": "Specific action that occurred within the event category"
+    },
+    "event_result": {
+      "type": "string",
+      "enum": ["success", "failure", "warning", "violation_detected", "challenge_required"],
+      "description": "Result or outcome of the event"
+    },
+    "event_details": {
+      "type": "object",
+      "description": "Category-specific details about the event",
+      "properties": {
+        "mandate_version": {
+          "type": "string",
+          "description": "Version of the mandate format"
+        },
+        "user_consent_method": {
+          "type": "string",
+          "enum": ["digital_signature", "biometric", "pin", "multi_factor"],
+          "description": "Method used for user consent"
+        },
+        "consent_timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When user consent was obtained"
+        },
+        "merchant_details": {
+          "type": "object",
+          "properties": {
+            "merchant_id": {"type": "string"},
+            "merchant_name": {"type": "string"},
+            "mcc_code": {"type": "string", "pattern": "^[0-9]{4}$"}
+          }
+        },
+        "payment_method": {
+          "type": "object",
+          "properties": {
+            "method_type": {
+              "type": "string",
+              "enum": ["card", "bank_transfer", "digital_wallet"]
+            },
+            "last_four": {"type": "string", "pattern": "^[0-9]{4}$"},
+            "network": {"type": "string"}
+          }
+        },
+        "amount_details": {
+          "type": "object",
+          "properties": {
+            "currency": {"type": "string", "pattern": "^[A-Z]{3}$"},
+            "amount": {"type": "number", "minimum": 0},
+            "tax_amount": {"type": "number", "minimum": 0},
+            "shipping_amount": {"type": "number", "minimum": 0}
+          }
+        },
+        "geographic_context": {
+          "type": "object", 
+          "properties": {
+            "billing_country": {"type": "string", "pattern": "^[A-Z]{2}$"},
+            "shipping_country": {"type": "string", "pattern": "^[A-Z]{2}$"},
+            "transaction_country": {"type": "string", "pattern": "^[A-Z]{2}$"}
+          }
+        },
+        "violation_type": {
+          "type": "string",
+          "enum": [
+            "price_exceeded",
+            "merchant_unauthorized", 
+            "mandate_expired",
+            "fraud_detected",
+            "sku_not_permitted",
+            "refund_policy_violation",
+            "geographic_restriction",
+            "velocity_limit_exceeded",
+            "user_consent_revoked"
+          ]
+        },
+        "violation_severity": {
+          "type": "string",
+          "enum": ["low", "medium", "high", "critical"]
+        },
+        "expected_value": {
+          "type": ["string", "number", "array"],
+          "description": "The expected value per mandate constraints"
+        },
+        "actual_value": {
+          "type": ["string", "number"],
+          "description": "The actual value that was attempted"
+        },
+        "violation_delta": {
+          "type": ["string", "number"],
+          "description": "Difference between expected and actual values"
+        },
+        "enforcement_action": {
+          "type": "string",
+          "enum": ["blocked", "flagged", "challenged", "allowed_with_warning"],
+          "description": "Action taken in response to violation"
+        },
+        "risk_factors": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "List of risk factors that contributed to the decision"
+        },
+        "compliance_impact": {
+          "type": "object",
+          "properties": {
+            "pci_dss_violation": {"type": "boolean"},
+            "sox_reporting_required": {"type": "boolean"},
+            "regulatory_notification": {"type": "boolean"}
+          }
+        },
+        "payment_processor": {"type": "string"},
+        "network_reference": {"type": "string"},
+        "authorization_code": {"type": "string"},
+        "processing_time_ms": {"type": "integer", "minimum": 0},
+        "3ds_challenge": {
+          "type": "object",
+          "properties": {
+            "challenge_required": {"type": "boolean"},
+            "challenge_type": {
+              "type": "string",
+              "enum": ["otp", "biometric", "password", "device_verification"]
+            },
+            "challenge_result": {
+              "type": "string",
+              "enum": ["success", "failure", "timeout", "abandoned"]
+            }
+          }
+        },
+        "issuer_response": {
+          "type": "object",
+          "properties": {
+            "response_code": {"type": "string"},
+            "response_description": {"type": "string"},
+            "avs_result": {"type": "string"},
+            "cvv_result": {"type": "string"}
+          }
+        },
+        "settlement_details": {
+          "type": "object",
+          "properties": {
+            "settlement_date": {"type": "string", "format": "date"},
+            "batch_id": {"type": "string"},
+            "clearing_network": {"type": "string"}
+          }
+        }
+      }
+    },
+    "security_context": {
+      "type": "object",
+      "required": ["encryption_algorithm", "digital_signature", "integrity_hash"],
+      "properties": {
+        "encryption_algorithm": {
+          "type": "string",
+          "enum": ["AES-256-GCM", "ChaCha20-Poly1305"],
+          "description": "Encryption algorithm used for sensitive data"
+        },
+        "digital_signature": {
+          "type": "string",
+          "description": "Digital signature of the audit event"
+        },
+        "integrity_hash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$",
+          "description": "SHA-256 hash of the audit event for integrity verification"
+        }
+      }
+    },
+    "privacy_metadata": {
+      "type": "object",
+      "required": ["pii_redacted", "data_classification", "retention_period_days"],
+      "properties": {
+        "pii_redacted": {
+          "type": "boolean",
+          "description": "Whether personally identifiable information has been redacted"
+        },
+        "data_classification": {
+          "type": "string",
+          "enum": ["public", "internal", "confidential", "financial_transaction"],
+          "description": "Data classification level"
+        },
+        "retention_period_days": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of days to retain this audit record"
+        },
+        "shared_with": {
+          "type": "array",
+          "items": {"type": "string"},
+          "description": "List of external parties this audit data may be shared with"
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

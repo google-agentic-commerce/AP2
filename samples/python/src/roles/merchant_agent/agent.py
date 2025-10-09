@@ -25,8 +25,6 @@ This agent can be run in two modes:
 """
 
 import json
-from . import tools
-from .sub_agents.catalog_agent import find_items_workflow
 from common.retrying_llm_agent import RetryingLlmAgent
 from common.system_utils import DEBUG_MODE_INSTRUCTIONS
 

@@ -117,7 +117,7 @@
           "description": "Expiry date of the mandate"
         },
         "current_date": {
-          "type": "string", 
+          "type": "string",
           "format": "date-time",
           "description": "Current date/time when expiry was checked"
         },

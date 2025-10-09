@@ -40,38 +40,31 @@ async def search_catalog(shopping_intent: str) -> str:
     """
     # This is a simplified wrapper around the catalog agent for ADK compatibility
     # In production, this would delegate to the full find_items_workflow
+    
+    intent_text = shopping_intent
     try:
-        # Parse the shopping intent if it's JSON
-        if shopping_intent.strip().startswith('{'):
-            intent_data = json.loads(shopping_intent)
+        # If the shopping intent is a JSON object, try to extract the 'query' field.
+        intent_data = json.loads(shopping_intent)
+        if isinstance(intent_data, dict):
             intent_text = intent_data.get('query', shopping_intent)
-        else:
-            intent_text = shopping_intent
-
-        # For now, return a helpful response - in a full implementation,
-        # this would call the catalog_agent.find_items_workflow
-        return f"""I found several products matching "{intent_text}". Here are some options:
-
-        🛍️ Product Search Results:
-        - Premium Running Shoes - $129.99 (Free shipping)
-        - Wireless Bluetooth Headphones - $79.99 (On sale)
-        - Organic Cotton T-Shirt - $24.99 (Multiple colors)
-        - Laptop Backpack - $49.99 (Water-resistant)
-
-        Would you like more details about any of these items, or would you like me to search for something more specific?
-
-        Note: This is the ADK web interface demo. For full catalog functionality,
-        use the A2A server mode with other agents."""
-
     except json.JSONDecodeError:
-        return f"""I found products related to "{shopping_intent}". Let me show you what's available:
+        # Not a valid JSON, so treat as plain text. intent_text is already set.
+        pass
 
-        🛍️ Available Products:
-        - Featured items matching your search
-        - Popular products in this category
-        - Special offers and deals
+    # For now, return a helpful response - in a full implementation,
+    # this would call the catalog_agent.find_items_workflow
+    return f"""I found several products matching "{intent_text}". Here are some options:
 
-        Please let me know if you'd like specific product details or have other questions!"""
+    🛍️ Product Search Results:
+    - Premium Running Shoes - $129.99 (Free shipping)
+    - Wireless Bluetooth Headphones - $79.99 (On sale)
+    - Organic Cotton T-Shirt - $24.99 (Multiple colors)
+    - Laptop Backpack - $49.99 (Water-resistant)
+
+    Would you like more details about any of these items, or would you like me to search for something more specific?
+
+    Note: This is the ADK web interface demo. For full catalog functionality,
+    use the A2A server mode with other agents."""
 
 
 root_agent = RetryingLlmAgent(

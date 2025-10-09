@@ -1,287 +1,322 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://agentpayments.org/schemas/error-response.json",
-  "title": "AP2 Error Response Schema",
-  "description": "Standard schema for Agent Payments Protocol error responses",
-  "type": "object",
-  "required": [
-    "error_code",
-    "error_category", 
-    "error_type",
-    "severity",
-    "timestamp",
-    "message"
-  ],
-  "properties": {
-    "error_code": {
-      "type": "string",
-      "pattern": "^AP2-[A-Z]{3}-[A-Z]{2}-[0-9]{3}$",
-      "description": "Structured error code in format AP2-{Category}{SubCategory}{Number}",
-      "examples": [
-        "AP2-MND-CR-001",
-        "AP2-MND-EN-002", 
-        "AP2-PAY-PR-001"
-      ]
-    },
-    "error_category": {
-      "type": "string",
-      "enum": [
-        "mandate_creation",
-        "mandate_enforcement",
-        "mandate_execution", 
-        "mandate_violation",
-        "payment_processing",
-        "authentication",
-        "validation",
-        "network_communication",
-        "system_error"
-      ],
-      "description": "High-level category of the error"
-    },
-    "error_type": {
-      "type": "string",
-      "description": "Specific type of error within the category",
-      "examples": [
-        "price_constraint_violation",
-        "merchant_unauthorized",
-        "mandate_expired",
-        "invalid_signature",
-        "network_timeout"
-      ]
-    },
-    "severity": {
-      "type": "string",
-      "enum": ["low", "medium", "high", "critical"],
-      "description": "Severity level of the error"
-    },
-    "timestamp": {
-      "type": "string",
-      "format": "date-time",
-      "description": "ISO 8601 timestamp when the error occurred"
-    },
-    "message": {
-      "type": "string",
-      "minLength": 1,
-      "maxLength": 500,
-      "description": "Human-readable error message"
-    },
-    "details": {
-      "type": "object",
-      "description": "Error-specific details and context",
-      "properties": {
-        "mandate_id": {
-          "type": "string",
-          "description": "ID of the mandate associated with the error"
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "$id": "https://agentpayments.org/schemas/error-response.json",
+    "title": "AP2 Error Response Schema",
+    "description": "Standard schema for Agent Payments Protocol error responses",
+    "type": "object",
+    "required": [
+        "error_code",
+        "error_category",
+        "error_type",
+        "severity",
+        "timestamp",
+        "message"
+    ],
+    "properties": {
+        "error_code": {
+            "type": "string",
+            "pattern": "^AP2-[A-Z]{3}-[A-Z]{2}-[0-9]{3}$",
+            "description": "Structured error code in format AP2-{Category}{SubCategory}{Number}",
+            "examples": [
+                "AP2-MND-CR-001",
+                "AP2-MND-EN-002",
+                "AP2-PAY-PR-001"
+            ]
         },
-        "constraint_type": {
-          "type": "string",
-          "enum": [
-            "maximum_amount",
-            "minimum_amount", 
-            "allowed_merchants",
-            "allowed_skus",
-            "expiry_date",
-            "refund_policy",
-            "geographic_restriction"
-          ],
-          "description": "Type of constraint that was violated"
+        "error_category": {
+            "type": "string",
+            "enum": [
+                "mandate_creation",
+                "mandate_enforcement",
+                "mandate_execution",
+                "mandate_violation",
+                "payment_processing",
+                "authentication",
+                "validation",
+                "network_communication",
+                "system_error"
+            ],
+            "description": "High-level category of the error"
         },
-        "mandate_limit": {
-          "type": ["number", "string", "array"],
-          "description": "The limit defined in the mandate"
+        "error_type": {
+            "type": "string",
+            "description": "Specific type of error within the category",
+            "examples": [
+                "price_constraint_violation",
+                "merchant_unauthorized",
+                "mandate_expired",
+                "invalid_signature",
+                "network_timeout"
+            ]
         },
-        "attempted_value": {
-          "type": ["number", "string"],
-          "description": "The value that was attempted"
+        "severity": {
+            "type": "string",
+            "enum": [
+                "low",
+                "medium",
+                "high",
+                "critical"
+            ],
+            "description": "Severity level of the error"
         },
-        "violation_amount": {
-          "type": "number",
-          "description": "Amount by which the limit was exceeded"
+        "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "description": "ISO 8601 timestamp when the error occurred"
         },
-        "currency": {
-          "type": "string",
-          "pattern": "^[A-Z]{3}$",
-          "description": "Currency code for monetary amounts"
+        "message": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 500,
+            "description": "Human-readable error message"
         },
-        "merchant_id": {
-          "type": "string",
-          "description": "Merchant identifier involved in the error"
+        "details": {
+            "type": "object",
+            "description": "Error-specific details and context",
+            "properties": {
+                "mandate_id": {
+                    "type": "string",
+                    "description": "ID of the mandate associated with the error"
+                },
+                "constraint_type": {
+                    "type": "string",
+                    "enum": [
+                        "maximum_amount",
+                        "minimum_amount",
+                        "allowed_merchants",
+                        "allowed_skus",
+                        "expiry_date",
+                        "refund_policy",
+                        "geographic_restriction"
+                    ],
+                    "description": "Type of constraint that was violated"
+                },
+                "mandate_limit": {
+                    "type": [
+                        "number",
+                        "string",
+                        "array"
+                    ],
+                    "description": "The limit defined in the mandate"
+                },
+                "attempted_value": {
+                    "type": [
+                        "number",
+                        "string"
+                    ],
+                    "description": "The value that was attempted"
+                },
+                "violation_amount": {
+                    "type": "number",
+                    "description": "Amount by which the limit was exceeded"
+                },
+                "currency": {
+                    "type": "string",
+                    "pattern": "^[A-Z]{3}$",
+                    "description": "Currency code for monetary amounts"
+                },
+                "merchant_id": {
+                    "type": "string",
+                    "description": "Merchant identifier involved in the error"
+                },
+                "sku": {
+                    "type": "string",
+                    "description": "Product SKU involved in the error"
+                },
+                "expiry_date": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Expiry date of the mandate"
+                },
+                "current_date": {
+                    "type": "string",
+                    "format": "date-time",
+                    "description": "Current date/time when expiry was checked"
+                },
+                "payment_method": {
+                    "type": "string",
+                    "description": "Payment method involved in the error"
+                },
+                "processor_error_code": {
+                    "type": "string",
+                    "description": "Error code from the payment processor"
+                },
+                "network_error": {
+                    "type": "object",
+                    "properties": {
+                        "http_status": {
+                            "type": "integer"
+                        },
+                        "timeout_ms": {
+                            "type": "integer"
+                        },
+                        "retry_count": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "validation_failures": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "field": {
+                                "type": "string"
+                            },
+                            "expected": {
+                                "type": "string"
+                            },
+                            "actual": {
+                                "type": "string"
+                            },
+                            "rule": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "description": "List of validation failures"
+                }
+            }
         },
-        "sku": {
-          "type": "string",
-          "description": "Product SKU involved in the error"
+        "suggested_actions": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+            },
+            "minItems": 1,
+            "maxItems": 5,
+            "description": "List of suggested actions to resolve the error"
         },
-        "expiry_date": {
-          "type": "string",
-          "format": "date-time",
-          "description": "Expiry date of the mandate"
-        },
-        "current_date": {
-          "type": "string", 
-          "format": "date-time",
-          "description": "Current date/time when expiry was checked"
-        },
-        "payment_method": {
-          "type": "string",
-          "description": "Payment method involved in the error"
-        },
-        "processor_error_code": {
-          "type": "string",
-          "description": "Error code from the payment processor"
-        },
-        "network_error": {
-          "type": "object",
-          "properties": {
-            "http_status": {"type": "integer"},
-            "timeout_ms": {"type": "integer"},
-            "retry_count": {"type": "integer"}
-          }
-        },
-        "validation_failures": {
-          "type": "array",
-          "items": {
+        "compliance_context": {
             "type": "object",
             "properties": {
-              "field": {"type": "string"},
-              "expected": {"type": "string"},
-              "actual": {"type": "string"},
-              "rule": {"type": "string"}
+                "requires_reporting": {
+                    "type": "boolean",
+                    "description": "Whether this error requires compliance reporting"
+                },
+                "retention_required": {
+                    "type": "boolean",
+                    "description": "Whether this error must be retained for compliance"
+                },
+                "audit_trail_needed": {
+                    "type": "boolean",
+                    "description": "Whether an audit trail is required for this error"
+                },
+                "pci_dss_relevant": {
+                    "type": "boolean",
+                    "description": "Whether this error is relevant to PCI DSS compliance"
+                },
+                "sox_reportable": {
+                    "type": "boolean",
+                    "description": "Whether this error must be reported under SOX"
+                },
+                "gdpr_relevant": {
+                    "type": "boolean",
+                    "description": "Whether this error involves GDPR-protected data"
+                }
             }
-          },
-          "description": "List of validation failures"
+        },
+        "technical_context": {
+            "type": "object",
+            "properties": {
+                "validation_rule": {
+                    "type": "string",
+                    "description": "The validation rule that failed"
+                },
+                "code_location": {
+                    "type": "string",
+                    "description": "Code location where the error occurred"
+                },
+                "correlation_id": {
+                    "type": "string",
+                    "format": "uuid",
+                    "description": "Correlation ID for tracing this error across systems"
+                },
+                "stack_trace": {
+                    "type": "string",
+                    "description": "Stack trace (if applicable and in debug mode)"
+                },
+                "system_context": {
+                    "type": "object",
+                    "properties": {
+                        "agent_version": {
+                            "type": "string"
+                        },
+                        "environment": {
+                            "type": "string"
+                        },
+                        "timestamp": {
+                            "type": "string",
+                            "format": "date-time"
+                        }
+                    }
+                }
+            }
+        },
+        "resolution_info": {
+            "type": "object",
+            "properties": {
+                "can_retry": {
+                    "type": "boolean",
+                    "description": "Whether the operation can be retried"
+                },
+                "retry_after_seconds": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Suggested delay before retry"
+                },
+                "max_retries": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "description": "Maximum number of retries allowed"
+                },
+                "alternative_actions": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    },
+                    "description": "Alternative actions that might succeed"
+                },
+                "escalation_required": {
+                    "type": "boolean",
+                    "description": "Whether this error requires human intervention"
+                }
+            }
         }
-      }
     },
-    "suggested_actions": {
-      "type": "array",
-      "items": {
-        "type": "string",
-        "minLength": 1,
-        "maxLength": 200
-      },
-      "minItems": 1,
-      "maxItems": 5,
-      "description": "List of suggested actions to resolve the error"
-    },
-    "compliance_context": {
-      "type": "object",
-      "properties": {
-        "requires_reporting": {
-          "type": "boolean",
-          "description": "Whether this error requires compliance reporting"
-        },
-        "retention_required": {
-          "type": "boolean", 
-          "description": "Whether this error must be retained for compliance"
-        },
-        "audit_trail_needed": {
-          "type": "boolean",
-          "description": "Whether an audit trail is required for this error"
-        },
-        "pci_dss_relevant": {
-          "type": "boolean",
-          "description": "Whether this error is relevant to PCI DSS compliance"
-        },
-        "sox_reportable": {
-          "type": "boolean",
-          "description": "Whether this error must be reported under SOX"
-        },
-        "gdpr_relevant": {
-          "type": "boolean",
-          "description": "Whether this error involves GDPR-protected data"
+    "additionalProperties": false,
+    "examples": [
+        {
+            "error_code": "AP2-MND-EN-001",
+            "error_category": "mandate_enforcement",
+            "error_type": "price_constraint_violation",
+            "severity": "high",
+            "timestamp": "2025-10-09T14:30:00.000Z",
+            "message": "Transaction amount exceeds mandate maximum",
+            "details": {
+                "mandate_id": "mandate_12345",
+                "constraint_type": "maximum_amount",
+                "mandate_limit": 100.00,
+                "attempted_value": 129.99,
+                "violation_amount": 29.99,
+                "currency": "USD"
+            },
+            "suggested_actions": [
+                "Reduce transaction amount to within mandate limits",
+                "Request new mandate with higher limits",
+                "Split transaction into multiple smaller amounts"
+            ],
+            "compliance_context": {
+                "requires_reporting": true,
+                "retention_required": true,
+                "audit_trail_needed": true
+            },
+            "technical_context": {
+                "validation_rule": "amount <= mandate.maximum_amount",
+                "correlation_id": "550e8400-e29b-41d4-a716-446655440000"
+            }
         }
-      }
-    },
-    "technical_context": {
-      "type": "object",
-      "properties": {
-        "validation_rule": {
-          "type": "string",
-          "description": "The validation rule that failed"
-        },
-        "code_location": {
-          "type": "string",
-          "description": "Code location where the error occurred"
-        },
-        "correlation_id": {
-          "type": "string",
-          "format": "uuid",
-          "description": "Correlation ID for tracing this error across systems"
-        },
-        "stack_trace": {
-          "type": "string",
-          "description": "Stack trace (if applicable and in debug mode)"
-        },
-        "system_context": {
-          "type": "object",
-          "properties": {
-            "agent_version": {"type": "string"},
-            "environment": {"type": "string"},
-            "timestamp": {"type": "string", "format": "date-time"}
-          }
-        }
-      }
-    },
-    "resolution_info": {
-      "type": "object",
-      "properties": {
-        "can_retry": {
-          "type": "boolean",
-          "description": "Whether the operation can be retried"
-        },
-        "retry_after_seconds": {
-          "type": "integer",
-          "minimum": 0,
-          "description": "Suggested delay before retry"
-        },
-        "max_retries": {
-          "type": "integer",
-          "minimum": 0,
-          "description": "Maximum number of retries allowed"
-        },
-        "alternative_actions": {
-          "type": "array",
-          "items": {"type": "string"},
-          "description": "Alternative actions that might succeed"
-        },
-        "escalation_required": {
-          "type": "boolean",
-          "description": "Whether this error requires human intervention"
-        }
-      }
-    }
-  },
-  "additionalProperties": false,
-  "examples": [
-    {
-      "error_code": "AP2-MND-EN-001",
-      "error_category": "mandate_enforcement",
-      "error_type": "price_constraint_violation",
-      "severity": "high",
-      "timestamp": "2025-10-09T14:30:00.000Z",
-      "message": "Transaction amount exceeds mandate maximum",
-      "details": {
-        "mandate_id": "mandate_12345",
-        "constraint_type": "maximum_amount",
-        "mandate_limit": 100.00,
-        "attempted_value": 129.99,
-        "violation_amount": 29.99,
-        "currency": "USD"
-      },
-      "suggested_actions": [
-        "Reduce transaction amount to within mandate limits",
-        "Request new mandate with higher limits",
-        "Split transaction into multiple smaller amounts"
-      ],
-      "compliance_context": {
-        "requires_reporting": true,
-        "retention_required": true,
-        "audit_trail_needed": true
-      },
-      "technical_context": {
-        "validation_rule": "amount <= mandate.maximum_amount",
-        "correlation_id": "550e8400-e29b-41d4-a716-446655440000"
-      }
-    }
-  ]
+    ]
 }

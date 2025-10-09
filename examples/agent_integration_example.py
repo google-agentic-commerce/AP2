@@ -14,7 +14,7 @@ from datetime import datetime, timezone
 
 # Import our audit logging implementation
 from examples.audit_logger_implementation import (
-    AP2AuditLogger, 
+    AP2AuditLogger,
     AP2ErrorHandler,
     EventCategory,
     MandateType,
@@ -34,10 +34,10 @@ class PaymentMandateContents:
 class TaskUpdater:
     def __init__(self):
         self.messages = []
-    
+
     async def failed(self, message):
         self.messages.append(("failed", message))
-    
+
     async def complete(self, message=None):
         self.messages.append(("complete", message))
 
@@ -45,18 +45,18 @@ class TaskUpdater:
 class EnhancedMerchantAgentTools:
     """
     Enhanced version of merchant agent tools with audit logging integration.
-    
+
     This shows how the existing merchant agent tools can be enhanced with
     comprehensive audit logging and structured error handling while
     maintaining backward compatibility.
     """
-    
+
     def __init__(self, merchant_id: str = "merchant_agent_001"):
         """Initialize enhanced merchant agent with audit logging."""
         self.audit_logger = AP2AuditLogger(merchant_id, "merchant_agent")
         self.error_handler = AP2ErrorHandler(self.audit_logger)
         self.merchant_id = merchant_id
-    
+
     async def initiate_payment_enhanced(
         self,
         data_parts: list[dict[str, Any]],
@@ -66,13 +66,13 @@ class EnhancedMerchantAgentTools:
     ) -> None:
         """
         Enhanced version of initiate_payment with comprehensive audit logging.
-        
+
         This is based on the existing merchant_agent/tools.py:initiate_payment
         but adds structured audit logging and error handling.
         """
         # Start audit logging for payment initiation
         session_id = str(uuid.uuid4())
-        
+
         self.audit_logger.log_mandate_event(
             event_category=EventCategory.MANDATE_EXECUTION,
             event_action="payment_initiation_requested",
@@ -85,14 +85,14 @@ class EnhancedMerchantAgentTools:
                 "has_current_task": current_task is not None
             }
         )
-        
+
         # Extract payment mandate (original logic)
         payment_mandate_data = None
         for part in data_parts:
             if "ap2.mandates.PaymentMandate" in part:
                 payment_mandate_data = part["ap2.mandates.PaymentMandate"]
                 break
-        
+
         if not payment_mandate_data:
             # Enhanced error handling with audit logging
             error_response = self.error_handler.create_error_response(
@@ -106,14 +106,14 @@ class EnhancedMerchantAgentTools:
                     "expected_key": "ap2.mandates.PaymentMandate"
                 }
             )
-            
+
             await self._fail_task_enhanced(
-                updater, 
+                updater,
                 error_response,
                 session_id=session_id
             )
             return
-        
+
         # Validate and parse payment mandate
         try:
             payment_mandate = PaymentMandate(
@@ -123,7 +123,7 @@ class EnhancedMerchantAgentTools:
                 )
             )
             mandate_id = payment_mandate.payment_mandate_contents.payment_mandate_id
-            
+
             # Log successful mandate validation
             self.audit_logger.log_mandate_event(
                 event_category=EventCategory.MANDATE_EXECUTION,
@@ -136,7 +136,7 @@ class EnhancedMerchantAgentTools:
                     "mandate_structure": "valid"
                 }
             )
-            
+
         except Exception as e:
             # Log validation failure with structured error
             error_response = self.error_handler.create_error_response(
@@ -150,21 +150,21 @@ class EnhancedMerchantAgentTools:
                     "received_data_keys": list(payment_mandate_data.keys()) if payment_mandate_data else []
                 }
             )
-            
+
             await self._fail_task_enhanced(
                 updater,
                 error_response,
                 session_id=session_id
             )
             return
-        
+
         # Extract risk data (original logic)
         risk_data = None
         for part in data_parts:
             if "risk_data" in part:
                 risk_data = part["risk_data"]
                 break
-        
+
         if not risk_data:
             # Enhanced error handling for missing risk data
             error_response = self.error_handler.create_error_response(
@@ -179,7 +179,7 @@ class EnhancedMerchantAgentTools:
                 },
                 mandate_id=mandate_id
             )
-            
+
             await self._fail_task_enhanced(
                 updater,
                 error_response,
@@ -187,13 +187,13 @@ class EnhancedMerchantAgentTools:
                 session_id=session_id
             )
             return
-        
+
         # Validate payment amount against mandate constraints
         payment_amount = payment_mandate.payment_mandate_contents.payment_details_total.get("value", 0)
         if not self._validate_payment_constraints(mandate_id, payment_amount, session_id):
             # Constraint validation will have already logged the violation
             return
-        
+
         # Log successful constraint validation
         self.audit_logger.log_mandate_event(
             event_category=EventCategory.MANDATE_ENFORCEMENT,
@@ -207,10 +207,10 @@ class EnhancedMerchantAgentTools:
                 "validation_result": "passed"
             }
         )
-        
+
         # Proceed with payment processing (original logic would continue here)
         transaction_id = str(uuid.uuid4())
-        
+
         # Log payment initiation
         self.audit_logger.log_payment_execution(
             mandate_id=mandate_id,
@@ -221,7 +221,7 @@ class EnhancedMerchantAgentTools:
             processor="example_processor",
             transaction_id=transaction_id
         )
-        
+
         # Simulate successful payment completion
         await self._complete_payment_enhanced(
             mandate_id=mandate_id,
@@ -230,7 +230,7 @@ class EnhancedMerchantAgentTools:
             updater=updater,
             session_id=session_id
         )
-    
+
     def _validate_payment_constraints(
         self,
         mandate_id: str,
@@ -239,13 +239,13 @@ class EnhancedMerchantAgentTools:
     ) -> bool:
         """
         Validate payment against mandate constraints with audit logging.
-        
+
         This demonstrates how constraint validation can be enhanced with
         structured violation logging.
         """
         # Example constraint: maximum payment amount of $500
         max_amount = 500.00
-        
+
         if payment_amount > max_amount:
             # Log the violation with structured details
             self.audit_logger.log_mandate_violation(
@@ -256,7 +256,7 @@ class EnhancedMerchantAgentTools:
                 severity=ErrorSeverity.HIGH,
                 enforcement_action="blocked"
             )
-            
+
             # Create structured error response
             error_response = self.error_handler.create_mandate_violation_error(
                 violation_type="price_exceeded",
@@ -265,11 +265,11 @@ class EnhancedMerchantAgentTools:
                 actual_value=payment_amount,
                 severity=ErrorSeverity.HIGH
             )
-            
+
             return False
-        
+
         return True
-    
+
     async def _complete_payment_enhanced(
         self,
         mandate_id: str,
@@ -279,14 +279,14 @@ class EnhancedMerchantAgentTools:
         session_id: str
     ) -> None:
         """Complete payment processing with comprehensive audit logging."""
-        
+
         # Simulate payment processing time
         processing_start = datetime.now(timezone.utc)
-        
+
         # Log payment completion
         processing_time_ms = 1250  # Simulated processing time
         authorization_code = f"AUTH_{uuid.uuid4().hex[:8].upper()}"
-        
+
         self.audit_logger.log_payment_execution(
             mandate_id=mandate_id,
             action="payment_completed",
@@ -298,7 +298,7 @@ class EnhancedMerchantAgentTools:
             processing_time_ms=processing_time_ms,
             transaction_id=transaction_id
         )
-        
+
         # Log final resolution
         self.audit_logger.log_mandate_event(
             event_category=EventCategory.MANDATE_RESOLUTION,
@@ -314,7 +314,7 @@ class EnhancedMerchantAgentTools:
                 "confirmation_timestamp": datetime.now(timezone.utc).isoformat()
             }
         )
-        
+
         # Complete the task (original logic)
         success_message = {
             "status": "success",
@@ -322,9 +322,9 @@ class EnhancedMerchantAgentTools:
             "authorization_code": authorization_code,
             "amount": amount
         }
-        
+
         await updater.complete(message=success_message)
-    
+
     async def _fail_task_enhanced(
         self,
         updater: TaskUpdater,
@@ -334,7 +334,7 @@ class EnhancedMerchantAgentTools:
     ) -> None:
         """
         Enhanced version of _fail_task with structured error responses.
-        
+
         This replaces the simple error text with a comprehensive structured
         error response that includes audit logging.
         """
@@ -353,7 +353,7 @@ class EnhancedMerchantAgentTools:
                     "failure_reason": error_response["message"]
                 }
             )
-        
+
         # Fail the task with structured error
         await updater.failed(message=error_response)
 
@@ -362,19 +362,19 @@ class EnhancedMerchantAgentTools:
 class BackwardCompatibleMerchantAgent:
     """
     Example showing backward-compatible integration.
-    
+
     This shows how existing agent code can be gradually enhanced with
     audit logging without breaking existing functionality.
     """
-    
+
     def __init__(self, merchant_id: str = "merchant_agent_001"):
         # Add audit logging to existing initialization
         self.audit_logger = AP2AuditLogger(merchant_id, "merchant_agent")
         self.error_handler = AP2ErrorHandler(self.audit_logger)
-        
+
         # Existing initialization code would remain unchanged
         self.merchant_id = merchant_id
-    
+
     async def initiate_payment(
         self,
         data_parts: list[dict[str, Any]],
@@ -384,13 +384,13 @@ class BackwardCompatibleMerchantAgent:
     ) -> None:
         """
         Existing initiate_payment method with minimal audit logging integration.
-        
+
         This shows how to add basic audit logging to existing methods
         without major refactoring.
         """
         # Add minimal audit logging at the start
         session_id = str(uuid.uuid4())
-        
+
         try:
             # Log payment initiation attempt
             self.audit_logger.log_mandate_event(
@@ -400,21 +400,21 @@ class BackwardCompatibleMerchantAgent:
                 mandate_type="payment_mandate",
                 session_id=session_id
             )
-            
+
             # EXISTING CODE STARTS HERE (unchanged)
             payment_mandate_data = None
             for part in data_parts:
                 if "ap2.mandates.PaymentMandate" in part:
                     payment_mandate_data = part["ap2.mandates.PaymentMandate"]
                     break
-            
+
             if not payment_mandate_data:
                 await self._fail_task(updater, "Missing payment_mandate.")
                 return
-            
+
             # More existing code would follow...
             # EXISTING CODE ENDS HERE
-            
+
             # Add minimal audit logging at the end
             mandate_id = payment_mandate_data.get("payment_mandate_id", "unknown")
             self.audit_logger.log_mandate_event(
@@ -425,7 +425,7 @@ class BackwardCompatibleMerchantAgent:
                 session_id=session_id,
                 event_result="success"
             )
-            
+
         except Exception as e:
             # Enhanced error handling with audit logging
             error_response = self.error_handler.create_error_response(
@@ -435,25 +435,25 @@ class BackwardCompatibleMerchantAgent:
                 severity="high",
                 message=f"Unexpected error during payment processing: {str(e)}"
             )
-            
+
             await updater.failed(message=error_response)
-    
+
     async def _fail_task(self, updater: TaskUpdater, error_text: str) -> None:
         """
         Minimally enhanced version of existing _fail_task method.
-        
+
         This shows how to gradually enhance error handling while maintaining
         backward compatibility.
         """
         # Create basic structured error from simple text
         error_response = self.error_handler.create_error_response(
             error_code="AP2-MND-EX-999",
-            error_category="mandate_execution", 
+            error_category="mandate_execution",
             error_type="general_error",
             severity="medium",
             message=error_text
         )
-        
+
         # Maintain backward compatibility by also logging simple text
         await updater.failed(message=error_response)
 
@@ -461,13 +461,13 @@ class BackwardCompatibleMerchantAgent:
 # Demo function showing integration examples
 async def demo_agent_integration():
     """Demonstrate how audit logging integrates with AP2 agents."""
-    
+
     print("=== AP2 Agent Integration Demo ===\n")
-    
+
     # 1. Enhanced agent with full audit logging
     print("1. Testing enhanced merchant agent...")
     enhanced_agent = EnhancedMerchantAgentTools("enhanced_merchant_001")
-    
+
     # Simulate payment request data
     payment_data = [
         {
@@ -480,17 +480,17 @@ async def demo_agent_integration():
             "risk_data": {"risk_score": 0.1, "device_id": "device_123"}
         }
     ]
-    
+
     updater = TaskUpdater()
     await enhanced_agent.initiate_payment_enhanced(payment_data, updater, debug_mode=True)
     print(f"Enhanced agent completed with {len(updater.messages)} messages")
-    
+
     # 2. Test constraint violation
     print("\n2. Testing constraint violation...")
     violation_data = [
         {
             "ap2.mandates.PaymentMandate": {
-                "payment_mandate_id": "mandate_violation_456", 
+                "payment_mandate_id": "mandate_violation_456",
                 "payment_details_total": {"value": 999.99, "currency": "USD"}  # Exceeds $500 limit
             }
         },
@@ -498,18 +498,18 @@ async def demo_agent_integration():
             "risk_data": {"risk_score": 0.3, "device_id": "device_456"}
         }
     ]
-    
+
     violation_updater = TaskUpdater()
     await enhanced_agent.initiate_payment_enhanced(violation_data, violation_updater)
     print(f"Violation test completed with {len(violation_updater.messages)} messages")
-    
+
     # 3. Backward compatible agent
     print("\n3. Testing backward-compatible agent...")
     compat_agent = BackwardCompatibleMerchantAgent("compat_merchant_001")
     compat_updater = TaskUpdater()
     await compat_agent.initiate_payment(payment_data, compat_updater)
     print(f"Compatible agent completed with {len(compat_updater.messages)} messages")
-    
+
     print("\n=== Integration Demo Complete ===")
 
 

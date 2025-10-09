@@ -12,7 +12,7 @@ Currently, AP2 demonstrates mandate types and payment flows but lacks standardiz
 
 This document proposes:
 - **Standardized audit log schema** for mandate lifecycle events
-- **Comprehensive error taxonomy** for mandate enforcement scenarios  
+- **Comprehensive error taxonomy** for mandate enforcement scenarios
 - **Privacy-preserving patterns** for cross-participant audit verification
 - **Implementation guidance** with practical examples
 
@@ -25,7 +25,7 @@ This document proposes:
 - **Log Elements**: User identification, type of event, date/time, success/failure, origination of event, identity of affected data/system/resource
 - **Retention**: Minimum 1 year, with 3 months immediately available for analysis
 
-#### SOX (Sarbanes-Oxley Act) Compliance  
+#### SOX (Sarbanes-Oxley Act) Compliance
 - **Section 404**: Internal controls over financial reporting
 - **Requirements**: Detailed transaction logs, segregation of duties tracking, change management audit trails
 - **Focus**: Non-repudiation, tamper-evidence, chronological integrity
@@ -75,7 +75,7 @@ class IntentMandate(BaseModel):
 - Expiration handling
 - Constraint violation detection
 
-#### 2. Cart Mandate  
+#### 2. Cart Mandate
 ```python
 class CartMandate(BaseModel):
     contents: CartContents
@@ -304,7 +304,7 @@ Format: `AP2-{Category}{SubCategory}{ErrorNumber}`
 
 #### Categories:
 - **MND**: Mandate-related errors
-- **PAY**: Payment processing errors  
+- **PAY**: Payment processing errors
 - **AUT**: Authentication/authorization errors
 - **VAL**: Validation errors
 - **NET**: Network/communication errors
@@ -319,7 +319,7 @@ Format: `AP2-{Category}{SubCategory}{ErrorNumber}`
 - `AP2-MND-CR-004`: Mandate expiry date invalid
 - `AP2-MND-CR-005`: Amount limits exceeded during creation
 
-#### Enforcement Errors (MND-EN-xxx)  
+#### Enforcement Errors (MND-EN-xxx)
 - `AP2-MND-EN-001`: Price constraint violation
 - `AP2-MND-EN-002`: Unauthorized merchant attempted
 - `AP2-MND-EN-003`: Mandate has expired
@@ -378,7 +378,7 @@ Format: `AP2-{Category}{SubCategory}{ErrorNumber}`
 
 #### Critical (System/Security)
 - Authentication failures
-- Cryptographic signature failures  
+- Cryptographic signature failures
 - Data integrity violations
 - Security policy violations
 
@@ -449,7 +449,7 @@ Format: `AP2-{Category}{SubCategory}{ErrorNumber}`
         "signature": "shopping_agent_signature"
       },
       "merchant_agent": {
-        "event_fragment": "merchant_agent_perspective", 
+        "event_fragment": "merchant_agent_perspective",
         "signature": "merchant_agent_signature"
       },
       "credentials_provider": {
@@ -478,7 +478,7 @@ class AP2AuditLogger:
     def __init__(self, participant_id: str, participant_type: str):
         self.participant_id = participant_id
         self.participant_type = participant_type
-    
+
     def log_mandate_event(
         self,
         event_category: str,
@@ -495,7 +495,7 @@ class AP2AuditLogger:
         """
         event_id = str(uuid.uuid4())
         timestamp = datetime.utcnow().isoformat() + "Z"
-        
+
         audit_entry = {
             "audit_log_version": "1.0",
             "event_id": event_id,
@@ -514,15 +514,15 @@ class AP2AuditLogger:
             "security_context": self._create_security_context(event_id, timestamp),
             "privacy_metadata": self._create_privacy_metadata()
         }
-        
+
         # Add integrity hash
         audit_entry["security_context"]["integrity_hash"] = self._compute_integrity_hash(audit_entry)
-        
+
         # Store and/or transmit the audit entry
         self._store_audit_entry(audit_entry)
-        
+
         return audit_entry
-    
+
     def log_mandate_violation(
         self,
         violation_type: str,
@@ -543,7 +543,7 @@ class AP2AuditLogger:
             "enforcement_action": enforcement_action,
             "compliance_impact": self._assess_compliance_impact(violation_type, severity)
         }
-        
+
         return self.log_mandate_event(
             event_category="mandate_violation",
             event_action=violation_type,
@@ -552,14 +552,14 @@ class AP2AuditLogger:
             event_result="violation_detected",
             event_details=event_details
         )
-    
+
     def _create_security_context(self, event_id: str, timestamp: str) -> Dict[str, Any]:
         return {
             "encryption_algorithm": "AES-256-GCM",
             "digital_signature": self._sign_event(event_id, timestamp),
             # integrity_hash added after audit entry completion
         }
-    
+
     def _create_privacy_metadata(self) -> Dict[str, Any]:
         return {
             "pii_redacted": True,
@@ -567,22 +567,22 @@ class AP2AuditLogger:
             "retention_period_days": 2555,  # 7 years for financial records
             "shared_with": ["issuer", "network"]
         }
-    
+
     def _compute_integrity_hash(self, audit_entry: Dict[str, Any]) -> str:
         # Create a copy without the integrity_hash field
         entry_copy = audit_entry.copy()
         if "security_context" in entry_copy and "integrity_hash" in entry_copy["security_context"]:
             del entry_copy["security_context"]["integrity_hash"]
-        
+
         # Compute hash of canonical JSON representation
         canonical_json = json.dumps(entry_copy, sort_keys=True, separators=(',', ':'))
         return hashlib.sha256(canonical_json.encode()).hexdigest()
-    
+
     def _sign_event(self, event_id: str, timestamp: str) -> str:
         # Placeholder for digital signature implementation
         # In production, would use agent's private key
         return f"signature_of_{event_id}_{timestamp}"
-    
+
     def _assess_compliance_impact(self, violation_type: str, severity: str) -> Dict[str, bool]:
         # Determine compliance reporting requirements
         return {
@@ -590,7 +590,7 @@ class AP2AuditLogger:
             "sox_reporting_required": severity in ["high", "critical"],
             "regulatory_notification": severity == "critical"
         }
-    
+
     def _store_audit_entry(self, audit_entry: Dict[str, Any]) -> None:
         # Implementation would store to secure audit log storage
         # Options: secure database, immutable ledger, encrypted file system
@@ -601,7 +601,7 @@ class AP2AuditLogger:
 class ShoppingAgentWithAudit:
     def __init__(self):
         self.audit_logger = AP2AuditLogger("shopping_agent_001", "shopping_agent")
-    
+
     async def create_intent_mandate(self, user_intent: str, constraints: Dict[str, Any]) -> IntentMandate:
         # Create intent mandate
         intent_mandate = IntentMandate(
@@ -609,7 +609,7 @@ class ShoppingAgentWithAudit:
             intent_expiry=constraints.get("expiry"),
             # ... other fields
         )
-        
+
         # Log mandate creation
         self.audit_logger.log_mandate_event(
             event_category="mandate_creation",
@@ -622,12 +622,12 @@ class ShoppingAgentWithAudit:
                 "user_consent_method": "digital_signature"
             }
         )
-        
+
         return intent_mandate
-    
+
     async def validate_merchant(self, merchant_id: str, allowed_merchants: List[str]) -> bool:
         is_valid = merchant_id in allowed_merchants
-        
+
         if not is_valid:
             self.audit_logger.log_mandate_violation(
                 violation_type="merchant_unauthorized",
@@ -637,7 +637,7 @@ class ShoppingAgentWithAudit:
                 severity="high",
                 enforcement_action="blocked"
             )
-        
+
         return is_valid
 ```
 
@@ -646,7 +646,7 @@ class ShoppingAgentWithAudit:
 class AP2ErrorHandler:
     def __init__(self, audit_logger: AP2AuditLogger):
         self.audit_logger = audit_logger
-    
+
     def create_error_response(
         self,
         error_code: str,
@@ -674,7 +674,7 @@ class AP2ErrorHandler:
                 "correlation_id": str(uuid.uuid4())
             }
         }
-        
+
         # Log the error event
         if mandate_id:
             self.audit_logger.log_mandate_event(
@@ -689,9 +689,9 @@ class AP2ErrorHandler:
                     "error_severity": severity
                 }
             )
-        
+
         return error_response
-    
+
     def _get_suggested_actions(self, error_code: str) -> List[str]:
         suggestions_map = {
             "AP2-MND-EN-001": [
@@ -711,7 +711,7 @@ class AP2ErrorHandler:
             ]
         }
         return suggestions_map.get(error_code, ["Contact support for assistance"])
-    
+
     def _get_compliance_context(self, severity: str) -> Dict[str, bool]:
         return {
             "requires_reporting": severity in ["high", "critical"],
@@ -721,16 +721,16 @@ class AP2ErrorHandler:
 
 # Integration with existing agent code:
 async def _fail_task_with_audit(
-    updater: TaskUpdater, 
+    updater: TaskUpdater,
     error_code: str,
     error_message: str,
     mandate_id: str = None,
     error_details: Dict[str, Any] = None
 ) -> None:
     """Enhanced version of existing _fail_task with audit logging."""
-    
+
     error_handler = AP2ErrorHandler(audit_logger)
-    
+
     # Create structured error response
     error_response = error_handler.create_error_response(
         error_code=error_code,
@@ -741,7 +741,7 @@ async def _fail_task_with_audit(
         details=error_details,
         mandate_id=mandate_id
     )
-    
+
     # Create task failure with structured error
     error_message = updater.new_agent_message(
         parts=[
@@ -773,7 +773,7 @@ CREATE TABLE ap2_audit_events (
     security_context JSONB,
     privacy_metadata JSONB,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    
+
     -- Indexes for common queries
     INDEX idx_mandate_id (mandate_id),
     INDEX idx_participant (participant_id, participant_type),
@@ -794,7 +794,7 @@ CREATE TABLE ap2_mandate_violations (
     enforcement_action VARCHAR(50) NOT NULL,
     compliance_impact JSONB,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    
+
     INDEX idx_mandate_violations_mandate_id (mandate_id),
     INDEX idx_mandate_violations_type (violation_type),
     INDEX idx_mandate_violations_severity (violation_severity)
@@ -814,7 +814,7 @@ CREATE TABLE ap2_errors (
     compliance_context JSONB,
     technical_context JSONB,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    
+
     INDEX idx_error_code (error_code),
     INDEX idx_error_severity (severity),
     INDEX idx_error_category (error_category)
@@ -828,14 +828,14 @@ CREATE TABLE ap2_errors (
 audit_logging:
   enabled: true
   version: "1.0"
-  
+
   # Storage configuration
   storage:
     backend: "postgresql"  # postgresql|mongodb|elasticsearch
     connection_string: "${AUDIT_DB_CONNECTION_STRING}"
     encryption_at_rest: true
     backup_retention_days: 2555  # 7 years
-  
+
   # Event filtering
   events:
     log_all_mandate_events: true
@@ -843,14 +843,14 @@ audit_logging:
     log_failed_payments: true
     log_violations: true
     log_performance_metrics: false
-  
+
   # Privacy controls
   privacy:
     redact_pii: true
     redact_payment_details: true
     allow_cross_participant_sharing: true
     zero_knowledge_proofs: false  # Future enhancement
-  
+
   # Compliance settings
   compliance:
     pci_dss_mode: true
@@ -858,7 +858,7 @@ audit_logging:
     gdpr_compliance: true
     data_retention_days: 2555
     automatic_reporting: true
-  
+
   # Performance settings
   performance:
     async_logging: true
@@ -891,7 +891,7 @@ error_codes:
 # Complete audit trail for successful payment flow
 async def complete_payment_scenario():
     audit_logger = AP2AuditLogger("shopping_agent_001", "shopping_agent")
-    
+
     # 1. Intent Creation
     intent_mandate_id = "intent_abc123"
     audit_logger.log_mandate_event(
@@ -906,11 +906,11 @@ async def complete_payment_scenario():
             "user_consent_method": "biometric"
         }
     )
-    
+
     # 2. Cart Finalization
     cart_mandate_id = "cart_def456"
     audit_logger.log_mandate_event(
-        event_category="mandate_creation", 
+        event_category="mandate_creation",
         event_action="cart_finalized",
         mandate_id=cart_mandate_id,
         mandate_type="cart_mandate",
@@ -921,7 +921,7 @@ async def complete_payment_scenario():
             "merchant_signature": "jwt_signature_xyz"
         }
     )
-    
+
     # 3. Payment Authorization
     payment_mandate_id = "payment_ghi789"
     audit_logger.log_mandate_event(
@@ -936,7 +936,7 @@ async def complete_payment_scenario():
             "user_verification": "completed"
         }
     )
-    
+
     # 4. Payment Processing
     audit_logger.log_mandate_event(
         event_category="mandate_execution",
@@ -950,13 +950,13 @@ async def complete_payment_scenario():
             "processing_time_ms": 1250
         }
     )
-    
+
     # 5. Completion
     audit_logger.log_mandate_event(
         event_category="mandate_resolution",
         event_action="payment_confirmed",
         mandate_id=payment_mandate_id,
-        mandate_type="payment_mandate", 
+        mandate_type="payment_mandate",
         transaction_id="txn_jkl012",
         event_result="success",
         event_details={
@@ -973,12 +973,12 @@ async def complete_payment_scenario():
 async def price_violation_scenario():
     audit_logger = AP2AuditLogger("merchant_agent_001", "merchant_agent")
     error_handler = AP2ErrorHandler(audit_logger)
-    
+
     # Attempt to process payment exceeding mandate limits
     mandate_id = "mandate_abc123"
     mandate_limit = 100.00
     attempted_amount = 150.00
-    
+
     # Log the violation
     violation_log = audit_logger.log_mandate_violation(
         violation_type="price_exceeded",
@@ -988,7 +988,7 @@ async def price_violation_scenario():
         severity="high",
         enforcement_action="blocked"
     )
-    
+
     # Create structured error response
     error_response = error_handler.create_error_response(
         error_code="AP2-MND-EN-001",
@@ -1004,7 +1004,7 @@ async def price_violation_scenario():
         },
         mandate_id=mandate_id
     )
-    
+
     # This would be returned to the user/calling agent
     return error_response
 ```
@@ -1014,7 +1014,7 @@ async def price_violation_scenario():
 ```python
 async def cross_participant_verification():
     # Multiple participants contribute to audit trail
-    
+
     # Shopping agent perspective
     shopping_logger = AP2AuditLogger("shopping_agent_001", "shopping_agent")
     shopping_log = shopping_logger.log_mandate_event(
@@ -1024,17 +1024,17 @@ async def cross_participant_verification():
         mandate_type="payment_mandate",
         event_details={"shopping_agent_perspective": "user_authorized_payment"}
     )
-    
-    # Merchant agent perspective  
+
+    # Merchant agent perspective
     merchant_logger = AP2AuditLogger("merchant_agent_001", "merchant_agent")
     merchant_log = merchant_logger.log_mandate_event(
         event_category="mandate_execution",
-        event_action="payment_initiated", 
+        event_action="payment_initiated",
         mandate_id="mandate_xyz789",
         mandate_type="payment_mandate",
         event_details={"merchant_agent_perspective": "received_valid_payment_mandate"}
     )
-    
+
     # Credentials provider perspective
     creds_logger = AP2AuditLogger("creds_provider_001", "credentials_provider")
     creds_log = creds_logger.log_mandate_event(
@@ -1044,7 +1044,7 @@ async def cross_participant_verification():
         mandate_type="payment_mandate",
         event_details={"credentials_provider_perspective": "provided_payment_credentials"}
     )
-    
+
     # Verification: All participants agree on key facts
     assert shopping_log["mandate_id"] == merchant_log["mandate_id"] == creds_log["mandate_id"]
     assert shopping_log["event_category"] == merchant_log["event_category"] == "mandate_execution"

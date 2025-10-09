@@ -61,7 +61,7 @@ error_handler = AP2ErrorHandler(logger)
 # Log mandate events
 logger.log_mandate_event(
     event_category="mandate_creation",
-    event_action="intent_submitted", 
+    event_action="intent_submitted",
     mandate_id="mandate_123",
     mandate_type="intent_mandate"
 )
@@ -119,7 +119,7 @@ See `examples/agent_integration_example.py` for detailed integration patterns.
 # 1. Intent creation
 logger.log_mandate_event("mandate_creation", "intent_submitted", ...)
 
-# 2. Cart finalization  
+# 2. Cart finalization
 logger.log_mandate_event("mandate_creation", "cart_finalized", ...)
 
 # 3. Payment authorization
@@ -147,7 +147,7 @@ logger.log_mandate_violation(
 # Create structured error
 error_response = error_handler.create_mandate_violation_error(
     violation_type="price_exceeded",
-    mandate_id="mandate_123", 
+    mandate_id="mandate_123",
     expected_value=100.00,
     actual_value=150.00
 )

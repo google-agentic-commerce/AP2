@@ -214,8 +214,15 @@ class EnhancedMerchantAgentTools:
 
         # Validate payment amount against mandate constraints
         payment_amount = payment_mandate.payment_mandate_contents.payment_details_total.get("value", 0)
-        if not self._validate_payment_constraints(mandate_id, payment_amount, session_id):
-            # Constraint validation will have already logged the violation
+        validation_error = self._validate_payment_constraints(mandate_id, payment_amount, session_id)
+        if validation_error:
+            # Constraint validation failed - fail the task with structured error
+            await self._fail_task_enhanced(
+                updater,
+                validation_error,
+                mandate_id=mandate_id,
+                session_id=session_id
+            )
             return
 
         # Log successful constraint validation
@@ -260,29 +267,22 @@ class EnhancedMerchantAgentTools:
         mandate_id: str,
         payment_amount: float,
         session_id: str
-    ) -> bool:
+    ) -> Optional[Dict[str, Any]]:
         """
         Validate payment against mandate constraints with audit logging.
-
+        
         This demonstrates how constraint validation can be enhanced with
         structured violation logging.
+
+        Returns:
+            An error response dictionary if validation fails, otherwise None.
         """
         # Example constraint: maximum payment amount of $500
         max_amount = 500.00
 
         if payment_amount > max_amount:
-            # Log the violation with structured details
-            self.audit_logger.log_mandate_violation(
-                violation_type="price_exceeded",
-                mandate_id=mandate_id,
-                expected_value=max_amount,
-                actual_value=payment_amount,
-                severity=ErrorSeverity.HIGH,
-                enforcement_action="blocked"
-            )
-
-            # Create structured error response
-            error_response = self.error_handler.create_mandate_violation_error(
+            # Create structured error response. The error handler will log the violation.
+            return self.error_handler.create_mandate_violation_error(
                 violation_type="price_exceeded",
                 mandate_id=mandate_id,
                 mandate_type=MandateType.PAYMENT_MANDATE,
@@ -291,9 +291,7 @@ class EnhancedMerchantAgentTools:
                 severity=ErrorSeverity.HIGH
             )
 
-            return False
-
-        return True
+        return None
 
     async def _complete_payment_enhanced(
         self,

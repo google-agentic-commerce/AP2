@@ -114,16 +114,19 @@ cleanup() {
 # Set up cleanup on exit
 trap cleanup EXIT
 
-# Main execution
-main() {
+# Setup checks function to avoid duplication
+setup_checks() {
     print_header
-    
     print_status "Setting up AP2 local documentation server..."
     echo ""
-    
     check_directory
     check_python
     check_package_manager
+}
+
+# Main execution
+main() {
+    setup_checks
     
     # Ask user if they want to install/update dependencies
     echo ""
@@ -164,10 +167,7 @@ case "${1:-}" in
         exit 0
         ;;
     --install-only)
-        print_header
-        check_directory
-        check_python
-        check_package_manager
+        setup_checks
         install_dependencies
         print_success "Dependencies installed. Run '$0' to start the server."
         exit 0

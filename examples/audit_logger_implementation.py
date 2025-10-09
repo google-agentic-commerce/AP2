@@ -37,7 +37,7 @@ import hashlib
 import logging
 from datetime import datetime, timezone
 from typing import Dict, Any, List, Optional, Union
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, field
 from enum import Enum
 
 # Configure logging
@@ -97,7 +97,9 @@ class PrivacyMetadata:
     pii_redacted: bool = True
     data_classification: str = 'financial_transaction'
     retention_period_days: int = 2555  # 7 years
-    shared_with: List[str] = field(default_factory=lambda: ['issuer', 'network'])
+    shared_with: List[str] = field(
+        default_factory=lambda: ['issuer', 'network']
+    )
 
 
 @dataclass
@@ -707,6 +709,9 @@ def demo_audit_logging():
         actual_value=125.50,
         severity=ErrorSeverity.HIGH,
         currency='EUR',  # Properly derived from mandate context
+    )
+    print(
+        f"International error created with ID: {intl_error_response.get('technical_context', {}).get('correlation_id', 'N/A')}"
     )
 
     # 4. Log payment execution

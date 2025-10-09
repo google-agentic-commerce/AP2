@@ -25,8 +25,6 @@ This agent can be run in two modes:
 """
 
 import json
-from . import tools
-from .sub_agents.catalog_agent import find_items_workflow
 from common.retrying_llm_agent import RetryingLlmAgent
 from common.system_utils import DEBUG_MODE_INSTRUCTIONS
 
@@ -78,8 +76,8 @@ async def search_catalog(shopping_intent: str) -> str:
 
 root_agent = RetryingLlmAgent(
     max_retries=3,
-    model="gemini-2.5-flash",
-    name="merchant_agent",
+    model='gemini-2.5-flash',
+    name='merchant_agent',
     instruction="""
           You are a merchant agent responsible for helping customers find
           products and providing information about your catalog.
@@ -121,7 +119,8 @@ root_agent = RetryingLlmAgent(
           Note: You are running in ADK web interface mode. For full AP2 functionality
           including payment processing, the A2A server mode should be used with
           all four agents (shopping, merchant, credentials, payment processor).
-          """ % DEBUG_MODE_INSTRUCTIONS,
+          """
+    % DEBUG_MODE_INSTRUCTIONS,
     tools=[
         search_catalog,
     ],

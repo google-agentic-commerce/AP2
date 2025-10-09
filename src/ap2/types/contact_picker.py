@@ -23,7 +23,6 @@ Specification:
 https://www.w3.org/TR/contact-picker/
 """
 
-
 from pydantic import BaseModel
 
 

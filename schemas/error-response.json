@@ -19,7 +19,7 @@
       "description": "Structured error code in format AP2-{Category}{SubCategory}{Number}",
       "examples": [
         "AP2-MND-CR-001",
-        "AP2-MND-EN-002", 
+        "AP2-MND-EN-002",
         "AP2-PAY-PR-001"
       ]
     },

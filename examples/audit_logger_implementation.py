@@ -91,11 +91,7 @@ class PrivacyMetadata:
     pii_redacted: bool = True
     data_classification: str = "financial_transaction"
     retention_period_days: int = 2555  # 7 years
-    shared_with: List[str] = None
-
-    def __post_init__(self):
-        if self.shared_with is None:
-            self.shared_with = ["issuer", "network"]
+    shared_with: List[str] = field(default_factory=lambda: ["issuer", "network"])
 
 
 @dataclass

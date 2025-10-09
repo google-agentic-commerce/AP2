@@ -208,3 +208,6 @@ gradle-app.setting
 ### Gradle Patch ###
 # Java heap dump
 *.hprof
+
+# Private development notes and contributions
+PRIVATE_CONTRIBUTIONS/

@@ -73,7 +73,7 @@ build, codify, and adopt A2A as the standard protocol for AI agent payments.
 -   [Natural Intelligence](https://www.naturalint.com/)
 -   [Nuvei](https://www.nuvei.com/)
 -   [Okta](https://www.okta.com/)
--   [PANW](https://www.paloaltonetworks.com/)
+-   [Palo Alto Networks](https://www.paloaltonetworks.com/)
 -   [PayPal](https://www.paypal.com/)
 -   [Paynet](https://www.paynet.ro/)
 -   [Payoneer](https://www.payoneer.com/)

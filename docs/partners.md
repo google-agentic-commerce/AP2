@@ -90,7 +90,7 @@ build, codify, and adopt A2A as the standard protocol for AI agent payments.
 -   [Riskified](https://www.riskified.com/)
 -   [Salesforce](https://www.salesforce.com/)
 -   [Sardine](https://www.sardine.ai/)
--   [Shopcider.com](https://www.shopcider.com/)
+-   [Cider](https://www.shopcider.com/)
 -   [Shopee](https://shopee.com/)
 -   [Shopify](https://www.shopify.com/)
 -   [Signifyd](https://www.signifyd.com/)

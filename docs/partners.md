@@ -119,8 +119,7 @@ build, codify, and adopt A2A as the standard protocol for AI agent payments.
 -   [Zalora](https://www.zalora.com/)
 
 Many AP2 partners were featured in the keynote at Google's
-[Gemini at Work](https://www.googlecloudevents.com/gemini-at-work) on Oct
-9th, 2025.
+[Gemini at Work](https://www.googlecloudevents.com/gemini-at-work) on Oct 9th, 2025.
 
 ![AP2 at Gemini at Work Intro](./assets/ap2-at-gemini-at-work-intro.webp)
 ![AP2 at Gemini at Work Logos](./assets/ap2-at-gemini-at-work-logos.webp)

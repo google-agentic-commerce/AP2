@@ -54,7 +54,7 @@ build, codify, and adopt A2A as the standard protocol for AI agent payments.
 -   [JCB](https://www.global.jcb/en/)
 -   [JKOPay](https://www.jkopay.com/)
 -   [JusPay](https://juspay.in/)
--   [KCP (Korea Cyber Payment)](http://kcp.co.kr/)
+-   [KCP (Korea Cyber Payment)](https://kcp.co.kr/)
 -   [Kaia Network](https://kaia.network/)
 -   [Klarna](https://www.klarna.com/)
 -   [Lazada](https://www.lazada.com/)

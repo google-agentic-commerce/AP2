@@ -118,7 +118,7 @@ build, codify, and adopt A2A as the standard protocol for AI agent payments.
 -   [Zalopay](https://zalopay.vn/)
 -   [Zalora](https://www.zalora.com/)
 
-Many AP2 parters were featured in the keynote at Google's
+Many AP2 partners were featured in the keynote at Google's
 [Gemini at Work](https://www.googlecloudevents.com/gemini-at-work) on Oct
 9th, 2025.
 

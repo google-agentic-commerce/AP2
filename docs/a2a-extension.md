@@ -252,28 +252,34 @@ The following listing shows a JSON rendering of a PaymentMandate Message.
       "kind": "data",
       "data": {
         "ap2.mandates.PaymentMandate": {
-          "payment_details": {
-            "cart_mandate": "<user-signed hash of the cart mandate>",
-            "payment_request_id": "order_shoes_123",
-            "merchant_agent_card": {
-              "name": "MerchantAgent"
+          "payment_mandate_contents": {
+            "payment_mandate_id": "pm_12345",
+            "payment_details_id": "order_shoes_123",
+            "payment_details_total": {
+              "label": "Total",
+              "amount": {
+                "currency": "USD",
+                "value": 120.0
+              },
+              "pending": null,
+              "refund_period": 30
             },
-            "payment_method": {
-              "supported_methods": "CARD",
-              "data": {
+            "payment_response": {
+              "request_id": "order_shoes_123",
+              "method_name": "CARD",
+              "details": {
                 "token": "xyz789"
-              }
+              },
+              "shipping_address": null,
+              "shipping_option": null,
+              "payer_name": null,
+              "payer_email": null,
+              "payer_phone": null
             },
-            "amount": {
-              "currency": "USD",
-              "value": 120.0
-            },
-            "risk_info": {
-              "device_imei": "abc123"
-            },
-            "display_info": "<image bytes>"
+            "merchant_agent": "MerchantAgent",
+            "timestamp": "2025-08-26T19:36:36.377022Z"
           },
-          "creation_time": "2025-08-26T19:36:36.377022Z"
+          "user_authorization": "eyJhbGciOiJFUzI1NksiLCJraWQiOiJkaWQ6ZXhhbXBsZ..."
         }
       }
     }

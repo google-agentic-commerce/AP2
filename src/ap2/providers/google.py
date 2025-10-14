@@ -199,7 +199,6 @@ class GoogleGeminiProvider(LLMProvider):
                         if chunk.candidates and chunk.candidates[0].content:
                             for part in chunk.candidates[0].content.parts:
                                 if hasattr(part, 'text') and part.text:
-                                    accumulated_content += part.text
                                     yield LLMResponse(
                                         content=part.text,
                                         metadata={'chunk': True},

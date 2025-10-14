@@ -137,7 +137,11 @@ class ProviderAgnosticLlmAgent(LlmAgent):
             messages = []
             for message in ctx.history:
                 if hasattr(message, 'author') and hasattr(message, 'content'):
-                    role = 'assistant' if message.author == ctx.agent.name else 'user'
+                    role = (
+                        'assistant'
+                        if message.author == ctx.agent.name
+                        else 'user'
+                    )
                     messages.append(f'{role}: {message.content}')
             return '\n'.join(messages)
         else:
@@ -180,7 +184,9 @@ class RetryingLlmAgent(ProviderAgnosticLlmAgent):
         # Create provider config for backward compatibility
         config_fields = {f.name for f in dataclasses.fields(LLMConfig)}
         config_kwargs = {k: v for k, v in kwargs.items() if k in config_fields}
-        agent_kwargs = {k: v for k, v in kwargs.items() if k not in config_fields}
+        agent_kwargs = {
+            k: v for k, v in kwargs.items() if k not in config_fields
+        }
         config = LLMConfig(provider=provider, model=model, **config_kwargs)
 
         super().__init__(

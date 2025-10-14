@@ -10,7 +10,7 @@ import os
 from abc import ABC, abstractmethod
 from collections.abc import AsyncGenerator
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 
 @dataclass
@@ -39,7 +39,9 @@ class LLMConfig:
 
         api_key = os.getenv(f'{provider.upper()}_API_KEY')
         base_url = os.getenv(f'{provider.upper()}_BASE_URL')
-        model = os.getenv(f'{provider.upper()}_MODEL', default_models.get(provider, 'gpt-4'))
+        model = os.getenv(
+            f'{provider.upper()}_MODEL', default_models.get(provider, 'gpt-4')
+        )
 
         return cls(
             provider=provider,
@@ -51,7 +53,9 @@ class LLMConfig:
             temperature=float(
                 os.getenv(f'{provider.upper()}_TEMPERATURE', '0.7')
             ),
-            max_tokens=int(val) if (val := os.getenv(f"{provider.upper()}_MAX_TOKENS")) else None,
+            max_tokens=int(val)
+            if (val := os.getenv(f'{provider.upper()}_MAX_TOKENS'))
+            else None,
         )
 
     @classmethod

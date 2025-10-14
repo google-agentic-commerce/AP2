@@ -2,16 +2,23 @@
 
 import logging
 import os
+from typing import TYPE_CHECKING
 
 from collections.abc import AsyncGenerator
 from typing import Any
 
+
+if TYPE_CHECKING:
+    from openai import AsyncOpenAI
 
 try:
     from openai import AsyncOpenAI
     OPENAI_AVAILABLE = True
 except ImportError:
     OPENAI_AVAILABLE = False
+    # Create a dummy class for type checking when openai is not available
+    class AsyncOpenAI:
+        pass
 
 from ap2 import LLMConfig, LLMProvider, LLMProviderFactory, LLMResponse
 

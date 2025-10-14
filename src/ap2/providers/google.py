@@ -3,10 +3,15 @@
 import asyncio
 import logging
 import os
+from typing import TYPE_CHECKING
 
 from collections.abc import AsyncGenerator
 from typing import Any
 
+
+if TYPE_CHECKING:
+    from google import genai
+    from google.genai import types
 
 try:
     from google import genai
@@ -14,9 +19,26 @@ try:
 
     GOOGLE_GENAI_AVAILABLE = True
 except ImportError:
-    GOOGLE_GENAI_AVAILABLE = False
-    genai = None
-    types = None
+    # Create a dummy class for type checking when google-genai is not available
+    class genai:
+        class Client:
+            pass
+    
+    class types:
+        class Tool:
+            def __init__(self, function_declarations=None):
+                self.function_declarations = function_declarations or []
+        
+        class FunctionDeclaration:
+            def __init__(self, name='', description='', parameters=None):
+                self.name = name
+                self.description = description
+                self.parameters = parameters or {}
+        
+        class GenerateContentConfig:
+            def __init__(self, **kwargs):
+                for k, v in kwargs.items():
+                    setattr(self, k, v)
 
 from ap2 import LLMConfig, LLMProvider, LLMProviderFactory, LLMResponse
 

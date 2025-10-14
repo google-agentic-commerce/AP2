@@ -2,10 +2,14 @@
 
 import logging
 import os
+from typing import TYPE_CHECKING
 
 from collections.abc import AsyncGenerator
 from typing import Any
 
+
+if TYPE_CHECKING:
+    import anthropic
 
 try:
     import anthropic
@@ -13,6 +17,10 @@ try:
     ANTHROPIC_AVAILABLE = True
 except ImportError:
     ANTHROPIC_AVAILABLE = False
+    # Create a dummy class for type checking when anthropic is not available
+    class anthropic:
+        class AsyncAnthropic:
+            pass
 
 from ap2 import LLMConfig, LLMProvider, LLMProviderFactory, LLMResponse
 

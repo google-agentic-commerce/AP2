@@ -15,6 +15,7 @@ Boku
 BVNK
 classpath
 CLASSPATH
+claude
 CMSPI
 cmwallet
 Cobo

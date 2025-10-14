@@ -9,12 +9,11 @@ from typing import Any
 
 try:
     from openai import AsyncOpenAI
-
     OPENAI_AVAILABLE = True
 except ImportError:
     OPENAI_AVAILABLE = False
 
-from . import LLMConfig, LLMProvider, LLMProviderFactory, LLMResponse
+from ap2 import LLMConfig, LLMProvider, LLMProviderFactory, LLMResponse
 
 
 class OpenAIProvider(LLMProvider):

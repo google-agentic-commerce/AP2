@@ -14,7 +14,7 @@ try:
 except ImportError:
     ANTHROPIC_AVAILABLE = False
 
-from . import LLMConfig, LLMProvider, LLMProviderFactory, LLMResponse
+from ap2 import LLMConfig, LLMProvider, LLMProviderFactory, LLMResponse
 
 
 class AnthropicProvider(LLMProvider):

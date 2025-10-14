@@ -18,7 +18,7 @@ except ImportError:
     genai = None
     types = None
 
-from . import LLMConfig, LLMProvider, LLMProviderFactory, LLMResponse
+from ap2 import LLMConfig, LLMProvider, LLMProviderFactory, LLMResponse
 
 
 class GoogleGeminiProvider(LLMProvider):

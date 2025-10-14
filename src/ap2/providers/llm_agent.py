@@ -14,7 +14,7 @@ from google.adk.agents.invocation_context import InvocationContext
 from google.adk.agents.llm_agent import LlmAgent
 from google.adk.events.event import Event
 
-from ..providers import LLMConfig, LLMProvider, LLMProviderFactory
+from ap2 import LLMConfig, LLMProvider, LLMProviderFactory
 
 
 class ProviderAgnosticLlmAgent(LlmAgent):

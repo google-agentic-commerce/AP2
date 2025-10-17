@@ -8,6 +8,7 @@ Agentic
 agenticpayments
 Algorand
 androidx
+Applebot
 appname
 ASGI
 Blackhawk
@@ -73,6 +74,8 @@ KXMYBJWNQ
 Lazada
 Lightspark
 linenums
+llms
+llmstxt
 mastercard
 micropayments
 Mispick

@@ -7,6 +7,7 @@ site_description: >
   MCP, and encompasses the global nature of payments.
 site_author: Google
 site_dir: site
+edit_uri: edit/main/docs/
 
 extra:
   analytics:
@@ -56,6 +57,7 @@ theme:
   favicon: assets/ap2-logo-black.svg
   icon:
     repo: fontawesome/brands/github
+    view: material/pencil-box-multiple
     admonition:
       note: fontawesome/solid/note-sticky
       abstract: fontawesome/solid/book
@@ -75,6 +77,7 @@ theme:
       accent: white
   features:
     - announce.dismiss
+    - content.action.view
     - content.code.annotate
     - content.code.copy
     - content.code.select
@@ -128,3 +131,23 @@ markdown_extensions:
 plugins:
   - search
   - macros
+  - llmstxt:
+      full_output: llms-full.txt
+      sections:
+        "Introduction":
+          - index.md
+        "Core Topics":
+          - topics/what-is-ap2.md
+          - topics/core-concepts.md
+          - topics/ap2-a2a-and-mcp.md
+          - topics/ap2-and-x402.md
+          - topics/privacy-and-security.md
+          - topics/life-of-a-transaction.md
+        "Specification":
+          - specification.md
+          - a2a-extension.md
+        "Additional Resources":
+          - glossary.md
+          - faq.md
+          - roadmap.md
+          - partners.md

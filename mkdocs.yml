@@ -128,3 +128,23 @@ markdown_extensions:
 plugins:
   - search
   - macros
+  - llmstxt:
+      full_output: llms-full.txt
+      sections:
+        "Introduction":
+          - index.md
+        "Core Topics":
+          - topics/what-is-ap2.md
+          - topics/core-concepts.md
+          - topics/ap2-a2a-and-mcp.md
+          - topics/ap2-and-x402.md
+          - topics/privacy-and-security.md
+          - topics/life-of-a-transaction.md
+        "Specification":
+          - specification.md
+          - a2a-extension.md
+        "Additional Resources":
+          - glossary.md
+          - faq.md
+          - roadmap.md
+          - partners.md

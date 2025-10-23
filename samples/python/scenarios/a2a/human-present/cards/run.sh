@@ -39,16 +39,22 @@ if [ ! -d ".venv" ]; then
 fi
 
 # Detect the correct activation script path based on the operating system
-case "$OSTYPE" in
-  msys* | cygwin*)
+#case "$OSTYPE" in
+#  msys* | cygwin*)
     # Windows (Git Bash, MSYS2, or Cygwin)
-    source .venv/Scripts/activate
-    ;;
-  *)
+#    source .venv/Scripts/activate
+#    ;;
+#  *)
     # Unix/Linux/macOS
-    source .venv/bin/activate
-    ;;
-esac
+#    source .venv/bin/activate
+#    ;;
+#esac
+# Detect if we're on Windows and use the appropriate activation script
+if [[ "$OSTYPE" == "msys" || "$OSTYPE" == "win32" || "$OSTYPE" == "cygwin" ]]; then
+  source .venv/Scripts/activate
+else
+  source .venv/bin/activate
+fi
 echo "Virtual environment activated."
 
 echo "Installing project in editable mode..."

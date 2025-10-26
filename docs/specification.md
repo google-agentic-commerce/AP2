@@ -259,7 +259,7 @@ operating on behalf of <johndoe@gmail.com>, and that a specific merchant
 endpoint is genuinely representing a real merchant. Similarly, the Credentials
 Provider should be trusted by the Shopping Agent & Merchant Endpoint to be
 authentic and to appropriately represent <johndoe@gmail.com>. This trust
-framework will leverage and extend established web standards such as HTTPS, DNS
+framework will leverage and extend established web standards such as HTTPS (TLS 1.3), DNS
 ownership, mTLS, and API key-exchange.
 
 ## Section 4: Trust Anchors: Verifiable Digital Credentials & Mandates

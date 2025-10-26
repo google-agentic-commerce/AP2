@@ -41,3 +41,5 @@ jobs:
           VALIDATE_GITHUB_ACTIONS_ZIZMOR: false
           VALIDATE_JSCPD: false
           VALIDATE_SHELL_SHFMT: false
+          VALIDATE_GO: false
+          VALIDATE_GO_MODULES: false

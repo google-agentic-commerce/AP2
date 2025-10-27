@@ -40,3 +40,4 @@ jobs:
           VALIDATE_GIT_COMMITLINT: false
           VALIDATE_GITHUB_ACTIONS_ZIZMOR: false
           VALIDATE_JSCPD: false
+          VALIDATE_SHELL_SHFMT: false

@@ -2,85 +2,89 @@
 
 This sample demonstrates Go implementations of backend agents for the AP2 protocol in a human present transaction using a card as the payment method.
 
-## Scenario
+## Overview
 
-This Go sample provides backend agent infrastructure without a shopping agent frontend. It demonstrates how to implement AP2-compliant agents in Go, showcasing the protocol's server-side components.
+This Go sample provides production-ready backend agent infrastructure for the Agent Payments Protocol. It showcases how to build AP2-compliant services in Go, focusing on the backend components typically operated by merchants, payment processors, and credential providers.
 
-Unlike the Python samples which include a complete end-to-end flow with a Shopping Agent UI, this sample focuses on the backend agents that would typically be operated by merchants, payment processors, and credential providers.
+The sample includes three backend agents but does **not** include a Shopping Agent. This design choice demonstrates the protocol's **language-agnostic interoperability** - the Python Shopping Agent can seamlessly communicate with these Go backend services.
 
-## Key Actors
+## Agents Implemented
 
-This sample implements three backend agents:
+*   **Merchant Agent** (`http://localhost:8001`)
+    - Handles product catalog queries
+    - Creates and manages cart mandates
+    - Exposes `search_catalog` skill for shopping intents
+    - Supports AP2 and Sample Card Network extensions
 
-*   **Merchant Agent:** Handles product catalog queries and creates cart mandates. Exposes a `search_catalog` skill that accepts shopping intents and returns product results.
-*   **Merchant Payment Processor Agent:** Processes payments on behalf of the merchant. Implements OTP challenges for additional security verification.
-*   **Credentials Provider Agent:** Manages user payment credentials and wallet information. Provides payment method details including tokenized (DPAN) cards.
+*   **Credentials Provider Agent** (`http://localhost:8002`)
+    - Manages user payment credentials and wallet
+    - Provides payment method details
+    - Supplies tokenized (DPAN) card information
+    - Handles payment authorization
 
-**Note:** This sample does NOT include a Shopping Agent. To see a complete shopping flow, refer to the [Python human-present cards sample](../../../../python/scenarios/a2a/human-present/cards/README.md) which includes all actors including the Shopping Agent with a web UI.
+*   **Merchant Payment Processor Agent** (`http://localhost:8003`)
+    - Processes payments on behalf of merchants
+    - Implements OTP challenge mechanism
+    - Handles payment authorization and settlement
 
-## Key Features
+## What This Sample Demonstrates
 
-**1. A2A Protocol Implementation in Go**
+1. **Production-Quality Go Implementation**
+   - Full A2A JSON-RPC protocol implementation
+   - Type-safe mandate and message structures
+   - Concurrent request handling
+   - Proper error handling and validation
 
-*   Full implementation of the A2A JSON-RPC protocol in Go
-*   Support for AP2 extensions and payment method extensions
-*   Structured mandate handling (IntentMandate, CartMandate, PaymentMandate)
+2. **Language-Agnostic Protocol**
+   - Go backend agents work seamlessly with Python Shopping Agent
+   - Demonstrates true interoperability across languages
+   - Shows protocol is implementation-independent
 
-**2. Card Purchase Support with DPAN**
+3. **AP2 Protocol Features**
+   - Complete mandate lifecycle (Intent → Cart → Payment)
+   - Card payment support with DPAN tokens
+   - OTP challenge flows
+   - Extension mechanism (AP2 + payment method extensions)
 
-*   The merchant agent advertises support for card purchases through its agent card
-*   The credentials provider supplies tokenized (DPAN) card information
+4. **Backend Service Patterns**
+   - Modular, independently deployable services
+   - Clean separation of concerns
+   - Go's strengths for backend services (concurrency, type safety, performance)
 
-**3. OTP Challenge Flow**
-
-*   The merchant payment processor agent implements an OTP challenge mechanism
-*   Demonstrates secure payment authorization patterns
-
-## Executing the Example
+## Running the Sample
 
 ### Prerequisites
 
 *   Go 1.21 or higher
 *   Make
+*   Google API key from [Google AI Studio](https://aistudio.google.com/apikey)
 
-### Setup
+### Quick Start
 
-Ensure you have obtained a Google API key from [Google AI Studio](https://aistudio.google.com/apikey). Then declare the GOOGLE_API_KEY variable in one of two ways:
+1. **Set up your API key:**
 
-*   Option 1: Declare it as an environment variable:
-    ```sh
-    export GOOGLE_API_KEY=your_key
-    ```
+   ```sh
+   export GOOGLE_API_KEY=your_key
+   ```
 
-*   Option 2: Put it into an .env file in the `samples/go` directory:
-    ```sh
-    echo "GOOGLE_API_KEY=your_key" > samples/go/.env
-    ```
+   Or create a `.env` file in `samples/go/`:
+   ```sh
+   echo "GOOGLE_API_KEY=your_key" > samples/go/.env
+   ```
 
-### Running the Agents
+2. **Run all backend agents:**
 
-From the repository root, you can run all agents with a single command:
+   ```sh
+   # From repository root
+   bash samples/go/scenarios/a2a/human-present/cards/run.sh
+   ```
 
-```sh
-bash samples/go/scenarios/a2a/human-present/cards/run.sh
-```
+   This starts all three backend agents:
+   - Merchant Agent on port 8001
+   - Credentials Provider on port 8002
+   - Payment Processor on port 8003
 
-This script will:
-1. Install Go dependencies
-2. Build all agent binaries
-3. Start all three agents in the background
-4. Display the running agent endpoints
-
-The agents will be available at:
-*   **Merchant Agent:** http://localhost:8001/a2a/merchant_agent
-*   **Credentials Provider Agent:** http://localhost:8002/a2a/credentials_provider_agent
-*   **Merchant Payment Processor Agent:** http://localhost:8003/a2a/merchant_payment_processor_agent
-
-To stop all agents, press `Ctrl+C`.
-
-### Building Manually
-
-Alternatively, you can build and run agents manually from the `samples/go` directory:
+### Manual Build and Run
 
 ```sh
 cd samples/go
@@ -91,22 +95,60 @@ go mod download
 # Build all agents
 make build
 
-# Run individual agents
+# Run individual agents (in separate terminals)
 ./bin/merchant_agent
 ./bin/credentials_provider_agent
 ./bin/merchant_payment_processor_agent
 ```
 
-## Interacting with the Agents
+## Complete Shopping Flow
 
-Since this sample does not include a Shopping Agent or UI, you can interact with the agents directly via HTTP requests or by integrating them with your own shopping agent implementation.
+To experience the full end-to-end shopping flow with these Go backend agents, use the Python Shopping Agent.
 
-### Testing with cURL
+### Option 1: Python Shopping Agent + Go Backends (Recommended)
 
-You can test the agents using cURL or any HTTP client. Here are example requests:
+This demonstrates **cross-language interoperability** - the strength of the AP2 protocol.
 
-**1. Query the Merchant Agent's capabilities:**
+1. **Start the Go backend agents** (as shown above)
 
+2. **Configure Python Shopping Agent** to use Go backends:
+
+   Edit `samples/python/src/roles/shopping_agent/remote_agents.py`:
+   ```python
+   merchant_agent_client = PaymentRemoteA2aClient(
+       name="merchant_agent",
+       base_url="http://localhost:8001/a2a/merchant_agent",  # Go agent!
+       required_extensions={EXTENSION_URI},
+   )
+
+   credentials_provider_client = PaymentRemoteA2aClient(
+       name="credentials_provider",
+       base_url="http://localhost:8002/a2a/credentials_provider_agent",  # Go agent!
+       required_extensions={EXTENSION_URI},
+   )
+   ```
+
+3. **Start the Python Shopping Agent:**
+
+   ```sh
+   # From repository root
+   cd samples/python
+   uv run --package ap2-samples adk web samples/python/src/roles
+   ```
+
+4. **Open browser** to `http://localhost:8000` and shop!
+
+   You'll now have:
+   - **Shopping Agent**: Python (with ADK web UI)
+   - **Backend Agents**: Go (merchant, credentials, payment processor)
+
+This setup demonstrates the protocol working across language boundaries.
+
+### Option 2: Direct API Testing
+
+Test the Go agents directly with HTTP requests:
+
+**Get merchant agent info:**
 ```sh
 curl -X POST http://localhost:8001/a2a/merchant_agent \
   -H "Content-Type: application/json" \
@@ -118,8 +160,7 @@ curl -X POST http://localhost:8001/a2a/merchant_agent \
   }'
 ```
 
-**2. Search the catalog:**
-
+**Search for products:**
 ```sh
 curl -X POST http://localhost:8001/a2a/merchant_agent \
   -H "Content-Type: application/json" \
@@ -129,15 +170,14 @@ curl -X POST http://localhost:8001/a2a/merchant_agent \
     "params": {
       "skill": "search_catalog",
       "input": {
-        "shopping_intent": "{\"product_type\": \"coffee maker\", \"quantity\": 1}"
+        "shopping_intent": "{\"product_type\": \"coffee maker\"}"
       }
     },
     "id": 2
   }'
 ```
 
-**3. Get payment methods from the Credentials Provider:**
-
+**Get payment methods:**
 ```sh
 curl -X POST http://localhost:8002/a2a/credentials_provider_agent \
   -H "Content-Type: application/json" \
@@ -151,67 +191,42 @@ curl -X POST http://localhost:8002/a2a/credentials_provider_agent \
   }'
 ```
 
-### Integration with Shopping Agents
-
-These backend agents are designed to be called by a Shopping Agent (like those in the Python samples). The typical flow would be:
-
-1. Shopping Agent receives user intent
-2. Shopping Agent calls Merchant Agent's `search_catalog` skill
-3. Merchant Agent returns CartMandate(s)
-4. Shopping Agent queries Credentials Provider for payment methods
-5. User selects payment method and confirms purchase
-6. Shopping Agent sends PaymentMandate to Merchant Payment Processor
-7. Payment Processor may challenge with OTP
-8. Payment is completed and receipt is issued
-
-For a complete working example of this flow, see the [Python human-present cards sample](../../../../python/scenarios/a2a/human-present/cards/README.md).
-
-## What This Sample Demonstrates
-
-This Go implementation showcases:
-
-1. **Language Portability:** The AP2 protocol can be implemented in any language, not just Python. This demonstrates Go as a viable option for building AP2 agents.
-
-2. **Backend Agent Architecture:** Focuses on the server-side infrastructure that merchants, payment processors, and credential providers would deploy.
-
-3. **A2A Protocol Compliance:** Full implementation of:
-   - JSON-RPC 2.0 transport
-   - Agent discovery and capabilities
-   - Skill invocation patterns
-   - AP2 extensions and mandate handling
-
-4. **Modularity:** Each agent is a standalone service that can be deployed independently, demonstrating the distributed nature of the AP2 ecosystem.
-
-5. **Production Patterns:** Uses Go's strengths for building robust backend services:
-   - Type-safe mandate and message structures
-   - Concurrent request handling
-   - Clean separation of concerns
-
-## Development
-
-### Project Structure
+## Project Structure
 
 ```
 samples/go/
-├── cmd/                          # Agent entry points
-│   ├── merchant_agent/
-│   ├── credentials_provider_agent/
-│   └── merchant_payment_processor_agent/
+├── cmd/                                  # Agent entry points
+│   ├── merchant_agent/main.go
+│   ├── credentials_provider_agent/main.go
+│   └── merchant_payment_processor_agent/main.go
 ├── pkg/
-│   ├── ap2/                      # AP2 protocol types
-│   │   └── types/
-│   ├── common/                   # Shared utilities
-│   │   ├── base_executor.go     # Base agent execution
-│   │   ├── message_builder.go   # A2A message construction
-│   │   └── server.go            # HTTP/JSON-RPC server
-│   └── roles/                   # Agent implementations
+│   ├── ap2/types/                       # AP2 protocol types
+│   │   ├── mandate.go                   # Mandate structures
+│   │   ├── payment_request.go
+│   │   └── contact_address.go
+│   ├── common/                          # Shared infrastructure
+│   │   ├── base_executor.go            # Base agent execution
+│   │   ├── message_builder.go          # A2A message construction
+│   │   ├── server.go                   # HTTP/JSON-RPC server
+│   │   └── function_resolver.go        # Tool/skill handling
+│   └── roles/                           # Agent implementations
 │       ├── merchant_agent/
+│       │   ├── agent.json              # Capabilities & skills
+│       │   ├── executor.go             # Business logic
+│       │   ├── tools.go                # Agent tools
+│       │   └── storage.go              # Product catalog
 │       ├── credentials_provider_agent/
+│       │   ├── agent.json
+│       │   └── executor.go
 │       └── merchant_payment_processor_agent/
-└── scenarios/
-    └── a2a/human-present/cards/
-        └── run.sh               # Convenience script
+│           ├── agent.json
+│           └── executor.go
+└── scenarios/a2a/human-present/cards/
+    ├── README.md                        # This file
+    └── run.sh                           # Start all agents
 ```
+
+## Development
 
 ### Running Tests
 
@@ -223,27 +238,64 @@ make test
 ### Code Formatting
 
 ```sh
-cd samples/go
 make fmt
 ```
 
-## Differences from Python Sample
+### Adding a New Backend Agent
+
+1. Create entry point in `cmd/your_agent/main.go`
+2. Implement executor in `pkg/roles/your_agent/executor.go`
+3. Define `agent.json` with capabilities and skills
+4. Add build target to `Makefile`
+5. Update `run.sh` to start the new agent
+
+## Why Go for Backend Agents?
+
+Go is an excellent choice for building AP2 backend agents:
+
+- **Type Safety**: Compile-time guarantees for protocol structures
+- **Concurrency**: Efficient handling of multiple agent requests
+- **Performance**: Fast startup, low memory footprint
+- **Deployment**: Single binary, easy containerization
+- **Maintainability**: Clean, readable code
+
+## Comparison with Python Sample
 
 | Feature | Python Sample | Go Sample |
 |---------|--------------|-----------|
-| Shopping Agent | ✅ Included with web UI | ❌ Not included |
-| Backend Agents | ✅ Included | ✅ Included |
-| End-to-End Flow | ✅ Complete user journey | ❌ Backend only |
-| Primary Purpose | Demonstrate complete flow | Demonstrate backend implementation |
-| Interaction Method | Web browser UI | HTTP/JSON-RPC API calls |
+| **Shopping Agent** | ✅ Full ADK-powered agent with UI | ❌ Not included (use Python version) |
+| **Backend Agents** | ✅ Python implementations | ✅ Go implementations |
+| **Purpose** | Complete end-to-end demo | Production backend infrastructure |
+| **Best For** | Learning full AP2 flow | Building production services |
+| **Interoperability** | Can call any A2A backend | Works with any A2A shopping agent |
+
+## Integration Scenarios
+
+These Go backend agents support multiple integration patterns:
+
+1. **Hybrid Stack**: Python Shopping Agent → Go Backends (demonstrated above)
+2. **Full Go Stack**: Build your own Go Shopping Agent → Go Backends
+3. **Polyglot**: Any language Shopping Agent → Go Backends
+4. **Microservices**: Deploy each Go agent independently
+
+## Stopping the Agents
+
+If you used `run.sh`, press `Ctrl+C` to stop all agents.
+
+If running manually, stop each process individually.
 
 ## Next Steps
 
-To see these agents in action with a complete shopping flow:
+- **Experience the full flow**: Use Python Shopping Agent with these Go backends
+- **Explore the code**: See how AP2 protocol is implemented in Go
+- **Build your own**: Use these as reference for your own AP2 agents
+- **Deploy**: Containerize and deploy these production-ready services
 
-1. Run the [Python human-present cards sample](../../../../python/scenarios/a2a/human-present/cards/README.md)
-2. Configure the Python Shopping Agent to call these Go backend agents instead of the Python ones
-3. Experience the full end-to-end flow with Go-powered backend services
+## Resources
+
+- [AP2 Protocol Documentation](../../../../README.md)
+- [Python Sample (with Shopping Agent)](../../../../python/scenarios/a2a/human-present/cards/README.md)
+- [Go Implementation Guide](../../README.md)
 
 ## License
 

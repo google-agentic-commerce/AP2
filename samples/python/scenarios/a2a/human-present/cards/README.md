@@ -63,11 +63,21 @@ GOOGLE_API_KEY variable in one of two ways.
 
 ### Execution
 
-You can execute the following command to run all of the steps in one terminal:
+#### Option 1: Automated Script (Recommended)
+
+**For Linux/macOS (Bash):**
 
 ```sh
 bash samples/python/scenarios/a2a/human-present/cards/run.sh
 ```
+
+**For Windows (PowerShell):**
+
+```powershell
+powershell -ExecutionPolicy Bypass -File samples/python/scenarios/a2a/human-present/cards/run.ps1
+```
+
+#### Option 2: Manual Setup
 
 Or you can run each server in its own terminal:
 

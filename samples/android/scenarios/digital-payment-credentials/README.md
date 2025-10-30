@@ -103,12 +103,23 @@ This sample consists of:
 
 ### Execution
 
-A convenience script is included to automatically build, install, and launch the
-Android app, and start the local merchant server.
+#### Option 1: Automated Script (Recommended)
+
+**For Linux/macOS (Bash):**
 
 ```sh
 bash samples/android/scenarios/digital-payment-credentials/run.sh
 ```
+
+**For Windows (PowerShell):**
+
+```powershell
+powershell -ExecutionPolicy Bypass -File samples/android/scenarios/digital-payment-credentials/run.ps1
+```
+
+#### Option 2: Manual Setup
+
+If you prefer to run the steps manually or need to troubleshoot, you can run each component separately by following the manual setup instructions in the bash script.
 
 ## How to Use the App
 

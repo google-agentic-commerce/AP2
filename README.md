@@ -60,10 +60,16 @@ For either method, you can set the required credentials as environment variables
 1. Obtain a Google API key from [Google AI Studio](http://aistudio.google.com/apikey).
 2. Set the `GOOGLE_API_KEY` environment variable.
 
-    - **As an environment variable:**
+    - **As an environment variable (Linux/macOS):**
 
         ```sh
         export GOOGLE_API_KEY='your_key'
+        ```
+
+    - **As an environment variable (Windows PowerShell):**
+
+        ```powershell
+        $env:GOOGLE_API_KEY = 'your_key'
         ```
 
     - **In a `.env` file:**
@@ -75,12 +81,20 @@ For either method, you can set the required credentials as environment variables
 #### Option 2: [Vertex AI](https://cloud.google.com/vertex-ai) (Recommended for production)
 
 1. **Configure your environment to use Vertex AI.**
-    - **As environment variables:**
+    - **As environment variables (Linux/macOS):**
 
         ```sh
         export GOOGLE_GENAI_USE_VERTEXAI=true
         export GOOGLE_CLOUD_PROJECT='your-project-id'
         export GOOGLE_CLOUD_LOCATION='global' # or your preferred region
+        ```
+
+    - **As environment variables (Windows PowerShell):**
+
+        ```powershell
+        $env:GOOGLE_GENAI_USE_VERTEXAI = 'true'
+        $env:GOOGLE_CLOUD_PROJECT = 'your-project-id'
+        $env:GOOGLE_CLOUD_LOCATION = 'global'  # or your preferred region
         ```
 
     - **In a `.env` file:**

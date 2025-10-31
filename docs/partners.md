@@ -46,6 +46,7 @@ build, codify, and adopt A2A as the standard protocol for AI agent payments.
 - [Forter](https://www.forter.com/)
 - [GMO Payment Gateway](https://www.gmo-pg.com/)
 - [Garena](https://www.garena.com/)
+- [Global Payments](https://www.globalpayments.com/)
 - [Gr4vy](https://gr4vy.com/)
 - [GrabPay](https://www.grab.com/)
 - [Gravitee](https://www.gravitee.io/)

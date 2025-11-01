@@ -17,6 +17,8 @@
 import httpx
 import logging
 import uuid
+from urllib.parse import urlparse
+
 
 from a2a import types as a2a_types
 from a2a.client.card_resolver import A2ACardResolver
@@ -67,11 +69,15 @@ class PaymentRemoteA2aClient():
   async def get_agent_card(self) -> a2a_types.AgentCard:
     """Get agent card."""
     if self._agent_card is None:
-      resolver = A2ACardResolver(
-          httpx_client=self._httpx_client,
-          base_url=self._base_url,
-      )
-      self._agent_card = await resolver.get_agent_card()
+       parsed_url = urlparse(self._base_url)
+       card_base_url = f'{parsed_url.scheme}://{parsed_url.netloc}'
+
+       resolver = A2ACardResolver(
+           httpx_client=self._httpx_client,
+           base_url=card_base_url,
+       )
+       self._agent_card = await resolver.get_agent_card()
+
     return self._agent_card
 
   async def send_a2a_message(

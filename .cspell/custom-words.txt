@@ -29,6 +29,7 @@ cryptographical
 CYGPATTERN
 Dafiti
 dcql
+dmypy
 Dcql
 DCQL
 deviceauth
@@ -50,9 +51,12 @@ Garena
 gemini
 genai
 generativeai
+gofmt
 gradlew
+gradletasknamecache
 Gravitee
 gson
+hprof
 htmlcov
 Hashkey
 icns
@@ -77,6 +81,7 @@ ktor
 Ktor
 KXMYBJWNQ
 Lazada
+libpeerconnection
 Lightspark
 linenums
 llms
@@ -117,6 +122,7 @@ repudiable
 Revolut
 Riskified
 ROOTDIRS
+ropeproject
 ROOTDIRSRAW
 Rulebook
 screenreaders
@@ -128,6 +134,9 @@ sideloaded
 Signifyd
 skus
 Splitit
+Spyder
+spyderproject
+spyproject
 stablecoins
 superfences
 Truelayer

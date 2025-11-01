@@ -23,7 +23,7 @@ import (
 
 const (
 	AgentPort = 8002
-	RPCURL    = "/a2a/credentials_provider_agent"
+	RPCURL    = "/a2a/credentials_provider"
 )
 
 func main() {

@@ -71,12 +71,11 @@ func InitiatePayment(dataParts []map[string]interface{}, updater *common.TaskUpd
 
 	updater.AddArtifact([]common.Part{
 		{
-			Data: &common.DataPart{
-				Data: map[string]interface{}{
-					"payment_status":     "SUCCESS",
-					"transaction_id":     "txn-" + paymentMandate.PaymentMandateContents.PaymentMandateID,
-					"authorization_code": "AUTH-123456",
-				},
+			Kind: "data",
+			Data: map[string]interface{}{
+				"payment_status":     "SUCCESS",
+				"transaction_id":     "txn-" + paymentMandate.PaymentMandateContents.PaymentMandateID,
+				"authorization_code": "AUTH-123456",
 			},
 		},
 	})

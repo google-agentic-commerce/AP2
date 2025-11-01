@@ -7,6 +7,7 @@ Production-ready Go implementations of AP2-compliant backend agents for the Agen
 This directory contains Go implementations of backend agents for the Agent Payments Protocol, demonstrating how to build AP2 services using Go. These agents implement the merchant-side, payment processing, and credentials provider roles in an AP2 transaction flow.
 
 **What's included:**
+
 - ✅ **Merchant Agent** - Product catalog and cart management
 - ✅ **Credentials Provider Agent** - Payment credentials and wallet management
 - ✅ **Merchant Payment Processor Agent** - Payment processing and authorization
@@ -18,9 +19,9 @@ This design showcases **language-agnostic interoperability** - the Python Shoppi
 
 ### Prerequisites
 
-*   Go 1.21 or higher
-*   Make
-*   Google API key from [Google AI Studio](https://aistudio.google.com/apikey)
+- Go 1.21 or higher
+- Make
+- Google API key from [Google AI Studio](https://aistudio.google.com/apikey)
 
 ### 1. Configure API Key
 
@@ -29,6 +30,7 @@ export GOOGLE_API_KEY=your_key
 ```
 
 Or create `.env` file:
+
 ```sh
 echo "GOOGLE_API_KEY=your_key" > .env
 ```
@@ -41,6 +43,7 @@ bash samples/go/scenarios/a2a/human-present/cards/run.sh
 ```
 
 This starts three backend agents:
+
 - **Merchant Agent**: `http://localhost:8001/a2a/merchant_agent`
 - **Credentials Provider**: `http://localhost:8002/a2a/credentials_provider`
 - **Payment Processor**: `http://localhost:8003/a2a/merchant_payment_processor_agent`
@@ -62,6 +65,7 @@ uv run --package ap2-samples adk web samples/python/src/roles
 **3. Open browser** to `http://localhost:8000` and start shopping!
 
 Now you have:
+
 - **Frontend**: Python Shopping Agent with ADK web UI
 - **Backend**: Go merchant, credentials, and payment processor agents
 
@@ -69,7 +73,7 @@ This demonstrates true protocol interoperability across languages.
 
 ## Project Structure
 
-```
+```text
 samples/go/
 ├── cmd/                                  # Agent entry points
 │   ├── merchant_agent/
@@ -213,6 +217,7 @@ Go is exceptionally well-suited for building AP2 backend services:
 Location: `scenarios/a2a/human-present/cards/`
 
 Demonstrates:
+
 - A2A protocol implementation in Go
 - Card payment with DPAN tokens
 - OTP challenge flows
@@ -231,6 +236,7 @@ make test
 ### Code Quality
 
 The project follows Go best practices:
+
 - Built-in testing framework
 - Standard formatting (`gofmt`)
 - Static type checking

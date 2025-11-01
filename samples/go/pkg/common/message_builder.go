@@ -25,6 +25,7 @@ type MessageBuilder struct {
 func NewMessageBuilder() *MessageBuilder {
 	return &MessageBuilder{
 		message: &Message{
+			Kind:      "message",
 			MessageID: uuid.New().String(),
 			Parts:     []Part{},
 			Role:      RoleAgent,
@@ -34,7 +35,8 @@ func NewMessageBuilder() *MessageBuilder {
 
 func (mb *MessageBuilder) AddText(text string) *MessageBuilder {
 	mb.message.Parts = append(mb.message.Parts, Part{
-		Text: &TextPart{Text: text},
+		Kind: "text",
+		Text: text,
 	})
 	return mb
 }
@@ -56,7 +58,8 @@ func (mb *MessageBuilder) AddData(key string, data interface{}) *MessageBuilder 
 	}
 
 	mb.message.Parts = append(mb.message.Parts, Part{
-		Data: &DataPart{Data: nestedData},
+		Kind: "data",
+		Data: nestedData,
 	})
 	return mb
 }

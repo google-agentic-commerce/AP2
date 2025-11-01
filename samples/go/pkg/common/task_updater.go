@@ -34,7 +34,7 @@ func NewTaskUpdater(contextID string) *TaskUpdater {
 				State: TaskStateCreated,
 			},
 			History:   []Message{},
-			Artifacts: []Part{},
+			Artifacts: []Artifact{},
 		},
 	}
 }
@@ -58,7 +58,11 @@ func (tu *TaskUpdater) AddMessage(message *Message) {
 func (tu *TaskUpdater) AddArtifact(parts []Part) {
 	tu.mutex.Lock()
 	defer tu.mutex.Unlock()
-	tu.task.Artifacts = append(tu.task.Artifacts, parts...)
+	artifact := Artifact{
+		ArtifactID: uuid.New().String(),
+		Parts:      parts,
+	}
+	tu.task.Artifacts = append(tu.task.Artifacts, artifact)
 }
 
 func (tu *TaskUpdater) UpdateStatus(state TaskState, message *Message) {
@@ -83,6 +87,7 @@ func (tu *TaskUpdater) Failed(errorText string) {
 
 func (tu *TaskUpdater) NewAgentMessage(parts []Part) *Message {
 	return &Message{
+		Kind:      "message",
 		MessageID: uuid.New().String(),
 		Parts:     parts,
 		Role:      RoleAgent,

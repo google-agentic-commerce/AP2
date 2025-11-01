@@ -49,7 +49,7 @@ This starts three backend agents:
 
 To experience the full end-to-end shopping flow, use the **Python Shopping Agent** with these Go backend agents.
 
-### Cross-Language Integration (Recommended)
+### Cross-Language Integration
 
 **1. Start Go backend agents** (as shown above)
 

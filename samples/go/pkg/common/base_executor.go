@@ -16,7 +16,6 @@ package common
 
 import (
 	"fmt"
-	"log"
 )
 
 type BaseExecutor struct {
@@ -57,8 +56,10 @@ func (be *BaseExecutor) HandleRequestWithTools(message *Message, _ *Task, valida
 	dataParts := ExtractDataParts(message)
 	textParts := ExtractTextParts(message)
 
-	if validateFunc != nil && !validateFunc(dataParts, updater) {
-		return updater.GetTask(), nil
+	if validateFunc != nil {
+		if !validateFunc(dataParts, updater) {
+			return updater.GetTask(), nil
+		}
 	}
 
 	if len(textParts) == 0 {
@@ -67,7 +68,6 @@ func (be *BaseExecutor) HandleRequestWithTools(message *Message, _ *Task, valida
 	}
 
 	prompt := textParts[0]
-	log.Printf("Processing prompt: %s", prompt)
 
 	toolName, err := be.ToolResolver.DetermineToolToUse(prompt)
 	if err != nil {
@@ -75,17 +75,13 @@ func (be *BaseExecutor) HandleRequestWithTools(message *Message, _ *Task, valida
 		return updater.GetTask(), nil
 	}
 
-	log.Printf("Selected tool: %s", toolName)
-
 	toolFunc, err := be.ToolResolver.GetTool(toolName)
 	if err != nil {
 		updater.Failed(fmt.Sprintf("Tool not found: %s", toolName))
 		return updater.GetTask(), nil
 	}
 
-	if err := toolFunc(dataParts, updater); err != nil {
-		log.Printf("Error executing tool %s: %v", toolName, err)
-	}
+	toolFunc(dataParts, updater)
 
 	return updater.GetTask(), nil
 }

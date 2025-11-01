@@ -51,40 +51,86 @@ func NewAgentServer(port int, agentCard *AgentCard, executor AgentExecutor, rpcU
 }
 
 func (s *AgentServer) setupRoutes() {
+	s.router.Use(s.loggingMiddleware)
 	s.router.HandleFunc(s.RPCURL, s.handleA2ARequest).Methods("POST")
 	s.router.HandleFunc("/.well-known/agent-card.json", s.handleGetCard).Methods("GET")
 	s.router.HandleFunc("/health", s.handleHealth).Methods("GET")
 }
 
+func (s *AgentServer) loggingMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		next.ServeHTTP(w, r)
+	})
+}
+
 func (s *AgentServer) handleA2ARequest(w http.ResponseWriter, r *http.Request) {
-	var message Message
-	if err := json.NewDecoder(r.Body).Decode(&message); err != nil {
-		log.Printf("Failed to decode request: %v", err)
+	var rpcRequest JSONRPCRequest
+	if err := json.NewDecoder(r.Body).Decode(&rpcRequest); err != nil {
 		http.Error(w, fmt.Sprintf("Invalid request body: %v", err), http.StatusBadRequest)
 		return
 	}
 
-	log.Printf("Received A2A message: %s", message.MessageID)
-
-	task, err := s.Executor.HandleRequest(&message, nil)
-	if err != nil {
-		log.Printf("Error handling request: %v", err)
-		http.Error(w, fmt.Sprintf("Error processing request: %v", err), http.StatusInternalServerError)
+	messageData, ok := rpcRequest.Params["message"]
+	if !ok {
+		s.sendJSONRPCError(w, rpcRequest.ID, -32602, "Missing 'message' in params")
 		return
 	}
 
+	messageJSON, err := json.Marshal(messageData)
+	if err != nil {
+		s.sendJSONRPCError(w, rpcRequest.ID, -32603, "Failed to process message data")
+		return
+	}
+
+	var message Message
+	if err := json.Unmarshal(messageJSON, &message); err != nil {
+		s.sendJSONRPCError(w, rpcRequest.ID, -32602, fmt.Sprintf("Invalid message format: %v", err))
+		return
+	}
+
+	task, err := s.Executor.HandleRequest(&message, nil)
+	if err != nil {
+		s.sendJSONRPCError(w, rpcRequest.ID, -32603, fmt.Sprintf("Executor error: %v", err))
+		return
+	}
+
+	// Convert task to map[string]interface{} for direct inclusion in result
+	var result map[string]interface{}
+	if task != nil {
+		taskJSON, _ := json.Marshal(task)
+		json.Unmarshal(taskJSON, &result)
+	}
+
+	rpcResponse := JSONRPCResponse{
+		ID:      rpcRequest.ID,
+		JSONRPC: "2.0",
+		Result: result,
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(task); err != nil {
-		log.Printf("Failed to encode response: %v", err)
+	if err := json.NewEncoder(w).Encode(rpcResponse); err != nil {
 		http.Error(w, "Failed to encode response", http.StatusInternalServerError)
 		return
 	}
 }
 
-func (s *AgentServer) handleGetCard(w http.ResponseWriter, _ *http.Request) {
+func (s *AgentServer) sendJSONRPCError(w http.ResponseWriter, id string, code int, message string) {
+	response := JSONRPCResponse{
+		ID:      id,
+		JSONRPC: "2.0",
+		Error: &JSONRPCError{
+			Code:    code,
+			Message: message,
+		},
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(response)
+}
+
+func (s *AgentServer) handleGetCard(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(s.AgentCard); err != nil {
-		log.Printf("Failed to encode agent card: %v", err)
 		http.Error(w, "Failed to encode agent card", http.StatusInternalServerError)
 		return
 	}
@@ -92,15 +138,14 @@ func (s *AgentServer) handleGetCard(w http.ResponseWriter, _ *http.Request) {
 
 func (s *AgentServer) handleHealth(w http.ResponseWriter, _ *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(map[string]string{"status": "healthy"}); err != nil {
-		log.Printf("Failed to encode health response: %v", err)
-	}
+	json.NewEncoder(w).Encode(map[string]string{"status": "healthy"})
 }
 
 func (s *AgentServer) Start() error {
 	addr := fmt.Sprintf(":%d", s.Port)
-	log.Printf("Starting %s on %s", s.AgentCard.Name, addr)
-	log.Printf("Agent card available at: http://localhost%s/.well-known/agent-card.json", addr)
+	log.Printf("Starting %s on port %d", s.AgentCard.Name, s.Port)
+	log.Printf("Agent Card URL: http://localhost%s/.well-known/agent-card.json", addr)
+	log.Printf("RPC URL: http://localhost%s%s", addr, s.RPCURL)
 
 	server := &http.Server{
 		Addr:         addr,

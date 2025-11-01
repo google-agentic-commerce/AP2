@@ -15,11 +15,15 @@
 package merchant_agent
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
-	"log"
+	"os"
 
 	"github.com/google-agentic-commerce/ap2/samples/go/pkg/ap2/types"
 	"github.com/google-agentic-commerce/ap2/samples/go/pkg/common"
+	"github.com/google/generative-ai-go/genai"
+	"google.golang.org/api/option"
 )
 
 const (
@@ -31,16 +35,150 @@ const (
 func FindItems(dataParts []map[string]interface{}, updater *common.TaskUpdater) error {
 	storage := GetStorage()
 
+	// Try to parse the IntentMandate first
+	var intentMandate types.IntentMandate
 	var query string
-	if val, ok := common.FindDataPart("shopping_intent", dataParts); ok {
+
+	if err := common.ParseDataPart(types.IntentMandateDataKey, dataParts, &intentMandate); err == nil {
+		// Use the natural language description from IntentMandate
+		query = intentMandate.NaturalLanguageDescription
+	} else if val, ok := common.FindDataPart("shopping_intent", dataParts); ok {
+		// Fallback to shopping_intent if no IntentMandate
 		query = fmt.Sprintf("%v", val)
+	} else {
+		query = ""
 	}
 
-	log.Printf("Searching for products with query: %s", query)
+	// Only use LLM-based product generation (like Python implementation)
+	err := generateProductsWithLLM(query, updater, storage)
+	if err != nil {
+		updater.Failed(fmt.Sprintf("Failed to generate products: %v", err))
+		return fmt.Errorf("LLM generation failed: %w", err)
+	}
 
-	products := storage.SearchProducts(query)
+	updater.Complete()
+	return nil
+}
 
-	cartMandate := storage.CreateCartMandate(products)
+// generateProductsWithLLM generates products using Gemini LLM with structured output
+func generateProductsWithLLM(query string, updater *common.TaskUpdater, storage *Storage) error {
+	apiKey := os.Getenv("GOOGLE_API_KEY")
+	if apiKey == "" {
+		return fmt.Errorf("GOOGLE_API_KEY environment variable is required but not set")
+	}
+
+	ctx := context.Background()
+	client, err := genai.NewClient(ctx, option.WithAPIKey(apiKey))
+	if err != nil {
+		return fmt.Errorf("failed to create genai client: %w", err)
+	}
+	defer client.Close()
+
+	model := client.GenerativeModel("gemini-2.5-flash")
+
+	// Configure model for structured JSON output
+	model.ResponseMIMEType = "application/json"
+
+	// Define the schema for structured output using Go struct tags
+	type Amount struct {
+		Currency string  `json:"currency"`
+		Value    float64 `json:"value"`
+	}
+
+	type PaymentItem struct {
+		Label        string  `json:"label"`
+		Amount       Amount  `json:"amount"`
+		RefundPeriod int     `json:"refund_period"`
+	}
+
+	// Set the response schema for an array of PaymentItems
+	model.ResponseSchema = &genai.Schema{
+		Type: genai.TypeArray,
+		Items: &genai.Schema{
+			Type: genai.TypeObject,
+			Properties: map[string]*genai.Schema{
+				"label": {
+					Type:        genai.TypeString,
+					Description: "Product name without branding",
+				},
+				"amount": {
+					Type: genai.TypeObject,
+					Properties: map[string]*genai.Schema{
+						"currency": {
+							Type: genai.TypeString,
+							Enum: []string{"USD"},
+						},
+						"value": {
+							Type:        genai.TypeNumber,
+							Description: "Price in USD",
+						},
+					},
+					Required: []string{"currency", "value"},
+				},
+				"refund_period": {
+					Type:        genai.TypeInteger,
+					Description: "Refund period in days",
+				},
+			},
+			Required: []string{"label", "amount", "refund_period"},
+		},
+	}
+
+	prompt := fmt.Sprintf(`Based on the user's request for '%s', your task is to generate 3
+	complete, unique and realistic PaymentItem JSON objects.
+
+	You MUST exclude all branding from the PaymentItem label field.
+	Each item should have:
+	- A descriptive product name
+	- A realistic price in USD
+	- A refund period of 30 days
+
+	Generate exactly 3 items that best match the user's request.`, query)
+
+	resp, err := model.GenerateContent(ctx, genai.Text(prompt))
+	if err != nil {
+		return fmt.Errorf("LLM generation failed: %w", err)
+	}
+
+	if len(resp.Candidates) == 0 {
+		return fmt.Errorf("no LLM response candidates")
+	}
+
+	// Extract the generated JSON
+	var generatedJSON string
+	for _, part := range resp.Candidates[0].Content.Parts {
+		if text, ok := part.(genai.Text); ok {
+			generatedJSON = string(text)
+			break
+		}
+	}
+
+	// Parse the structured JSON response
+	var generatedItems []PaymentItem
+	if err := json.Unmarshal([]byte(generatedJSON), &generatedItems); err != nil {
+		return fmt.Errorf("failed to parse LLM response: %w", err)
+	}
+
+	// Create a cart mandate for each generated item
+	for i, item := range generatedItems {
+		product := Product{
+			SKU:         fmt.Sprintf("GEN-%d", i+1),
+			Name:        item.Label,
+			Description: fmt.Sprintf("Generated product for: %s", query),
+			Price:       item.Amount.Value,
+			Category:    "Generated",
+		}
+
+		singleProductCart := storage.CreateCartMandate([]Product{product})
+		updater.AddArtifact([]common.Part{
+			{
+				Kind: "data",
+				Data: map[string]interface{}{
+					types.CartMandateDataKey: singleProductCart,
+				},
+			},
+		})
+	}
 
 	storage.StoreRiskData(updater.GetContextID(), map[string]interface{}{
 		"ip_address":    "192.168.1.1",
@@ -48,17 +186,6 @@ func FindItems(dataParts []map[string]interface{}, updater *common.TaskUpdater) 
 		"session_token": "session-67890",
 	})
 
-	updater.AddArtifact([]common.Part{
-		{
-			Data: &common.DataPart{
-				Data: map[string]interface{}{
-					types.CartMandateDataKey: cartMandate,
-				},
-			},
-		},
-	})
-
-	updater.Complete()
 	return nil
 }
 
@@ -120,11 +247,10 @@ func UpdateCart(dataParts []map[string]interface{}, updater *common.TaskUpdater)
 
 	updater.AddArtifact([]common.Part{
 		{
-			Data: &common.DataPart{
-				Data: map[string]interface{}{
-					types.CartMandateDataKey: cartMandate,
-					"risk_data":              riskData,
-				},
+			Kind: "data",
+			Data: map[string]interface{}{
+				types.CartMandateDataKey: cartMandate,
+				"risk_data":              riskData,
 			},
 		},
 	})
@@ -145,9 +271,6 @@ func InitiatePayment(dataParts []map[string]interface{}, updater *common.TaskUpd
 		updater.Failed("Missing risk_data")
 		return fmt.Errorf("missing risk_data")
 	}
-
-	paymentMethodType := paymentMandate.PaymentMandateContents.PaymentResponse.MethodName
-	log.Printf("Initiating payment with method: %s", paymentMethodType)
 
 	processorClient := common.NewA2AClient(
 		"payment_processor_agent",

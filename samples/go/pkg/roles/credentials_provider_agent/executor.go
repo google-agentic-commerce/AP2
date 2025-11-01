@@ -67,10 +67,9 @@ func GetPaymentMethod(_ []map[string]interface{}, updater *common.TaskUpdater) e
 
 	updater.AddArtifact([]common.Part{
 		{
-			Data: &common.DataPart{
-				Data: map[string]interface{}{
-					"payment_response": paymentResponse,
-				},
+			Kind: "data",
+			Data: map[string]interface{}{
+				"payment_response": paymentResponse,
 			},
 		},
 	})

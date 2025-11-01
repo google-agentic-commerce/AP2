@@ -15,6 +15,7 @@
 package merchant_agent
 
 import (
+	"strings"
 	"sync"
 	"time"
 
@@ -73,9 +74,90 @@ func (s *Storage) SearchProducts(query string) []Product {
 	s.mutex.RLock()
 	defer s.mutex.RUnlock()
 
-	// TODO: Implement actual product search logic based on the query.
-	// For this sample, we return all products.
-	return s.products
+	// Implement smarter product search logic
+	var matchingProducts []Product
+	queryLower := strings.ToLower(query)
+
+	// Split query into words and filter out common words
+	queryWords := strings.Fields(queryLower)
+	var significantWords []string
+
+	// Common words to ignore
+	stopWords := map[string]bool{
+		"a": true, "an": true, "the": true, "of": true, "for": true,
+		"and": true, "or": true, "but": true, "in": true, "on": true,
+		"at": true, "to": true, "with": true, "pair": true, "set": true,
+		"some": true, "any": true,
+	}
+
+	for _, word := range queryWords {
+		if !stopWords[word] && len(word) > 1 {
+			significantWords = append(significantWords, word)
+		}
+	}
+
+	// Score each product based on matches
+	type scoredProduct struct {
+		product Product
+		score   int
+	}
+
+	var scoredProducts []scoredProduct
+
+	for _, product := range s.products {
+		nameLower := strings.ToLower(product.Name)
+		descLower := strings.ToLower(product.Description)
+		categoryLower := strings.ToLower(product.Category)
+		score := 0
+
+		// Check each significant word
+		for _, word := range significantWords {
+			// Higher score for name matches
+			if strings.Contains(nameLower, word) {
+				score += 3
+			}
+			// Medium score for description matches
+			if strings.Contains(descLower, word) {
+				score += 2
+			}
+			// Lower score for category matches
+			if strings.Contains(categoryLower, word) {
+				score += 1
+			}
+		}
+
+		// Also check if the entire query matches (bonus points)
+		if strings.Contains(nameLower, queryLower) {
+			score += 5
+		}
+
+		if score > 0 {
+			scoredProducts = append(scoredProducts, scoredProduct{
+				product: product,
+				score:   score,
+			})
+		}
+	}
+
+	// Sort by score (highest first) - simple bubble sort for small dataset
+	for i := 0; i < len(scoredProducts); i++ {
+		for j := i + 1; j < len(scoredProducts); j++ {
+			if scoredProducts[j].score > scoredProducts[i].score {
+				scoredProducts[i], scoredProducts[j] = scoredProducts[j], scoredProducts[i]
+			}
+		}
+	}
+
+	// Extract products from scored results
+	for _, sp := range scoredProducts {
+		matchingProducts = append(matchingProducts, sp.product)
+	}
+
+	if len(matchingProducts) == 0 {
+		return []Product{}
+	}
+
+	return matchingProducts
 }
 
 func (s *Storage) CreateCartMandate(products []Product) *types.CartMandate {

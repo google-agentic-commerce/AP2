@@ -4,7 +4,7 @@ Production-ready Go implementations of AP2-compliant backend agents for the Agen
 
 ## Overview
 
-This directory contains Go implementations of backend agents for the Agent Payments Protocol, demonstrating how to build production-quality AP2 services using Go. These agents implement the merchant-side, payment processing, and credentials provider roles in an AP2 transaction flow.
+This directory contains Go implementations of backend agents for the Agent Payments Protocol, demonstrating how to build AP2 services using Go. These agents implement the merchant-side, payment processing, and credentials provider roles in an AP2 transaction flow.
 
 **What's included:**
 - ✅ **Merchant Agent** - Product catalog and cart management

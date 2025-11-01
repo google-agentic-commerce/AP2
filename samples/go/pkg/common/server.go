@@ -52,7 +52,7 @@ func NewAgentServer(port int, agentCard *AgentCard, executor AgentExecutor, rpcU
 
 func (s *AgentServer) setupRoutes() {
 	s.router.HandleFunc(s.RPCURL, s.handleA2ARequest).Methods("POST")
-	s.router.HandleFunc(s.RPCURL+"/card", s.handleGetCard).Methods("GET")
+	s.router.HandleFunc("/.well-known/agent-card.json", s.handleGetCard).Methods("GET")
 	s.router.HandleFunc("/health", s.handleHealth).Methods("GET")
 }
 
@@ -100,7 +100,7 @@ func (s *AgentServer) handleHealth(w http.ResponseWriter, _ *http.Request) {
 func (s *AgentServer) Start() error {
 	addr := fmt.Sprintf(":%d", s.Port)
 	log.Printf("Starting %s on %s", s.AgentCard.Name, addr)
-	log.Printf("Agent card available at: http://localhost%s%s/card", addr, s.RPCURL)
+	log.Printf("Agent card available at: http://localhost%s/.well-known/agent-card.json", addr)
 
 	server := &http.Server{
 		Addr:         addr,

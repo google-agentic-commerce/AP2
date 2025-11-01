@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 )
 
 type A2AClient struct {
@@ -72,7 +73,14 @@ func (c *A2AClient) SendMessage(message *Message) (*Task, error) {
 }
 
 func (c *A2AClient) GetCard() (*AgentCard, error) {
-	resp, err := c.httpClient.Get(c.BaseURL + "/card")
+	parsedURL, err := url.Parse(c.BaseURL)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse base URL: %w", err)
+	}
+
+	cardURL := fmt.Sprintf("%s://%s/.well-known/agent-card.json", parsedURL.Scheme, parsedURL.Host)
+
+	resp, err := c.httpClient.Get(cardURL)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get agent card: %w", err)
 	}

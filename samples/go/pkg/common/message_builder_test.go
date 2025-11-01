@@ -32,12 +32,12 @@ func TestMessageBuilder(t *testing.T) {
 		t.Errorf("Expected 2 parts, got %d", len(message.Parts))
 	}
 
-	if message.Parts[0].Text == nil {
-		t.Error("Expected first part to be TextPart")
+	if message.Parts[0].Text == "" {
+		t.Error("Expected first part to have text")
 	}
 
-	if message.Parts[0].Text.Text != "Hello, world!" {
-		t.Errorf("Expected text 'Hello, world!', got '%s'", message.Parts[0].Text.Text)
+	if message.Parts[0].Text != "Hello, world!" {
+		t.Errorf("Expected text 'Hello, world!', got '%s'", message.Parts[0].Text)
 	}
 
 	if message.Parts[1].Data == nil {

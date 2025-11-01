@@ -30,16 +30,22 @@ type DataPart struct {
 }
 
 type Part struct {
-	Text *TextPart `json:"text,omitempty"`
-	Data *DataPart `json:"data,omitempty"`
+	Kind     string                 `json:"kind,omitempty"`
+	Text     string                 `json:"text,omitempty"`
+	Data     map[string]interface{} `json:"data,omitempty"`
+	Metadata map[string]interface{} `json:"metadata,omitempty"`
 }
 
 type Message struct {
-	MessageID string `json:"message_id"`
-	Parts     []Part `json:"parts"`
-	Role      Role   `json:"role"`
-	ContextID string `json:"context_id,omitempty"`
-	TaskID    string `json:"task_id,omitempty"`
+	Kind              string                 `json:"kind,omitempty"`
+	MessageID         string                 `json:"messageId"`
+	Parts             []Part                 `json:"parts"`
+	Role              Role                   `json:"role"`
+	ContextID         string                 `json:"contextId,omitempty"`
+	TaskID            string                 `json:"taskId,omitempty"`
+	Extensions        map[string]interface{} `json:"extensions,omitempty"`
+	Metadata          map[string]interface{} `json:"metadata,omitempty"`
+	ReferenceTaskIds  []string               `json:"referenceTaskIds,omitempty"`
 }
 
 type TaskState string
@@ -56,12 +62,17 @@ type TaskStatus struct {
 	Message *Message  `json:"message,omitempty"`
 }
 
+type Artifact struct {
+	ArtifactID string `json:"artifactId"`
+	Parts      []Part `json:"parts"`
+}
+
 type Task struct {
 	ID        string     `json:"id"`
-	ContextID string     `json:"context_id"`
+	ContextID string     `json:"contextId"`
 	Status    TaskStatus `json:"status"`
 	History   []Message  `json:"history"`
-	Artifacts []Part     `json:"artifacts"`
+	Artifacts []Artifact `json:"artifacts"`
 }
 
 type AgentCard struct {

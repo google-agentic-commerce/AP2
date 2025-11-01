@@ -22,8 +22,8 @@ import (
 func ExtractTextParts(message *Message) []string {
 	var texts []string
 	for _, part := range message.Parts {
-		if part.Text != nil {
-			texts = append(texts, part.Text.Text)
+		if part.Text != "" {
+			texts = append(texts, part.Text)
 		}
 	}
 	return texts
@@ -33,7 +33,7 @@ func ExtractDataParts(message *Message) []map[string]interface{} {
 	var dataParts []map[string]interface{}
 	for _, part := range message.Parts {
 		if part.Data != nil {
-			dataParts = append(dataParts, part.Data.Data)
+			dataParts = append(dataParts, part.Data)
 		}
 	}
 	return dataParts

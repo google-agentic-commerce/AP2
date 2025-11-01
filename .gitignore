@@ -8,6 +8,9 @@ __pycache__/
 /out-tsc
 /bazel-out
 
+# Go binaries
+bin/
+
 # C extensions
 *.so
 

@@ -21,6 +21,8 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+
+	"github.com/google/uuid"
 )
 
 type A2AClient struct {
@@ -45,9 +47,24 @@ func NewA2AClient(name, baseURL string, requiredExtensions []string) *A2AClient 
 }
 
 func (c *A2AClient) SendMessage(message *Message) (*Task, error) {
-	jsonData, err := json.Marshal(message)
+	// Create JSON-RPC request with unique ID
+	requestID := message.MessageID
+	if requestID == "" {
+		requestID = uuid.New().String()
+	}
+
+	rpcRequest := JSONRPCRequest{
+		ID:      requestID,
+		JSONRPC: "2.0",
+		Method:  "sendMessage",
+		Params: map[string]interface{}{
+			"message": message,
+		},
+	}
+
+	jsonData, err := json.Marshal(rpcRequest)
 	if err != nil {
-		return nil, fmt.Errorf("failed to marshal message: %w", err)
+		return nil, fmt.Errorf("failed to marshal JSONRPC request: %w", err)
 	}
 
 	resp, err := c.httpClient.Post(c.BaseURL, "application/json", bytes.NewBuffer(jsonData))
@@ -56,16 +73,40 @@ func (c *A2AClient) SendMessage(message *Message) (*Task, error) {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
-		body, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return nil, fmt.Errorf("request failed with status %d: %w", resp.StatusCode, err)
-		}
-		return nil, fmt.Errorf("request failed with status %d: %s", resp.StatusCode, string(body))
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response: %w", err)
 	}
 
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("request failed with status %d: %s", resp.StatusCode, string(bodyBytes))
+	}
+
+	// First try to parse as JSONRPC response
+	var rpcResponse JSONRPCResponse
+	if err := json.Unmarshal(bodyBytes, &rpcResponse); err == nil && rpcResponse.JSONRPC == "2.0" {
+		// It's a JSONRPC response
+		if rpcResponse.Error != nil {
+			return nil, fmt.Errorf("JSONRPC error: %s", rpcResponse.Error.Message)
+		}
+
+		// Convert result map to Task
+		taskJSON, err := json.Marshal(rpcResponse.Result)
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal result: %w", err)
+		}
+
+		var task Task
+		if err := json.Unmarshal(taskJSON, &task); err != nil {
+			return nil, fmt.Errorf("failed to decode task from JSONRPC result: %w", err)
+		}
+
+		return &task, nil
+	}
+
+	// Fallback to direct Task parsing (for backward compatibility)
 	var task Task
-	if err := json.NewDecoder(resp.Body).Decode(&task); err != nil {
+	if err := json.Unmarshal(bodyBytes, &task); err != nil {
 		return nil, fmt.Errorf("failed to decode response: %w", err)
 	}
 
@@ -86,8 +127,17 @@ func (c *A2AClient) GetCard() (*AgentCard, error) {
 	}
 	defer resp.Body.Close()
 
+	bodyBytes, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to read response: %w", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("agent card request failed with status %d: %s", resp.StatusCode, string(bodyBytes))
+	}
+
 	var card AgentCard
-	if err := json.NewDecoder(resp.Body).Decode(&card); err != nil {
+	if err := json.Unmarshal(bodyBytes, &card); err != nil {
 		return nil, fmt.Errorf("failed to decode agent card: %w", err)
 	}
 

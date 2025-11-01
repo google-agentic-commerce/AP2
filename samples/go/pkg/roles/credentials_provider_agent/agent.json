@@ -1,7 +1,7 @@
 {
   "name": "CredentialsProviderAgent",
   "description": "An agent that manages user payment credentials and wallet.",
-  "url": "http://localhost:8002/a2a/credentials_provider_agent",
+  "url": "http://localhost:8002/a2a/credentials_provider",
   "preferredTransport": "JSONRPC",
   "protocolVersion": "0.3.0",
   "version": "1.0.0",

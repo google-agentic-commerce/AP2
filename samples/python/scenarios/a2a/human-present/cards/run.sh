@@ -38,7 +38,17 @@ if [ ! -d ".venv" ]; then
   uv venv
 fi
 
-source .venv/bin/activate
+# Detect the correct activation script path based on the operating system
+case "$OSTYPE" in
+  msys* | cygwin*)
+    # Windows (Git Bash, MSYS2, or Cygwin)
+    source .venv/Scripts/activate
+    ;;
+  *)
+    # Unix/Linux/macOS
+    source .venv/bin/activate
+    ;;
+esac
 echo "Virtual environment activated."
 
 echo "Installing project in editable mode..."

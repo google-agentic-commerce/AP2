@@ -42,3 +42,4 @@ jobs:
           VALIDATE_JSCPD: false
           VALIDATE_GO: false
           VALIDATE_GO_MODULES: false
+          VALIDATE_SHELL_SHFMT: false

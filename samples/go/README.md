@@ -53,7 +53,7 @@ To experience the full end-to-end shopping flow, use the **Python Shopping Agent
 
 **1. Start Go backend agents** (as shown above)
 
-**2. Configure Python Shopping Agent** to use Go backends:
+**2. Configure Python Shopping Agent** to use Go backends (in a separate terminal):
 
 Edit `samples/python/src/roles/shopping_agent/remote_agents.py`:
 ```python
@@ -73,7 +73,6 @@ credentials_provider_client = PaymentRemoteA2aClient(
 **3. Start Python Shopping Agent:**
 
 ```sh
-cd samples/python
 uv run --package ap2-samples adk web samples/python/src/roles
 ```
 

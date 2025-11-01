@@ -42,7 +42,7 @@ bash samples/go/scenarios/a2a/human-present/cards/run.sh
 
 This starts three backend agents:
 - **Merchant Agent**: `http://localhost:8001/a2a/merchant_agent`
-- **Credentials Provider**: `http://localhost:8002/a2a/credentials_provider_agent`
+- **Credentials Provider**: `http://localhost:8002/a2a/credentials_provider`
 - **Payment Processor**: `http://localhost:8003/a2a/merchant_payment_processor_agent`
 
 ## Complete Shopping Experience
@@ -53,30 +53,13 @@ To experience the full end-to-end shopping flow, use the **Python Shopping Agent
 
 **1. Start Go backend agents** (as shown above)
 
-**2. Configure Python Shopping Agent** to use Go backends (in a separate terminal):
-
-Edit `samples/python/src/roles/shopping_agent/remote_agents.py`:
-```python
-merchant_agent_client = PaymentRemoteA2aClient(
-    name="merchant_agent",
-    base_url="http://localhost:8001/a2a/merchant_agent",  # Go agent
-    required_extensions={EXTENSION_URI},
-)
-
-credentials_provider_client = PaymentRemoteA2aClient(
-    name="credentials_provider",
-    base_url="http://localhost:8002/a2a/credentials_provider_agent",  # Go agent
-    required_extensions={EXTENSION_URI},
-)
-```
-
-**3. Start Python Shopping Agent:**
+**2. Start Python Shopping Agent** (in a separate terminal):
 
 ```sh
 uv run --package ap2-samples adk web samples/python/src/roles
 ```
 
-**4. Open browser** to `http://localhost:8000` and start shopping!
+**3. Open browser** to `http://localhost:8000` and start shopping!
 
 Now you have:
 - **Frontend**: Python Shopping Agent with ADK web UI

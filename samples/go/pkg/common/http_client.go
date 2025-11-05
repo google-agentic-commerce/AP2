@@ -20,7 +20,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/url"
 
 	"github.com/google/uuid"
 )
@@ -114,12 +113,12 @@ func (c *A2AClient) SendMessage(message *Message) (*Task, error) {
 }
 
 func (c *A2AClient) GetCard() (*AgentCard, error) {
-	parsedURL, err := url.Parse(c.BaseURL)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse base URL: %w", err)
+	baseURL := c.BaseURL
+	if baseURL[len(baseURL)-1] == '/' {
+		baseURL = baseURL[:len(baseURL)-1]
 	}
 
-	cardURL := fmt.Sprintf("%s://%s/.well-known/agent-card.json", parsedURL.Scheme, parsedURL.Host)
+	cardURL := fmt.Sprintf("%s/.well-known/agent-card.json", baseURL)
 
 	resp, err := c.httpClient.Get(cardURL)
 	if err != nil {

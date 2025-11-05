@@ -54,6 +54,7 @@ func (s *AgentServer) setupRoutes() {
 	s.router.Use(s.loggingMiddleware)
 	s.router.HandleFunc(s.RPCURL, s.handleA2ARequest).Methods("POST")
 	s.router.HandleFunc("/.well-known/agent-card.json", s.handleGetCard).Methods("GET")
+	s.router.HandleFunc(s.RPCURL+"/.well-known/agent-card.json", s.handleGetCard).Methods("GET")
 	s.router.HandleFunc("/health", s.handleHealth).Methods("GET")
 }
 
@@ -144,7 +145,7 @@ func (s *AgentServer) handleHealth(w http.ResponseWriter, _ *http.Request) {
 func (s *AgentServer) Start() error {
 	addr := fmt.Sprintf(":%d", s.Port)
 	log.Printf("Starting %s on port %d", s.AgentCard.Name, s.Port)
-	log.Printf("Agent Card URL: http://localhost%s/.well-known/agent-card.json", addr)
+	log.Printf("Agent Card URL: http://localhost%s%s/.well-known/agent-card.json", addr, s.RPCURL)
 	log.Printf("RPC URL: http://localhost%s%s", addr, s.RPCURL)
 
 	server := &http.Server{

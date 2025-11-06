@@ -1,55 +1,58 @@
 # Agent Payments Protocol Go Sample: Backend Agent Infrastructure
 
-This sample demonstrates Go implementations of backend agents for the AP2 protocol in a human present transaction using a card as the payment method.
+This sample demonstrates Go implementations of backend agents for the AP2
+protocol in a human present transaction using a card as the payment method.
 
 ## Overview
 
-This Go sample provides production-ready backend agent infrastructure for the Agent Payments Protocol. It showcases how to build AP2-compliant services in Go, focusing on the backend components typically operated by merchants, payment processors, and credential providers.
+This Go sample provides an example agent infrastructure for the Agent Payments
+Protocol. It showcases how to build AP2 services in Go, focusing on the backend
+agents operated by merchants, payment processors, and credential providers.
 
-The sample includes three backend agents but does **not** include a Shopping Agent. This design choice demonstrates the protocol's **language-agnostic interoperability** - the Python Shopping Agent can seamlessly communicate with these Go backend services.
+The sample includes three backend agents but does **not** include a Shopping
+Agent. This design choice demonstrates the protocol's **language-agnostic
+interoperability** - the Python Shopping Agent can seamlessly communicate with
+other Go agents.
 
 ## Agents Implemented
 
-- **Merchant Agent** (`http://localhost:8001`)
-    - Handles product catalog queries
-    - Creates and manages cart mandates
-    - Exposes `search_catalog` skill for shopping intents
-    - Supports AP2 and Sample Card Network extensions
+- **Merchant Agent** (`http://localhost:8001/a2a/merchant_agent`)
+  - Handles product catalog queries
+  - Creates and manages cart mandates
+  - Exposes `search_catalog` skill for shopping intents
+  - Supports AP2 and Sample Card Network extensions
 
-- **Credentials Provider Agent** (`http://localhost:8002`)
-    - Manages user payment credentials and wallet
-    - Provides payment method details
-    - Supplies tokenized (DPAN) card information
-    - Handles payment authorization
+- **Credentials Provider Agent**
+  (`http://localhost:8002/a2a/credentials_provider`)
+  - Manages user payment credentials and wallet
+  - Provides payment method details
+  - Supplies tokenized (DPAN) card information
+  - Handles payment authorization
 
-- **Merchant Payment Processor Agent** (`http://localhost:8003`)
-    - Processes payments on behalf of merchants
-    - Implements OTP challenge mechanism
-    - Handles payment authorization and settlement
+- **Merchant Payment Processor Agent**
+  (`http://localhost:8003/a2a/merchant_payment_processor_agent`)
+  - Processes payments on behalf of merchants
+  - Implements OTP challenge mechanism
+  - Handles payment authorization and settlement
 
 ## What This Sample Demonstrates
 
-1. **Production-Quality Go Implementation**
-    - Full A2A JSON-RPC protocol implementation
-    - Type-safe mandate and message structures
-    - Concurrent request handling
-    - Proper error handling and validation
+1. **AP2 Protocol Features**
+   - Complete mandate lifecycle (Intent → Cart → Payment)
+   - Card payment support with DPAN tokens
+   - OTP challenge flows
+   - Extension mechanism (AP2 + payment method extensions)
 
-2. **Language-Agnostic Protocol**
-    - Go backend agents work seamlessly with Python Shopping Agent
-    - Demonstrates true interoperability across languages
-    - Shows protocol is implementation-independent
+2. **Backend Service Patterns**
+   - Modular, independently deployable services
+   - Clean separation of concerns
+   - Go's strengths for backend services (concurrency, type safety,
+     performance)
 
-3. **AP2 Protocol Features**
-    - Complete mandate lifecycle (Intent → Cart → Payment)
-    - Card payment support with DPAN tokens
-    - OTP challenge flows
-    - Extension mechanism (AP2 + payment method extensions)
-
-4. **Backend Service Patterns**
-    - Modular, independently deployable services
-    - Clean separation of concerns
-    - Go's strengths for backend services (concurrency, type safety, performance)
+3. **Language-Agnostic Protocol**
+   - Go backend agents work seamlessly with Python Shopping Agent
+   - Demonstrates true interoperability across languages
+   - Shows protocol is implementation-independent
 
 ## Running the Sample
 
@@ -73,7 +76,7 @@ The sample includes three backend agents but does **not** include a Shopping Age
    echo "GOOGLE_API_KEY=your_key" > samples/go/.env
    ```
 
-2. **Run all backend agents:**
+2. **Run all `go` agents:**
 
    ```sh
    # From repository root
@@ -82,9 +85,9 @@ The sample includes three backend agents but does **not** include a Shopping Age
 
    This starts all three backend agents:
 
-    - Merchant Agent on port 8001
-    - Credentials Provider on port 8002
-    - Payment Processor on port 8003
+   - Merchant Agent on port 8001
+   - Credentials Provider on port 8002
+   - Payment Processor on port 8003
 
 ### Manual Build and Run
 
@@ -105,28 +108,31 @@ make build
 
 ## Complete Shopping Flow
 
-To experience the full end-to-end shopping flow with these Go backend agents, use the Python Shopping Agent.
+To demonstrate the full end-to-end shopping workflow using the Go agents, we
+can leverage the Python Shopping Agent.
 
-### Option 1: Python Shopping Agent + Go Backends (Recommended)
+### Option 1: Python Shopping Agent + `go` Agents
 
-This demonstrates **cross-language interoperability** - the strength of the AP2 protocol.
+This demonstrates **cross-language interoperability**.
 
 1. **Start the Go backend agents** (as shown above)
 
-2. **Configure Python Shopping Agent** to use Go backends:
+2. **Python Shopping Agent** can connect with Go backends:
 
-   Edit `samples/python/src/roles/shopping_agent/remote_agents.py`:
+   The Python Shopping Agent in
+   `samples/python/src/roles/shopping_agent/remote_agents.py` already points
+   to:
 
    ```python
    merchant_agent_client = PaymentRemoteA2aClient(
        name="merchant_agent",
-       base_url="http://localhost:8001/a2a/merchant_agent",  # Go agent!
+       base_url="http://localhost:8001/a2a/merchant_agent",  # Go agent
        required_extensions={EXTENSION_URI},
    )
 
    credentials_provider_client = PaymentRemoteA2aClient(
        name="credentials_provider",
-       base_url="http://localhost:8002/a2a/credentials_provider_agent",  # Go agent!
+       base_url="http://localhost:8002/a2a/credentials_provider",  # Go agent
        required_extensions={EXTENSION_URI},
    )
    ```
@@ -143,8 +149,8 @@ This demonstrates **cross-language interoperability** - the strength of the AP2 
 
    You'll now have:
 
-    - **Shopping Agent**: Python (with ADK web UI)
-    - **Backend Agents**: Go (merchant, credentials, payment processor)
+   - **Shopping Agent**: Python (with ADK web UI)
+   - **Backend Agents**: Go (merchant, credentials, payment processor)
 
 This setup demonstrates the protocol working across language boundaries.
 
@@ -186,7 +192,7 @@ curl -X POST http://localhost:8001/a2a/merchant_agent \
 **Get payment methods:**
 
 ```sh
-curl -X POST http://localhost:8002/a2a/credentials_provider_agent \
+curl -X POST http://localhost:8002/a2a/credentials_provider \
   -H "Content-Type: application/json" \
   -d '{
     "jsonrpc": "2.0",
@@ -270,7 +276,7 @@ Go is an excellent choice for building AP2 backend agents:
 
 | Feature | Python Sample | Go Sample |
 |---------|--------------|-----------|
-| **Shopping Agent** | ✅ Full ADK-powered agent with UI | ❌ Not included (use Python version) |
+| **Shopping Agent** | ✅ Full ADK-powered agent with UI | ❌ Not included |
 | **Backend Agents** | ✅ Python implementations | ✅ Go implementations |
 
 ## Integration Scenarios
@@ -293,7 +299,6 @@ If running manually, stop each process individually.
 - **Experience the full flow**: Use Python Shopping Agent with these Go backends
 - **Explore the code**: See how AP2 protocol is implemented in Go
 - **Build your own**: Use these as reference for your own AP2 agents
-- **Deploy**: Containerize and deploy these production-ready services
 
 ## Resources
 

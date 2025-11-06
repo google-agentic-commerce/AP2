@@ -1,18 +1,17 @@
-# Agent Payments Protocol Go Sample: Backend Agent Infrastructure
+# Go Sample: Human-Present Card Payment (A2A)
 
-This sample demonstrates Go implementations of backend agents for the AP2
-protocol in a human present transaction using a card as the payment method.
+This scenario demonstrates a human-present card payment flow using Go backend
+agents with the Python Shopping Agent, showcasing the protocol's cross-language
+interoperability.
 
-## Overview
+**What's included:**
 
-This Go sample provides an example agent infrastructure for the Agent Payments
-Protocol. It showcases how to build AP2 services in Go, focusing on the backend
-agents operated by merchants, payment processors, and credential providers.
+- Merchant Agent - product catalog and cart management
+- Credentials Provider - payment credentials and wallet
+- Payment Processor - payment processing and OTP challenges
 
-The sample includes three backend agents but does **not** include a Shopping
-Agent. This design choice demonstrates the protocol's **language-agnostic
-interoperability** - the Python Shopping Agent can seamlessly communicate with
-other Go agents.
+**Note:** This sample focuses on backend services in Go. Use the Python
+Shopping Agent to interact with these services.
 
 ## Agents Implemented
 

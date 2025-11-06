@@ -1,8 +1,7 @@
 # Go Sample: Human-Present Card Payment (A2A)
 
 This scenario demonstrates a human-present card payment flow using Go backend
-agents with the Python Shopping Agent, showcasing the protocol's cross-language
-interoperability.
+agents.
 
 **What's included:**
 
@@ -10,8 +9,8 @@ interoperability.
 - Credentials Provider - payment credentials and wallet
 - Payment Processor - payment processing and OTP challenges
 
-**Note:** This sample focuses on backend services in Go. Use the Python
-Shopping Agent to interact with these services.
+**Note:** This sample focuses on backend agents in Go. Use the Python
+Shopping Agent to interact with these agents.
 
 ## Agents Implemented
 
@@ -110,11 +109,11 @@ make build
 To demonstrate the full end-to-end shopping workflow using the Go agents, we
 can leverage the Python Shopping Agent.
 
-### Option 1: Python Shopping Agent + `go` Agents
+### Python Shopping Agent + `go` Agents
 
 This demonstrates **cross-language interoperability**.
 
-1. **Start the Go backend agents** (as shown above)
+1. **Start the Go backend agents** (see [Quick Start](#quick-start))
 
 2. **Python Shopping Agent** can connect with Go backends:
 
@@ -153,9 +152,9 @@ This demonstrates **cross-language interoperability**.
 
 This setup demonstrates the protocol working across language boundaries.
 
-### Option 2: Direct API Testing
+### Direct API Testing
 
-Test the Go agents directly with HTTP requests:
+You can test the Go agents directly with HTTP requests:
 
 **Get merchant agent info:**
 

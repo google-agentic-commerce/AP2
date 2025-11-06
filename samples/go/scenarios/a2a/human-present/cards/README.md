@@ -1,7 +1,6 @@
 # Go Sample: Human-Present Card Payment (A2A)
 
-This scenario demonstrates a human-present card payment flow using Go backend
-agents.
+This scenario demonstrates a human-present card payment flow using Go agents.
 
 **What's included:**
 
@@ -9,48 +8,48 @@ agents.
 - Credentials Provider - payment credentials and wallet
 - Payment Processor - payment processing and OTP challenges
 
-**Note:** This sample focuses on backend agents in Go. Use the Python
+**Note:** This sample focuses on agents in Go. Use the Python
 Shopping Agent to interact with these agents.
 
 ## Agents Implemented
 
 - **Merchant Agent** (`http://localhost:8001/a2a/merchant_agent`)
-  - Handles product catalog queries
-  - Creates and manages cart mandates
-  - Exposes `search_catalog` skill for shopping intents
-  - Supports AP2 and Sample Card Network extensions
+    - Handles product catalog queries
+    - Creates and manages cart mandates
+    - Exposes `search_catalog` skill for shopping intents
+    - Supports AP2 and Sample Card Network extensions
 
 - **Credentials Provider Agent**
   (`http://localhost:8002/a2a/credentials_provider`)
-  - Manages user payment credentials and wallet
-  - Provides payment method details
-  - Supplies tokenized (DPAN) card information
-  - Handles payment authorization
+    - Manages user payment credentials and wallet
+    - Provides payment method details
+    - Supplies tokenized (DPAN) card information
+    - Handles payment authorization
 
 - **Merchant Payment Processor Agent**
   (`http://localhost:8003/a2a/merchant_payment_processor_agent`)
-  - Processes payments on behalf of merchants
-  - Implements OTP challenge mechanism
-  - Handles payment authorization and settlement
+    - Processes payments on behalf of merchants
+    - Implements OTP challenge mechanism
+    - Handles payment authorization and settlement
 
 ## What This Sample Demonstrates
 
 1. **AP2 Protocol Features**
-   - Complete mandate lifecycle (Intent → Cart → Payment)
-   - Card payment support with DPAN tokens
-   - OTP challenge flows
-   - Extension mechanism (AP2 + payment method extensions)
+    - Complete mandate lifecycle (Intent → Cart → Payment)
+    - Card payment support with DPAN tokens
+    - OTP challenge flows
+    - Extension mechanism (AP2 + payment method extensions)
 
 2. **Backend Service Patterns**
-   - Modular, independently deployable services
-   - Clean separation of concerns
-   - Go's strengths for backend services (concurrency, type safety,
-     performance)
+    - Modular, independently deployable services
+    - Clean separation of concerns
+    - Go's strengths for backend services (concurrency, type safety,
+      performance)
 
 3. **Language-Agnostic Protocol**
-   - Go backend agents work seamlessly with Python Shopping Agent
-   - Demonstrates true interoperability across languages
-   - Shows protocol is implementation-independent
+    - Go backend agents work seamlessly with Python Shopping Agent
+    - Demonstrates true interoperability across languages
+    - Shows protocol is implementation-independent
 
 ## Running the Sample
 
@@ -147,7 +146,10 @@ This demonstrates **cross-language interoperability**.
    - **Shopping Agent**: Python (with ADK web UI)
    - **Backend Agents**: Go (merchant, credentials, payment processor)
 
-This setup demonstrates the protocol working across language boundaries.
+   To try it out:
+   - Select "Shopping Agent" from the top-left dropdown
+   - Ask: "Hello, I'd like to buy a pair of red running shoes."
+   - Follow the conversation to complete the purchase flow
 
 ### Direct API Testing
 
@@ -256,32 +258,6 @@ make fmt
 3. Define `agent.json` with capabilities and skills
 4. Add build target to `Makefile`
 5. Update `run.sh` to start the new agent
-
-## Why Go for Backend Agents?
-
-Go is an excellent choice for building AP2 backend agents:
-
-- **Type Safety**: Compile-time guarantees for protocol structures
-- **Concurrency**: Efficient handling of multiple agent requests
-- **Performance**: Fast startup, low memory footprint
-- **Deployment**: Single binary, easy containerization
-- **Maintainability**: Clean, readable code
-
-## Comparison with Python Sample
-
-| Feature | Python Sample | Go Sample |
-|---------|--------------|-----------|
-| **Shopping Agent** | ✅ Full ADK-powered agent with UI | ❌ Not included |
-| **Backend Agents** | ✅ Python implementations | ✅ Go implementations |
-
-## Integration Scenarios
-
-These Go backend agents support multiple integration patterns:
-
-1. **Hybrid Stack**: Python Shopping Agent → Go Backends (demonstrated above)
-2. **Full Go Stack**: Build your own Go Shopping Agent → Go Backends
-3. **Polyglot**: Any language Shopping Agent → Go Backends
-4. **Microservices**: Deploy each Go agent independently
 
 ## Stopping the Agents
 

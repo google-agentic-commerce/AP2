@@ -115,11 +115,16 @@ This demonstrates **cross-language interoperability**.
 
 1. **Start the Go backend agents** (see [Quick Start](#quick-start))
 
-2. **Python Shopping Agent** can connect with Go backends:
+2. **Start the Python Shopping Agent:**
 
-   The Python Shopping Agent in
-   `samples/python/src/roles/shopping_agent/remote_agents.py` already points
-   to:
+   ```sh
+   # From repository root
+   cd samples/python
+   uv run --package ap2-samples adk web samples/python/src/roles
+   ```
+
+   The Python Shopping Agent is pre-configured to connect with the Go backends
+   in `samples/python/src/roles/shopping_agent/remote_agents.py`:
 
    ```python
    merchant_agent_client = PaymentRemoteA2aClient(
@@ -135,15 +140,7 @@ This demonstrates **cross-language interoperability**.
    )
    ```
 
-3. **Start the Python Shopping Agent:**
-
-   ```sh
-   # From repository root
-   cd samples/python
-   uv run --package ap2-samples adk web samples/python/src/roles
-   ```
-
-4. **Open browser** to `http://localhost:8000` and shop!
+3. **Open browser** to `http://localhost:8000` and shop!
 
    You'll now have:
 

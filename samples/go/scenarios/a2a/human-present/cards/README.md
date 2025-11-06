@@ -272,9 +272,6 @@ Go is an excellent choice for building AP2 backend agents:
 |---------|--------------|-----------|
 | **Shopping Agent** | ✅ Full ADK-powered agent with UI | ❌ Not included (use Python version) |
 | **Backend Agents** | ✅ Python implementations | ✅ Go implementations |
-| **Purpose** | Complete end-to-end demo | Production backend infrastructure |
-| **Best For** | Learning full AP2 flow | Building production services |
-| **Interoperability** | Can call any A2A backend | Works with any A2A shopping agent |
 
 ## Integration Scenarios
 

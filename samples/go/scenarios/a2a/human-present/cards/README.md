@@ -114,11 +114,10 @@ This demonstrates **cross-language interoperability**.
 
 1. **Start the Go backend agents** (see [Quick Start](#quick-start))
 
-2. **Start the Python Shopping Agent:**
+2. **Start the Python Shopping Agent in a separate terminal:**
 
    ```sh
    # From repository root
-   cd samples/python
    uv run --package ap2-samples adk web samples/python/src/roles
    ```
 

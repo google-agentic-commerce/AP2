@@ -18,9 +18,11 @@ Each agent uses individual tools to handle distinct tasks throughout the
 shopping and purchasing process.
 """
 
-
+from datetime import datetime
+from datetime import timezone
 import logging
 from typing import Any
+import uuid
 
 from a2a.server.tasks.task_updater import TaskUpdater
 from a2a.types import DataPart
@@ -28,9 +30,11 @@ from a2a.types import Part
 from a2a.types import Task
 from a2a.types import TaskState
 from a2a.types import TextPart
-
 from ap2.types.mandate import PAYMENT_MANDATE_DATA_KEY
 from ap2.types.mandate import PaymentMandate
+from ap2.types.payment_receipt import PAYMENT_RECEIPT_DATA_KEY
+from ap2.types.payment_receipt import PaymentReceipt
+from ap2.types.payment_receipt import Success
 from common import artifact_utils
 from common import message_utils
 from common.a2a_extension_utils import EXTENSION_URI
@@ -171,8 +175,12 @@ async def _complete_payment(
   payment_mandate_id = (
       payment_mandate.payment_mandate_contents.payment_mandate_id
   )
+  credentials_provider = _get_credentials_provider_client(payment_mandate)
   payment_credential = await _request_payment_credential(
-      payment_mandate, updater, debug_mode
+      payment_mandate,
+      credentials_provider,
+      updater,
+      debug_mode,
   )
 
   logging.info(
@@ -181,6 +189,20 @@ async def _complete_payment(
       payment_credential,
   )
   # Call issuer to complete the payment
+  payment_receipt = _create_payment_receipt(payment_mandate)
+  await _send_payment_receipt_to_credentials_provider(
+      payment_receipt,
+      credentials_provider,
+      updater,
+      debug_mode,
+  )
+  await updater.add_artifact([
+      Part(
+          root=DataPart(
+              data={PAYMENT_RECEIPT_DATA_KEY: payment_receipt.model_dump()}
+          )
+      )
+  ])
   success_message = updater.new_agent_message(
       parts=_create_text_parts("{'status': 'success'}")
   )
@@ -195,6 +217,7 @@ def _challenge_response_is_valid(challenge_response: str) -> bool:
 
 async def _request_payment_credential(
     payment_mandate: PaymentMandate,
+    credentials_provider: PaymentRemoteA2aClient,
     updater: TaskUpdater,
     debug_mode: bool = False,
 ) -> str:
@@ -202,25 +225,13 @@ async def _request_payment_credential(
 
   Args:
     payment_mandate: The PaymentMandate containing payment details.
+    credentials_provider: The credentials provider client.
     updater: The task updater.
     debug_mode: Whether the agent is in debug mode.
 
   Returns:
     payment_credential: The payment credential details.
   """
-  token_object = (
-      payment_mandate.payment_mandate_contents.payment_response.details.get(
-          "token"
-      )
-  )
-  credentials_provider_url = token_object.get("url")
-
-  credentials_provider = PaymentRemoteA2aClient(
-      name="credentials_provider",
-      base_url=credentials_provider_url,
-      required_extensions={EXTENSION_URI},
-  )
-
   message_builder = (
       A2aMessageBuilder()
       .set_context_id(updater.context_id)
@@ -235,6 +246,82 @@ async def _request_payment_credential(
   payment_credential = artifact_utils.get_first_data_part(task.artifacts)
 
   return payment_credential
+
+
+def _create_payment_receipt(payment_mandate: PaymentMandate) -> PaymentReceipt:
+  """Creates a payment receipt.
+
+  Args:
+    payment_mandate: The PaymentMandate containing payment details.
+
+  Returns:
+    The PaymentReceipt containing payment receipt details.
+  """
+  payment_id = uuid.uuid4().hex
+  return PaymentReceipt(
+      payment_mandate_id=payment_mandate.payment_mandate_contents.payment_mandate_id,
+      timestamp=datetime.now(timezone.utc).isoformat(),
+      payment_id=payment_id,
+      amount=payment_mandate.payment_mandate_contents.payment_details_total.amount,
+      payment_status=Success(
+          merchant_confirmation_id=payment_id,
+          psp_confirmation_id=payment_id
+      ),
+      payment_method_details={
+          "method_name": (
+              payment_mandate.payment_mandate_contents.payment_response.method_name
+          )
+      },
+  )
+
+
+def _get_credentials_provider_client(
+    payment_mandate: PaymentMandate,
+) -> PaymentRemoteA2aClient:
+  """Gets the credentials provider client.
+
+  Args:
+    payment_mandate: The PaymentMandate containing payment details.
+
+  Returns:
+    The credentials provider client.
+  """
+  token_object = (
+      payment_mandate.payment_mandate_contents.payment_response.details.get(
+          "token"
+      )
+  )
+  credentials_provider_url = token_object.get("url")
+  return PaymentRemoteA2aClient(
+      name="credentials_provider",
+      base_url=credentials_provider_url,
+      required_extensions={EXTENSION_URI},
+  )
+
+
+async def _send_payment_receipt_to_credentials_provider(
+    payment_receipt: PaymentReceipt,
+    credentials_provider: PaymentRemoteA2aClient,
+    updater: TaskUpdater,
+    debug_mode: bool = False,
+) -> None:
+  """Sends the payment receipt to the Credentials Provider.
+
+  Args:
+    payment_receipt: The PaymentReceipt containing payment receipt details.
+    credentials_provider: The credentials provider client.
+    updater: The task updater.
+    debug_mode: Whether the agent is in debug mode.
+  """
+
+  message_builder = (
+      A2aMessageBuilder()
+      .set_context_id(updater.context_id)
+      .add_text("Here is the payment receipt. No action is required.")
+      .add_data(PAYMENT_RECEIPT_DATA_KEY, payment_receipt.model_dump())
+      .add_data("debug_mode", debug_mode)
+  )
+  await credentials_provider.send_a2a_message(message_builder.build())
 
 
 def _create_text_parts(*texts: str) -> list[Part]:

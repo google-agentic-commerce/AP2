@@ -193,6 +193,23 @@ async def handle_signed_payment_mandate(
   await updater.complete()
 
 
+async def handle_payment_receipt(
+    data_parts: list[dict[str, Any]],
+    updater: TaskUpdater,
+    current_task: Task | None,
+) -> None:
+  """Handles a payment receipt.
+
+  Does nothing and then completes the task. This is a placeholder for now.
+
+  Args:
+    data_parts: DataPart contents. Should contain a single PaymentMandate.
+    updater: The TaskUpdater instance for updating the task state.
+    current_task: The current task if there is one.
+  """
+  await updater.complete()
+
+
 def _get_payment_method_aliases(
     payment_methods: list[dict[str, Any]],
 ) -> list[str | None]:

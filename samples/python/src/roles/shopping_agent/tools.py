@@ -33,6 +33,8 @@ from ap2.types.mandate import CartMandate
 from ap2.types.mandate import PAYMENT_MANDATE_DATA_KEY
 from ap2.types.mandate import PaymentMandate
 from ap2.types.mandate import PaymentMandateContents
+from ap2.types.payment_receipt import PAYMENT_RECEIPT_DATA_KEY
+from ap2.types.payment_receipt import PaymentReceipt
 from ap2.types.payment_request import PaymentResponse
 from common import artifact_utils
 from common.a2a_message_builder import A2aMessageBuilder
@@ -107,6 +109,7 @@ async def initiate_payment(tool_context: ToolContext, debug_mode: bool = False):
       .build()
   )
   task = await merchant_agent_client.send_a2a_message(outgoing_message_builder)
+  store_receipt_if_present(task, tool_context)
   tool_context.state["initiate_payment_task_id"] = task.id
   return task.status
 
@@ -148,7 +151,18 @@ async def initiate_payment_with_otp(
   )
 
   task = await merchant_agent_client.send_a2a_message(outgoing_message_builder)
+  store_receipt_if_present(task, tool_context)
   return task.status
+
+
+def store_receipt_if_present(task, tool_context: ToolContext) -> None:
+  """Stores the payment receipt in state."""
+  payment_receipts = artifact_utils.find_canonical_objects(
+      task.artifacts, PAYMENT_RECEIPT_DATA_KEY, PaymentReceipt
+  )
+  if payment_receipts:
+    payment_receipt = artifact_utils.only(payment_receipts)
+    tool_context.state["payment_receipt"] = payment_receipt
 
 
 def create_payment_mandate(

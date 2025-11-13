@@ -679,7 +679,8 @@ Some salient points of the flow diagram:
 - Step 13: Payment Options may be received from a Credentials Provider or may
     be supplied by the merchant directly in case they already stored payment
     method information.
-- Step 21: This is the load bearing step where the user verifies everything
+- Step 21: This is the load bearing step where the user verifies everything and
+    proceeds to make a purchase.
 - Step 23: The user may be required to step up their payment method through a
     security/tokenization flow if the payment network has specific
     security/tokenization requirements for AI Agent transactions.
@@ -689,7 +690,6 @@ Some salient points of the flow diagram:
     modality (Human Present or Human Not Present).
     - Note that this is distinct from the “Cart Mandate” which contains all
         the information which a merchant requires to fulfill the order.
-    and proceed to make a purchase
 - Step 28: While not shown in the diagram we expect the PSP to send the
     transaction authorization message (along with the PaymentMandate) to
     supporting networks/issuers, allowing these parties to reason over the

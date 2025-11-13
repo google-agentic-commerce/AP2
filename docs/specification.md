@@ -196,19 +196,19 @@ The agent payments ecosystem consists of the following key roles:
     primary functions include understanding the user's needs, discovering
     products, interacting with merchants to build a cart, and obtaining the
     user's signed authorization to initiate a payment related task.
-- **The User’s Credentials Provider (CP)**: A specialized entity responsible
+- **The User’s Credentials Provider (CP)**: A specialized entity (or set of entities) responsible
     for the secure management and execution of payments credentials (e.g. a
     digital Wallet). It holds knowledge of the User's available payment methods,
     gets user consent (if deemed necessary) to share credentials with the SA,
     selects the optimal payment method based on user preferences and transaction
-    context, and handles payment scenarios like errors, declines and transaction
+    context, and handles payment scenarios like tokenization, errors, declines and transaction
     challenges gracefully.
 - **The Remote or Merchant Endpoint (ME)**: A web interface, MCP endpoint or
     an AI agent operating on behalf of an entity which expects to receive a
     payment in return for offering products or services. Its objectives are to
     showcase products/services, provide information, negotiate the contents of a
     cart with a Shopping Agent, and confirm that it has enough information about
-    the user’s intent to deliver the right products/services.
+    the user’s intent to deliver the right products/services. A technology or service provider could also play this role on behalf of multiple merchants.
 - **The Merchant Payment Processor Endpoint (MPP)**: The Merchant Payment
     Processor (web, API, MCP or AI Agent) may be the same as the Merchant if the
     Merchant has all the capabilities to fulfill this role. The MPP constructs
@@ -454,13 +454,13 @@ Key changes from the Human Present modality are noted below:
    are able to fulfill the user’s requirement.
 
 3. Merchant can force user confirmation: If the Merchant is unsure about their
-   ability to fulfill the user’s needs, they can force the user to come back
+   ability to fulfill the user’s needs (e.g. the request is not for a specific SKU), they can force the user to come back
    into session to confirm. Here, the merchant can require either (i) the user
    select from among a set of SKUs presented to them or (ii) provide answers to
    additional questions that the merchant needs to know. (i) can lead to
    creation of Human-Present cart mandate and (ii) can lead to updating the
    “intent mandate” with more information. This ensures that the Merchants get
-   more confidence on the user’s intent if they are unsure. Merchants may
+   more confidence on the user’s intent if they are unsure. With (i), merchants now get confirmation of the user having reviewed the purchases leading to the accountability of a bad transaction leaning towards the user. Merchants may
    balance transaction conversion rates with returns/user dissatisfaction to
    decide when they want to force users to provide additional confirmation.
 
@@ -481,7 +481,7 @@ Example Scenario
 - SA notifies the user that their presence is needed before the txn can be
     initiated. User sees the 3 options, picks one and can now sign a "Cart
     Mandate" which gives the merchant evidence that the user knows exactly what
-    they are getting.
+    they are getting, and also shifts accountability of a bad transaction towards the user unless there is clear merchant error (for example, mis-ship or damaged items)
 
 Alternatively, the merchant may have decided to fulfill the order with the
 cheapest tickets which meet the criteria. This would be up to the merchant and
@@ -667,30 +667,30 @@ sequenceDiagram
 
 Some salient points of the flow diagram:
 
-- Step 4: The user may need to provide a shipping address or the Shopping
+- Step 5: The user may need to provide a shipping address or the Shopping
     Agent may already have it based on the user's preferences/settings. This is
     to ensure the price in the cart is final. All selections that may alter a
     cart price must be completed prior to the CartMandate being able to be
     created.
-- Step 6: The cart mandate is first signed by the merchant entity (not an
+- Step 10: The cart mandate is first signed by the merchant entity (not an
     Agent) to guarantee they will fulfill the order based on the SKU, price and
     shipping information. This ensures that the user sees a cart (in step 12)
     which the merchant has confirmed to fulfill.
-- Step 10: Payment Options may be received from a Credentials Provider or may
+- Step 13: Payment Options may be received from a Credentials Provider or may
     be supplied by the merchant directly in case they already stored payment
     method information.
-- Step 13: The user may be required to step up their payment method through a
+- Step 21: This is the load bearing step where the user verifies everything and
+    proceeds to make a purchase.
+- Step 23: The user may be required to step up their payment method through a
     security/tokenization flow if the payment network has specific
     security/tokenization requirements for AI Agent transactions.
-- Step 14: The PaymentMandate contains information that can be appended to the
+- Step 24: The PaymentMandate contains information that can be appended to the
     existing transaction authorization packet which will provide visibility to
     PSP/Networks/Issuers that the transaction had AI Agent involvement and its
     modality (Human Present or Human Not Present).
     - Note that this is distinct from the “Cart Mandate” which contains all
         the information which a merchant requires to fulfill the order.
-- Step 15: This is the load bearing step where the user verifies everything
-    and proceed to make a purchase
-- Step 21: While not shown in the diagram we expect the PSP to send the
+- Step 28: While not shown in the diagram we expect the PSP to send the
     transaction authorization message (along with the PaymentMandate) to
     supporting networks/issuers, allowing these parties to reason over the
     transactions and make a decision (approve/deny/challenge).

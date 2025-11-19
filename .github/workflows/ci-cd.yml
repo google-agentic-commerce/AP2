@@ -1,0 +1,327 @@
+# AI Shopping Concierge - CI/CD Pipeline Configuration
+
+name: AI Shopping Concierge CI/CD
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  # Test and Quality Assurance
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.10', '3.11']
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pytest pytest-asyncio pytest-cov black isort mypy safety bandit
+
+    - name: Code formatting check
+      run: |
+        black --check ai_shopping_agent/
+        isort --check-only ai_shopping_agent/
+
+    - name: Type checking
+      run: |
+        mypy ai_shopping_agent/ --ignore-missing-imports
+
+    - name: Security scan
+      run: |
+        safety check --json
+        bandit -r ai_shopping_agent/ -f json
+
+    - name: Run tests
+      env:
+        DATABASE_URL: postgresql+asyncpg://postgres:postgres@localhost:5432/test_db
+        REDIS_URL: redis://localhost:6379/0
+        GOOGLE_AI_API_KEY: test_key
+        WHATSAPP_ACCESS_TOKEN: test_token
+      run: |
+        pytest tests/ -v --cov=ai_shopping_agent --cov-report=xml --cov-report=html
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage.xml
+        flags: unittests
+        name: codecov-umbrella
+
+  # Build Docker image
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
+    
+    outputs:
+      image-tag: ${{ steps.meta.outputs.tags }}
+      image-digest: ${{ steps.build.outputs.digest }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=sha,prefix=main-{{branch}}-,enable=${{ github.ref == 'refs/heads/main' }}
+          type=sha,prefix=develop-{{branch}}-,enable=${{ github.ref == 'refs/heads/develop' }}
+
+    - name: Build and push Docker image
+      id: build
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        platforms: linux/amd64,linux/arm64
+
+  # Deploy to staging
+  deploy-staging:
+    needs: [test, build]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    environment: staging
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'v1.28.0'
+
+    - name: Configure kubectl
+      run: |
+        echo "${{ secrets.KUBE_CONFIG_STAGING }}" | base64 -d > $HOME/.kube/config
+
+    - name: Deploy to staging
+      run: |
+        # Update image tag in Kubernetes manifests
+        sed -i "s|image: .*|image: ${{ needs.build.outputs.image-tag }}|g" deployment/kubernetes/staging/deployment.yaml
+        
+        # Apply Kubernetes manifests
+        kubectl apply -f deployment/kubernetes/staging/
+        
+        # Wait for rollout
+        kubectl rollout status deployment/ai-shopping-concierge -n staging --timeout=300s
+
+    - name: Run smoke tests
+      run: |
+        # Wait for service to be ready
+        sleep 30
+        
+        # Get service URL
+        STAGING_URL=$(kubectl get service ai-shopping-concierge-service -n staging -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+        
+        # Run smoke tests
+        curl -f http://$STAGING_URL:8000/health || exit 1
+        
+        # Test webhook endpoint
+        curl -f -X GET "http://$STAGING_URL:8000/webhook/whatsapp?hub.mode=subscribe&hub.challenge=test&hub.verify_token=test" || exit 1
+
+    - name: Notify Slack
+      if: always()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        channel: '#deployments'
+        text: 'Staging deployment ${{ job.status }}'
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  # Deploy to production
+  deploy-production:
+    needs: [test, build, deploy-staging]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'v1.28.0'
+
+    - name: Configure kubectl
+      run: |
+        echo "${{ secrets.KUBE_CONFIG_PRODUCTION }}" | base64 -d > $HOME/.kube/config
+
+    - name: Deploy to production
+      run: |
+        # Update image tag in Kubernetes manifests
+        sed -i "s|image: .*|image: ${{ needs.build.outputs.image-tag }}|g" deployment/kubernetes/production/deployment.yaml
+        
+        # Apply Kubernetes manifests
+        kubectl apply -f deployment/kubernetes/production/
+        
+        # Wait for rollout
+        kubectl rollout status deployment/ai-shopping-concierge -n production --timeout=600s
+
+    - name: Run production health checks
+      run: |
+        # Wait for service to be ready
+        sleep 60
+        
+        # Get production URL
+        PROD_URL="https://api.ai-shopping-concierge.com"
+        
+        # Run comprehensive health checks
+        curl -f $PROD_URL/health || exit 1
+        
+        # Test critical endpoints
+        curl -f -H "Authorization: Bearer ${{ secrets.HEALTH_CHECK_TOKEN }}" $PROD_URL/api/v1/health/deep || exit 1
+
+    - name: Create GitHub release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ github.run_number }}
+        release_name: Release v${{ github.run_number }}
+        body: |
+          ## Changes in this release
+          - Automated deployment from commit ${{ github.sha }}
+          - Image: ${{ needs.build.outputs.image-tag }}
+          - Deployed to production: $(date)
+        draft: false
+        prerelease: false
+
+    - name: Notify Slack
+      if: always()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        channel: '#deployments'
+        text: 'Production deployment ${{ job.status }} - v${{ github.run_number }}'
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  # Security scanning
+  security-scan:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    
+    steps:
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        image-ref: ${{ needs.build.outputs.image-tag }}
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v2
+      if: always()
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+  # Performance testing
+  performance-test:
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Install k6
+      run: |
+        sudo gpg -k
+        sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+        echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+        sudo apt-get update
+        sudo apt-get install k6
+
+    - name: Run performance tests
+      run: |
+        k6 run tests/performance/load-test.js --env STAGING_URL=${{ secrets.STAGING_URL }}
+
+    - name: Upload performance results
+      uses: actions/upload-artifact@v3
+      with:
+        name: performance-results
+        path: performance-results.json

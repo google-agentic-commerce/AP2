@@ -76,7 +76,7 @@ Below is a list of partners who are part of the AP2 community and are helping bu
 - [Monee (ShopeePay)](https://shopeepay.com/)
 - [Mysten Labs](https://mystenlabs.com/)
 - [Natural Intelligence](https://www.naturalint.com/)
-- [Nexi](https://www.nexi.com/)
+- [Nexi](https://www.nexigroup.com/)
 - [Nuvei](https://www.nuvei.com/)
 - [Okta](https://www.okta.com/)
 - [OKX](https://www.okx.com/)

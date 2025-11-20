@@ -79,7 +79,7 @@ build, codify, and adopt A2A as the standard protocol for AI agent payments.
 - [Monee (ShopeePay)](https://shopeepay.com/)
 - [Mysten Labs](https://mystenlabs.com/)
 - [Natural Intelligence](https://www.naturalint.com/)
-- [Nexi](https://www.nexi.com/)
+- [Nexi](https://www.nexigroup.com/)
 - [Nuvei](https://www.nuvei.com/)
 - [Okta](https://www.okta.com/)
 - [OKX](https://www.okx.com/)

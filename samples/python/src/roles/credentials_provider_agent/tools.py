@@ -266,8 +266,9 @@ def _payment_method_is_eligible(
       network.casefold()
       for network in merchant_criteria.data.get("network", [])
   ]
+  # If no network filtering is required (e.g., for PAY_BY_BANK), type match is sufficient
   if not merchant_supported_networks:
-    return False
+    return True
 
   payment_card_networks = payment_method.get("network", [])
   for network_info in payment_card_networks:

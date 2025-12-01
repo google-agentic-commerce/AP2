@@ -107,10 +107,8 @@ async def _create_and_add_cart_mandate_artifact(
   payment_request = PaymentRequest(
       method_data=[
           PaymentMethodData(
-              supported_methods="CARD",
-              data={
-                  "network": ["mastercard", "paypal", "amex"],
-              },
+              supported_methods="PAY_BY_BANK",
+              data={},
           )
       ],
       details=PaymentDetailsInit(

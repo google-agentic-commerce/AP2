@@ -71,6 +71,12 @@ _account_db = {
                 "account_identifier": "foo@bar.com",
                 "alias": "Bugs's PayPal account",
             },
+            "pay_by_bank1": {
+                "type": "PAY_BY_BANK",
+                "brand": "TrueLayer",
+                "account_number": "12345678",
+                "alias": "TrueLayer Pay by Bank",
+            },
         },
     },
     "daffyduck@gmail.com": {

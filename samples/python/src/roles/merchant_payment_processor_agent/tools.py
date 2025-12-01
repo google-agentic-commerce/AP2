@@ -88,6 +88,17 @@ async def _handle_payment_mandate(
     current_task: The current task, or None if it's a new payment.
     debug_mode: Whether the agent is in debug mode.
   """
+  # Extract payment method type from the mandate
+  payment_method_type = (
+      payment_mandate.payment_mandate_contents.payment_response.method_name
+  )
+
+  # Pay by bank payments skip the challenge and process immediately
+  if payment_method_type == "PAY_BY_BANK":
+    await _complete_payment(payment_mandate, updater, debug_mode)
+    return
+
+  # Card payments continue with existing challenge flow
   if current_task is None:
     await _raise_challenge(updater)
     return

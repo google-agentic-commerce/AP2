@@ -60,11 +60,13 @@ one of two ways.
 *   Option 1: Declare them as environment variables:
     ```sh
     export GOOGLE_API_KEY=your_key
+    export TRUELAYER_BEARER_TOKEN=your_truelayer_access_token
     export VRP_MANDATE_ID=your_vrp_mandate_id
     ```
 *   Option 2: Put them into an .env file at the root of your repository:
     ```sh
     echo "GOOGLE_API_KEY=your_key" > .env
+    export "TRUELAYER_BEARER_TOKEN=your_truelayer_access_token" > .env
     echo "VRP_MANDATE_ID=your_vrp_mandate_id" >> .env
     ```
 

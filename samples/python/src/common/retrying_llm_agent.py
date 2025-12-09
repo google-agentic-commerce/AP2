@@ -18,7 +18,6 @@ This implementation enhances the ADK's LlmAgent by automatically retrying
 requests and surfacing errors captured from the LLM.
 """
 
-import logging
 from google.adk.agents.invocation_context import InvocationContext
 from google.adk.agents.llm_agent import LlmAgent
 from google.adk.events.event import Event
@@ -49,7 +48,6 @@ class RetryingLlmAgent(LlmAgent):
         async for event in super()._run_async_impl(ctx):
           yield event
       except Exception as e:  # pylint: disable=broad-exception-caught
-        logging.error("Gemini server error caught", exc_info=True)
         yield Event(
             author=ctx.agent.name,
             invocation_id=ctx.invocation_id,

@@ -54,22 +54,28 @@ This sample consists of:
 
 Ensure you have obtained a Google API key from
 [Google AI Studio](https://aistudio.google.com/apikey). You also need to set up
-a VRP mandate ID for TrueLayer Pay by Bank. Declare the required variables in
-one of two ways.
+TrueLayer credentials including a VRP mandate ID, bearer token, and signing
+credentials. Declare the required variables in one of two ways.
 
 *   Option 1: Declare them as environment variables:
     ```sh
     export GOOGLE_API_KEY=your_key
     export VRP_MANDATE_ID=your_vrp_mandate_id
+    export TRUELAYER_BEARER_TOKEN=your_bearer_token
+    export TL_SIGNING_KEY_ID=your_signing_key_id
+    export TL_SIGNING_PRIVATE_KEY=your_private_key_pem
     ```
 *   Option 2: Put them into an .env file at the root of your repository:
     ```sh
     echo "GOOGLE_API_KEY=your_key" > .env
     echo "VRP_MANDATE_ID=your_vrp_mandate_id" >> .env
+    echo "TRUELAYER_BEARER_TOKEN=your_bearer_token" >> .env
+    echo "TL_SIGNING_KEY_ID=your_signing_key_id" >> .env
+    echo "TL_SIGNING_PRIVATE_KEY=your_private_key_pem" >> .env
     ```
 
-**Note**: Replace `your_vrp_mandate_id` with a valid VRP mandate ID obtained
-from TrueLayer.
+**Note**: All TrueLayer credentials (VRP mandate ID, bearer token, signing key
+ID, and private key) should be obtained from your TrueLayer account.
 
 ### Execution
 

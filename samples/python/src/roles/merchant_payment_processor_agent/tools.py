@@ -289,9 +289,13 @@ async def _call_truelayer_payments_api(
     API response as dictionary
   """
   import httpx
+  import json
+  from truelayer_signing import sign_with_pem, HttpMethod
 
-  # TODO: dinamically generate
+  # Get credentials from environment
   TRUELAYER_BEARER_TOKEN = os.getenv("TRUELAYER_BEARER_TOKEN")
+  TL_SIGNING_KEY_ID = os.getenv("TL_SIGNING_KEY_ID")
+  TL_SIGNING_PRIVATE_KEY = os.getenv("TL_SIGNING_PRIVATE_KEY")
 
   # Convert amount to minor units (e.g., dollars to cents)
   amount_in_minor = int(amount * 100)
@@ -299,13 +303,7 @@ async def _call_truelayer_payments_api(
   # Generate idempotency key
   idempotency_key = str(uuid.uuid4())
 
-  # Prepare request
-  url = "https://api.t7r.dev/payments"
-  headers = {
-      "Authorization": f"Bearer {TRUELAYER_BEARER_TOKEN}",
-      "Content-Type": "application/json",
-      "Idempotency-Key": idempotency_key,
-  }
+  # Prepare payload with consistent JSON formatting for signature
   payload = {
       "payment_method": {
           "type": "mandate",
@@ -315,9 +313,29 @@ async def _call_truelayer_payments_api(
       "reference": reference,
       "currency": currency,
   }
+  body = json.dumps(payload, separators=(",", ":"))
+
+  # Generate TrueLayer signature
+  tl_signature = (
+      sign_with_pem(TL_SIGNING_KEY_ID, TL_SIGNING_PRIVATE_KEY)
+      .set_method(HttpMethod.POST)
+      .set_path("/payments")
+      .add_header("Idempotency-Key", idempotency_key)
+      .set_body(body)
+      .sign()
+  )
+
+  # Prepare request headers
+  url = "https://api.t7r.dev/payments"
+  headers = {
+      "Authorization": f"Bearer {TRUELAYER_BEARER_TOKEN}",
+      "Content-Type": "application/json",
+      "Idempotency-Key": idempotency_key,
+      "Tl-Signature": tl_signature,
+  }
 
   async with httpx.AsyncClient() as client:
-    response = await client.post(url, headers=headers, json=payload)
+    response = await client.post(url, headers=headers, data=body)
     response.raise_for_status()
     return response.json()
 

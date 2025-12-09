@@ -15,6 +15,7 @@ dependencies = [
     "google-genai",
     "httpx",
     "requests",
+    "truelayer-signing",
     "ap2"
 ]
 keywords = ["payments", "a2a", "ap2"]

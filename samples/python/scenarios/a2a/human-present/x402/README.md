@@ -130,39 +130,3 @@ This section walks you through a typical interaction with the sample.
     transaction information in a PaymentMandate and ask you to sign the
     mandate. It will initiate payment using the PaymentMandate.
 1.  **Purchase Complete**: The payment will be processed (OTP challenge is skipped for x402 demo), and you'll receive a confirmation message and a digital receipt.
-
-## Advanced Engagements with the samples
-
-### Enabling Verbose Engagement with the Shopping Agent
-
-If you want to understand what the agents are doing internally or inspect the
-mandate objects they create and share, you can ask the Shopping Agent to run in
-**verbose mode**.
-
-Enabling verbose mode will instruct the Shopping Agent, and any agents it
-delegates to, to provide detailed explanations of their process, including:
-
-*   A description of their current and next steps.
-*   The JSON representation of all data payloads (such as `IntentMandates`,
-    `CartMandates`, or `PaymentMandates`) being created, sent, or received.
-
-#### How to Activate Verbose Mode
-
-To activate this mode, simply include the keyword verbose in your initial prompt
-to the Shopping Agent. Example prompt:
-
-*"I'm looking to buy a new pair of shoes. Could you be verbose as we do this,
-explaining what you're doing, and display all data payloads?"*
-
-> **💡 TIP: Give elaborate instructions**
->
-> While the word **verbose** is usually sufficient, providing more elaborate
-> instruction in your prompt tends to result in more detailed and helpful
-> explanations from the agent.
-
-> **💡 TIP: If the JSON is missing...**
->
-> If the agent is in verbose mode but fails to display the JSON mandate, a quick
-> follow-up prompt is often needed. Just say: **"Remember we're in verbose mode,
-> please display the JSON."** After this reminder, the agent usually becomes
-> more reliable at displaying all data payloads.

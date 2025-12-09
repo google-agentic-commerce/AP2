@@ -20,6 +20,7 @@ shopping and purchasing process, such as updating a cart or initiating payment.
 
 from datetime import datetime
 from datetime import timezone
+import os
 import uuid
 
 from a2a.types import Artifact
@@ -184,12 +185,21 @@ def create_payment_mandate(
 
   payment_request = cart_mandate.contents.payment_request
   shipping_address = tool_context.state["shipping_address"]
+
+  payment_method = os.environ.get("PAYMENT_METHOD", "CARD")
+  if payment_method == "x402":
+    method_name = "https://www.x402.org/"
+    details = tool_context.state["payment_credential_token"]
+  else:
+    method_name = "CARD"
+    details = {
+        "token": tool_context.state["payment_credential_token"],
+    }
+
   payment_response = PaymentResponse(
       request_id=payment_request.details.id,
-      method_name="CARD",
-      details={
-          "token": tool_context.state["payment_credential_token"],
-      },
+      method_name=method_name,
+      details=details,
       shipping_address=shipping_address,
       payer_email=user_email,
   )

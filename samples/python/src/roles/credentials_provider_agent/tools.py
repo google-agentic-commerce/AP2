@@ -259,6 +259,8 @@ def _payment_method_is_eligible(
     True if the payment_method is eligible according to the payment method,
     False otherwise.
   """
+  if merchant_criteria.supported_methods == "https://www.x402.org/":
+    return True
   if payment_method.get("type", "") != merchant_criteria.supported_methods:
     return False
 

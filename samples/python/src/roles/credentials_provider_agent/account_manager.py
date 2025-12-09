@@ -71,6 +71,11 @@ _account_db = {
                 "account_identifier": "foo@bar.com",
                 "alias": "Bugs's PayPal account",
             },
+            "x402_wallet": {
+                "type": "DIGITAL_WALLET",
+                "brand": "x402",
+                "alias": "Bugs's x402 Wallet",
+            },
         },
     },
     "daffyduck@gmail.com": {

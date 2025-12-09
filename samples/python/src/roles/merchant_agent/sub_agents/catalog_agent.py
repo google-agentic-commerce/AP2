@@ -20,6 +20,7 @@ This agent fabricates catalog content based on the user's request.
 from datetime import datetime
 from datetime import timedelta
 from datetime import timezone
+import os
 from typing import Any
 
 from a2a.server.tasks.task_updater import TaskUpdater
@@ -82,7 +83,11 @@ async def find_items_workflow(
     for item in items:
       item_count += 1
       await _create_and_add_cart_mandate_artifact(
-          item, item_count, current_time, updater
+          item,
+          item_count,
+          current_time,
+          updater,
+          os.environ.get("PAYMENT_METHOD", "CARD"),
       )
     risk_data = _collect_risk_data(updater)
     updater.add_artifact([
@@ -102,17 +107,36 @@ async def _create_and_add_cart_mandate_artifact(
     item_count: int,
     current_time: datetime,
     updater: TaskUpdater,
+    payment_method: str,
 ) -> None:
   """Creates a CartMandate and adds it as an artifact."""
+  if payment_method == "x402":
+    method_data = [
+        PaymentMethodData(
+            supported_methods="https://www.x402.org/",
+            data={
+                "x402Version": 1,
+                "accepts": [{
+                    "scheme": "exact",
+                    "network": "base",
+                    "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bda02913",
+                    "payTo": "0xMerchantWalletAddress",
+                    "maxAmountRequired": str(int(item.amount.value * 1000000))
+                }]
+            }
+        )
+    ]
+  else:
+    method_data = [
+        PaymentMethodData(
+            supported_methods="CARD",
+            data={
+                "network": ["mastercard", "paypal", "amex"],
+            },
+        )
+    ]
   payment_request = PaymentRequest(
-      method_data=[
-          PaymentMethodData(
-              supported_methods="CARD",
-              data={
-                  "network": ["mastercard", "paypal", "amex"],
-              },
-          )
-      ],
+      method_data=method_data,
       details=PaymentDetailsInit(
           id=f"order_{item_count}",
           display_items=[item],

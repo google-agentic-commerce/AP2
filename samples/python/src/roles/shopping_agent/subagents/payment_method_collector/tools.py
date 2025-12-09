@@ -19,6 +19,7 @@ shopping and purchasing process.
 """
 
 from google.adk.tools.tool_context import ToolContext
+import os
 
 from ap2.types.payment_request import PAYMENT_METHOD_DATA_DATA_KEY
 from common.a2a_message_builder import A2aMessageBuilder
@@ -75,23 +76,39 @@ async def get_payment_credential_token(
   Returns:
     Status of the call and the payment credential token.
   """
-  message = (
-      A2aMessageBuilder()
-      .set_context_id(tool_context.state["shopping_context_id"])
-      .add_text("Get a payment credential token for the user's payment method.")
-      .add_data("payment_method_alias", payment_method_alias)
-      .add_data("user_email", user_email)
-      .build()
-  )
-  task = await credentials_provider_client.send_a2a_message(message)
-  data = artifact_utils.get_first_data_part(task.artifacts)
-  token = data.get("token")
-  credentials_provider_agent_card = (
-      await credentials_provider_client.get_agent_card()
-  )
+  payment_method = os.environ.get("PAYMENT_METHOD", "CARD")
 
-  tool_context.state["payment_credential_token"] = {
-      "value": token,
-      "url": credentials_provider_agent_card.url,
-  }
-  return {"status": "success", "token": token}
+  if payment_method == "x402":
+    # Mock x402 PaymentPayload
+    signed_payload = {
+        "x402Version": 1,
+        "paymentMethod": {
+            "network": "base",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bda02913",
+            "payFrom": "0xPayerWalletAddress",
+        },
+        "signature": "mock-x402-signature",
+    }
+    tool_context.state["payment_credential_token"] = {"value": signed_payload}
+    return {"status": "success", "token": signed_payload}
+  else:
+    message = (
+        A2aMessageBuilder()
+        .set_context_id(tool_context.state["shopping_context_id"])
+        .add_text("Get a payment credential token for the user's payment method.")
+        .add_data("payment_method_alias", payment_method_alias)
+        .add_data("user_email", user_email)
+        .build()
+    )
+    task = await credentials_provider_client.send_a2a_message(message)
+    data = artifact_utils.get_first_data_part(task.artifacts)
+    token = data.get("token")
+    credentials_provider_agent_card = (
+        await credentials_provider_client.get_agent_card()
+    )
+
+    tool_context.state["payment_credential_token"] = {
+        "value": token,
+        "url": credentials_provider_agent_card.url,
+    }
+    return {"status": "success", "token": token}

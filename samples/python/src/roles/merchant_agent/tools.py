@@ -49,6 +49,7 @@ from common.payment_remote_a2a_client import PaymentRemoteA2aClient
 # is integrated with.
 _PAYMENT_PROCESSORS_BY_PAYMENT_METHOD_TYPE = {
     "CARD": "http://localhost:8003/a2a/merchant_payment_processor_agent",
+    "https://www.x402.org/": "http://localhost:8003/a2a/merchant_payment_processor_agent",
 }
 
 # A placeholder for a JSON Web Token (JWT) used for merchant authorization.

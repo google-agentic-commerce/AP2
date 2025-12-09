@@ -20,6 +20,7 @@ shopping and purchasing process, such as updating a cart or initiating payment.
 
 from datetime import datetime
 from datetime import timezone
+import logging
 import uuid
 
 from a2a.types import Artifact
@@ -91,6 +92,9 @@ async def initiate_payment(tool_context: ToolContext, debug_mode: bool = False):
   Returns:
     The status of the payment initiation.
   """
+
+  logging.info("Initiating payment...")
+
   payment_mandate = tool_context.state["signed_payment_mandate"]
   if not payment_mandate:
     raise RuntimeError("No signed payment mandate found in tool context state.")

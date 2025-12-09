@@ -291,7 +291,7 @@ async def _call_truelayer_payments_api(
   import httpx
 
   # TODO: dinamically generate
-  TRUELAYER_BEARER_TOKEN = os.Getenv("TRUELAYER_BEARER_TOKEN");
+  TRUELAYER_BEARER_TOKEN = os.getenv("TRUELAYER_BEARER_TOKEN")
 
   # Convert amount to minor units (e.g., dollars to cents)
   amount_in_minor = int(amount * 100)

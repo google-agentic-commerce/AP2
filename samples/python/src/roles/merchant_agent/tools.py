@@ -158,6 +158,9 @@ async def initiate_payment(
     current_task: The current task, used to find the processor's task ID.
     debug_mode: Whether the agent is in debug mode.
   """
+
+  logging.info("Initiating payment...")
+
   payment_mandate = message_utils.parse_canonical_object(
       PAYMENT_MANDATE_DATA_KEY, data_parts, PaymentMandate
   )
@@ -210,6 +213,7 @@ async def initiate_payment(
   if payment_processor_task_id:
     message_builder.set_task_id(payment_processor_task_id)
 
+  logging.info("Sending initiate_payment to processor at %s", processor_url)
   task = await payment_processor_agent.send_a2a_message(message_builder.build())
 
   # Pass the payment receipt back to the shopping agent if it exists.

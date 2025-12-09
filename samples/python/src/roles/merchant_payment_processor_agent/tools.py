@@ -21,6 +21,7 @@ shopping and purchasing process.
 from datetime import datetime
 from datetime import timezone
 import logging
+import os
 from typing import Any
 import uuid
 
@@ -40,6 +41,7 @@ from common import message_utils
 from common.a2a_extension_utils import EXTENSION_URI
 from common.a2a_message_builder import A2aMessageBuilder
 from common.payment_remote_a2a_client import PaymentRemoteA2aClient
+
 
 
 async def initiate_payment(
@@ -183,6 +185,9 @@ async def _complete_payment(
     updater: The task updater.
     debug_mode: Whether the agent is in debug mode.
   """
+  logging.info("Completing payment for mandate id %s...",
+               payment_mandate.payment_mandate_contents.payment_mandate_id)
+
   payment_mandate_id = (
       payment_mandate.payment_mandate_contents.payment_mandate_id
   )
@@ -194,11 +199,51 @@ async def _complete_payment(
       debug_mode,
   )
 
-  logging.info(
-      "Calling issuer to complete payment for %s with payment credential %s...",
-      payment_mandate_id,
-      payment_credential,
+  # Check if this is a PAY_BY_BANK payment
+  payment_method_type = (
+      payment_mandate.payment_mandate_contents.payment_response.method_name
   )
+
+  if payment_method_type == "PAY_BY_BANK":
+    # Extract VRP mandate ID from credentials
+    vrp_mandate_id = payment_credential.get("vrp_mandate_id")
+    if not vrp_mandate_id:
+      raise ValueError("VRP mandate ID not found in payment credentials")
+
+    # Extract amount and currency from payment mandate
+    payment_total = payment_mandate.payment_mandate_contents.payment_details_total
+    amount = payment_total.amount.value
+    currency = payment_total.amount.currency
+
+    # Generate reference from mandate ID
+    reference = f"mandate_{payment_mandate_id}"
+
+    logging.info(
+        "Calling TrueLayer API for payment %s with VRP mandate %s...",
+        payment_mandate_id,
+        vrp_mandate_id,
+    )
+
+    try:
+      # Call TrueLayer Payments API
+      truelayer_response = await _call_truelayer_payments_api(
+          vrp_mandate_id=vrp_mandate_id,
+          amount=amount,
+          currency=currency,
+          reference=reference,
+      )
+      logging.info("TrueLayer payment response: %s", truelayer_response)
+    except Exception as e:
+      logging.error("TrueLayer API call failed: %s", e)
+      # Continue with creating receipt for demo purposes
+  else:
+    # Original flow for CARD payments
+    logging.info(
+        "Calling issuer to complete payment for %s with payment credential %s...",
+        payment_mandate_id,
+        payment_credential,
+    )
+
   # Call issuer to complete the payment
   payment_receipt = _create_payment_receipt(payment_mandate)
   await _send_payment_receipt_to_credentials_provider(
@@ -224,6 +269,57 @@ def _challenge_response_is_valid(challenge_response: str) -> bool:
   """Validates the challenge response."""
 
   return challenge_response == "123"
+
+
+async def _call_truelayer_payments_api(
+    vrp_mandate_id: str,
+    amount: float,
+    currency: str,
+    reference: str,
+) -> dict:
+  """Calls TrueLayer Payments API to execute payment via VRP mandate.
+
+  Args:
+    vrp_mandate_id: The VRP mandate ID from credentials
+    amount: Payment amount in major currency units (e.g., 10.50)
+    currency: Three-letter ISO currency code (e.g., "GBP")
+    reference: Payment reference string
+
+  Returns:
+    API response as dictionary
+  """
+  import httpx
+
+  # TODO: dinamically generate
+  TRUELAYER_BEARER_TOKEN = os.Getenv("TRUELAYER_BEARER_TOKEN");
+
+  # Convert amount to minor units (e.g., dollars to cents)
+  amount_in_minor = int(amount * 100)
+
+  # Generate idempotency key
+  idempotency_key = str(uuid.uuid4())
+
+  # Prepare request
+  url = "https://api.t7r.dev/payments"
+  headers = {
+      "Authorization": f"Bearer {TRUELAYER_BEARER_TOKEN}",
+      "Content-Type": "application/json",
+      "Idempotency-Key": idempotency_key,
+  }
+  payload = {
+      "payment_method": {
+          "type": "mandate",
+          "mandate_id": vrp_mandate_id,
+      },
+      "amount_in_minor": amount_in_minor,
+      "reference": reference,
+      "currency": currency,
+  }
+
+  async with httpx.AsyncClient() as client:
+    response = await client.post(url, headers=headers, json=payload)
+    response.raise_for_status()
+    return response.json()
 
 
 async def _request_payment_credential(

@@ -53,13 +53,23 @@ This sample consists of:
 ### Setup
 
 Ensure you have obtained a Google API key from
-[Google AI Studio](https://aistudio.google.com/apikey). Then declare the
-GOOGLE_API_KEY variable in one of two ways.
+[Google AI Studio](https://aistudio.google.com/apikey). You also need to set up
+a VRP mandate ID for TrueLayer Pay by Bank. Declare the required variables in
+one of two ways.
 
-*   Option 1: Declare it as an environment variable: `export
-    GOOGLE_API_KEY=your_key`
-*   Option 2: Put it into an .env file at the root of your repository. `echo
-    "GOOGLE_API_KEY=your_key" > .env`
+*   Option 1: Declare them as environment variables:
+    ```sh
+    export GOOGLE_API_KEY=your_key
+    export VRP_MANDATE_ID=your_vrp_mandate_id
+    ```
+*   Option 2: Put them into an .env file at the root of your repository:
+    ```sh
+    echo "GOOGLE_API_KEY=your_key" > .env
+    echo "VRP_MANDATE_ID=your_vrp_mandate_id" >> .env
+    ```
+
+**Note**: Replace `your_vrp_mandate_id` with a valid VRP mandate ID obtained
+from TrueLayer.
 
 ### Execution
 

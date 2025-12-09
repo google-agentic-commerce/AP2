@@ -186,7 +186,7 @@ def create_payment_mandate(
   shipping_address = tool_context.state["shipping_address"]
   payment_response = PaymentResponse(
       request_id=payment_request.details.id,
-      method_name="CARD",
+      method_name="PAY_BY_BANK",
       details={
           "token": tool_context.state["payment_credential_token"],
       },

@@ -18,6 +18,7 @@ Each 'account' contains a user's payment methods and shipping address.
 For demonstration purposes, several accounts are pre-populated with sample data.
 """
 
+import os
 from typing import Any
 
 
@@ -76,6 +77,7 @@ _account_db = {
                 "brand": "TrueLayer",
                 "account_number": "12345678",
                 "alias": "TrueLayer Pay by Bank",
+                "vrp_mandate_id": os.getenv("VRP_MANDATE_ID"),
             },
         },
     },

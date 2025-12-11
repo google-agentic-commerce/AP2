@@ -104,7 +104,9 @@ _account_db = {
 _token = {}
 
 
-def create_token(email_address: str, payment_method_alias: str) -> str:
+def create_token(
+    email_address: str, payment_method_alias: str
+) -> str | dict[str, Any]:
   """Creates and stores a token for an account.
 
   Args:
@@ -114,6 +116,21 @@ def create_token(email_address: str, payment_method_alias: str) -> str:
   Returns:
     The token for the payment method.
   """
+  payment_method = get_payment_method_by_alias(
+      email_address, payment_method_alias
+  )
+  if payment_method and payment_method.get("brand") == "x402":
+    # Mock x402 PaymentPayload
+    return {
+        "x402Version": 1,
+        "paymentMethod": {
+            "network": "base",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bda02913",
+            "payFrom": "0xPayerWalletAddress",
+        },
+        "signature": "mock-x402-signature",
+    }
+
   token = f"fake_payment_credential_token_{len(_token)}"
 
   _token[token] = {

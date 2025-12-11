@@ -19,7 +19,6 @@ shopping and purchasing process.
 """
 
 from google.adk.tools.tool_context import ToolContext
-import os
 
 from ap2.types.payment_request import PAYMENT_METHOD_DATA_DATA_KEY
 from common.a2a_message_builder import A2aMessageBuilder

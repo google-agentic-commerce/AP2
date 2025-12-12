@@ -46,124 +46,134 @@ async def update_cart(
     tool_context: ToolContext,
     debug_mode: bool = False,
 ) -> str:
-  """Notifies the merchant agent of a shipping address selection for a cart.
+    """Notifies the merchant agent of a shipping address selection for a cart.
 
-  Args:
-    shipping_address: The user's selected shipping address.
-    tool_context: The ADK supplied tool context.
-    debug_mode: Whether the agent is in debug mode.
+    Args:
+      shipping_address: The user's selected shipping address.
+      tool_context: The ADK supplied tool context.
+      debug_mode: Whether the agent is in debug mode.
 
-  Returns:
-    The updated CartMandate.
-  """
-  chosen_cart_id = tool_context.state["chosen_cart_id"]
-  if not chosen_cart_id:
-    raise RuntimeError("No chosen cart mandate found in tool context state.")
+    Returns:
+      The updated CartMandate.
+    """
+    chosen_cart_id = tool_context.state['chosen_cart_id']
+    if not chosen_cart_id:
+        raise RuntimeError(
+            'No chosen cart mandate found in tool context state.'
+        )
 
-  message = (
-      A2aMessageBuilder()
-      .set_context_id(tool_context.state["shopping_context_id"])
-      .add_text("Update the cart with the user's shipping address.")
-      .add_data("cart_id", chosen_cart_id)
-      .add_data("shipping_address", shipping_address)
-      .add_data("shopping_agent_id", "trusted_shopping_agent")
-      .add_data("debug_mode", debug_mode)
-      .build()
-  )
-  task = await merchant_agent_client.send_a2a_message(message)
+    message = (
+        A2aMessageBuilder()
+        .set_context_id(tool_context.state['shopping_context_id'])
+        .add_text("Update the cart with the user's shipping address.")
+        .add_data('cart_id', chosen_cart_id)
+        .add_data('shipping_address', shipping_address)
+        .add_data('shopping_agent_id', 'trusted_shopping_agent')
+        .add_data('debug_mode', debug_mode)
+        .build()
+    )
+    task = await merchant_agent_client.send_a2a_message(message)
 
-  updated_cart_mandate = artifact_utils.only(
-      _parse_cart_mandates(task.artifacts)
-  )
+    updated_cart_mandate = artifact_utils.only(
+        _parse_cart_mandates(task.artifacts)
+    )
 
-  tool_context.state["cart_mandate"] = updated_cart_mandate
-  tool_context.state["shipping_address"] = shipping_address
+    tool_context.state['cart_mandate'] = updated_cart_mandate
+    tool_context.state['shipping_address'] = shipping_address
 
-  return updated_cart_mandate
+    return updated_cart_mandate
 
 
 async def initiate_payment(tool_context: ToolContext, debug_mode: bool = False):
-  """Initiates a payment using the payment mandate from state.
+    """Initiates a payment using the payment mandate from state.
 
-  Args:
-    tool_context: The ADK supplied tool context.
-    debug_mode: Whether the agent is in debug mode.
+    Args:
+      tool_context: The ADK supplied tool context.
+      debug_mode: Whether the agent is in debug mode.
 
-  Returns:
-    The status of the payment initiation.
-  """
-  payment_mandate = tool_context.state["signed_payment_mandate"]
-  if not payment_mandate:
-    raise RuntimeError("No signed payment mandate found in tool context state.")
-  risk_data = tool_context.state["risk_data"]
-  if not risk_data:
-    raise RuntimeError("No risk data found in tool context state.")
+    Returns:
+      The status of the payment initiation.
+    """
+    payment_mandate = tool_context.state['signed_payment_mandate']
+    if not payment_mandate:
+        raise RuntimeError(
+            'No signed payment mandate found in tool context state.'
+        )
+    risk_data = tool_context.state['risk_data']
+    if not risk_data:
+        raise RuntimeError('No risk data found in tool context state.')
 
-  outgoing_message_builder = (
-      A2aMessageBuilder()
-      .set_context_id(tool_context.state["shopping_context_id"])
-      .add_text("Initiate a payment")
-      .add_data(PAYMENT_MANDATE_DATA_KEY, payment_mandate)
-      .add_data("risk_data", risk_data)
-      .add_data("shopping_agent_id", "trusted_shopping_agent")
-      .add_data("debug_mode", debug_mode)
-      .build()
-  )
-  task = await merchant_agent_client.send_a2a_message(outgoing_message_builder)
-  store_receipt_if_present(task, tool_context)
-  tool_context.state["initiate_payment_task_id"] = task.id
-  return task.status
+    outgoing_message_builder = (
+        A2aMessageBuilder()
+        .set_context_id(tool_context.state['shopping_context_id'])
+        .add_text('Initiate a payment')
+        .add_data(PAYMENT_MANDATE_DATA_KEY, payment_mandate)
+        .add_data('risk_data', risk_data)
+        .add_data('shopping_agent_id', 'trusted_shopping_agent')
+        .add_data('debug_mode', debug_mode)
+        .build()
+    )
+    task = await merchant_agent_client.send_a2a_message(
+        outgoing_message_builder
+    )
+    store_receipt_if_present(task, tool_context)
+    tool_context.state['initiate_payment_task_id'] = task.id
+    return task.status
 
 
 async def initiate_payment_with_otp(
     challenge_response: str, tool_context: ToolContext, debug_mode: bool = False
 ):
-  """Initiates a payment using the payment mandate from state and a
+    """Initiates a payment using the payment mandate from state and a
 
-    challenge response. In our sample, the challenge response is a one-time
-    password (OTP) sent to the user.
+      challenge response. In our sample, the challenge response is a one-time
+      password (OTP) sent to the user.
 
-  Args:
-    challenge_response: The challenge response.
-    tool_context: The ADK supplied tool context.
-    debug_mode: Whether the agent is in debug mode.
+    Args:
+      challenge_response: The challenge response.
+      tool_context: The ADK supplied tool context.
+      debug_mode: Whether the agent is in debug mode.
 
-  Returns:
-    The status of the payment initiation.
-  """
-  payment_mandate = tool_context.state["signed_payment_mandate"]
-  if not payment_mandate:
-    raise RuntimeError("No signed payment mandate found in tool context state.")
-  risk_data = tool_context.state["risk_data"]
-  if not risk_data:
-    raise RuntimeError("No risk data found in tool context state.")
+    Returns:
+      The status of the payment initiation.
+    """
+    payment_mandate = tool_context.state['signed_payment_mandate']
+    if not payment_mandate:
+        raise RuntimeError(
+            'No signed payment mandate found in tool context state.'
+        )
+    risk_data = tool_context.state['risk_data']
+    if not risk_data:
+        raise RuntimeError('No risk data found in tool context state.')
 
-  outgoing_message_builder = (
-      A2aMessageBuilder()
-      .set_context_id(tool_context.state["shopping_context_id"])
-      .set_task_id(tool_context.state["initiate_payment_task_id"])
-      .add_text("Initiate a payment. Include the challenge response.")
-      .add_data(PAYMENT_MANDATE_DATA_KEY, payment_mandate)
-      .add_data("shopping_agent_id", "trusted_shopping_agent")
-      .add_data("challenge_response", challenge_response)
-      .add_data("risk_data", risk_data)
-      .add_data("debug_mode", debug_mode)
-      .build()
-  )
+    outgoing_message_builder = (
+        A2aMessageBuilder()
+        .set_context_id(tool_context.state['shopping_context_id'])
+        .set_task_id(tool_context.state['initiate_payment_task_id'])
+        .add_text('Initiate a payment. Include the challenge response.')
+        .add_data(PAYMENT_MANDATE_DATA_KEY, payment_mandate)
+        .add_data('shopping_agent_id', 'trusted_shopping_agent')
+        .add_data('challenge_response', challenge_response)
+        .add_data('risk_data', risk_data)
+        .add_data('debug_mode', debug_mode)
+        .build()
+    )
 
-  task = await merchant_agent_client.send_a2a_message(outgoing_message_builder)
-  store_receipt_if_present(task, tool_context)
-  return task.status
+    task = await merchant_agent_client.send_a2a_message(
+        outgoing_message_builder
+    )
+    store_receipt_if_present(task, tool_context)
+    return task.status
 
 
 def store_receipt_if_present(task, tool_context: ToolContext) -> None:
-  """Stores the payment receipt in state."""
-  payment_receipts = artifact_utils.find_canonical_objects(
-      task.artifacts, PAYMENT_RECEIPT_DATA_KEY, PaymentReceipt
-  )
-  if payment_receipts:
-    payment_receipt = artifact_utils.only(payment_receipts)
-    tool_context.state["payment_receipt"] = payment_receipt
+    """Stores the payment receipt in state."""
+    payment_receipts = artifact_utils.find_canonical_objects(
+        task.artifacts, PAYMENT_RECEIPT_DATA_KEY, PaymentReceipt
+    )
+    if payment_receipts:
+        payment_receipt = artifact_utils.only(payment_receipts)
+        tool_context.state['payment_receipt'] = payment_receipt
 
 
 def create_payment_mandate(
@@ -171,162 +181,165 @@ def create_payment_mandate(
     user_email: str,
     tool_context: ToolContext,
 ) -> str:
-  """Creates a payment mandate and stores it in state.
+    """Creates a payment mandate and stores it in state.
 
-  Args:
-    payment_method_alias: The payment method alias.
-    user_email: The user's email address.
-    tool_context: The ADK supplied tool context.
+    Args:
+      payment_method_alias: The payment method alias.
+      user_email: The user's email address.
+      tool_context: The ADK supplied tool context.
 
-  Returns:
-    The payment mandate.
-  """
-  cart_mandate = tool_context.state["cart_mandate"]
+    Returns:
+      The payment mandate.
+    """
+    cart_mandate = tool_context.state['cart_mandate']
 
-  payment_request = cart_mandate.contents.payment_request
-  shipping_address = tool_context.state["shipping_address"]
+    payment_request = cart_mandate.contents.payment_request
+    shipping_address = tool_context.state['shipping_address']
 
-  payment_method = os.environ.get("PAYMENT_METHOD", "CARD")
-  if payment_method == "x402":
-    method_name = "https://www.x402.org/"
-    details = tool_context.state["payment_credential_token"]
-  else:
-    method_name = "CARD"
-    details = {
-        "token": tool_context.state["payment_credential_token"],
-    }
+    payment_method = os.environ.get('PAYMENT_METHOD', 'CARD')
+    if payment_method == 'x402':
+        method_name = 'https://www.x402.org/'
+        details = tool_context.state['payment_credential_token']
+    else:
+        method_name = 'CARD'
+        details = {
+            'token': tool_context.state['payment_credential_token'],
+        }
 
-  payment_response = PaymentResponse(
-      request_id=payment_request.details.id,
-      method_name=method_name,
-      details=details,
-      shipping_address=shipping_address,
-      payer_email=user_email,
-  )
+    payment_response = PaymentResponse(
+        request_id=payment_request.details.id,
+        method_name=method_name,
+        details=details,
+        shipping_address=shipping_address,
+        payer_email=user_email,
+    )
 
-  payment_mandate = PaymentMandate(
-      payment_mandate_contents=PaymentMandateContents(
-          payment_mandate_id=uuid.uuid4().hex,
-          timestamp=datetime.now(timezone.utc).isoformat(),
-          payment_details_id=payment_request.details.id,
-          payment_details_total=payment_request.details.total,
-          payment_response=payment_response,
-          merchant_agent=cart_mandate.contents.merchant_name,
-      ),
-  )
+    payment_mandate = PaymentMandate(
+        payment_mandate_contents=PaymentMandateContents(
+            payment_mandate_id=uuid.uuid4().hex,
+            timestamp=datetime.now(timezone.utc).isoformat(),
+            payment_details_id=payment_request.details.id,
+            payment_details_total=payment_request.details.total,
+            payment_response=payment_response,
+            merchant_agent=cart_mandate.contents.merchant_name,
+        ),
+    )
 
-  tool_context.state["payment_mandate"] = payment_mandate
-  return payment_mandate
+    tool_context.state['payment_mandate'] = payment_mandate
+    return payment_mandate
 
 
 def sign_mandates_on_user_device(tool_context: ToolContext) -> str:
-  """Simulates signing the transaction details on a user's secure device.
+    """Simulates signing the transaction details on a user's secure device.
 
-  This function represents the step where the final transaction details,
-  including hashes of the cart and payment mandates, would be sent to a
-  secure hardware element on the user's device (e.g., Secure Enclave) to be
-  cryptographically signed with the user's private key.
+    This function represents the step where the final transaction details,
+    including hashes of the cart and payment mandates, would be sent to a
+    secure hardware element on the user's device (e.g., Secure Enclave) to be
+    cryptographically signed with the user's private key.
 
-  Note: This is a placeholder implementation. It does not perform any actual
-  cryptographic operations. It simulates the creation of a signature by
-  concatenating the mandate hashes.
+    Note: This is a placeholder implementation. It does not perform any actual
+    cryptographic operations. It simulates the creation of a signature by
+    concatenating the mandate hashes.
 
-  Args:
-      tool_context: The context object used for state management. It is expected
-        to contain the `payment_mandate` and `cart_mandate`.
+    Args:
+        tool_context: The context object used for state management. It is expected
+          to contain the `payment_mandate` and `cart_mandate`.
 
-  Returns:
-      A string representing the simulated user authorization signature (JWT).
-  """
-  payment_mandate: PaymentMandate = tool_context.state["payment_mandate"]
-  cart_mandate: CartMandate = tool_context.state["cart_mandate"]
-  cart_mandate_hash = _generate_cart_mandate_hash(cart_mandate)
-  payment_mandate_hash = _generate_payment_mandate_hash(
-      payment_mandate.payment_mandate_contents
-  )
-  # A JWT containing the user's digital signature to authorize the transaction.
-  # The payload uses hashes to bind the signature to the specific cart and
-  # payment details, and includes a nonce to prevent replay attacks.
-  payment_mandate.user_authorization = (
-      cart_mandate_hash + "_" + payment_mandate_hash
-  )
-  tool_context.state["signed_payment_mandate"] = payment_mandate
-  return payment_mandate.user_authorization
+    Returns:
+        A string representing the simulated user authorization signature (JWT).
+    """
+    payment_mandate: PaymentMandate = tool_context.state['payment_mandate']
+    cart_mandate: CartMandate = tool_context.state['cart_mandate']
+    cart_mandate_hash = _generate_cart_mandate_hash(cart_mandate)
+    payment_mandate_hash = _generate_payment_mandate_hash(
+        payment_mandate.payment_mandate_contents
+    )
+    # A JWT containing the user's digital signature to authorize the transaction.
+    # The payload uses hashes to bind the signature to the specific cart and
+    # payment details, and includes a nonce to prevent replay attacks.
+    payment_mandate.user_authorization = (
+        cart_mandate_hash + '_' + payment_mandate_hash
+    )
+    tool_context.state['signed_payment_mandate'] = payment_mandate
+    return payment_mandate.user_authorization
 
 
 async def send_signed_payment_mandate_to_credentials_provider(
     tool_context: ToolContext,
     debug_mode: bool = False,
 ) -> str:
-  """Sends the signed payment mandate to the credentials provider.
+    """Sends the signed payment mandate to the credentials provider.
 
-  Args:
-    tool_context: The ADK supplied tool context.
-    debug_mode: Whether the agent is in debug mode.
-  """
-  payment_mandate = tool_context.state["signed_payment_mandate"]
-  if not payment_mandate:
-    raise RuntimeError("No signed payment mandate found in tool context state.")
-  risk_data = tool_context.state["risk_data"]
-  if not risk_data:
-    raise RuntimeError("No risk data found in tool context state.")
-  message = (
-      A2aMessageBuilder()
-      .set_context_id(tool_context.state["shopping_context_id"])
-      .add_text("This is the signed payment mandate")
-      .add_data(PAYMENT_MANDATE_DATA_KEY, payment_mandate)
-      .add_data("risk_data", risk_data)
-      .add_data("debug_mode", debug_mode)
-      .build()
-  )
-  return await credentials_provider_client.send_a2a_message(message)
+    Args:
+      tool_context: The ADK supplied tool context.
+      debug_mode: Whether the agent is in debug mode.
+    """
+    payment_mandate = tool_context.state['signed_payment_mandate']
+    if not payment_mandate:
+        raise RuntimeError(
+            'No signed payment mandate found in tool context state.'
+        )
+    risk_data = tool_context.state['risk_data']
+    if not risk_data:
+        raise RuntimeError('No risk data found in tool context state.')
+    message = (
+        A2aMessageBuilder()
+        .set_context_id(tool_context.state['shopping_context_id'])
+        .add_text('This is the signed payment mandate')
+        .add_data(PAYMENT_MANDATE_DATA_KEY, payment_mandate)
+        .add_data('risk_data', risk_data)
+        .add_data('debug_mode', debug_mode)
+        .build()
+    )
+    return await credentials_provider_client.send_a2a_message(message)
 
 
 def _generate_cart_mandate_hash(cart_mandate: CartMandate) -> str:
-  """Generates a cryptographic hash of the CartMandate.
+    """Generates a cryptographic hash of the CartMandate.
 
-  This hash serves as a tamper-proof reference to the specific merchant-signed
-  cart offer that the user has approved.
+    This hash serves as a tamper-proof reference to the specific merchant-signed
+    cart offer that the user has approved.
 
-  Note: This is a placeholder implementation for development. A real
-  implementation must use a secure hashing algorithm (e.g., SHA-256) on the
-  canonical representation of the CartMandate object.
+    Note: This is a placeholder implementation for development. A real
+    implementation must use a secure hashing algorithm (e.g., SHA-256) on the
+    canonical representation of the CartMandate object.
 
-  Args:
-      cart_mandate: The complete CartMandate object, including the merchant's
-        authorization.
+    Args:
+        cart_mandate: The complete CartMandate object, including the merchant's
+          authorization.
 
-  Returns:
-      A string representing the hash of the cart mandate.
-  """
-  return "fake_cart_mandate_hash_" + cart_mandate.contents.id
+    Returns:
+        A string representing the hash of the cart mandate.
+    """
+    return 'fake_cart_mandate_hash_' + cart_mandate.contents.id
 
 
 def _generate_payment_mandate_hash(
     payment_mandate_contents: PaymentMandateContents,
 ) -> str:
-  """Generates a cryptographic hash of the PaymentMandateContents.
+    """Generates a cryptographic hash of the PaymentMandateContents.
 
-  This hash creates a tamper-proof reference to the specific payment details
-  the user is about to authorize.
+    This hash creates a tamper-proof reference to the specific payment details
+    the user is about to authorize.
 
-  Note: This is a placeholder implementation for development. A real
-  implementation must use a secure hashing algorithm (e.g., SHA-256) on the
-  canonical representation of the PaymentMandateContents object.
+    Note: This is a placeholder implementation for development. A real
+    implementation must use a secure hashing algorithm (e.g., SHA-256) on the
+    canonical representation of the PaymentMandateContents object.
 
-  Args:
-      payment_mandate_contents: The payment mandate contents to hash.
+    Args:
+        payment_mandate_contents: The payment mandate contents to hash.
 
-  Returns:
-      A string representing the hash of the payment mandate contents.
-  """
-  return (
-      "fake_payment_mandate_hash_" + payment_mandate_contents.payment_mandate_id
-  )
+    Returns:
+        A string representing the hash of the payment mandate contents.
+    """
+    return (
+        'fake_payment_mandate_hash_'
+        + payment_mandate_contents.payment_mandate_id
+    )
 
 
 def _parse_cart_mandates(artifacts: list[Artifact]) -> list[CartMandate]:
-  """Parses a list of artifacts into a list of CartMandate objects."""
-  return artifact_utils.find_canonical_objects(
-      artifacts, CART_MANDATE_DATA_KEY, CartMandate
-  )
+    """Parses a list of artifacts into a list of CartMandate objects."""
+    return artifact_utils.find_canonical_objects(
+        artifacts, CART_MANDATE_DATA_KEY, CartMandate
+    )

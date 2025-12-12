@@ -22,79 +22,79 @@ from typing import Any
 
 
 _account_db = {
-    'bugsbunny@gmail.com': {
-        'shipping_address': {
-            'recipient': 'Bugs Bunny',
-            'organization': 'Sample Organization',
-            'address_line': ['123 Main St'],
-            'city': 'Sample City',
-            'region': 'ST',
-            'postal_code': '00000',
-            'country': 'US',
-            'phone_number': '+1-000-000-0000',
+    "bugsbunny@gmail.com": {
+        "shipping_address": {
+            "recipient": "Bugs Bunny",
+            "organization": "Sample Organization",
+            "address_line": ["123 Main St"],
+            "city": "Sample City",
+            "region": "ST",
+            "postal_code": "00000",
+            "country": "US",
+            "phone_number": "+1-000-000-0000",
         },
-        'payment_methods': {
-            'card1': {
-                'type': 'CARD',
-                'alias': 'American Express ending in 4444',
-                'network': [{'name': 'amex', 'formats': ['DPAN']}],
-                'cryptogram': 'fake_cryptogram_abc123',
-                'token': '1111000000000000',
-                'card_holder_name': 'John Doe',
-                'card_expiration': '12/2025',
-                'card_billing_address': {
-                    'country': 'US',
-                    'postal_code': '00000',
+        "payment_methods": {
+            "card1": {
+                "type": "CARD",
+                "alias": "American Express ending in 4444",
+                "network": [{"name": "amex", "formats": ["DPAN"]}],
+                "cryptogram": "fake_cryptogram_abc123",
+                "token": "1111000000000000",
+                "card_holder_name": "John Doe",
+                "card_expiration": "12/2025",
+                "card_billing_address": {
+                    "country": "US",
+                    "postal_code": "00000",
                 },
             },
-            'card2': {
-                'type': 'CARD',
-                'alias': 'American Express ending in 8888',
-                'network': [{'name': 'amex', 'formats': ['DPAN']}],
-                'cryptogram': 'fake_cryptogram_ghi789',
-                'token': '2222000000000000',
-                'card_holder_name': 'Bugs Bunny',
-                'card_expiration': '10/2027',
-                'card_billing_address': {
-                    'country': 'US',
-                    'postal_code': '00000',
+            "card2": {
+                "type": "CARD",
+                "alias": "American Express ending in 8888",
+                "network": [{"name": "amex", "formats": ["DPAN"]}],
+                "cryptogram": "fake_cryptogram_ghi789",
+                "token": "2222000000000000",
+                "card_holder_name": "Bugs Bunny",
+                "card_expiration": "10/2027",
+                "card_billing_address": {
+                    "country": "US",
+                    "postal_code": "00000",
                 },
             },
-            'bank_account1': {
-                'type': 'BANK_ACCOUNT',
-                'account_number': '111',
-                'alias': 'Primary bank account',
+            "bank_account1": {
+                "type": "BANK_ACCOUNT",
+                "account_number": "111",
+                "alias": "Primary bank account",
             },
-            'digital_wallet1': {
-                'type': 'DIGITAL_WALLET',
-                'brand': 'PayPal',
-                'account_identifier': 'foo@bar.com',
-                'alias': "Bugs's PayPal account",
+            "digital_wallet1": {
+                "type": "DIGITAL_WALLET",
+                "brand": "PayPal",
+                "account_identifier": "foo@bar.com",
+                "alias": "Bugs's PayPal account",
             },
-            'x402_wallet': {
-                'type': 'DIGITAL_WALLET',
-                'brand': 'x402',
-                'alias': "Bugs's x402 Wallet",
+            "x402_wallet": {
+                "type": "DIGITAL_WALLET",
+                "brand": "x402",
+                "alias": "Bugs's x402 Wallet",
             },
         },
     },
-    'daffyduck@gmail.com': {
-        'payment_methods': {
-            'bank_account1': {
-                'type': 'BANK_ACCOUNT',
-                'brand': 'Bank of Money',
-                'account_number': '789',
-                'alias': 'Main checking account',
+    "daffyduck@gmail.com": {
+        "payment_methods": {
+            "bank_account1": {
+                "type": "BANK_ACCOUNT",
+                "brand": "Bank of Money",
+                "account_number": "789",
+                "alias": "Main checking account",
             }
         },
     },
-    'elmerfudd@gmail.com': {
-        'payment_methods': {
-            'digital_wallet1': {
-                'type': 'DIGITAL_WALLET',
-                'brand': 'PayPal',
-                'account_identifier': 'elmerfudd@gmail.com',
-                'alias': "Fudd's PayPal",
+    "elmerfudd@gmail.com": {
+        "payment_methods": {
+            "digital_wallet1": {
+                "type": "DIGITAL_WALLET",
+                "brand": "PayPal",
+                "account_identifier": "elmerfudd@gmail.com",
+                "alias": "Fudd's PayPal",
             }
         }
     },
@@ -107,125 +107,124 @@ _token = {}
 def create_token(
     email_address: str, payment_method_alias: str
 ) -> str | dict[str, Any]:
-    """Creates and stores a token for an account.
+  """Creates and stores a token for an account.
 
-    Args:
-      email_address: The email address of the account.
-      payment_method_alias: The alias of the payment method.
+  Args:
+    email_address: The email address of the account.
+    payment_method_alias: The alias of the payment method.
 
-    Returns:
-      The token for the payment method.
-    """
-    payment_method = get_payment_method_by_alias(
-        email_address, payment_method_alias
-    )
-    if payment_method and payment_method.get('brand') == 'x402':
-        # Mock x402 PaymentPayload
-        return {
-            'x402Version': 1,
-            'paymentMethod': {
-                'network': 'base',
-                'asset': '0x833589fCD6eDb6E08f4c7C32D4f71b54bda02913',
-                'payFrom': '0xPayerWalletAddress',
-            },
-            'signature': 'mock-x402-signature',
-        }
-
-    token = f'fake_payment_credential_token_{len(_token)}'
-
-    _token[token] = {
-        'email_address': email_address,
-        'payment_method_alias': payment_method_alias,
-        'payment_mandate_id': None,
+  Returns:
+    The token for the payment method.
+  """
+  payment_method = get_payment_method_by_alias(
+      email_address, payment_method_alias
+  )
+  if payment_method and payment_method.get("brand") == "x402":
+    # Mock x402 PaymentPayload
+    return {
+        "x402Version": 1,
+        "paymentMethod": {
+            "network": "base",
+            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bda02913",
+            "payFrom": "0xPayerWalletAddress",
+        },
+        "signature": "mock-x402-signature",
     }
 
-    return token
+  token = f"fake_payment_credential_token_{len(_token)}"
+
+  _token[token] = {
+      "email_address": email_address,
+      "payment_method_alias": payment_method_alias,
+      "payment_mandate_id": None,
+  }
+
+  return token
 
 
 def update_token(token: str, payment_mandate_id: str) -> None:
-    """Updates the token with the payment mandate id.
+  """Updates the token with the payment mandate id.
 
-    Args:
-      token: The token to update.
-      payment_mandate_id: The payment mandate id to associate with the token.
-    """
-    if token not in _token:
-        raise ValueError(f'Token {token} not found')
-    if _token[token].get('payment_mandate_id'):
-        # Do not overwrite the payment mandate id if it is already set.
-        return
-    _token[token]['payment_mandate_id'] = payment_mandate_id
-
+  Args:
+    token: The token to update.
+    payment_mandate_id: The payment mandate id to associate with the token.
+  """
+  if token not in _token:
+    raise ValueError(f"Token {token} not found")
+  if _token[token].get("payment_mandate_id"):
+    # Do not overwrite the payment mandate id if it is already set.
+    return
+  _token[token]["payment_mandate_id"] = payment_mandate_id
 
 def verify_token(token: str, payment_mandate_id: str) -> dict[str, Any]:
-    """Look up an account by token.
+  """Look up an account by token.
 
-    Args:
-      token: The token for look up.
-      payment_mandate_id: The payment mandate id associated with the token.
+  Args:
+    token: The token for look up.
+    payment_mandate_id: The payment mandate id associated with the token.
 
-    Returns:
-      The account for the given token, or status:invalid_token if the token is not
-      valid.
-    """
-    account_lookup = _token.get(token, {})
-    if not account_lookup:
-        raise ValueError('Invalid token')
-    if account_lookup.get('payment_mandate_id') != payment_mandate_id:
-        raise ValueError('Invalid token')
-    email_address = account_lookup.get('email_address')
-    alias = account_lookup.get('payment_method_alias')
-    return get_payment_method_by_alias(email_address, alias)
+  Returns:
+    The account for the given token, or status:invalid_token if the token is not
+    valid.
+  """
+  account_lookup = _token.get(token, {})
+  if not account_lookup:
+    raise ValueError("Invalid token")
+  if account_lookup.get("payment_mandate_id") != payment_mandate_id:
+    raise ValueError("Invalid token")
+  email_address = account_lookup.get("email_address")
+  alias = account_lookup.get("payment_method_alias")
+  return get_payment_method_by_alias(email_address, alias)
 
 
 def get_account_payment_methods(email_address: str) -> list[dict[str, Any]]:
-    """Returns a list of the payment methods for the given account email address.
+  """Returns a list of the payment methods for the given account email address.
 
-    Args:
-      email_address: The account's email address.
+  Args:
+    email_address: The account's email address.
 
-    Returns:
-      A list of the user's payment_methods.
-    """
+  Returns:
+    A list of the user's payment_methods.
+  """
 
-    return list(
-        _account_db.get(email_address, {}).get('payment_methods', {}).values()
-    )
+  return list(
+      _account_db.get(email_address, {}).get("payment_methods", {}).values()
+  )
 
 
 def get_account_shipping_address(email_address: str) -> dict[str, Any]:
-    """Gets the shipping address associated for the given account email address.
+  """Gets the shipping address associated for the given account email address.
 
-    Args:
-      email_address: The account's email address.
+  Args:
+    email_address: The account's email address.
 
-    Returns:
-      The account's shipping address.
-    """
+  Returns:
+    The account's shipping address.
+  """
 
-    return _account_db.get(email_address, {}).get('shipping_address', {})
+  return _account_db.get(email_address, {}).get("shipping_address", {})
 
 
 def get_payment_method_by_alias(
     email_address: str, alias: str
 ) -> dict[str, Any] | None:
-    """Returns the payment method for a given account and alias.
+  """Returns the payment method for a given account and alias.
 
-    Args:
-      email_address: The account's email address.
-      alias: The alias of the payment method to retrieve.
+  Args:
+    email_address: The account's email address.
+    alias: The alias of the payment method to retrieve.
 
-    Returns:
-      The payment method for the given account and alias, or status:not_found.
-    """
+  Returns:
+    The payment method for the given account and alias, or status:not_found.
+  """
 
-    payment_methods = list(
-        filter(
-            lambda payment_method: payment_method.get('alias').casefold()
-            == alias.casefold(),
-            get_account_payment_methods(email_address),
-        )
-    )
-    if not payment_methods:
-        return None
-    return payment_methods[0]
+  payment_methods = list(
+      filter(
+          lambda payment_method: payment_method.get("alias").casefold()
+          == alias.casefold(),
+          get_account_payment_methods(email_address),
+      )
+  )
+  if not payment_methods:
+    return None
+  return payment_methods[0]

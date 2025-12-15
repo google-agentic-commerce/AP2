@@ -279,7 +279,7 @@ def _payment_method_is_eligible(
     False otherwise.
   """
   if merchant_criteria.supported_methods == "https://www.x402.org/":
-    return True
+    return payment_method.get("brand") == "x402"
   if payment_method.get("type", "") != merchant_criteria.supported_methods:
     return False
 

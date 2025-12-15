@@ -20,6 +20,10 @@ For demonstration purposes, several accounts are pre-populated with sample data.
 
 from typing import Any
 
+from x402_a2a.types import EIP3009Authorization
+from x402_a2a.types import ExactPaymentPayload
+from x402_a2a.types import PaymentPayload
+
 
 _account_db = {
     "bugsbunny@gmail.com": {
@@ -75,6 +79,9 @@ _account_db = {
                 "type": "DIGITAL_WALLET",
                 "brand": "x402",
                 "alias": "Bugs's x402 Wallet",
+                "wallet_address": "0xPayerWalletAddress",
+                "network": "base",
+                "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bda02913",
             },
         },
     },
@@ -121,15 +128,30 @@ def create_token(
   )
   if payment_method and payment_method.get("brand") == "x402":
     # Mock x402 PaymentPayload
-    return {
-        "x402Version": 1,
-        "paymentMethod": {
-            "network": "base",
-            "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bda02913",
-            "payFrom": "0xPayerWalletAddress",
-        },
-        "signature": "mock-x402-signature",
+    authorization_payload = {
+        "from": payment_method["wallet_address"],
+        "to": "0xMerchantAddress",
+        "value": "100",
+        "valid_after": "0",
+        "valid_before": "9999999999",
+        "nonce": "0xrandomnonce",
     }
+    authorization = EIP3009Authorization(**authorization_payload)
+
+    # The signature is a single bytes object, but some systems expect it as a hex string
+    # with r, s, and v components concatenated.
+    signature_hex = "0xmocksignature"
+
+    exact_payload = ExactPaymentPayload(
+        signature=signature_hex, authorization=authorization
+    )
+
+    return PaymentPayload(
+        x402_version=1,
+        scheme="exact",
+        network=payment_method["network"],
+        payload=exact_payload,
+    ).model_dump()
 
   token = f"fake_payment_credential_token_{len(_token)}"
 

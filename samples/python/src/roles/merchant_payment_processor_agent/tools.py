@@ -21,6 +21,7 @@ shopping and purchasing process.
 from datetime import datetime
 from datetime import timezone
 import logging
+import os
 from typing import Any
 import uuid
 
@@ -49,6 +50,7 @@ async def initiate_payment(
     debug_mode: bool = False,
 ) -> None:
   """Handles the initiation of a payment."""
+  payment_method = os.environ.get("PAYMENT_METHOD", "CARD")
   payment_mandate = message_utils.find_data_part(
       PAYMENT_MANDATE_DATA_KEY, data_parts
   )
@@ -66,6 +68,7 @@ async def initiate_payment(
       updater,
       current_task,
       debug_mode,
+      payment_method,
   )
 
 
@@ -75,6 +78,7 @@ async def _handle_payment_mandate(
     updater: TaskUpdater,
     current_task: Task | None,
     debug_mode: bool = False,
+    payment_method: str = "CARD",
 ) -> None:
   """Handles a payment mandate.
 
@@ -87,6 +91,7 @@ async def _handle_payment_mandate(
     updater: The task updater for managing task state.
     current_task: The current task, or None if it's a new payment.
     debug_mode: Whether the agent is in debug mode.
+    payment_method: The payment method to use (e.g., 'CARD', 'x402').
   """
   if current_task is None:
     await _raise_challenge(updater)
@@ -98,6 +103,7 @@ async def _handle_payment_mandate(
         challenge_response,
         updater,
         debug_mode,
+        payment_method,
     )
     return
 
@@ -138,6 +144,7 @@ async def _check_challenge_response_and_complete_payment(
     challenge_response: str,
     updater: TaskUpdater,
     debug_mode: bool = False,
+    payment_method: str = "CARD",
 ) -> None:
   """Checks the challenge response and completes the payment process.
 
@@ -149,9 +156,10 @@ async def _check_challenge_response_and_complete_payment(
     challenge_response: The challenge response.
     updater: The task updater.
     debug_mode: Whether the agent is in debug mode.
+    payment_method: The payment method to use (e.g., 'CARD', 'x402').
   """
   if _challenge_response_is_valid(challenge_response=challenge_response):
-    await _complete_payment(payment_mandate, updater, debug_mode)
+    await _complete_payment(payment_mandate, updater, debug_mode, payment_method)
     return
 
   message = updater.new_agent_message(
@@ -164,6 +172,7 @@ async def _complete_payment(
     payment_mandate: PaymentMandate,
     updater: TaskUpdater,
     debug_mode: bool = False,
+    payment_method: str = "CARD",
 ) -> None:
   """Completes the payment process.
 
@@ -171,16 +180,20 @@ async def _complete_payment(
     payment_mandate: The payment mandate.
     updater: The task updater.
     debug_mode: Whether the agent is in debug mode.
+    payment_method: The payment method to use (e.g., 'CARD', 'x402').
   """
   payment_mandate_id = (
       payment_mandate.payment_mandate_contents.payment_mandate_id
   )
-  credentials_provider = _get_credentials_provider_client(payment_mandate)
+  credentials_provider = _get_credentials_provider_client(
+      payment_mandate, payment_method
+  )
   payment_credential = await _request_payment_credential(
       payment_mandate,
       credentials_provider,
       updater,
       debug_mode,
+      payment_method,
   )
 
   logging.info(
@@ -195,6 +208,7 @@ async def _complete_payment(
       credentials_provider,
       updater,
       debug_mode,
+      payment_method,
   )
   await updater.add_artifact([
       Part(
@@ -220,6 +234,7 @@ async def _request_payment_credential(
     credentials_provider: PaymentRemoteA2aClient,
     updater: TaskUpdater,
     debug_mode: bool = False,
+    payment_method: str = "CARD",
 ) -> str:
   """Sends a request to the Credentials Provider for payment credentials.
 
@@ -228,27 +243,38 @@ async def _request_payment_credential(
     credentials_provider: The credentials provider client.
     updater: The task updater.
     debug_mode: Whether the agent is in debug mode.
+    payment_method: The payment method to use (e.g., 'CARD', 'x402').
 
   Returns:
     payment_credential: The payment credential details.
   """
-  message_builder = (
-      A2aMessageBuilder()
-      .set_context_id(updater.context_id)
-      .add_text("Give me the payment method credentials for the given token.")
-      .add_data(PAYMENT_MANDATE_DATA_KEY, payment_mandate.model_dump())
-      .add_data("debug_mode", debug_mode)
-  )
-  task = await credentials_provider.send_a2a_message(message_builder.build())
+  if payment_method == "x402":
+    # For x402, the signed payload is already in the payment_response.details
+    payment_credential = (
+        payment_mandate.payment_mandate_contents.payment_response.details.get(
+            "value"
+        )
+    )
+  else:
+    message_builder = (
+        A2aMessageBuilder()
+        .set_context_id(updater.context_id)
+        .add_text("Give me the payment method credentials for the given token.")
+        .add_data(PAYMENT_MANDATE_DATA_KEY, payment_mandate.model_dump())
+        .add_data("debug_mode", debug_mode)
+    )
+    task = await credentials_provider.send_a2a_message(message_builder.build())
 
-  if not task.artifacts:
-    raise ValueError("Failed to find the payment method data.")
-  payment_credential = artifact_utils.get_first_data_part(task.artifacts)
+    if not task.artifacts:
+      raise ValueError("Failed to find the payment method data.")
+    payment_credential = artifact_utils.get_first_data_part(task.artifacts)
 
   return payment_credential
 
 
-def _create_payment_receipt(payment_mandate: PaymentMandate) -> PaymentReceipt:
+def _create_payment_receipt(
+    payment_mandate: PaymentMandate, payment_method: str = "CARD"
+) -> PaymentReceipt:
   """Creates a payment receipt.
 
   Args:
@@ -258,6 +284,13 @@ def _create_payment_receipt(payment_mandate: PaymentMandate) -> PaymentReceipt:
     The PaymentReceipt containing payment receipt details.
   """
   payment_id = uuid.uuid4().hex
+  payment_method = os.environ.get("PAYMENT_METHOD", "CARD")
+  if payment_method == "x402":
+    method_name_for_receipt = "https://www.x402.org/"
+  else:
+    method_name_for_receipt = (
+        payment_mandate.payment_mandate_contents.payment_response.method_name
+    )
   return PaymentReceipt(
       payment_mandate_id=payment_mandate.payment_mandate_contents.payment_mandate_id,
       timestamp=datetime.now(timezone.utc).isoformat(),
@@ -268,35 +301,44 @@ def _create_payment_receipt(payment_mandate: PaymentMandate) -> PaymentReceipt:
           psp_confirmation_id=payment_id
       ),
       payment_method_details={
-          "method_name": (
-              payment_mandate.payment_mandate_contents.payment_response.method_name
-          )
+          "method_name": method_name_for_receipt
       },
   )
 
 
 def _get_credentials_provider_client(
     payment_mandate: PaymentMandate,
+    payment_method: str = "CARD",
 ) -> PaymentRemoteA2aClient:
   """Gets the credentials provider client.
 
   Args:
     payment_mandate: The PaymentMandate containing payment details.
+    payment_method: The payment method to use (e.g., 'CARD', 'x402').
 
   Returns:
     The credentials provider client.
   """
-  token_object = (
-      payment_mandate.payment_mandate_contents.payment_response.details.get(
-          "token"
-      )
-  )
-  credentials_provider_url = token_object.get("url")
-  return PaymentRemoteA2aClient(
-      name="credentials_provider",
-      base_url=credentials_provider_url,
-      required_extensions={EXTENSION_URI},
-  )
+  if payment_method == "x402":
+    # For x402, we don't necessarily interact with a credentials provider
+    # in the same way to fetch a token. Return a dummy client.
+    return PaymentRemoteA2aClient(
+        name="dummy_credentials_provider",
+        base_url="http://localhost:8000",  # Dummy URL
+        required_extensions={EXTENSION_URI},
+    )
+  else:
+    token_object = (
+        payment_mandate.payment_mandate_contents.payment_response.details.get(
+            "token"
+        )
+    )
+    credentials_provider_url = token_object.get("url")
+    return PaymentRemoteA2aClient(
+        name="credentials_provider",
+        base_url=credentials_provider_url,
+        required_extensions={EXTENSION_URI},
+    )
 
 
 async def _send_payment_receipt_to_credentials_provider(
@@ -304,6 +346,7 @@ async def _send_payment_receipt_to_credentials_provider(
     credentials_provider: PaymentRemoteA2aClient,
     updater: TaskUpdater,
     debug_mode: bool = False,
+    payment_method: str = "CARD",
 ) -> None:
   """Sends the payment receipt to the Credentials Provider.
 
@@ -312,7 +355,13 @@ async def _send_payment_receipt_to_credentials_provider(
     credentials_provider: The credentials provider client.
     updater: The task updater.
     debug_mode: Whether the agent is in debug mode.
+    payment_method: The payment method to use (e.g., 'CARD', 'x402').
   """
+  if payment_method == "x402":
+    logging.info(
+        "Skipping sending payment receipt to credentials provider for x402."
+    )
+    return
 
   message_builder = (
       A2aMessageBuilder()

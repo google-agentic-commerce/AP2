@@ -7,6 +7,20 @@
 # Exit immediately if any command exits with a non-zero status.
 set -e
 
+# Default payment method
+PAYMENT_METHOD="CARD"
+
+# Parse command-line arguments
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        --payment-method) PAYMENT_METHOD="${2:?--payment-method requires an argument}"; shift ;;
+        *) echo "Unknown parameter passed: $1"; exit 1 ;;
+    esac
+    shift
+done
+
+export PAYMENT_METHOD
+
 # The directory containing the agents.
 AGENTS_DIR="samples/python/src/roles"
 # A directory to store logs.

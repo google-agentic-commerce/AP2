@@ -18,6 +18,7 @@ Each agent uses individual tools to handle distinct tasks throughout the
 shopping and purchasing process.
 """
 
+import os
 from typing import Any
 
 from a2a.server.tasks.task_updater import TaskUpdater
@@ -183,6 +184,14 @@ async def handle_signed_payment_mandate(
   payment_mandate = message_utils.parse_canonical_object(
       PAYMENT_MANDATE_DATA_KEY, data_parts, PaymentMandate
   )
+
+  if (
+      payment_mandate.payment_mandate_contents.payment_response.method_name
+      == "https://www.x402.org/"
+  ):
+    await updater.complete()
+    return
+
   token = payment_mandate.payment_mandate_contents.payment_response.details.get(
       "token", {}
   ).get("value", "")
@@ -231,6 +240,16 @@ def _get_eligible_payment_method_aliases(
     A list of the user's eligible payment_methods.
   """
   payment_methods = account_manager.get_account_payment_methods(user_email)
+
+  if os.environ.get("PAYMENT_METHOD") == "x402":
+    payment_methods = [
+        method for method in payment_methods if method.get("brand") == "x402"
+    ]
+  else:
+    payment_methods = [
+        method for method in payment_methods if method.get("brand") != "x402"
+    ]
+
   eligible_payment_methods = []
 
   for payment_method in payment_methods:
@@ -259,6 +278,8 @@ def _payment_method_is_eligible(
     True if the payment_method is eligible according to the payment method,
     False otherwise.
   """
+  if merchant_criteria.supported_methods == "https://www.x402.org/":
+    return payment_method.get("brand") == "x402"
   if payment_method.get("type", "") != merchant_criteria.supported_methods:
     return False
 

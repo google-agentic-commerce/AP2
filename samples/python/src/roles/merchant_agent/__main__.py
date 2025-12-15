@@ -23,16 +23,14 @@ from common import server
 
 AGENT_MERCHANT_PORT = 8001
 
-
 def main(argv: Sequence[str]) -> None:
-    agent_card = server.load_local_agent_card(__file__)
-    server.run_agent_blocking(
-        port=AGENT_MERCHANT_PORT,
-        agent_card=agent_card,
-        executor=MerchantAgentExecutor(agent_card.capabilities.extensions),
-        rpc_url='/a2a/merchant_agent',
-    )
+  agent_card = server.load_local_agent_card(__file__)
+  server.run_agent_blocking(
+      port=AGENT_MERCHANT_PORT,
+      agent_card=agent_card,
+      executor=MerchantAgentExecutor(agent_card.capabilities.extensions),
+      rpc_url="/a2a/merchant_agent",
+  )
 
-
-if __name__ == '__main__':
-    app.run(main)
+if __name__ == "__main__":
+  app.run(main)

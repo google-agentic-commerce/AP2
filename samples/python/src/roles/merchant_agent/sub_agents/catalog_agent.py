@@ -51,60 +51,55 @@ async def find_items_workflow(
     updater: TaskUpdater,
     current_task: Task | None,
 ) -> None:
-    """Finds products that match the user's IntentMandate."""
-    llm_client = genai.Client()
+  """Finds products that match the user's IntentMandate."""
+  llm_client = genai.Client()
 
-    intent_mandate = message_utils.parse_canonical_object(
-        INTENT_MANDATE_DATA_KEY, data_parts, IntentMandate
-    )
-    intent = intent_mandate.natural_language_description
-    prompt = (
-        f"""
+  intent_mandate = message_utils.parse_canonical_object(
+      INTENT_MANDATE_DATA_KEY, data_parts, IntentMandate
+  )
+  intent = intent_mandate.natural_language_description
+  prompt = f"""
         Based on the user's request for '{intent}', your task is to generate 3
         complete, unique and realistic PaymentItem JSON objects.
 
         You MUST exclude all branding from the PaymentItem `label` field.
 
     %s
-        """
-        % DEBUG_MODE_INSTRUCTIONS
-    )
+        """ % DEBUG_MODE_INSTRUCTIONS
 
-    llm_response = llm_client.models.generate_content(
-        model='gemini-2.5-flash',
-        contents=prompt,
-        config={
-            'response_mime_type': 'application/json',
-            'response_schema': list[PaymentItem],
-        },
-    )
-    try:
-        items: list[PaymentItem] = llm_response.parsed
+  llm_response = llm_client.models.generate_content(
+      model="gemini-2.5-flash",
+      contents=prompt,
+      config={
+          "response_mime_type": "application/json",
+          "response_schema": list[PaymentItem],
+      }
+  )
+  try:
+    items: list[PaymentItem] = llm_response.parsed
 
-        current_time = datetime.now(timezone.utc)
-        item_count = 0
-        for item in items:
-            item_count += 1
-            await _create_and_add_cart_mandate_artifact(
-                item,
-                item_count,
-                current_time,
-                updater,
-                os.environ.get('PAYMENT_METHOD', 'CARD'),
-            )
-        risk_data = _collect_risk_data(updater)
-        updater.add_artifact(
-            [
-                Part(root=DataPart(data={'risk_data': risk_data})),
-            ]
-        )
-        await updater.complete()
-    except ValidationError as e:
-        error_message = updater.new_agent_message(
-            parts=[Part(root=TextPart(text=f'Invalid CartMandate list: {e}'))]
-        )
-        await updater.failed(message=error_message)
-        return
+    current_time = datetime.now(timezone.utc)
+    item_count = 0
+    for item in items:
+      item_count += 1
+      await _create_and_add_cart_mandate_artifact(
+          item,
+          item_count,
+          current_time,
+          updater,
+          os.environ.get("PAYMENT_METHOD", "CARD"),
+      )
+    risk_data = _collect_risk_data(updater)
+    updater.add_artifact([
+        Part(root=DataPart(data={"risk_data": risk_data})),
+    ])
+    await updater.complete()
+  except ValidationError as e:
+    error_message = updater.new_agent_message(
+        parts=[Part(root=TextPart(text=f"Invalid CartMandate list: {e}"))]
+    )
+    await updater.failed(message=error_message)
+    return
 
 
 async def _create_and_add_cart_mandate_artifact(
@@ -114,74 +109,66 @@ async def _create_and_add_cart_mandate_artifact(
     updater: TaskUpdater,
     payment_method: str,
 ) -> None:
-    """Creates a CartMandate and adds it as an artifact."""
-    if payment_method == 'x402':
-        method_data = [
-            PaymentMethodData(
-                supported_methods='https://www.x402.org/',
-                data={
-                    'x402Version': 1,
-                    'accepts': [
-                        {
-                            'scheme': 'exact',
-                            'network': 'base',
-                            'asset': '0x833589fCD6eDb6E08f4c7C32D4f71b54bda02913',
-                            'payTo': '0xMerchantWalletAddress',
-                            'maxAmountRequired': str(
-                                int(item.amount.value * 1000000)
-                            ),
-                        }
-                    ],
-                },
-            )
-        ]
-    else:
-        method_data = [
-            PaymentMethodData(
-                supported_methods='CARD',
-                data={
-                    'network': ['mastercard', 'paypal', 'amex'],
-                },
-            )
-        ]
-    payment_request = PaymentRequest(
-        method_data=method_data,
-        details=PaymentDetailsInit(
-            id=f'order_{item_count}',
-            display_items=[item],
-            total=PaymentItem(
-                label='Total',
-                amount=item.amount,
-            ),
-        ),
-        options=PaymentOptions(request_shipping=True),
-    )
+  """Creates a CartMandate and adds it as an artifact."""
+  if payment_method == "x402":
+    method_data = [
+        PaymentMethodData(
+            supported_methods="https://www.x402.org/",
+            data={
+                "x402Version": 1,
+                "accepts": [{
+                    "scheme": "exact",
+                    "network": "base",
+                    "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bda02913",
+                    "payTo": "0xMerchantWalletAddress",
+                    "maxAmountRequired": str(int(item.amount.value * 1000000))
+                }]
+            }
+        )
+    ]
+  else:
+    method_data = [
+        PaymentMethodData(
+            supported_methods="CARD",
+            data={
+                "network": ["mastercard", "paypal", "amex"],
+            },
+        )
+    ]
+  payment_request = PaymentRequest(
+      method_data=method_data,
+      details=PaymentDetailsInit(
+          id=f"order_{item_count}",
+          display_items=[item],
+          total=PaymentItem(
+              label="Total",
+              amount=item.amount,
+          ),
+      ),
+      options=PaymentOptions(request_shipping=True),
+  )
 
-    cart_contents = CartContents(
-        id=f'cart_{item_count}',
-        user_cart_confirmation_required=True,
-        payment_request=payment_request,
-        cart_expiry=(current_time + timedelta(minutes=30)).isoformat(),
-        merchant_name='Generic Merchant',
-    )
+  cart_contents = CartContents(
+      id=f"cart_{item_count}",
+      user_cart_confirmation_required=True,
+      payment_request=payment_request,
+      cart_expiry=(current_time + timedelta(minutes=30)).isoformat(),
+      merchant_name="Generic Merchant",
+  )
 
-    cart_mandate = CartMandate(contents=cart_contents)
+  cart_mandate = CartMandate(contents=cart_contents)
 
-    storage.set_cart_mandate(cart_mandate.contents.id, cart_mandate)
-    await updater.add_artifact(
-        [
-            Part(
-                root=DataPart(
-                    data={CART_MANDATE_DATA_KEY: cart_mandate.model_dump()}
-                )
-            )
-        ]
-    )
+  storage.set_cart_mandate(cart_mandate.contents.id, cart_mandate)
+  await updater.add_artifact([
+      Part(
+          root=DataPart(data={CART_MANDATE_DATA_KEY: cart_mandate.model_dump()})
+      )
+  ])
 
 
 def _collect_risk_data(updater: TaskUpdater) -> dict:
-    """Creates a risk_data in the tool_context."""
-    # This is a fake risk data for demonstration purposes.
-    risk_data = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...fake_risk_data'
-    storage.set_risk_data(updater.context_id, risk_data)
-    return risk_data
+  """Creates a risk_data in the tool_context."""
+  # This is a fake risk data for demonstration purposes.
+  risk_data = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...fake_risk_data"
+  storage.set_risk_data(updater.context_id, risk_data)
+  return risk_data

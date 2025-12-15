@@ -20,67 +20,65 @@ from a2a.types import Artifact
 from a2a.utils import message as message_utils
 from pydantic import BaseModel
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 def find_canonical_objects(
     artifacts: list[Artifact], data_key: str, model: BaseModel
 ) -> list[BaseModel]:
-    """Finds all canonical objects of the given type in the artifacts.
+  """Finds all canonical objects of the given type in the artifacts.
 
-    Args:
-      artifacts: a list of the artifacts to be searched.
-      data_key: The key of the DataPart to search for.
-      model: The model of the canonical object to search for.
+  Args:
+    artifacts: a list of the artifacts to be searched.
+    data_key: The key of the DataPart to search for.
+    model: The model of the canonical object to search for.
 
-    Returns:
-      A list of canonical objects of the given type in the artifacts.
-    """
-    if artifacts is None:
-        return []
+  Returns:
+    A list of canonical objects of the given type in the artifacts.
+  """
+  if artifacts is None:
+    return []
 
-    canonical_objects = []
-    for artifact in artifacts:
-        for part in artifact.parts:
-            if hasattr(part.root, 'data') and data_key in part.root.data:
-                canonical_objects.append(
-                    model.model_validate(part.root.data[data_key])
-                )
-    return canonical_objects
+  canonical_objects = []
+  for artifact in artifacts:
+    for part in artifact.parts:
+      if hasattr(part.root, "data") and data_key in part.root.data:
+        canonical_objects.append(model.model_validate(part.root.data[data_key]))
+  return canonical_objects
 
 
 def get_first_data_part(artifacts: list[Artifact]) -> dict[str, Any]:
-    """Returns the first DataPart encountered in all the given artifacts.
+  """Returns the first DataPart encountered in all the given artifacts.
 
-    Args:
-      artifacts: The artifacts to be searched for a DataPart.
+  Args:
+    artifacts: The artifacts to be searched for a DataPart.
 
-    Returns:
-      The data contents within the first found DataPart.
-    """
-    if artifacts is None:
-        return {}
-
-    data_parts = [
-        message_utils.get_data_parts(artifact.parts) for artifact in artifacts
-    ]
-    for data_part in data_parts:
-        for item in data_part:
-            return item
+  Returns:
+    The data contents within the first found DataPart.
+  """
+  if artifacts is None:
     return {}
+
+  data_parts = [
+      message_utils.get_data_parts(artifact.parts) for artifact in artifacts
+  ]
+  for data_part in data_parts:
+    for item in data_part:
+      return item
+  return {}
 
 
 def only(list_: list[T]) -> T:
-    """Returns the only element in a list.
+  """Returns the only element in a list.
 
-    Args:
-      list_: The list expected to contain exactly one element.
+  Args:
+    list_: The list expected to contain exactly one element.
 
-    Raises:
-      ValueError: if the list is empty or has more than one element.
-    """
-    if not list_:
-        raise ValueError('List is empty.')
-    if len(list_) > 1:
-        raise ValueError('List has more than one element.')
-    return list_[0]
+  Raises:
+    ValueError: if the list is empty or has more than one element.
+  """
+  if not list_:
+    raise ValueError("List is empty.")
+  if len(list_) > 1:
+    raise ValueError("List has more than one element.")
+  return list_[0]

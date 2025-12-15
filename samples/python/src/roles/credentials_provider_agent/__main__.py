@@ -17,25 +17,21 @@
 from collections.abc import Sequence
 
 from absl import app
-from roles.credentials_provider_agent.agent_executor import (
-    CredentialsProviderExecutor,
-)
+from roles.credentials_provider_agent.agent_executor import CredentialsProviderExecutor
 from common import server
 
 AGENT_PORT = 8002
 
 
 def main(argv: Sequence[str]) -> None:
-    agent_card = server.load_local_agent_card(__file__)
-    server.run_agent_blocking(
-        port=AGENT_PORT,
-        agent_card=agent_card,
-        executor=CredentialsProviderExecutor(
-            agent_card.capabilities.extensions
-        ),
-        rpc_url='/a2a/credentials_provider',
-    )
+  agent_card = server.load_local_agent_card(__file__)
+  server.run_agent_blocking(
+      port=AGENT_PORT,
+      agent_card=agent_card,
+      executor=CredentialsProviderExecutor(agent_card.capabilities.extensions),
+      rpc_url="/a2a/credentials_provider",
+  )
 
 
-if __name__ == '__main__':
-    app.run(main)
+if __name__ == "__main__":
+  app.run(main)

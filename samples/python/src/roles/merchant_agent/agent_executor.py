@@ -28,6 +28,7 @@ interpreting the user's request, identifying the appropriate tool to use, and
 invoking it to complete a task.
 """
 
+
 import logging
 from typing import Any
 
@@ -46,107 +47,96 @@ from common.system_utils import DEBUG_MODE_INSTRUCTIONS
 # A list of known Shopping Agent identifiers that this Merchant is willing to
 # work with.
 _KNOWN_SHOPPING_AGENTS = [
-    'trusted_shopping_agent',
+    "trusted_shopping_agent",
 ]
 
-
 class MerchantAgentExecutor(BaseServerExecutor):
-    """AgentExecutor for the merchant agent."""
+  """AgentExecutor for the merchant agent."""
 
-    _system_prompt = (
-        """
+  _system_prompt = """
     You are a merchant agent. Your role is to help users with their shopping
     requests.
 
     You can find items, update shopping carts, and initiate payments.
 
     %s
-  """
-        % DEBUG_MODE_INSTRUCTIONS
+  """ % DEBUG_MODE_INSTRUCTIONS
+
+  def __init__(self, supported_extensions: list[dict[str, Any]] = None):
+    """Initializes the MerchantAgentExecutor.
+
+    Args:
+        supported_extensions: A list of extension objects supported by the
+          agent.
+    """
+    agent_tools = [
+        tools.update_cart,
+        catalog_agent.find_items_workflow,
+        tools.initiate_payment,
+        tools.dpc_finish,
+    ]
+    super().__init__(supported_extensions, agent_tools, self._system_prompt)
+
+  async def _handle_request(
+      self,
+      text_parts: list[str],
+      data_parts: list[dict[str, Any]],
+      updater: TaskUpdater,
+      current_task: Task | None,
+  ) -> None:
+    """Overrides the base class method to validate the shopping agent first."""
+    if not await self._validate_shopping_agent(data_parts, updater):
+      error_message = updater.new_agent_message(
+          parts=[
+              Part(root=TextPart(text=f"Failed to validate shopping agent."))
+          ]
+      )
+      await updater.failed(message=error_message)
+      return
+    await super()._handle_request(text_parts, data_parts, updater, current_task)
+
+  async def _validate_shopping_agent(
+      self, data_parts: list[dict[str, Any]], updater: TaskUpdater
+  ) -> None:
+    """Validates that the incoming request is from a trusted Shopping Agent.
+
+    Args:
+      data_parts: A list of data part contents from the request.
+
+    Returns:
+      True if the Shopping Agent is trusted, or False if not.
+    """
+
+    shopping_agent_id = message_utils.find_data_part(
+        "shopping_agent_id", data_parts
+    )
+    logging.info(
+        "Received request from shopping_agent_id: %s", shopping_agent_id
     )
 
-    def __init__(self, supported_extensions: list[dict[str, Any]] = None):
-        """Initializes the MerchantAgentExecutor.
+    if not shopping_agent_id:
+      logging.warning("Missing shopping_agent_id in request.")
+      await _fail_task(
+          updater, "Unauthorized Request: Missing shopping_agent_id."
+      )
+      return False
 
-        Args:
-            supported_extensions: A list of extension objects supported by the
-              agent.
-        """
-        agent_tools = [
-            tools.update_cart,
-            catalog_agent.find_items_workflow,
-            tools.initiate_payment,
-            tools.dpc_finish,
-        ]
-        super().__init__(supported_extensions, agent_tools, self._system_prompt)
+    if shopping_agent_id not in _KNOWN_SHOPPING_AGENTS:
+      logging.warning("Unknown Shopping Agent: %s", shopping_agent_id)
+      await _fail_task(
+          updater, f"Unauthorized Request: Unknown agent '{shopping_agent_id}'."
+      )
+      return False
 
-    async def _handle_request(
-        self,
-        text_parts: list[str],
-        data_parts: list[dict[str, Any]],
-        updater: TaskUpdater,
-        current_task: Task | None,
-    ) -> None:
-        """Overrides the base class method to validate the shopping agent first."""
-        if not await self._validate_shopping_agent(data_parts, updater):
-            error_message = updater.new_agent_message(
-                parts=[
-                    Part(
-                        root=TextPart(
-                            text=f'Failed to validate shopping agent.'
-                        )
-                    )
-                ]
-            )
-            await updater.failed(message=error_message)
-            return
-        await super()._handle_request(
-            text_parts, data_parts, updater, current_task
-        )
-
-    async def _validate_shopping_agent(
-        self, data_parts: list[dict[str, Any]], updater: TaskUpdater
-    ) -> None:
-        """Validates that the incoming request is from a trusted Shopping Agent.
-
-        Args:
-          data_parts: A list of data part contents from the request.
-
-        Returns:
-          True if the Shopping Agent is trusted, or False if not.
-        """
-
-        shopping_agent_id = message_utils.find_data_part(
-            'shopping_agent_id', data_parts
-        )
-        logging.info(
-            'Received request from shopping_agent_id: %s', shopping_agent_id
-        )
-
-        if not shopping_agent_id:
-            logging.warning('Missing shopping_agent_id in request.')
-            await _fail_task(
-                updater, 'Unauthorized Request: Missing shopping_agent_id.'
-            )
-            return False
-
-        if shopping_agent_id not in _KNOWN_SHOPPING_AGENTS:
-            logging.warning('Unknown Shopping Agent: %s', shopping_agent_id)
-            await _fail_task(
-                updater,
-                f"Unauthorized Request: Unknown agent '{shopping_agent_id}'.",
-            )
-            return False
-
-        logging.info(
-            'Authorized request from shopping_agent_id: %s', shopping_agent_id
-        )
-        return True
+    logging.info(
+        "Authorized request from shopping_agent_id: %s", shopping_agent_id
+    )
+    return True
 
 
 async def _fail_task(updater: TaskUpdater, error_text: str) -> None:
-    """A helper function to fail a task with a given error message."""
-    error_message = updater.new_agent_message(
-        parts=[Part(root=TextPart(text=error_text))]
-    )
-    await updater.failed(message=error_message)
+  """A helper function to fail a task with a given error message."""
+  error_message = updater.new_agent_message(
+      parts=[Part(root=TextPart(text=error_text))]
+  )
+  await updater.failed(message=error_message)

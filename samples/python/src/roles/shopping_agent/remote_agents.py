@@ -26,8 +26,8 @@ from common.payment_remote_a2a_client import PaymentRemoteA2aClient
 
 
 credentials_provider_client = PaymentRemoteA2aClient(
-    name='credentials_provider',
-    base_url='http://localhost:8002/a2a/credentials_provider',
+    name="credentials_provider",
+    base_url="http://localhost:8002/a2a/credentials_provider",
     required_extensions={
         EXTENSION_URI,
     },
@@ -35,8 +35,8 @@ credentials_provider_client = PaymentRemoteA2aClient(
 
 
 merchant_agent_client = PaymentRemoteA2aClient(
-    name='merchant_agent',
-    base_url='http://localhost:8001/a2a/merchant_agent',
+    name="merchant_agent",
+    base_url="http://localhost:8001/a2a/merchant_agent",
     required_extensions={
         EXTENSION_URI,
     },

@@ -6,7 +6,7 @@ using payment methods compatible with the x402 as the payment method.
 **Note:** The AP2 compatible x402 extension is coming soon. The current x402
 extension will be enhanced to ensure the creation of all key mandates outlined
 in AP2. See the current x402 A2A extension repository
-[here](https://github.com/google-agentic-commerce/a2a-x402/).
+[x402 A2A extension repository](https://github.com/google-agentic-commerce/a2a-x402/).
 
 ## Scenario
 

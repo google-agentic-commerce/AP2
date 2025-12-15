@@ -43,3 +43,7 @@ jobs:
           VALIDATE_SHELL_SHFMT: false
           VALIDATE_GO: false
           VALIDATE_GO_MODULES: false
+          VALIDATE_EDITORCONFIG: false
+          VALIDATE_TRIVY: false
+          VALIDATE_PYTHON_RUFF: false
+          VALIDATE_PYTHON_RUFF_FORMAT: false

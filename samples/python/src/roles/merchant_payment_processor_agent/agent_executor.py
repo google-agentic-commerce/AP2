@@ -26,7 +26,6 @@ interpreting the user's request, identifying the appropriate tool to use, and
 invoking it to complete a task.
 """
 
-
 from typing import Any
 
 from . import tools
@@ -34,21 +33,22 @@ from common.base_server_executor import BaseServerExecutor
 from common.system_utils import DEBUG_MODE_INSTRUCTIONS
 
 
-
-
 class PaymentProcessorExecutor(BaseServerExecutor):
-  """AgentExecutor for the merchant payment processor agent."""
+    """AgentExecutor for the merchant payment processor agent."""
 
-  _system_prompt = """
+    _system_prompt = (
+        """
     You are a payment processor agent. Your role is to process payments
     on behalf of a merchant.
 
     %s
-  """ % DEBUG_MODE_INSTRUCTIONS
+  """
+        % DEBUG_MODE_INSTRUCTIONS
+    )
 
-  def __init__(self, supported_extensions: list[dict[str, Any]] = None):
-    """Initializes the PaymentProcessorExecutor."""
-    agent_tools = [
-        tools.initiate_payment,
-    ]
-    super().__init__(supported_extensions, agent_tools, self._system_prompt)
+    def __init__(self, supported_extensions: list[dict[str, Any]] = None):
+        """Initializes the PaymentProcessorExecutor."""
+        agent_tools = [
+            tools.initiate_payment,
+        ]
+        super().__init__(supported_extensions, agent_tools, self._system_prompt)

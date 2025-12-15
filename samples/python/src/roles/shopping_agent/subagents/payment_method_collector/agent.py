@@ -31,8 +31,8 @@ from common.system_utils import DEBUG_MODE_INSTRUCTIONS
 
 
 payment_method_collector = RetryingLlmAgent(
-    model="gemini-2.5-flash",
-    name="payment_method_collector",
+    model='gemini-2.5-flash',
+    name='payment_method_collector',
     max_retries=5,
     instruction="""
     You are an agent responsible for obtaining the user's payment method for a
@@ -70,7 +70,8 @@ payment_method_collector = RetryingLlmAgent(
     5. Call the `get_payment_credential_token` tool to get the payment
        credential token with the user_email and payment_method_alias.
     6. Transfer back to the root_agent with the payment_method_alias.
-    """ % DEBUG_MODE_INSTRUCTIONS,
+    """
+    % DEBUG_MODE_INSTRUCTIONS,
     tools=[
         tools.get_payment_methods,
         tools.get_payment_credential_token,

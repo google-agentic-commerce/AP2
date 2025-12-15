@@ -48,144 +48,149 @@ from common.validation import validate_payment_mandate_signature
 DataPartContent = dict[str, Any]
 Tool = Callable[[list[DataPartContent], TaskUpdater, Task | None], Any]
 
+
 class BaseServerExecutor(AgentExecutor, abc.ABC):
-  """A baseline A2A AgentExecutor to be utilized by agents."""
+    """A baseline A2A AgentExecutor to be utilized by agents."""
 
-  def __init__(
-      self,
-      supported_extensions: list[dict[str, Any]] | None,
-      tools: list[Tool],
-      system_prompt: str = "You are a helpful assistant.",
-  ):
-    """Initialization.
+    def __init__(
+        self,
+        supported_extensions: list[dict[str, Any]] | None,
+        tools: list[Tool],
+        system_prompt: str = 'You are a helpful assistant.',
+    ):
+        """Initialization.
 
-    Args:
-      supported_extensions: Extensions the agent declares that it supports.
-      tools: Tools supported by the agent.
-      system_prompt: Helps steer the model when choosing tools.
-    """
-    if supported_extensions is not None:
-      self._supported_extension_uris = {ext.uri for ext in supported_extensions}
-    else:
-      self._supported_extension_uris = set()
-    self._client = genai.Client()
-    self._tools = tools
-    self._tool_resolver = FunctionCallResolver(
-        self._client, self._tools, system_prompt
-    )
-    super().__init__()
-
-  async def execute(
-      self, context: RequestContext, event_queue: EventQueue
-  ) -> None:
-    """Execute the agent's logic for a given request context.
-
-    Args:
-      context: The request context containing the message, task ID, etc.
-      event_queue: The queue to publish events to.
-    """
-    watch_log.log_a2a_request_extensions(context)
-
-    text_parts, data_parts = self._parse_request(context)
-    watch_log.log_a2a_message_parts(text_parts, data_parts)
-
-    self._handle_extensions(context)
-
-    if EXTENSION_URI in context.call_context.activated_extensions:
-      payment_mandate = message_utils.find_data_part(
-          PAYMENT_MANDATE_DATA_KEY, data_parts
-      )
-      if payment_mandate is not None:
-        validate_payment_mandate_signature(
-            PaymentMandate.model_validate(payment_mandate)
+        Args:
+          supported_extensions: Extensions the agent declares that it supports.
+          tools: Tools supported by the agent.
+          system_prompt: Helps steer the model when choosing tools.
+        """
+        if supported_extensions is not None:
+            self._supported_extension_uris = {
+                ext.uri for ext in supported_extensions
+            }
+        else:
+            self._supported_extension_uris = set()
+        self._client = genai.Client()
+        self._tools = tools
+        self._tool_resolver = FunctionCallResolver(
+            self._client, self._tools, system_prompt
         )
-    else:
-      raise ValueError(
-          "Payment extension not activated."
-          f" {context.call_context.activated_extensions}"
-      )
+        super().__init__()
 
-    updater = TaskUpdater(
-        event_queue,
-        task_id=context.task_id or str(uuid.uuid4()),
-        context_id=context.context_id or str(uuid.uuid4()),
-    )
+    async def execute(
+        self, context: RequestContext, event_queue: EventQueue
+    ) -> None:
+        """Execute the agent's logic for a given request context.
 
-    logging.info(
-        "Server working on (context_id, task_id): (%s, %s)",
-        updater.context_id,
-        updater.task_id,
-    )
-    await self._handle_request(
-        text_parts,
-        data_parts,
-        updater,
-        context.current_task,
-    )
+        Args:
+          context: The request context containing the message, task ID, etc.
+          event_queue: The queue to publish events to.
+        """
+        watch_log.log_a2a_request_extensions(context)
 
-  async def cancel(self, context: RequestContext) -> None:
-    """Request the agent to cancel an ongoing task."""
-    pass
+        text_parts, data_parts = self._parse_request(context)
+        watch_log.log_a2a_message_parts(text_parts, data_parts)
 
-  async def _handle_request(
-      self,
-      text_parts: list[str],
-      data_parts: list[dict[str, Any]],
-      updater: TaskUpdater,
-      current_task: Task | None,
-  ) -> None:
-    """Receives a parsed request and dispatches to the appropriate tool.
+        self._handle_extensions(context)
 
-    Args:
-      text_parts: A list of text parts from the request.
-      data_parts: A list of data parts from the request.
-      updater: The TaskUpdater instance for updating the task.
-      current_task: The current Task, if available.
-    """
-    try:
-      prompt = (text_parts[0] if text_parts else "").strip()
-      tool_name = self._tool_resolver.determine_tool_to_use(prompt)
-      logging.info("Using tool: %s", tool_name)
+        if EXTENSION_URI in context.call_context.activated_extensions:
+            payment_mandate = message_utils.find_data_part(
+                PAYMENT_MANDATE_DATA_KEY, data_parts
+            )
+            if payment_mandate is not None:
+                validate_payment_mandate_signature(
+                    PaymentMandate.model_validate(payment_mandate)
+                )
+        else:
+            raise ValueError(
+                'Payment extension not activated.'
+                f' {context.call_context.activated_extensions}'
+            )
 
-      matching_tools = list(
-          filter(lambda tool: tool.__name__ == tool_name, self._tools)
-      )
-      if len(matching_tools) != 1:
-        raise ValueError(
-            f"Expected 1 tool matching {tool_name}, got {len(matching_tools)}"
+        updater = TaskUpdater(
+            event_queue,
+            task_id=context.task_id or str(uuid.uuid4()),
+            context_id=context.context_id or str(uuid.uuid4()),
         )
-      callable_tool = matching_tools[0]
-      await callable_tool(data_parts, updater, current_task)
 
-    except Exception as e:  # pylint: disable=broad-exception-caught
-      error_message = updater.new_agent_message(
-          parts=[Part(root=TextPart(text=f"An error occurred: {e}"))]
-      )
-      await updater.failed(message=error_message)
+        logging.info(
+            'Server working on (context_id, task_id): (%s, %s)',
+            updater.context_id,
+            updater.task_id,
+        )
+        await self._handle_request(
+            text_parts,
+            data_parts,
+            updater,
+            context.current_task,
+        )
 
-  def _parse_request(
-      self, context: RequestContext
-  ) -> Tuple[list[str], list[dict[str, Any]]]:
-    """Parses the request and returns the text and data parts.
+    async def cancel(self, context: RequestContext) -> None:
+        """Request the agent to cancel an ongoing task."""
+        pass
 
-    Args:
-      context: The A2A RequestContext
+    async def _handle_request(
+        self,
+        text_parts: list[str],
+        data_parts: list[dict[str, Any]],
+        updater: TaskUpdater,
+        current_task: Task | None,
+    ) -> None:
+        """Receives a parsed request and dispatches to the appropriate tool.
 
-    Returns:
-      A tuple containing the contents of TextPart and DataPart objects.
-    """
-    parts = context.message.parts if context.message else []
-    text_parts = message.get_text_parts(parts)
-    data_parts = message.get_data_parts(parts)
-    return text_parts, data_parts
+        Args:
+          text_parts: A list of text parts from the request.
+          data_parts: A list of data parts from the request.
+          updater: The TaskUpdater instance for updating the task.
+          current_task: The current Task, if available.
+        """
+        try:
+            prompt = (text_parts[0] if text_parts else '').strip()
+            tool_name = self._tool_resolver.determine_tool_to_use(prompt)
+            logging.info('Using tool: %s', tool_name)
 
-  def _handle_extensions(self, context: RequestContext) -> None:
-    """Activates any requested extensions that the agent supports.
+            matching_tools = list(
+                filter(lambda tool: tool.__name__ == tool_name, self._tools)
+            )
+            if len(matching_tools) != 1:
+                raise ValueError(
+                    f'Expected 1 tool matching {tool_name}, got {len(matching_tools)}'
+                )
+            callable_tool = matching_tools[0]
+            await callable_tool(data_parts, updater, current_task)
 
-    Args:
-      context: The A2A RequestContext
-    """
-    requested_uris = context.requested_extensions
-    activated_uris = requested_uris.intersection(self._supported_extension_uris)
-    for uri in activated_uris:
-      context.add_activated_extension(uri)
+        except Exception as e:  # pylint: disable=broad-exception-caught
+            error_message = updater.new_agent_message(
+                parts=[Part(root=TextPart(text=f'An error occurred: {e}'))]
+            )
+            await updater.failed(message=error_message)
+
+    def _parse_request(
+        self, context: RequestContext
+    ) -> Tuple[list[str], list[dict[str, Any]]]:
+        """Parses the request and returns the text and data parts.
+
+        Args:
+          context: The A2A RequestContext
+
+        Returns:
+          A tuple containing the contents of TextPart and DataPart objects.
+        """
+        parts = context.message.parts if context.message else []
+        text_parts = message.get_text_parts(parts)
+        data_parts = message.get_data_parts(parts)
+        return text_parts, data_parts
+
+    def _handle_extensions(self, context: RequestContext) -> None:
+        """Activates any requested extensions that the agent supports.
+
+        Args:
+          context: The A2A RequestContext
+        """
+        requested_uris = context.requested_extensions
+        activated_uris = requested_uris.intersection(
+            self._supported_extension_uris
+        )
+        for uri in activated_uris:
+            context.add_activated_extension(uri)

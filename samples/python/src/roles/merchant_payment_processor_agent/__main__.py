@@ -18,19 +18,23 @@ from collections.abc import Sequence
 
 from absl import app
 
-from roles.merchant_payment_processor_agent.agent_executor import PaymentProcessorExecutor
+from roles.merchant_payment_processor_agent.agent_executor import (
+    PaymentProcessorExecutor,
+)
 from common import server
 
 AGENT_PAYMENT_PROCESSOR_PORT = 8003
 
-def main(argv: Sequence[str]) -> None:
-  agent_card = server.load_local_agent_card(__file__)
-  server.run_agent_blocking(
-      port=AGENT_PAYMENT_PROCESSOR_PORT,
-      agent_card=agent_card,
-      executor=PaymentProcessorExecutor(agent_card.capabilities.extensions),
-      rpc_url="/a2a/merchant_payment_processor_agent",
-  )
 
-if __name__ == "__main__":
-  app.run(main)
+def main(argv: Sequence[str]) -> None:
+    agent_card = server.load_local_agent_card(__file__)
+    server.run_agent_blocking(
+        port=AGENT_PAYMENT_PROCESSOR_PORT,
+        agent_card=agent_card,
+        executor=PaymentProcessorExecutor(agent_card.capabilities.extensions),
+        rpc_url='/a2a/merchant_payment_processor_agent',
+    )
+
+
+if __name__ == '__main__':
+    app.run(main)

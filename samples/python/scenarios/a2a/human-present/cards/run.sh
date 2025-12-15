@@ -13,7 +13,7 @@ PAYMENT_METHOD="CARD"
 # Parse command-line arguments
 while [[ "$#" -gt 0 ]]; do
     case $1 in
-        --payment-method) PAYMENT_METHOD="$2"; shift ;;
+        --payment-method) PAYMENT_METHOD="${2:?--payment-method requires an argument}"; shift ;;
         *) echo "Unknown parameter passed: $1"; exit 1 ;;
     esac
     shift

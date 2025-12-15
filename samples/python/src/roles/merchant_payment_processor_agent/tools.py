@@ -273,7 +273,7 @@ async def _request_payment_credential(
 
 
 def _create_payment_receipt(
-    payment_mandate: PaymentMandate,
+    payment_mandate: PaymentMandate, payment_method: str = "CARD"
 ) -> PaymentReceipt:
   """Creates a payment receipt.
 

@@ -167,6 +167,7 @@ Truelayer
 Trulioo
 udpa
 unmarshal
+useto
 viewmodel
 vulnz
 Wallex
@@ -175,6 +176,7 @@ webassets
 Worldline
 Worldpay
 Xdock
+xeipuuv
 Xendit
 xerrors
 xmocksignature
@@ -183,3 +185,6 @@ XVCJ
 Yapily
 Zalopay
 Zalora
+gojsonschema
+quicktype
+paymentmethod

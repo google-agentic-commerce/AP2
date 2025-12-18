@@ -61,7 +61,8 @@
     "intent_expiry": {
       "description": "When the intent mandate expires, in ISO 8601 format.",
       "title": "Intent Expiry",
-      "type": "string"
+      "type": "string",
+      "format": "date-time"
     }
   },
   "required": [

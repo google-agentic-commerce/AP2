@@ -29,6 +29,7 @@ Requirements:
 
 import json
 import sys
+import textwrap
 from pathlib import Path
 
 # Add the src directory to the Python path
@@ -58,6 +59,26 @@ def generate_schema(model_class, output_path: Path, schema_id: str) -> None:
     # Generate the schema using Pydantic's built-in method
     schema = model_class.model_json_schema(mode="serialization")
 
+    # Post-process the schema to improve formatting and add details
+    def _post_process(node):
+        if isinstance(node, dict):
+            if "description" in node and isinstance(node["description"], str):
+                node["description"] = textwrap.dedent(node["description"]).strip()
+
+            if "properties" in node and isinstance(node["properties"], dict):
+                for prop_name, prop_schema in node["properties"].items():
+                    if prop_name in ("intent_expiry", "cart_expiry", "timestamp"):
+                        if prop_schema.get("type") == "string":
+                            prop_schema["format"] = "date-time"
+
+            for value in node.values():
+                _post_process(value)
+        elif isinstance(node, list):
+            for item in node:
+                _post_process(item)
+
+    _post_process(schema)
+
     # Add $schema and $id fields for proper JSON Schema compliance
     schema["$schema"] = "https://json-schema.org/draft/2020-12/schema"
     schema["$id"] = schema_id
@@ -65,7 +86,7 @@ def generate_schema(model_class, output_path: Path, schema_id: str) -> None:
     # Add metadata
     schema["title"] = model_class.__name__
     if model_class.__doc__:
-        schema["description"] = model_class.__doc__.strip()
+        schema["description"] = textwrap.dedent(model_class.__doc__).strip()
 
     # Write schema to file with pretty formatting
     output_path.parent.mkdir(parents=True, exist_ok=True)

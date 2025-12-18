@@ -20,7 +20,8 @@
         "cart_expiry": {
           "description": "When this cart expires, in ISO 8601 format.",
           "title": "Cart Expiry",
-          "type": "string"
+          "type": "string",
+          "format": "date-time"
         },
         "merchant_name": {
           "description": "The name of the merchant.",
@@ -548,7 +549,7 @@
         }
       ],
       "default": null,
-      "description": " A base64url-encoded JSON Web Token (JWT) that digitally\n        signs the cart contents, guaranteeing its authenticity and integrity:\n        1. Header includes the signing algorithm and key ID.\n        2. Payload includes:\n          - iss, sub, aud: Identifiers for the merchant (issuer)\n            and the intended recipient (audience), like a payment processor.\n          - iat: iat, exp: Timestamps for the token's creation and its\n            short-lived expiration (e.g., 5-15 minutes) to enhance security.\n          - jti: Unique identifier for the JWT to prevent replay attacks.\n          - cart_hash: A secure hash of the CartMandate, ensuring\n             integrity. The hash is computed over the canonical JSON\n             representation of the CartContents object.\n        3. Signature: A digital signature created with the merchant's private\n          key. It allows anyone with the public key to verify the token's\n          authenticity and confirm that the payload has not been tampered with.\n        The entire JWT is base64url encoded to ensure safe transmission.\n        ",
+      "description": "A base64url-encoded JSON Web Token (JWT) that digitally\n       signs the cart contents, guaranteeing its authenticity and integrity:\n       1. Header includes the signing algorithm and key ID.\n       2. Payload includes:\n         - iss, sub, aud: Identifiers for the merchant (issuer)\n           and the intended recipient (audience), like a payment processor.\n         - iat: iat, exp: Timestamps for the token's creation and its\n           short-lived expiration (e.g., 5-15 minutes) to enhance security.\n         - jti: Unique identifier for the JWT to prevent replay attacks.\n         - cart_hash: A secure hash of the CartMandate, ensuring\n            integrity. The hash is computed over the canonical JSON\n            representation of the CartContents object.\n       3. Signature: A digital signature created with the merchant's private\n         key. It allows anyone with the public key to verify the token's\n         authenticity and confirm that the payload has not been tampered with.\n       The entire JWT is base64url encoded to ensure safe transmission.",
       "example": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjIwMjQwOTA...",
       "title": "Merchant Authorization"
     }

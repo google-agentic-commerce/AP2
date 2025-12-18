@@ -219,7 +219,8 @@
         "timestamp": {
           "description": "The date and time the mandate was created, in ISO 8601 format.",
           "title": "Timestamp",
-          "type": "string"
+          "type": "string",
+          "format": "date-time"
         }
       },
       "required": [
@@ -381,7 +382,7 @@
         }
       ],
       "default": null,
-      "description": "\n          This is a base64_url-encoded verifiable presentation of a verifiable\n          credential signing over the cart_mandate and payment_mandate_hashes.\n          For example an sd-jwt-vc would contain:\n\n          - An issuer-signed jwt authorizing a 'cnf' claim\n          - A key-binding jwt with the claims\n            \"aud\": ...\n            \"nonce\": ...\n            \"sd_hash\": hash of the issuer-signed jwt\n            \"transaction_data\": an array containing the secure hashes of \n              CartMandate and PaymentMandateContents.\n\n          ",
+      "description": "This is a base64_url-encoded verifiable presentation of a verifiable\ncredential signing over the cart_mandate and payment_mandate_hashes.\nFor example an sd-jwt-vc would contain:\n\n- An issuer-signed jwt authorizing a 'cnf' claim\n- A key-binding jwt with the claims\n  \"aud\": ...\n  \"nonce\": ...\n  \"sd_hash\": hash of the issuer-signed jwt\n  \"transaction_data\": an array containing the secure hashes of \n    CartMandate and PaymentMandateContents.",
       "example": "eyJhbGciOiJFUzI1NksiLCJraWQiOiJkaWQ6ZXhhbXBsZ...",
       "title": "User Authorization"
     }

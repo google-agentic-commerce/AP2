@@ -123,6 +123,22 @@ generally follow this pattern:
 
 1. Navigate to the Shopping Agent URL and begin engaging.
 
+## JSON Schema Support
+
+AP2 provides language-agnostic JSON Schema definitions for all mandate types (Intent, Cart, and Payment mandates). These schemas enable:
+
+- Validation of mandate objects in any programming language
+- Type generation for non-Python implementations
+- Verifiable Credential creation with proper schema references
+- IDE autocomplete and validation support
+
+**Available schemas:**
+- [`schemas/intent-mandate.schema.json`](schemas/intent-mandate.schema.json)
+- [`schemas/cart-mandate.schema.json`](schemas/cart-mandate.schema.json)
+- [`schemas/payment-mandate.schema.json`](schemas/payment-mandate.schema.json)
+
+See the [schemas README](schemas/README.md) for usage examples in Python, JavaScript, Go, and other languages.
+
 ### Installing the AP2 Types Package
 
 The protocol's core objects are defined in the [`src/ap2/types`](src/ap2/types)

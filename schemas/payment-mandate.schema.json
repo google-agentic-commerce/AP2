@@ -1,0 +1,396 @@
+{
+  "$defs": {
+    "ContactAddress": {
+      "description": "The ContactAddress interface represents a physical address.\n\nSpecification:\nhttps://www.w3.org/TR/contact-picker/#contact-address",
+      "properties": {
+        "city": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "City"
+        },
+        "country": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Country"
+        },
+        "dependent_locality": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Dependent Locality"
+        },
+        "organization": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Organization"
+        },
+        "phone_number": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Phone Number"
+        },
+        "postal_code": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Postal Code"
+        },
+        "recipient": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Recipient"
+        },
+        "region": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Region"
+        },
+        "sorting_code": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sorting Code"
+        },
+        "address_line": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Address Line"
+        }
+      },
+      "title": "ContactAddress",
+      "type": "object"
+    },
+    "PaymentCurrencyAmount": {
+      "description": "A PaymentCurrencyAmount is used to supply monetary amounts.\n\nSpecification:\nhttps://www.w3.org/TR/payment-request/#dom-paymentcurrencyamount",
+      "properties": {
+        "currency": {
+          "description": "The three-letter ISO 4217 currency code.",
+          "title": "Currency",
+          "type": "string"
+        },
+        "value": {
+          "description": "The monetary value.",
+          "title": "Value",
+          "type": "number"
+        }
+      },
+      "required": [
+        "currency",
+        "value"
+      ],
+      "title": "PaymentCurrencyAmount",
+      "type": "object"
+    },
+    "PaymentItem": {
+      "description": "An item for purchase and the value asked for it.\n\nSpecification:\nhttps://www.w3.org/TR/payment-request/#dom-paymentitem",
+      "properties": {
+        "label": {
+          "description": "A human-readable description of the item.",
+          "title": "Label",
+          "type": "string"
+        },
+        "amount": {
+          "$ref": "#/$defs/PaymentCurrencyAmount",
+          "description": "The monetary amount of the item."
+        },
+        "pending": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "If true, indicates the amount is not final.",
+          "title": "Pending"
+        },
+        "refund_period": {
+          "default": 30,
+          "description": "The refund duration for this item, in days.",
+          "title": "Refund Period",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "label",
+        "amount"
+      ],
+      "title": "PaymentItem",
+      "type": "object"
+    },
+    "PaymentMandateContents": {
+      "description": "The data contents of a PaymentMandate.",
+      "properties": {
+        "payment_mandate_id": {
+          "description": "A unique identifier for this payment mandate.",
+          "title": "Payment Mandate Id",
+          "type": "string"
+        },
+        "payment_details_id": {
+          "description": "A unique identifier for the payment request.",
+          "title": "Payment Details Id",
+          "type": "string"
+        },
+        "payment_details_total": {
+          "$ref": "#/$defs/PaymentItem",
+          "description": "The total payment amount."
+        },
+        "payment_response": {
+          "$ref": "#/$defs/PaymentResponse",
+          "description": "The payment response containing details of the payment method chosen by the user."
+        },
+        "merchant_agent": {
+          "description": "Identifier for the merchant.",
+          "title": "Merchant Agent",
+          "type": "string"
+        },
+        "timestamp": {
+          "description": "The date and time the mandate was created, in ISO 8601 format.",
+          "title": "Timestamp",
+          "type": "string"
+        }
+      },
+      "required": [
+        "payment_mandate_id",
+        "payment_details_id",
+        "payment_details_total",
+        "payment_response",
+        "merchant_agent"
+      ],
+      "title": "PaymentMandateContents",
+      "type": "object"
+    },
+    "PaymentResponse": {
+      "description": "Indicates a user has chosen a payment method & approved a payment request.\n\nSpecification:\nhttps://www.w3.org/TR/payment-request/#paymentresponse-interface",
+      "properties": {
+        "request_id": {
+          "description": "The unique ID from the original PaymentRequest.",
+          "title": "Request Id",
+          "type": "string"
+        },
+        "method_name": {
+          "description": "The payment method chosen by the user.",
+          "title": "Method Name",
+          "type": "string"
+        },
+        "details": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "A dictionary generated by a payment method that a merchant can useto process a transaction. The contents will depend upon the paymentmethod.",
+          "title": "Details"
+        },
+        "shipping_address": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ContactAddress"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "shipping_option": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PaymentShippingOption"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "payer_name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Payer Name"
+        },
+        "payer_email": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Payer Email"
+        },
+        "payer_phone": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Payer Phone"
+        }
+      },
+      "required": [
+        "request_id",
+        "method_name"
+      ],
+      "title": "PaymentResponse",
+      "type": "object"
+    },
+    "PaymentShippingOption": {
+      "description": "Describes a shipping option.\n\nSpecification:\nhttps://www.w3.org/TR/payment-request/#dom-paymentshippingoption",
+      "properties": {
+        "id": {
+          "description": "A unique identifier for the shipping option.",
+          "title": "Id",
+          "type": "string"
+        },
+        "label": {
+          "description": "A human-readable description of the shipping option.",
+          "title": "Label",
+          "type": "string"
+        },
+        "amount": {
+          "$ref": "#/$defs/PaymentCurrencyAmount",
+          "description": "The cost of this shipping option."
+        },
+        "selected": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": false,
+          "description": "If true, indicates this as the default option.",
+          "title": "Selected"
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "amount"
+      ],
+      "title": "PaymentShippingOption",
+      "type": "object"
+    }
+  },
+  "description": "Contains the user's instructions & authorization for payment.\n\nWhile the Cart and Intent mandates are required by the merchant to fulfill the\norder, separately the protocol provides additional visibility into the agentic\ntransaction to the payments ecosystem. For this purpose, the PaymentMandate\n(bound to Cart/Intent mandate but containing separate information) may be\nshared with the network/issuer along with the standard transaction\nauthorization messages. The goal of the PaymentMandate is to help the\nnetwork/issuer build trust into the agentic transaction.",
+  "properties": {
+    "payment_mandate_contents": {
+      "$ref": "#/$defs/PaymentMandateContents",
+      "description": "The data contents of the payment mandate."
+    },
+    "user_authorization": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "\n          This is a base64_url-encoded verifiable presentation of a verifiable\n          credential signing over the cart_mandate and payment_mandate_hashes.\n          For example an sd-jwt-vc would contain:\n\n          - An issuer-signed jwt authorizing a 'cnf' claim\n          - A key-binding jwt with the claims\n            \"aud\": ...\n            \"nonce\": ...\n            \"sd_hash\": hash of the issuer-signed jwt\n            \"transaction_data\": an array containing the secure hashes of \n              CartMandate and PaymentMandateContents.\n\n          ",
+      "example": "eyJhbGciOiJFUzI1NksiLCJraWQiOiJkaWQ6ZXhhbXBsZ...",
+      "title": "User Authorization"
+    }
+  },
+  "required": [
+    "payment_mandate_contents"
+  ],
+  "title": "PaymentMandate",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/google-agentic-commerce/AP2/main/schemas/payment-mandate.schema.json"
+}

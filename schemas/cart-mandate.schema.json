@@ -1,0 +1,563 @@
+{
+  "$defs": {
+    "CartContents": {
+      "description": "The detailed contents of a cart.\n\nThis object is signed by the merchant to create a CartMandate.",
+      "properties": {
+        "id": {
+          "description": "A unique identifier for this cart.",
+          "title": "Id",
+          "type": "string"
+        },
+        "user_cart_confirmation_required": {
+          "description": "If true, the merchant requires the user to confirm the cart before the purchase can be completed.",
+          "title": "User Cart Confirmation Required",
+          "type": "boolean"
+        },
+        "payment_request": {
+          "$ref": "#/$defs/PaymentRequest",
+          "description": "The W3C PaymentRequest object to initiate payment. This contains the items being purchased, prices, and the set of payment methods accepted by the merchant for this cart."
+        },
+        "cart_expiry": {
+          "description": "When this cart expires, in ISO 8601 format.",
+          "title": "Cart Expiry",
+          "type": "string"
+        },
+        "merchant_name": {
+          "description": "The name of the merchant.",
+          "title": "Merchant Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "user_cart_confirmation_required",
+        "payment_request",
+        "cart_expiry",
+        "merchant_name"
+      ],
+      "title": "CartContents",
+      "type": "object"
+    },
+    "ContactAddress": {
+      "description": "The ContactAddress interface represents a physical address.\n\nSpecification:\nhttps://www.w3.org/TR/contact-picker/#contact-address",
+      "properties": {
+        "city": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "City"
+        },
+        "country": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Country"
+        },
+        "dependent_locality": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Dependent Locality"
+        },
+        "organization": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Organization"
+        },
+        "phone_number": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Phone Number"
+        },
+        "postal_code": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Postal Code"
+        },
+        "recipient": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Recipient"
+        },
+        "region": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Region"
+        },
+        "sorting_code": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sorting Code"
+        },
+        "address_line": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "string"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Address Line"
+        }
+      },
+      "title": "ContactAddress",
+      "type": "object"
+    },
+    "PaymentCurrencyAmount": {
+      "description": "A PaymentCurrencyAmount is used to supply monetary amounts.\n\nSpecification:\nhttps://www.w3.org/TR/payment-request/#dom-paymentcurrencyamount",
+      "properties": {
+        "currency": {
+          "description": "The three-letter ISO 4217 currency code.",
+          "title": "Currency",
+          "type": "string"
+        },
+        "value": {
+          "description": "The monetary value.",
+          "title": "Value",
+          "type": "number"
+        }
+      },
+      "required": [
+        "currency",
+        "value"
+      ],
+      "title": "PaymentCurrencyAmount",
+      "type": "object"
+    },
+    "PaymentDetailsInit": {
+      "description": "Contains the details of the payment being requested.\n\nSpecification:\nhttps://www.w3.org/TR/payment-request/#dom-paymentdetailsinit",
+      "properties": {
+        "id": {
+          "description": "A unique identifier for the payment request.",
+          "title": "Id",
+          "type": "string"
+        },
+        "display_items": {
+          "description": "A list of payment items to be displayed to the user.",
+          "items": {
+            "$ref": "#/$defs/PaymentItem"
+          },
+          "title": "Display Items",
+          "type": "array"
+        },
+        "shipping_options": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/PaymentShippingOption"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "A list of available shipping options.",
+          "title": "Shipping Options"
+        },
+        "modifiers": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/PaymentDetailsModifier"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "A list of price modifiers for particular payment methods.",
+          "title": "Modifiers"
+        },
+        "total": {
+          "$ref": "#/$defs/PaymentItem",
+          "description": "The total payment amount."
+        }
+      },
+      "required": [
+        "id",
+        "display_items",
+        "total"
+      ],
+      "title": "PaymentDetailsInit",
+      "type": "object"
+    },
+    "PaymentDetailsModifier": {
+      "description": "Provides details that modify the payment details based on a payment method.\n\nSpecification:\nhttps://www.w3.org/TR/payment-request/#dom-paymentdetailsmodifier",
+      "properties": {
+        "supported_methods": {
+          "description": "The payment method ID that this modifier applies to.",
+          "title": "Supported Methods",
+          "type": "string"
+        },
+        "total": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PaymentItem"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "A PaymentItem value that overrides the original item total."
+        },
+        "additional_display_items": {
+          "anyOf": [
+            {
+              "items": {
+                "$ref": "#/$defs/PaymentItem"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Additional PaymentItems applicable for this payment method.",
+          "title": "Additional Display Items"
+        },
+        "data": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Payment method specific data for the modifier.",
+          "title": "Data"
+        }
+      },
+      "required": [
+        "supported_methods"
+      ],
+      "title": "PaymentDetailsModifier",
+      "type": "object"
+    },
+    "PaymentItem": {
+      "description": "An item for purchase and the value asked for it.\n\nSpecification:\nhttps://www.w3.org/TR/payment-request/#dom-paymentitem",
+      "properties": {
+        "label": {
+          "description": "A human-readable description of the item.",
+          "title": "Label",
+          "type": "string"
+        },
+        "amount": {
+          "$ref": "#/$defs/PaymentCurrencyAmount",
+          "description": "The monetary amount of the item."
+        },
+        "pending": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "If true, indicates the amount is not final.",
+          "title": "Pending"
+        },
+        "refund_period": {
+          "default": 30,
+          "description": "The refund duration for this item, in days.",
+          "title": "Refund Period",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "label",
+        "amount"
+      ],
+      "title": "PaymentItem",
+      "type": "object"
+    },
+    "PaymentMethodData": {
+      "description": "Indicates a payment method and associated data specific to the method.\n\nFor example:\n- A card may have a processing fee if it is used.\n- A loyalty card may offer a discount on the purchase.\n\nSpecification:\nhttps://www.w3.org/TR/payment-request/#dom-paymentmethoddata",
+      "properties": {
+        "supported_methods": {
+          "description": "A string identifying the payment method.",
+          "title": "Supported Methods",
+          "type": "string"
+        },
+        "data": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Payment method specific details.",
+          "title": "Data"
+        }
+      },
+      "required": [
+        "supported_methods"
+      ],
+      "title": "PaymentMethodData",
+      "type": "object"
+    },
+    "PaymentOptions": {
+      "description": "Information about the eligible payment options for the payment request.\n\nSpecification:\nhttps://www.w3.org/TR/payment-request/#dom-paymentoptions",
+      "properties": {
+        "request_payer_name": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": false,
+          "description": "Indicates if the payer's name should be collected.",
+          "title": "Request Payer Name"
+        },
+        "request_payer_email": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": false,
+          "description": "Indicates if the payer's email should be collected.",
+          "title": "Request Payer Email"
+        },
+        "request_payer_phone": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": false,
+          "description": "Indicates if the payer's phone number should be collected.",
+          "title": "Request Payer Phone"
+        },
+        "request_shipping": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": true,
+          "description": "Indicates if the payer's shipping address should be collected.",
+          "title": "Request Shipping"
+        },
+        "shipping_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Can be `shipping`, `delivery`, or `pickup`.",
+          "title": "Shipping Type"
+        }
+      },
+      "title": "PaymentOptions",
+      "type": "object"
+    },
+    "PaymentRequest": {
+      "description": "A request for payment.\n\nSpecification:\nhttps://www.w3.org/TR/payment-request/#paymentrequest-interface",
+      "properties": {
+        "method_data": {
+          "description": "A list of supported payment methods.",
+          "items": {
+            "$ref": "#/$defs/PaymentMethodData"
+          },
+          "title": "Method Data",
+          "type": "array"
+        },
+        "details": {
+          "$ref": "#/$defs/PaymentDetailsInit",
+          "description": "The financial details of the transaction."
+        },
+        "options": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/PaymentOptions"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "shipping_address": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ContactAddress"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The user's provided shipping address."
+        }
+      },
+      "required": [
+        "method_data",
+        "details"
+      ],
+      "title": "PaymentRequest",
+      "type": "object"
+    },
+    "PaymentShippingOption": {
+      "description": "Describes a shipping option.\n\nSpecification:\nhttps://www.w3.org/TR/payment-request/#dom-paymentshippingoption",
+      "properties": {
+        "id": {
+          "description": "A unique identifier for the shipping option.",
+          "title": "Id",
+          "type": "string"
+        },
+        "label": {
+          "description": "A human-readable description of the shipping option.",
+          "title": "Label",
+          "type": "string"
+        },
+        "amount": {
+          "$ref": "#/$defs/PaymentCurrencyAmount",
+          "description": "The cost of this shipping option."
+        },
+        "selected": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": false,
+          "description": "If true, indicates this as the default option.",
+          "title": "Selected"
+        }
+      },
+      "required": [
+        "id",
+        "label",
+        "amount"
+      ],
+      "title": "PaymentShippingOption",
+      "type": "object"
+    }
+  },
+  "description": "A cart whose contents have been digitally signed by the merchant.\n\nThis serves as a guarantee of the items and price for a limited time.",
+  "properties": {
+    "contents": {
+      "$ref": "#/$defs/CartContents",
+      "description": "The contents of the cart."
+    },
+    "merchant_authorization": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": " A base64url-encoded JSON Web Token (JWT) that digitally\n        signs the cart contents, guaranteeing its authenticity and integrity:\n        1. Header includes the signing algorithm and key ID.\n        2. Payload includes:\n          - iss, sub, aud: Identifiers for the merchant (issuer)\n            and the intended recipient (audience), like a payment processor.\n          - iat: iat, exp: Timestamps for the token's creation and its\n            short-lived expiration (e.g., 5-15 minutes) to enhance security.\n          - jti: Unique identifier for the JWT to prevent replay attacks.\n          - cart_hash: A secure hash of the CartMandate, ensuring\n             integrity. The hash is computed over the canonical JSON\n             representation of the CartContents object.\n        3. Signature: A digital signature created with the merchant's private\n          key. It allows anyone with the public key to verify the token's\n          authenticity and confirm that the payload has not been tampered with.\n        The entire JWT is base64url encoded to ensure safe transmission.\n        ",
+      "example": "eyJhbGciOiJSUzI1NiIsImtpZCI6IjIwMjQwOTA...",
+      "title": "Merchant Authorization"
+    }
+  },
+  "required": [
+    "contents"
+  ],
+  "title": "CartMandate",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/google-agentic-commerce/AP2/main/schemas/cart-mandate.schema.json"
+}

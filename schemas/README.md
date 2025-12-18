@@ -8,27 +8,27 @@ validating AP2 mandate objects.
 
 ### Intent Mandate
 
--   **File**: [`intent-mandate.schema.json`](./intent-mandate.schema.json)
--   **Schema ID**:
-    `https://raw.githubusercontent.com/google-agentic-commerce/AP2/main/schemas/intent-mandate.schema.json`
--   **Description**: Represents the user's purchase intent, including
-    constraints on merchants, SKUs, and refundability.
+- **File**: [`intent-mandate.schema.json`](./intent-mandate.schema.json)
+- **Schema ID**:
+  `https://raw.githubusercontent.com/google-agentic-commerce/AP2/main/schemas/intent-mandate.schema.json`
+- **Description**: Represents the user's purchase intent, including
+  constraints on merchants, SKUs, and refundability.
 
 ### Cart Mandate
 
--   **File**: [`cart-mandate.schema.json`](./cart-mandate.schema.json)
--   **Schema ID**:
-    `https://raw.githubusercontent.com/google-agentic-commerce/AP2/main/schemas/cart-mandate.schema.json`
--   **Description**: A cart whose contents have been digitally signed by the
-    merchant, serving as a guarantee of items and price for a limited time.
+- **File**: [`cart-mandate.schema.json`](./cart-mandate.schema.json)
+- **Schema ID**:
+  `https://raw.githubusercontent.com/google-agentic-commerce/AP2/main/schemas/cart-mandate.schema.json`
+- **Description**: A cart whose contents have been digitally signed by the
+  merchant, serving as a guarantee of items and price for a limited time.
 
 ### Payment Mandate
 
--   **File**: [`payment-mandate.schema.json`](./payment-mandate.schema.json)
--   **Schema ID**:
-    `https://raw.githubusercontent.com/google-agentic-commerce/AP2/main/schemas/payment-mandate.schema.json`
--   **Description**: Contains the user's instructions and authorization for
-    payment, shared with the payments ecosystem.
+- **File**: [`payment-mandate.schema.json`](./payment-mandate.schema.json)
+- **Schema ID**:
+  `https://raw.githubusercontent.com/google-agentic-commerce/AP2/main/schemas/payment-mandate.schema.json`
+- **Description**: Contains the user's instructions and authorization for
+  payment, shared with the payments ecosystem.
 
 ## Usage
 
@@ -179,9 +179,9 @@ tags.
 
 ## Related Documentation
 
--   [AP2 Specification](../docs/specification.md) - Full protocol specification
--   [A2A Extension](../docs/a2a-extension.md) - Details on using AP2 with A2A
--   [Python Type Definitions](../src/ap2/types/) - Source Pydantic models
+- [AP2 Specification](../docs/specification.md) - Full protocol specification
+- [A2A Extension](../docs/a2a-extension.md) - Details on using AP2 with A2A
+- [Python Type Definitions](../src/ap2/types/) - Source Pydantic models
 
 ## Contributing
 

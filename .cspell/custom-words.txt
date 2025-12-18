@@ -163,6 +163,7 @@ stablecoins
 stdr
 stretchr
 superfences
+Fatalf
 Truelayer
 Trulioo
 udpa

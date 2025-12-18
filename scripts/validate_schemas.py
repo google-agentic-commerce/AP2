@@ -21,11 +21,12 @@ from pathlib import Path
 
 try:
     import jsonschema
-except ImportError:
-    print("Installing jsonschema...")
-    import subprocess
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "jsonschema", "--break-system-packages", "--user"])
-    import jsonschema
+except ImportError as e:
+    print(f"Error importing jsonschema: {e}")
+    print("\nPlease install jsonschema:")
+    print("  pip install jsonschema --break-system-packages --user")
+    print("  or: uv pip install jsonschema")
+    sys.exit(1)
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
@@ -36,11 +37,11 @@ from ap2.types.mandate import IntentMandate, CartMandate, PaymentMandate
 def test_schema(schema_path: Path, example_instance: dict, name: str):
     """Test that a schema validates an example instance."""
     print(f"\nTesting {name}...")
-    
+
     # Load schema
     with open(schema_path) as f:
         schema = json.load(f)
-    
+
     # Validate the instance
     try:
         jsonschema.validate(instance=example_instance, schema=schema)
@@ -57,11 +58,11 @@ def test_schema(schema_path: Path, example_instance: dict, name: str):
 
 def main():
     schemas_dir = Path(__file__).parent.parent / "schemas"
-    
+
     print("=" * 60)
     print("AP2 JSON Schema Validation Test")
     print("=" * 60)
-    
+
     # Test IntentMandate
     intent_example = {
         "natural_language_description": "High top, old school, red basketball shoes",
@@ -70,13 +71,13 @@ def main():
         "merchants": ["example-merchant.com"],
         "requires_refundability": True
     }
-    
+
     intent_result = test_schema(
         schemas_dir / "intent-mandate.schema.json",
         intent_example,
         "IntentMandate"
     )
-    
+
     # Test CartMandate
     cart_example = {
         "contents": {
@@ -106,13 +107,13 @@ def main():
         },
         "merchant_authorization": None
     }
-    
+
     cart_result = test_schema(
         schemas_dir / "cart-mandate.schema.json",
         cart_example,
         "CartMandate"
     )
-    
+
     # Test PaymentMandate
     payment_example = {
         "payment_mandate_contents": {
@@ -135,13 +136,13 @@ def main():
         },
         "user_authorization": None
     }
-    
+
     payment_result = test_schema(
         schemas_dir / "payment-mandate.schema.json",
         payment_example,
         "PaymentMandate"
     )
-    
+
     print("\n" + "=" * 60)
     print("Summary:")
     print("=" * 60)
@@ -149,7 +150,7 @@ def main():
     print(f"  CartMandate:    {'✓ PASS' if cart_result else '✗ FAIL'}")
     print(f"  PaymentMandate: {'✓ PASS' if payment_result else '✗ FAIL'}")
     print("=" * 60)
-    
+
     if all([intent_result, cart_result, payment_result]):
         print("\n✓ All schemas validated successfully!")
         return 0

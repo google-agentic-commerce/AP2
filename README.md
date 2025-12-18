@@ -133,6 +133,7 @@ AP2 provides language-agnostic JSON Schema definitions for all mandate types (In
 - IDE autocomplete and validation support
 
 **Available schemas:**
+
 - [`schemas/intent-mandate.schema.json`](schemas/intent-mandate.schema.json)
 - [`schemas/cart-mandate.schema.json`](schemas/cart-mandate.schema.json)
 - [`schemas/payment-mandate.schema.json`](schemas/payment-mandate.schema.json)

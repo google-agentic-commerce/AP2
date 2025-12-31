@@ -24,6 +24,7 @@ nav:
       - AP2 and x402: topics/ap2-and-x402.md
       - Privacy and Security: topics/privacy-and-security.md
       - Life of a Transaction: topics/life-of-a-transaction.md
+      - Handling Failure States: topics/failure-handling.md
   - AP2 specification: specification.md
   - A2A extension for AP2: a2a-extension.md
   - Glossary: glossary.md
@@ -143,6 +144,7 @@ plugins:
           - topics/ap2-and-x402.md
           - topics/privacy-and-security.md
           - topics/life-of-a-transaction.md
+          - topics/failure-handling.md
         "Specification":
           - specification.md
           - a2a-extension.md

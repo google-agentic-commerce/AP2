@@ -11,3 +11,25 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+"""AP2 type definitions."""
+
+from ap2.types.errors import (
+    FAILURE_RESPONSE_DATA_KEY,
+    FailureCategory,
+    FailureResponse,
+    ItemRejectionReason,
+    PaymentDeclineCode,
+    RecoveryAction,
+    RejectedItem,
+)
+
+__all__ = [
+    "FAILURE_RESPONSE_DATA_KEY",
+    "FailureCategory",
+    "FailureResponse",
+    "ItemRejectionReason",
+    "PaymentDeclineCode",
+    "RecoveryAction",
+    "RejectedItem",
+]

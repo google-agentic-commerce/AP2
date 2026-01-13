@@ -1,4 +1,4 @@
-#!/bin/bash
+https://github.com/Omar6052/Abul-hasnat-abdullah-omar-/actions/workflows/codeql.yml/badge.svg?branch=Omar6052-patch-3&event=pull_request_target#!/bin/bash
 
 # Exit immediately if a command exits with a non-zero status.
 set -e

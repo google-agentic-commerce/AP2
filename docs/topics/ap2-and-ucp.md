@@ -38,6 +38,6 @@ signing two distinct cryptographic objects during the checkout flow:
     for this specific transaction.
 
 Both mandates are provided to the merchant via UCP’s
-[/complete_checkout](https://ucp.dev/specification/checkout/#complete-checkout)
+[`/complete_checkout`](https://ucp.dev/specification/checkout/#complete-checkout)
 API, with the expectation that the **PaymentMandate** is passed along by the
 merchant to their PSP.

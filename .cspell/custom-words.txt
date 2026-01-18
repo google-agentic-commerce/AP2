@@ -7,7 +7,6 @@ agentic
 Agentic
 agenticpayments
 Algorand
-anotherterm
 androidx
 Applebot
 appname
@@ -19,7 +18,6 @@ BVNK
 celerybeat
 classpath
 CLASSPATH
-customterm
 CMSPI
 cmwallet
 cncf
@@ -151,8 +149,8 @@ RPCURL
 Rulebook
 screenreaders
 setlocal
-shellcheck
 sharedpref
+shellcheck
 shfmt
 Shopcider
 Shopee

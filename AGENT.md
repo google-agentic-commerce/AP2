@@ -26,7 +26,7 @@ ln -s AGENT.md <TOOL_NAME>.md
 **AP2 (Agent Payments Protocol)** is an open protocol enabling secure, verifiable payments between AI agents. This repository contains reference implementations, samples, and demos.
 
 | Field | Value |
-|-------|-------|
+| --- | --- |
 | License | Apache 2.0 |
 | Languages | Python (primary), Go, Kotlin (Android) |
 | Framework | Google Agent Development Kit (ADK) |
@@ -67,7 +67,7 @@ AP2/
 The protocol uses three types of **mandates** (signed authorization documents):
 
 | Mandate | Signer | Purpose |
-|---------|--------|---------|
+| --- | --- | --- |
 | `IntentMandate` | User | Expresses user's purchase intent and constraints |
 | `CartMandate` | Merchant | Guarantees cart contents and price (time-limited) |
 | `PaymentMandate` | User | Authorizes specific payment for the cart |
@@ -75,7 +75,7 @@ The protocol uses three types of **mandates** (signed authorization documents):
 ### Agent Roles
 
 | Agent | Port | Responsibility |
-|-------|------|----------------|
+| --- | --- | --- |
 | Shopping Agent | 8000 | Orchestrates user shopping flow, delegates to sub-agents |
 | Merchant Agent | 8001 | Provides product catalog, creates CartMandates |
 | Credentials Provider | 8002 | Manages user payment methods (wallet) |
@@ -104,7 +104,7 @@ The protocol uses three types of **mandates** (signed authorization documents):
 **CRITICAL**: All Python code MUST follow Google Python Style Guide.
 
 | Rule | Value |
-|------|-------|
+| --- | --- |
 | Line length | **80 characters** (hard limit) |
 | Indentation | **4 spaces** |
 | Target Python | **3.12+** |
@@ -167,7 +167,7 @@ def process_payment(
 ### Shell Scripts (.editorconfig)
 
 | Rule | Value |
-|------|-------|
+| --- | --- |
 | Indentation | **2 spaces** |
 | Shebang | `#!/bin/bash` |
 | Error handling | `set -e` at script start |
@@ -175,7 +175,7 @@ def process_payment(
 ### Markdown (.prettierrc, .markdownlint.json)
 
 | Rule | Value |
-|------|-------|
+| --- | --- |
 | Line length | **80 characters** (prose wrap) |
 | Indentation | **4 spaces** for lists |
 | End of line | **LF** (Unix style) |
@@ -205,7 +205,7 @@ chore: update dependencies
 ### 2. Linter Checks (Super-Linter)
 
 | Language | Linter | Config |
-|----------|--------|--------|
+| --- | --- | --- |
 | Python | ruff | `.ruff.toml` |
 | Markdown | markdownlint | `.github/linters/.markdownlint.json` |
 | Shell | shellcheck | Enabled with SC1091, SC2086 ignored |
@@ -345,47 +345,46 @@ Fixes #<issue_number>
 ### Adding a New Agent
 
 1. Create directory: `samples/python/src/roles/your_agent/`
-2. Create `__init__.py`, `agent.py`, `tools.py`
-3. Implement agent using `RetryingLlmAgent`:
+1. Create `__init__.py`, `agent.py`, `tools.py`
+1. Implement agent using `RetryingLlmAgent`:
 
-```python
-from common.retrying_llm_agent import RetryingLlmAgent
+    ```python
+    from common.retrying_llm_agent import RetryingLlmAgent
 
-agent = RetryingLlmAgent(
-    max_retries=5,
-    model='gemini-2.5-flash',
-    name='your_agent',
-    instruction="""Your agent instructions here.""",
-    tools=[your_tools],
-    sub_agents=[],
-)
-```
+    agent = RetryingLlmAgent(
+        max_retries=5,
+        model='gemini-2.5-flash',
+        name='your_agent',
+        instruction="""Your agent instructions here.""",
+        tools=[your_tools],
+        sub_agents=[],
+    )
+    ```
 
-4. Register in scenario's `run.sh`
+1. Register in scenario's `run.sh`
 
 ### Modifying Mandate Types
 
 1. Edit `src/ap2/types/mandate.py`
-2. Use Pydantic `Field()` with descriptions:
+1. Use Pydantic `Field()` with descriptions:
 
-```python
-new_field: str = Field(
-    ...,
-    description='Clear description of the field purpose.',
-)
-```
+    ```python
+    new_field: str = Field(
+        ...,
+        description='Clear description of the field purpose.',
+    )
+    ```
 
-3. Update dependent agents
-4. Run linters and tests
+1. Update dependent agents
+1. Run linters and tests
 
 ### Adding Custom Words for Spellcheck
 
 Edit `.cspell/custom-words.txt` (alphabetical order):
 
 ```text
-# Add your custom terms here (one per line, alphabetical order)
-customterm
-anotherterm
+newterm
+yourterm
 ```
 
 ---
@@ -393,7 +392,7 @@ anotherterm
 ## Important Files
 
 | File | Purpose |
-|------|---------|
+| --- | --- |
 | `CONTRIBUTING.md` | Contribution requirements |
 | `CODE_OF_CONDUCT.md` | Community guidelines |
 | `.ruff.toml` | Python linting configuration |
@@ -411,14 +410,16 @@ anotherterm
 
 ### Core Package (`ap2`)
 
-(See `pyproject.toml`)
+See `pyproject.toml`:
+
 ```toml
 dependencies = ["pydantic"]
 ```
 
 ### Samples Package (`ap2-samples`)
 
-(See `samples/python/pyproject.toml`)
+See `samples/python/pyproject.toml`:
+
 ```toml
 dependencies = [
     "a2a-sdk",         # Agent-to-Agent SDK
@@ -447,6 +448,7 @@ Before creating a new issue or starting work on a feature/fix, it is critical to
 The upstream repository is `google-agentic-commerce/AP2`. Use the GitHub CLI (`gh`) to query it at runtime.
 
 **1. List Open Issues:**
+
 ```bash
 # List all open issues
 gh issue list --repo google-agentic-commerce/AP2 --state open
@@ -458,14 +460,18 @@ gh issue list --repo google-agentic-commerce/AP2 --label "bug"
 ```
 
 **2. Search by Keyword:**
+
 Before reporting a new bug or feature, search for keywords to see if a similar issue exists.
+
 ```bash
 # Search for issues related to 'mandate'
 gh issue list --repo google-agentic-commerce/AP2 --search "mandate"
 ```
 
 **3. View an Issue:**
+
 To get the full context of a specific issue:
+
 ```bash
 gh issue view <issue-number> --repo google-agentic-commerce/AP2 --comments
 ```
@@ -475,7 +481,7 @@ gh issue view <issue-number> --repo google-agentic-commerce/AP2 --comments
 Look for these labels to find issues suitable for community contribution:
 
 | Label | Description | Contributor Fit |
-|-------|-------------|-----------------|
+| --- | --- | --- |
 | `help wanted` | Community contribution welcome | Good first issues |
 | `good first issue` | Newcomer-friendly issue | Ideal for getting started |
 | `bug` | Something isn't working | Fix existing functionality |
@@ -501,7 +507,7 @@ repository. Keep it current to ensure AI agents can work effectively.
 ### When to Update
 
 | Change Type | Action Required |
-|-------------|-----------------|
+| --- | --- |
 | Repository structure changes | Update "Repository Structure" section |
 | New agent roles added | Update "Agent Roles" and "Common Tasks" |
 | Code style rules change | Update "Code Style Requirements" section |

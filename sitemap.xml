@@ -2,54 +2,58 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://ap2-protocol.org/</loc>
-         <lastmod>2026-01-13</lastmod>
+         <lastmod>2026-01-20</lastmod>
     </url>
     <url>
          <loc>https://ap2-protocol.org/a2a-extension/</loc>
-         <lastmod>2026-01-13</lastmod>
+         <lastmod>2026-01-20</lastmod>
     </url>
     <url>
          <loc>https://ap2-protocol.org/faq/</loc>
-         <lastmod>2026-01-13</lastmod>
+         <lastmod>2026-01-20</lastmod>
     </url>
     <url>
          <loc>https://ap2-protocol.org/glossary/</loc>
-         <lastmod>2026-01-13</lastmod>
+         <lastmod>2026-01-20</lastmod>
     </url>
     <url>
          <loc>https://ap2-protocol.org/partners/</loc>
-         <lastmod>2026-01-13</lastmod>
+         <lastmod>2026-01-20</lastmod>
     </url>
     <url>
          <loc>https://ap2-protocol.org/roadmap/</loc>
-         <lastmod>2026-01-13</lastmod>
+         <lastmod>2026-01-20</lastmod>
     </url>
     <url>
          <loc>https://ap2-protocol.org/specification/</loc>
-         <lastmod>2026-01-13</lastmod>
+         <lastmod>2026-01-20</lastmod>
     </url>
     <url>
          <loc>https://ap2-protocol.org/topics/ap2-a2a-and-mcp/</loc>
-         <lastmod>2026-01-13</lastmod>
+         <lastmod>2026-01-20</lastmod>
+    </url>
+    <url>
+         <loc>https://ap2-protocol.org/topics/ap2-and-ucp/</loc>
+         <lastmod>2026-01-20</lastmod>
     </url>
     <url>
          <loc>https://ap2-protocol.org/topics/ap2-and-x402/</loc>
-         <lastmod>2026-01-13</lastmod>
+         <lastmod>2026-01-20</lastmod>
     </url>
     <url>
          <loc>https://ap2-protocol.org/topics/core-concepts/</loc>
-         <lastmod>2026-01-13</lastmod>
+         <lastmod>2026-01-20</lastmod>
     </url>
     <url>
          <loc>https://ap2-protocol.org/topics/life-of-a-transaction/</loc>
-         <lastmod>2026-01-13</lastmod>
+         <lastmod>2026-01-20</lastmod>
     </url>
     <url>
          <loc>https://ap2-protocol.org/topics/privacy-and-security/</loc>
-         <lastmod>2026-01-13</lastmod>
+         <lastmod>2026-01-20</lastmod>
     </url>
     <url>
          <loc>https://ap2-protocol.org/topics/what-is-ap2/</loc>
-         <lastmod>2026-01-13</lastmod>
+         <lastmod>2026-01-20</lastmod>
     </url>
 </urlset>

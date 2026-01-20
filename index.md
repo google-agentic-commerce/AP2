@@ -24,6 +24,7 @@ Build agents with *(or any framework)*, equip with *(or any tool)*, collaborate 
 
   [Overview](topics/what-is-ap2/)\
   [Core Concepts](topics/core-concepts/)\
+  [AP2 and UCP](topics/ap2-and-ucp/)\
   [AP2, A2A and MCP](topics/ap2-a2a-and-mcp/)\
   [AP2 and x402](topics/ap2-and-x402/)\
   [Privacy and Security](topics/privacy-and-security/)

@@ -78,7 +78,7 @@ async def get_payment_credential_token(
   message = (
       A2aMessageBuilder()
       .set_context_id(tool_context.state["shopping_context_id"])
-      .add_text("Get a payment credential token for the user's payment method.")
+      .add_text("Get a payment credential token and method name for the user's payment method.")
       .add_data("payment_method_alias", payment_method_alias)
       .add_data("user_email", user_email)
       .build()
@@ -86,9 +86,11 @@ async def get_payment_credential_token(
   task = await credentials_provider_client.send_a2a_message(message)
   data = artifact_utils.get_first_data_part(task.artifacts)
   token = data.get("token")
+  method_name = data.get("method_name")
   credentials_provider_agent_card = (
       await credentials_provider_client.get_agent_card()
   )
+  tool_context.state["selected_payment_method"] = method_name
 
   tool_context.state["payment_credential_token"] = {
       "value": token,

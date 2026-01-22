@@ -83,6 +83,12 @@ _account_db = {
                 "network": "base",
                 "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bda02913",
             },
+            "upi1": {
+                "type": "UPI_COLLECT",
+                "payer_vpa": "bugsbunny@upi",
+                "psp": "BHIM UPI",
+                "alias": "Bugs's BHIM UPI account (bu*******@upi)",
+            },
         },
     },
     "daffyduck@gmail.com": {

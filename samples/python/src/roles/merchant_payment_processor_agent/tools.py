@@ -41,6 +41,8 @@ from common import message_utils
 from common.a2a_extension_utils import EXTENSION_URI
 from common.a2a_message_builder import A2aMessageBuilder
 from common.payment_remote_a2a_client import PaymentRemoteA2aClient
+from samples.python.src.mock_bank_integration.create import create_mock_bank_transaction
+from samples.python.src.mock_bank_integration.sync import get_payment_status_from_mock_bank
 
 
 async def initiate_payment(
@@ -72,6 +74,87 @@ async def initiate_payment(
   )
 
 
+async def sync_payment(
+    data_parts: list[dict[str, Any]],
+    updater: TaskUpdater,
+    current_task: Task | None,
+    debug_mode: bool = False,
+) -> None:
+  """Syncs the status of a payment.
+
+  For already completed payments, returns success immediately.
+  For non-UPI_COLLECT payments, returns a message indicating sync is not allowed.
+  For pending UPI_COLLECT payments, checks status with the mock bank and completes
+  the payment if the status is SUCCESS or FAILURE.
+
+  Args:
+    data_parts: The data parts containing payment_mandate.
+    updater: The task updater for managing task state.
+    current_task: The current task, if any.
+    debug_mode: Whether the agent is in debug mode.
+  """
+  payment_method = os.environ.get("PAYMENT_METHOD", "CARD")
+  payment_mandate = message_utils.find_data_part(
+      PAYMENT_MANDATE_DATA_KEY, data_parts
+  )
+  if not payment_mandate:
+    error_message = _create_text_parts("Missing payment_mandate.")
+    await updater.failed(
+      message=updater.new_agent_message(parts=error_message)
+    )
+    return
+
+  payment_mandate_obj = PaymentMandate.model_validate(payment_mandate)
+
+  payment_receipt = message_utils.find_data_part(
+      PAYMENT_RECEIPT_DATA_KEY, data_parts
+  )
+  if payment_receipt:
+    success_message = updater.new_agent_message(
+        parts=_create_text_parts("{'status': 'success'}")
+    )
+    await updater.complete(message=success_message)
+    return
+
+  method_name = payment_mandate_obj.payment_mandate_contents.payment_response.method_name
+
+  sync_allowed_payment_methods = ["UPI_COLLECT"]
+
+  if method_name not in sync_allowed_payment_methods:
+    message = updater.new_agent_message(
+        parts=_create_text_parts(
+          "Payment sync is not allowed for non-UPI_COLLECT payment methods.")
+    )
+    await updater.complete(message=message)
+    return
+
+  payment_details_id = payment_mandate_obj.payment_mandate_contents.payment_details_id
+  bank_status = await get_payment_status_from_mock_bank(payment_details_id)
+
+  if bank_status =="SUCCESS":
+    logging.info(
+        "Payment %s has status %s at mock bank, completing payment...",
+        payment_details_id,
+        bank_status
+    )
+    await _complete_payment(payment_mandate_obj, updater, debug_mode, payment_method)
+  elif bank_status == "FAILURE":
+    logging.info(
+        "Payment %s has status %s at mock bank, completing payment...",
+        payment_details_id,
+        bank_status
+    )
+    error_message = _create_text_parts("Authorization Failed.")
+    await updater.failed(message=updater.new_agent_message(parts=error_message))
+  else:
+    text_part = TextPart(
+        text=f"The payment is still pending at the bank with status: `{bank_status}`."
+    )
+    message = updater.new_agent_message(
+        parts=[Part(root=text_part)]
+    )
+    await updater.start_work(message=message)
+
 async def _handle_payment_mandate(
     payment_mandate: PaymentMandate,
     challenge_response: str,
@@ -94,7 +177,7 @@ async def _handle_payment_mandate(
     payment_method: The payment method to use (e.g., 'CARD', 'x402').
   """
   if current_task is None:
-    await _raise_challenge(updater)
+    await _raise_challenge(updater, payment_mandate)
     return
 
   if current_task.status.state == TaskState.input_required:
@@ -110,6 +193,7 @@ async def _handle_payment_mandate(
 
 async def _raise_challenge(
     updater: TaskUpdater,
+    payment_mandate: PaymentMandate,
 ) -> None:
   """Raises a transaction challenge.
 
@@ -119,24 +203,48 @@ async def _raise_challenge(
 
   Args:
     updater: The task updater.
+    payment_mandate: The payment mandate.
   """
-  challenge_data = {
-      "type": "otp",
-      "display_text": (
-          "The payment method issuer sent a verification code to the phone "
-          "number on file, please enter it below. It will be shared with the "
-          "issuer so they can authorize the transaction."
-          "(Demo only hint: the code is 123)"
-      ),
-  }
-  text_part = TextPart(
-      text="Please provide the challenge response to complete the payment."
-  )
-  data_part = DataPart(data={"challenge": challenge_data})
-  message = updater.new_agent_message(
-      parts=[Part(root=text_part), Part(root=data_part)]
-  )
-  await updater.requires_input(message=message)
+  method_name = payment_mandate.payment_mandate_contents.payment_response.method_name
+
+  if method_name == "UPI_COLLECT":
+    await create_mock_bank_transaction(payment_mandate)
+
+    challenge_data = {
+        "type": "mca",
+        "display_text": (
+            "Please check your UPI PSP app to authorize the payment. "
+            "We'll keep syncing in the meanwhile. "
+            "(demo only hint: go to http://localhost:8004 to approve the payment)"
+        ),
+    }
+    text_part = TextPart(
+        text="Keep retrying payment sync every 5 seconds, up to 6 times, until\
+          transaction moves to success or failure."
+    )
+    data_part = DataPart(data={"auth_info": challenge_data})
+    message = updater.new_agent_message(
+        parts=[Part(root=text_part), Part(root=data_part)]
+    )
+    await updater.start_work(message=message)
+  else:
+    challenge_data = {
+        "type": "otp",
+        "display_text": (
+            "The payment method issuer sent a verification code to the phone "
+            "number on file, please enter it below. It will be shared with the "
+            "issuer so they can authorize the transaction."
+            "(Demo only hint: the code is 123)"
+        ),
+    }
+    text_part = TextPart(
+        text="Please provide the challenge response to complete the payment."
+    )
+    data_part = DataPart(data={"challenge": challenge_data})
+    message = updater.new_agent_message(
+        parts=[Part(root=text_part), Part(root=data_part)]
+    )
+    await updater.requires_input(message=message)
 
 
 async def _check_challenge_response_and_complete_payment(

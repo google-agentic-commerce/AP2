@@ -156,6 +156,43 @@ async def initiate_payment_with_otp(
   return task.status
 
 
+async def sync_payment(tool_context: ToolContext, debug_mode: bool = False):
+  """Syncs/polls the status of a payment (primarily for UPI_COLLECT).
+
+  This function is used to check the payment status when the payment is in a
+  'working' state, typically for multi-channel authentication (MCA) flows like
+  UPI_COLLECT where the user authorizes the payment in their bank app.
+
+  Args:
+    tool_context: The ADK supplied tool context.
+    debug_mode: Whether the agent is in debug mode.
+
+  Returns:
+    The status of the payment sync.
+  """
+  payment_mandate = tool_context.state["signed_payment_mandate"]
+  if not payment_mandate:
+    raise RuntimeError("No signed payment mandate found in tool context state.")
+  risk_data = tool_context.state["risk_data"]
+  if not risk_data:
+    raise RuntimeError("No risk data found in tool context state.")
+
+  outgoing_message_builder = (
+      A2aMessageBuilder()
+      .set_context_id(tool_context.state["shopping_context_id"])
+      .set_task_id(tool_context.state["initiate_payment_task_id"])
+      .add_text("Sync payment status")
+      .add_data(PAYMENT_MANDATE_DATA_KEY, payment_mandate)
+      .add_data("shopping_agent_id", "trusted_shopping_agent")
+      .add_data("risk_data", risk_data)
+      .add_data("debug_mode", debug_mode)
+      .build()
+  )
+
+  task = await merchant_agent_client.send_a2a_message(outgoing_message_builder)
+  store_receipt_if_present(task, tool_context)
+  return task.status
+
 def store_receipt_if_present(task, tool_context: ToolContext) -> None:
   """Stores the payment receipt in state."""
   payment_receipts = artifact_utils.find_canonical_objects(
@@ -187,11 +224,15 @@ def create_payment_mandate(
   shipping_address = tool_context.state["shipping_address"]
 
   payment_method = os.environ.get("PAYMENT_METHOD", "CARD")
+  selected_payment_method = tool_context.state.get(
+      "selected_payment_method",
+      payment_method
+    )
   if payment_method == "x402":
     method_name = "https://www.x402.org/"
     details = tool_context.state["payment_credential_token"]
   else:
-    method_name = "CARD"
+    method_name = selected_payment_method
     details = {
         "token": tool_context.state["payment_credential_token"],
     }

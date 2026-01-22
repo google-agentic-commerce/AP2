@@ -78,12 +78,20 @@ root_agent = RetryingLlmAgent(
              a. `sign_mandates_on_user_device`
              b. `send_signed_payment_mandate_to_credentials_provider`
           12. Initiate the payment by calling the `initiate_payment` tool.
-          13. If prompted for an OTP, relay the OTP request to the user.
-              Do not ask the user for anything other than the OTP request.
-              Once you have an challenge response, display the display_text
-              from it and then call the `initiate_payment_with_otp`
-              tool to retry the payment. Surface the result to the user.
-          14. If the response is a success or confirmation, create a block of
+          13. Handle the payment response based on the challenge type:
+             a. If challenged with type "otp", relay the OTP request to the user.
+                 Do not ask the user for anything other than the OTP request.
+                 Once you have an challenge response, display the display_text
+                 from it and then call the `initiate_payment_with_otp`
+                 tool to retry the payment. Surface the result to the user.
+             b. If authentication information suggests type "mca" (multi-channel
+                 authentication),Display the message to the user. Ask them to
+                 complete the authentication on their other channel/device.
+          14. If the response of payment is pending, retry syncing the payment
+              using `sync_payment` tool every 5 seconds. Keep repeating this step
+              either for 6 times or until you get a success or failure response.
+              Display the status to the user each time you retry.
+          15. If the response is a success or confirmation, create a block of
               text titled 'Payment Receipt'. Ensure its contents includes
               price, shipping, tax and total price. In a second block, show the
               shipping address. Format it all nicely. In a third block, show the
@@ -112,6 +120,7 @@ root_agent = RetryingLlmAgent(
         tools.create_payment_mandate,
         tools.initiate_payment,
         tools.initiate_payment_with_otp,
+        tools.sync_payment,
         tools.send_signed_payment_mandate_to_credentials_provider,
         tools.sign_mandates_on_user_device,
         tools.update_cart,

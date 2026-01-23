@@ -126,6 +126,12 @@ async def _create_and_add_cart_mandate_artifact(
             }
         )
     ]
+  elif payment_method == "UPI_COLLECT":
+    method_data = [
+        PaymentMethodData(
+              supported_methods="UPI_COLLECT",
+        )
+    ]
   else:
     method_data = [
         PaymentMethodData(

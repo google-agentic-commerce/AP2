@@ -50,6 +50,7 @@ from common.payment_remote_a2a_client import PaymentRemoteA2aClient
 _PAYMENT_PROCESSORS_BY_PAYMENT_METHOD_TYPE = {
     "CARD": "http://localhost:8003/a2a/merchant_payment_processor_agent",
     "https://www.x402.org/": "http://localhost:8003/a2a/merchant_payment_processor_agent",
+    "UPI_COLLECT": "http://localhost:8003/a2a/merchant_payment_processor_agent",
 }
 
 # A placeholder for a JSON Web Token (JWT) used for merchant authorization.
@@ -213,6 +214,88 @@ async def initiate_payment(
   task = await payment_processor_agent.send_a2a_message(message_builder.build())
 
   # Pass the payment receipt back to the shopping agent if it exists.
+  payment_receipts = artifact_utils.find_canonical_objects(
+      task.artifacts, PAYMENT_RECEIPT_DATA_KEY, PaymentReceipt
+  )
+  if payment_receipts:
+    payment_receipt = artifact_utils.only(payment_receipts)
+    await updater.add_artifact([
+        Part(
+            root=DataPart(
+                data={PAYMENT_RECEIPT_DATA_KEY: payment_receipt.model_dump()}
+            )
+        )
+    ])
+
+  await updater.update_status(
+      state=task.status.state,
+      message=task.status.message,
+  )
+
+
+async def sync_payment(
+    data_parts: list[dict[str, Any]],
+    updater: TaskUpdater,
+    current_task: Task | None,
+    debug_mode: bool = False,
+) -> None:
+  """Syncs/polls the status of a payment (primarily for UPI_COLLECT).
+
+  Args:
+    data_parts: The data parts from the request, expected to contain a
+      PaymentMandate.
+    updater: The TaskUpdater instance for updating the task state.
+    current_task: The current task, used to find the processor's task ID.
+    debug_mode: Whether the agent is in debug mode.
+  """
+  payment_mandate = message_utils.parse_canonical_object(
+      PAYMENT_MANDATE_DATA_KEY, data_parts, PaymentMandate
+  )
+  if not payment_mandate:
+    await _fail_task(updater, "Missing payment_mandate.")
+    return
+
+  risk_data = message_utils.find_data_part("risk_data", data_parts)
+  if not risk_data:
+    await _fail_task(updater, "Missing risk_data.")
+    return
+
+  payment_method_type = (
+      payment_mandate.payment_mandate_contents.payment_response.method_name
+  )
+  processor_url = _PAYMENT_PROCESSORS_BY_PAYMENT_METHOD_TYPE.get(
+      payment_method_type
+  )
+
+  if not processor_url:
+    await _fail_task(
+        updater, f"No payment processor found for method: {payment_method_type}"
+    )
+    return
+
+  payment_processor_agent = PaymentRemoteA2aClient(
+      name="payment_processor_agent",
+      base_url=processor_url,
+      required_extensions={
+          EXTENSION_URI,
+      },
+  )
+
+  message_builder = (
+      A2aMessageBuilder()
+      .set_context_id(updater.context_id)
+      .add_text("sync_payment")
+      .add_data(PAYMENT_MANDATE_DATA_KEY, payment_mandate.model_dump())
+      .add_data("risk_data", risk_data)
+      .add_data("debug_mode", debug_mode)
+  )
+
+  payment_processor_task_id = _get_payment_processor_task_id(current_task)
+  if payment_processor_task_id:
+    message_builder.set_task_id(payment_processor_task_id)
+
+  task = await payment_processor_agent.send_a2a_message(message_builder.build())
+
   payment_receipts = artifact_utils.find_canonical_objects(
       task.artifacts, PAYMENT_RECEIPT_DATA_KEY, PaymentReceipt
   )

@@ -12,9 +12,11 @@ Applebot
 appname
 ASGI
 bazel
+BHIM
 Blackhawk
 Boku
 BVNK
+bugsbunny
 celerybeat
 classpath
 CLASSPATH
@@ -79,6 +81,7 @@ issuerauth
 JAVACMD
 jetbrains
 Jetpack
+jsonify
 jvmargs
 Kaia
 keepattributes
@@ -146,6 +149,7 @@ ROOTDIRSRAW
 ropeproject
 RPCURL
 Rulebook
+RUPAY
 screenreaders
 setlocal
 sharedpref

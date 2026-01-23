@@ -1,6 +1,6 @@
 {
   "name": "merchant_payment_processor_agent",
-  "description": "An agent that processes card payments on behalf of a merchant.",
+  "description": "An agent that processes and syncs payments on behalf of a merchant.",
   "capabilities": {
       "extensions": [
         {
@@ -21,6 +21,12 @@
       "name": "Card Processor",
       "description": "Processes card payments.",
       "tags": ["payment", "card"]
+    },
+    {
+      "id": "payment-sync",
+      "name": "Payment Sync",
+      "description": "Synchronizes payment status. Currently supported Payment Methods: UPI_COLLECT",
+      "tags": ["payment", "sync", "upi", "status"]
     }
   ],
   "defaultInputModes": ["text/plain"],

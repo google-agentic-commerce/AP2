@@ -1,0 +1,17 @@
+{
+  "files": {
+    "includes": [
+      "**",
+      "!**/templates/**/*.html"
+    ]
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "complexity": {
+        "noImportantStyles": "off"
+      }
+    }
+  }
+}

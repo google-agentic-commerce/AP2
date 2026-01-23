@@ -73,6 +73,7 @@ class MerchantAgentExecutor(BaseServerExecutor):
         tools.update_cart,
         catalog_agent.find_items_workflow,
         tools.initiate_payment,
+        tools.sync_payment,
         tools.dpc_finish,
     ]
     super().__init__(supported_extensions, agent_tools, self._system_prompt)

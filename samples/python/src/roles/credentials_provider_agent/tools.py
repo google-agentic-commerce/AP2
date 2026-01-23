@@ -160,8 +160,13 @@ async def handle_create_payment_credential_token(
       user_email, payment_method_alias
   )
 
+  payment_method = account_manager.get_payment_method_by_alias(
+      user_email, payment_method_alias
+    )
   await updater.add_artifact(
-      [Part(root=DataPart(data={"token": tokenized_payment_method}))]
+      [Part(root=DataPart(
+        data={"token": tokenized_payment_method,
+              "method_name": payment_method.get("type")}))]
   )
   await updater.complete()
 
@@ -283,6 +288,26 @@ def _payment_method_is_eligible(
   if payment_method.get("type", "") != merchant_criteria.supported_methods:
     return False
 
+  if merchant_criteria.supported_methods == "CARD":
+    return _check_card_eligibility(payment_method, merchant_criteria)
+  elif merchant_criteria.supported_methods == "UPI_COLLECT":
+    return _check_upi_collect_eligibility(payment_method, merchant_criteria)
+  else:
+    return False
+
+def _check_card_eligibility(
+    payment_method: dict[str, Any], merchant_criteria: PaymentMethodData
+) -> bool:
+  """Checks if a card payment method is eligible based on a PaymentMethodData.
+
+  Args:
+    payment_method: A dictionary representing the card payment method.
+    merchant_criteria: A PaymentMethodData object containing the eligibility
+      criteria.
+  Returns:
+    True if the payment_method is eligible according to the payment method,
+    False otherwise.
+  """
   merchant_supported_networks = [
       network.casefold()
       for network in merchant_criteria.data.get("network", [])
@@ -296,3 +321,14 @@ def _payment_method_is_eligible(
       if network_info.get("name", "").casefold() == supported_network:
         return True
   return False
+
+
+def _check_upi_collect_eligibility(
+  payment_method: dict[str, Any], merchant_criteria: PaymentMethodData
+) -> bool:
+  """
+  RBI, the governing entity in India, doesn't allow filtering by PSP to
+  merchants, so all UPI psp handles are eligible.
+  When we'll add outage handling, we can filter out unavailable PSPs here.
+  """
+  return True

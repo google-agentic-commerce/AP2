@@ -382,9 +382,11 @@ Fixes #<issue_number>
 
 Edit `.cspell/custom-words.txt` (alphabetical order):
 
+<!-- cspell:ignore anotherword myword -->
+
 ```text
-newterm
-yourterm
+anotherword
+myword
 ```
 
 ---

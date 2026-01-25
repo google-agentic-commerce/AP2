@@ -109,6 +109,7 @@ MSYS
 multistep
 Mysten
 nexi
+newterm
 nosetests
 Nuvei
 objx
@@ -186,3 +187,4 @@ XVCJ
 Yapily
 Zalopay
 Zalora
+yourterm

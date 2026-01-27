@@ -120,7 +120,7 @@ build, codify, and adopt A2A as the standard protocol for AI agent payments.
 - [Wayfair](https://www.wayfair.com/)
 - [WooCommerce](https://woocommerce.com/)
 - [Worldline](https://worldline.com/)
-- [Worldpay](https://www.fisglobal.com/en/products/worldpay)
+- [Worldpay](https://www.worldpay.com/en/agentic-commerce)
 - [WPay](https://www.wpay.com.au/)
 - [Xendit](https://www.xendit.co/)
 - [Yapily](https://www.yapily.com/)

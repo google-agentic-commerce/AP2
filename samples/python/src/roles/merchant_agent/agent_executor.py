@@ -97,7 +97,7 @@ class MerchantAgentExecutor(BaseServerExecutor):
 
   async def _validate_shopping_agent(
       self, data_parts: list[dict[str, Any]], updater: TaskUpdater
-  ) -> None:
+  ) -> bool:
     """Validates that the incoming request is from a trusted Shopping Agent.
 
     Args:

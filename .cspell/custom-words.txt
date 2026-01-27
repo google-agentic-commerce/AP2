@@ -55,9 +55,11 @@ Garena
 gemini
 genai
 generativeai
+genkit
 genproto
 glog
 gofmt
+googleai
 gopkg
 gradletasknamecache
 gradlew
@@ -167,6 +169,7 @@ Truelayer
 Trulioo
 udpa
 unmarshal
+uuidv
 viewmodel
 vulnz
 Wallex

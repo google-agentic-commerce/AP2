@@ -1,0 +1,48 @@
+{
+  "name": "typescript",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "cli": "node --loader ts-node/esm src/cli.ts",
+    "cli:build": "npm run build && node dist/cli.js",
+    "agent:shopping": "npx tsx src/agents/shopping-agent/index.ts",
+    "agent:credentials": "npx tsx src/agents/credentials-provider-agent/index.ts",
+    "agent:payment-processor": "npx tsx src/agents/merchant-payment-processor-agent/index.ts",
+    "agent:merchant": "npx tsx src/agents/merchant-agent/index.ts",
+    "agent:shopper": "npx tsx src/agents/shopping-agent/subagents/shopper/index.ts",
+    "agent:payment-collector": "npx tsx src/agents/shopping-agent/subagents/payment-method-collector/index.ts",
+    "agent:shipping-collector": "npx tsx src/agents/shopping-agent/subagents/shipping-address-collector/index.ts",
+    "agents:all": "concurrently \"npm:agent:shopping\" \"npm:agent:credentials\" \"npm:agent:payment-processor\" \"npm:agent:merchant\" \"npm:agent:shopper\" \"npm:agent:payment-collector\" \"npm:agent:shipping-collector\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "engines": {
+    "node": ">=16.4.0"
+  },
+  "dependencies": {
+    "@a2a-js/sdk": "^0.3.4",
+    "@genkit-ai/googleai": "^1.20.0",
+    "dotenv": "^16.4.7",
+    "express": "^5.1.0",
+    "genkit": "^1.20.0",
+    "uuid": "^13.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^25.0.10",
+    "@types/uuid": "^10.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.53.1",
+    "@typescript-eslint/parser": "^8.53.1",
+    "concurrently": "^9.1.2",
+    "eslint": "^8.57.1",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-import": "^2.32.0",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

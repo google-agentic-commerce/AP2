@@ -81,7 +81,7 @@ class PaymentReceipt(BaseModel):
   timestamp: str = Field(
       description=(
           "The date and time the payment receipt was created, in ISO 8601"
-          "format."
+          " format."
       ),
       default_factory=lambda: datetime.now(timezone.utc).isoformat(),
   )

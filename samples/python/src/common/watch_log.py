@@ -47,9 +47,13 @@ def create_file_handler() -> logging.FileHandler:
 def log_a2a_message_parts(
     text_parts: list[str], data_parts: list[dict[str, Any]]
 ):
-  _load_logger()
+  """Logs the A2A message parts to the watch.log file.
 
-  """Logs the A2A message parts to the watch.log file."""
+  Args:
+    text_parts: A list of strings representing text parts of the message.
+    data_parts: A list of dictionaries representing data parts of the message.
+  """
+  _load_logger()
   _log_request_instructions(text_parts)
   _log_mandates(data_parts)
   _log_extra_data(data_parts)

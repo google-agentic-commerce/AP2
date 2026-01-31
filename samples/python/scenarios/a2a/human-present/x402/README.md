@@ -66,7 +66,7 @@ GOOGLE_API_KEY variable in one of two ways.
 You can execute the following command to run all of the steps in one terminal:
 
 ```sh
-samples/python/scenarios/a2a/human-present/cards/run.sh --payment-method x402
+samples/python/scenarios/a2a/human-present/x402/run.sh
 ```
 
 Or you can run each server in its own terminal (ensure `PAYMENT_METHOD=x402` is set for all processes):

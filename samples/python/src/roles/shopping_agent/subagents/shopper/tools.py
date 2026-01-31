@@ -65,7 +65,7 @@ def create_intent_mandate(
           datetime.now(timezone.utc) + timedelta(days=1)
       ).isoformat(),
   )
-  tool_context.state["intent_mandate"] = intent_mandate
+  tool_context.state["intent_mandate"] = intent_mandate.model_dump()
   return intent_mandate
 
 
@@ -93,7 +93,7 @@ async def find_products(
   message = (
       A2aMessageBuilder()
       .add_text("Find products that match the user's IntentMandate.")
-      .add_data(INTENT_MANDATE_DATA_KEY, intent_mandate.model_dump())
+      .add_data(INTENT_MANDATE_DATA_KEY, intent_mandate)
       .add_data("risk_data", risk_data)
       .add_data("debug_mode", debug_mode)
       .add_data("shopping_agent_id", "trusted_shopping_agent")
@@ -106,7 +106,7 @@ async def find_products(
 
   tool_context.state["shopping_context_id"] = task.context_id
   cart_mandates = _parse_cart_mandates(task.artifacts)
-  tool_context.state["cart_mandates"] = cart_mandates
+  tool_context.state["cart_mandates"] = [cm.model_dump() for cm in cart_mandates]
   return cart_mandates
 
 
@@ -117,7 +117,10 @@ def update_chosen_cart_mandate(cart_id: str, tool_context: ToolContext) -> str:
     cart_id: The ID of the chosen cart.
     tool_context: The ADK supplied tool context.
   """
-  cart_mandates: list[CartMandate] = tool_context.state.get("cart_mandates", [])
+  cart_mandates = [
+      CartMandate.model_validate(cm)
+      for cm in tool_context.state.get("cart_mandates", [])
+  ]
   for cart in cart_mandates:
     print(
         f"Checking cart with ID: {cart.contents.id} with chosen ID: {cart_id}"

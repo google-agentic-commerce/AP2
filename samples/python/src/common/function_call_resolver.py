@@ -19,6 +19,7 @@ use based on the instructions provided.
 """
 
 import logging
+import os
 from typing import Any, Callable
 
 from a2a.server.tasks.task_updater import TaskUpdater
@@ -81,7 +82,7 @@ class FunctionCallResolver:
     """
 
     response = self._client.models.generate_content(
-        model="gemini-2.5-flash",
+        model=os.environ.get("MODEL", "gemini-2.5-flash"),
         contents=prompt,
         config=self._config,
     )

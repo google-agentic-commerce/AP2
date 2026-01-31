@@ -14,7 +14,7 @@ PAYMENT_METHOD="X402"
 while [[ "$#" -gt 0 ]]; do
     case $1 in
         --payment-method) PAYMENT_METHOD="${2:?--payment-method requires an argument}"; shift ;;
-        *) echo "Unknown parameter passed: $1"; exit 1 ;;
+        *) echo "Unknown parameter passed: \"$1\""; exit 1 ;;
     esac
     shift
 done

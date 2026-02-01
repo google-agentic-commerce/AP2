@@ -36,6 +36,7 @@ DCQL
 deviceauth
 Dfile
 dmypy
+docstrings
 Doku
 Dorg
 DPAN
@@ -149,6 +150,8 @@ Rulebook
 screenreaders
 setlocal
 sharedpref
+shellcheck
+shfmt
 Shopcider
 Shopee
 sideloaded

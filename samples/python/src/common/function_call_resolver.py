@@ -19,13 +19,14 @@ use based on the instructions provided.
 """
 
 import logging
-import os
 from typing import Any, Callable
 
 from a2a.server.tasks.task_updater import TaskUpdater
 from a2a.types import Task
 from google import genai
 from google.genai import types
+
+from common.system_utils import LLM_MODEL
 
 
 DataPartContent = dict[str, Any]
@@ -82,7 +83,7 @@ class FunctionCallResolver:
     """
 
     response = self._client.models.generate_content(
-        model=os.environ.get("MODEL", "gemini-2.5-flash"),
+        model=LLM_MODEL,
         contents=prompt,
         config=self._config,
     )

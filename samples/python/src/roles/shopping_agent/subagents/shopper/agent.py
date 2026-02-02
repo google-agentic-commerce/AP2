@@ -24,15 +24,14 @@ multiple CartMandate objects, assuming the user will select one of the options.
 This is just one of many possible approaches.
 """
 
-import os
-
 from . import tools
 from common.retrying_llm_agent import RetryingLlmAgent
 from common.system_utils import DEBUG_MODE_INSTRUCTIONS
+from common.system_utils import LLM_MODEL
 
 
 shopper = RetryingLlmAgent(
-    model=os.environ.get("MODEL", "gemini-2.5-flash"),
+    model=LLM_MODEL,
     name="shopper",
     max_retries=5,
     instruction="""

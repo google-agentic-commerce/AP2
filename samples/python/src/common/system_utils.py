@@ -14,6 +14,10 @@
 
 """Helper functions related to the system."""
 
+import os
+
+LLM_MODEL = os.environ.get("MODEL", "gemini-2.5-flash")
+
 DEBUG_MODE_INSTRUCTIONS = """
     This is really important! If the agent or user asks you to be verbose or if debug_mode is True, do the following:
       1. If this is the the start of a new task, explain who you are, what you are going to do, what tools you use, and what agents you delegate to.

@@ -39,7 +39,7 @@ class RetryingLlmAgent(LlmAgent):
           author=ctx.agent.name,
           invocation_id=ctx.invocation_id,
           error_message=(
-              "Maximum retries exhausted. The remote Gemini server failed to"
+              "Maximum retries exhausted. The remote LLM server failed to"
               " respond. Please try again later."
           ),
       )
@@ -51,7 +51,7 @@ class RetryingLlmAgent(LlmAgent):
         yield Event(
             author=ctx.agent.name,
             invocation_id=ctx.invocation_id,
-            error_message="Gemini server error. Retrying...",
+            error_message="LLM server error. Retrying...",
             custom_metadata={"error": str(e)},
         )
         async for event in self._retry_async(ctx, retries_left - 1):

@@ -28,10 +28,11 @@ provider, which is then sent to the merchant agent for payment.
 from . import tools
 from common.retrying_llm_agent import RetryingLlmAgent
 from common.system_utils import DEBUG_MODE_INSTRUCTIONS
+from common.system_utils import LLM_MODEL
 
 
 payment_method_collector = RetryingLlmAgent(
-    model="gemini-2.5-flash",
+    model=LLM_MODEL,
     name="payment_method_collector",
     max_retries=5,
     instruction="""

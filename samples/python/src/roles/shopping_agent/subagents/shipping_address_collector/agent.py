@@ -29,9 +29,10 @@ This is just one of many possible approaches.
 from . import tools
 from common.retrying_llm_agent import RetryingLlmAgent
 from common.system_utils import DEBUG_MODE_INSTRUCTIONS
+from common.system_utils import LLM_MODEL
 
 shipping_address_collector = RetryingLlmAgent(
-    model="gemini-2.5-flash",
+    model=LLM_MODEL,
     name="shipping_address_collector",
     max_retries=5,
     instruction="""

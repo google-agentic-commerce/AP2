@@ -54,6 +54,7 @@ in progress.
 
     [:octicons-arrow-right-24: Overview](topics/what-is-ap2.md)<br>
     [:octicons-arrow-right-24: Core Concepts](topics/core-concepts.md)<br>
+    [:octicons-arrow-right-24: AP2 and UCP](topics/ap2-and-ucp.md)<br>
     [:octicons-arrow-right-24: AP2, A2A and MCP](topics/ap2-a2a-and-mcp.md)<br>
     [:octicons-arrow-right-24: AP2 and x402](topics/ap2-and-x402.md)<br>
     [:octicons-arrow-right-24: Privacy and Security](topics/privacy-and-security.md)<br>

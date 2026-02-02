@@ -84,16 +84,17 @@ async def find_products(
   Raises:
     RuntimeError: If the merchant agent fails to provide products.
   """
-  intent_mandate = tool_context.state["intent_mandate"]
-  if not intent_mandate:
+  intent_mandate_data = tool_context.state["intent_mandate"]
+  if not intent_mandate_data:
     raise RuntimeError("No IntentMandate found in tool context state.")
+  intent_mandate = IntentMandate.model_validate(intent_mandate_data)
   risk_data = _collect_risk_data(tool_context)
   if not risk_data:
     raise RuntimeError("No risk data found in tool context state.")
   message = (
       A2aMessageBuilder()
       .add_text("Find products that match the user's IntentMandate.")
-      .add_data(INTENT_MANDATE_DATA_KEY, intent_mandate)
+      .add_data(INTENT_MANDATE_DATA_KEY, intent_mandate.model_dump())
       .add_data("risk_data", risk_data)
       .add_data("debug_mode", debug_mode)
       .add_data("shopping_agent_id", "trusted_shopping_agent")

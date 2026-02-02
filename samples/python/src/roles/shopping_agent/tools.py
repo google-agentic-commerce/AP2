@@ -76,8 +76,8 @@ async def update_cart(
       _parse_cart_mandates(task.artifacts)
   )
 
-  tool_context.state["cart_mandate"] = updated_cart_mandate
-  tool_context.state["shipping_address"] = shipping_address
+  tool_context.state["cart_mandate"] = updated_cart_mandate.model_dump()
+  tool_context.state["shipping_address"] = shipping_address.model_dump()
 
   return updated_cart_mandate
 
@@ -163,7 +163,7 @@ def store_receipt_if_present(task, tool_context: ToolContext) -> None:
   )
   if payment_receipts:
     payment_receipt = artifact_utils.only(payment_receipts)
-    tool_context.state["payment_receipt"] = payment_receipt
+    tool_context.state["payment_receipt"] = payment_receipt.model_dump()
 
 
 def create_payment_mandate(
@@ -181,10 +181,12 @@ def create_payment_mandate(
   Returns:
     The payment mandate.
   """
-  cart_mandate = tool_context.state["cart_mandate"]
+  cart_mandate = CartMandate.model_validate(tool_context.state["cart_mandate"])
 
   payment_request = cart_mandate.contents.payment_request
-  shipping_address = tool_context.state["shipping_address"]
+  shipping_address = ContactAddress.model_validate(
+      tool_context.state["shipping_address"]
+  )
 
   payment_method = os.environ.get("PAYMENT_METHOD", "CARD")
   if payment_method == "x402":
@@ -215,7 +217,7 @@ def create_payment_mandate(
       ),
   )
 
-  tool_context.state["payment_mandate"] = payment_mandate
+  tool_context.state["payment_mandate"] = payment_mandate.model_dump()
   return payment_mandate
 
 
@@ -238,8 +240,12 @@ def sign_mandates_on_user_device(tool_context: ToolContext) -> str:
   Returns:
       A string representing the simulated user authorization signature (JWT).
   """
-  payment_mandate: PaymentMandate = tool_context.state["payment_mandate"]
-  cart_mandate: CartMandate = tool_context.state["cart_mandate"]
+  payment_mandate = PaymentMandate.model_validate(
+      tool_context.state["payment_mandate"]
+  )
+  cart_mandate = CartMandate.model_validate(
+      tool_context.state["cart_mandate"]
+  )
   cart_mandate_hash = _generate_cart_mandate_hash(cart_mandate)
   payment_mandate_hash = _generate_payment_mandate_hash(
       payment_mandate.payment_mandate_contents
@@ -250,7 +256,7 @@ def sign_mandates_on_user_device(tool_context: ToolContext) -> str:
   payment_mandate.user_authorization = (
       cart_mandate_hash + "_" + payment_mandate_hash
   )
-  tool_context.state["signed_payment_mandate"] = payment_mandate
+  tool_context.state["signed_payment_mandate"] = payment_mandate.model_dump()
   return payment_mandate.user_authorization
 
 

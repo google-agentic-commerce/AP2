@@ -65,7 +65,7 @@ def create_intent_mandate(
           datetime.now(timezone.utc) + timedelta(days=1)
       ).isoformat(),
   )
-  tool_context.state["intent_mandate"] = intent_mandate
+  tool_context.state["intent_mandate"] = intent_mandate.model_dump()
   return intent_mandate
 
 
@@ -84,9 +84,10 @@ async def find_products(
   Raises:
     RuntimeError: If the merchant agent fails to provide products.
   """
-  intent_mandate = tool_context.state["intent_mandate"]
-  if not intent_mandate:
+  intent_mandate_data = tool_context.state["intent_mandate"]
+  if not intent_mandate_data:
     raise RuntimeError("No IntentMandate found in tool context state.")
+  intent_mandate = IntentMandate.model_validate(intent_mandate_data)
   risk_data = _collect_risk_data(tool_context)
   if not risk_data:
     raise RuntimeError("No risk data found in tool context state.")
@@ -106,7 +107,7 @@ async def find_products(
 
   tool_context.state["shopping_context_id"] = task.context_id
   cart_mandates = _parse_cart_mandates(task.artifacts)
-  tool_context.state["cart_mandates"] = cart_mandates
+  tool_context.state["cart_mandates"] = [cm.model_dump() for cm in cart_mandates]
   return cart_mandates
 
 
@@ -117,7 +118,10 @@ def update_chosen_cart_mandate(cart_id: str, tool_context: ToolContext) -> str:
     cart_id: The ID of the chosen cart.
     tool_context: The ADK supplied tool context.
   """
-  cart_mandates: list[CartMandate] = tool_context.state.get("cart_mandates", [])
+  cart_mandates = [
+      CartMandate.model_validate(cm)
+      for cm in tool_context.state.get("cart_mandates", [])
+  ]
   for cart in cart_mandates:
     print(
         f"Checking cart with ID: {cart.contents.id} with chosen ID: {cart_id}"

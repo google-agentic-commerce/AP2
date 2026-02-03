@@ -43,7 +43,6 @@ from ap2.types.payment_request import PaymentMethodData
 from ap2.types.payment_request import PaymentOptions
 from ap2.types.payment_request import PaymentRequest
 from common import message_utils
-from common import system_utils
 from common.system_utils import DEBUG_MODE_INSTRUCTIONS
 
 
@@ -53,8 +52,7 @@ async def find_items_workflow(
     current_task: Task | None,
 ) -> None:
   """Finds products that match the user's IntentMandate."""
-  system_utils.check_google_api_key()
-  llm_client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
+  llm_client = genai.Client()
 
   intent_mandate = message_utils.parse_canonical_object(
       INTENT_MANDATE_DATA_KEY, data_parts, IntentMandate
@@ -85,7 +83,11 @@ async def find_items_workflow(
     for item in items:
       item_count += 1
       await _create_and_add_cart_mandate_artifact(
-          item, item_count, current_time, updater
+          item,
+          item_count,
+          current_time,
+          updater,
+          os.environ.get("PAYMENT_METHOD", "CARD"),
       )
     risk_data = _collect_risk_data(updater)
     updater.add_artifact([
@@ -105,17 +107,36 @@ async def _create_and_add_cart_mandate_artifact(
     item_count: int,
     current_time: datetime,
     updater: TaskUpdater,
+    payment_method: str,
 ) -> None:
   """Creates a CartMandate and adds it as an artifact."""
+  if payment_method == "x402":
+    method_data = [
+        PaymentMethodData(
+            supported_methods="https://www.x402.org/",
+            data={
+                "x402Version": 1,
+                "accepts": [{
+                    "scheme": "exact",
+                    "network": "base",
+                    "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bda02913",
+                    "payTo": "0xMerchantWalletAddress",
+                    "maxAmountRequired": str(int(item.amount.value * 1000000))
+                }]
+            }
+        )
+    ]
+  else:
+    method_data = [
+        PaymentMethodData(
+            supported_methods="CARD",
+            data={
+                "network": ["mastercard", "paypal", "amex"],
+            },
+        )
+    ]
   payment_request = PaymentRequest(
-      method_data=[
-          PaymentMethodData(
-              supported_methods="CARD",
-              data={
-                  "network": ["mastercard", "paypal", "amex"],
-              },
-          )
-      ],
+      method_data=method_data,
       details=PaymentDetailsInit(
           id=f"order_{item_count}",
           display_items=[item],

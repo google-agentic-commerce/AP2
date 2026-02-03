@@ -24,6 +24,7 @@ jobs:
           SHELLCHECK_OPTS: -e SC1091 -e 2086
           VALIDATE_ALL_CODEBASE: false
           FILTER_REGEX_EXCLUDE: "^(\\.github/|\\.vscode/|samples/).*|CODE_OF_CONDUCT.md|CHANGELOG.md"
+          VALIDATE_BIOME_FORMAT: false
           VALIDATE_PYTHON_BLACK: false
           VALIDATE_PYTHON_FLAKE8: false
           VALIDATE_PYTHON_ISORT: false
@@ -39,3 +40,10 @@ jobs:
           VALIDATE_GIT_COMMITLINT: false
           VALIDATE_GITHUB_ACTIONS_ZIZMOR: false
           VALIDATE_JSCPD: false
+          VALIDATE_SHELL_SHFMT: false
+          VALIDATE_GO: false
+          VALIDATE_GO_MODULES: false
+          VALIDATE_EDITORCONFIG: false
+          VALIDATE_TRIVY: false
+          VALIDATE_PYTHON_RUFF: false
+          VALIDATE_PYTHON_RUFF_FORMAT: false

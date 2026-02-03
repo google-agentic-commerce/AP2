@@ -14,11 +14,13 @@ This repository contains code samples and demos of the Agent Payments Protocol.
 
 [![A2A Intro Video](https://img.youtube.com/vi/yLTp3ic2j5c/hqdefault.jpg)](https://goo.gle/ap2-video)
 
+### AP2 on The Agent Factory
+
+[![The Agent Factory - Episode 8: Agent payments, can you do my shopping?](https://img.youtube.com/vi/T1MtWnEYXM0/hqdefault.jpg)](https://youtu.be/T1MtWnEYXM0?si=QkJWnAiav0JAP9F6)
+
 ## About the Samples
 
-These samples use
-[Agent Development Kit (ADK)](https://google.github.io/adk-docs/) and Gemini 2.5
-Flash.
+These samples use [Agent Development Kit (ADK)](https://google.github.io/adk-docs/) and Gemini 2.5 Flash.
 
 The Agent Payments Protocol doesn't require the use of either. While these were
 used in the samples, you're free to use any tools you prefer to build your
@@ -45,24 +47,62 @@ shopping assistant have their source code in [**`samples/android`**](samples/and
 ### Prerequisites
 
 - Python 3.10 or higher
+- [`uv`](https://docs.astral.sh/uv/getting-started/installation/) package manager
 
 ### Setup
 
-Ensure you have obtained a Google API key from
-[Google AI Studio](http://aistudio.google.com/apikey). Then declare the
-`GOOGLE_API_KEY` variable in one of two ways.
+You can authenticate using either a Google API Key or Vertex AI.
 
-1. Declare it as an environment variable:
+For either method, you can set the required credentials as environment variables in your shell or place them in a `.env` file at the root of your project.
 
-    ```sh
-    export GOOGLE_API_KEY=your_key
-    ```
+#### Option 1: Google API Key (Recommended for development)
 
-1. Put it into an `.env` file at the root of your repository.
+1. Obtain a Google API key from [Google AI Studio](http://aistudio.google.com/apikey).
+2. Set the `GOOGLE_API_KEY` environment variable.
 
-    ```sh
-    echo "GOOGLE_API_KEY=your_key" > .env
-    ```
+    - **As an environment variable:**
+
+        ```sh
+        export GOOGLE_API_KEY='your_key'
+        ```
+
+    - **In a `.env` file:**
+
+        ```sh
+        GOOGLE_API_KEY='your_key'
+        ```
+
+#### Option 2: [Vertex AI](https://cloud.google.com/vertex-ai) (Recommended for production)
+
+1. **Configure your environment to use Vertex AI.**
+    - **As environment variables:**
+
+        ```sh
+        export GOOGLE_GENAI_USE_VERTEXAI=true
+        export GOOGLE_CLOUD_PROJECT='your-project-id'
+        export GOOGLE_CLOUD_LOCATION='global' # or your preferred region
+        ```
+
+    - **In a `.env` file:**
+
+        ```sh
+        GOOGLE_GENAI_USE_VERTEXAI=true
+        GOOGLE_CLOUD_PROJECT='your-project-id'
+        GOOGLE_CLOUD_LOCATION='global'
+        ```
+
+2. **Authenticate your application.**
+    - **Using the [`gcloud` CLI](https://cloud.google.com/sdk/docs/install):**
+
+        ```sh
+        gcloud auth application-default login
+        ```
+
+    - **Using a Service Account:**
+
+        ```sh
+        export GOOGLE_APPLICATION_CREDENTIALS='/path/to/your/service-account-key.json'
+        ```
 
 ### How to Run a Scenario
 

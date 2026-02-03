@@ -8,6 +8,7 @@ version = "0.1"
 description = "Samples demonstrating the Agent Payments Protocol"
 dependencies = [
     "a2a-sdk",
+    "x402-a2a @ git+https://github.com/google-agentic-commerce/a2a-x402.git#subdirectory=python/x402_a2a",
     "absl-py",
     "flask",
     "flask-cors",

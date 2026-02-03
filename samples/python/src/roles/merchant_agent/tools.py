@@ -18,8 +18,6 @@ Each agent uses individual tools to handle distinct tasks throughout the
 shopping and purchasing process.
 """
 
-import base64
-import json
 import logging
 
 from pydantic import ValidationError
@@ -36,8 +34,11 @@ from ap2.types.contact_picker import ContactAddress
 from ap2.types.mandate import CART_MANDATE_DATA_KEY
 from ap2.types.mandate import PAYMENT_MANDATE_DATA_KEY
 from ap2.types.mandate import PaymentMandate
+from ap2.types.payment_receipt import PAYMENT_RECEIPT_DATA_KEY
+from ap2.types.payment_receipt import PaymentReceipt
 from ap2.types.payment_request import PaymentCurrencyAmount
 from ap2.types.payment_request import PaymentItem
+from common import artifact_utils
 from common import message_utils
 from common.a2a_extension_utils import EXTENSION_URI
 from common.a2a_message_builder import A2aMessageBuilder
@@ -48,6 +49,7 @@ from common.payment_remote_a2a_client import PaymentRemoteA2aClient
 # is integrated with.
 _PAYMENT_PROCESSORS_BY_PAYMENT_METHOD_TYPE = {
     "CARD": "http://localhost:8003/a2a/merchant_payment_processor_agent",
+    "https://www.x402.org/": "http://localhost:8003/a2a/merchant_payment_processor_agent",
 }
 
 # A placeholder for a JSON Web Token (JWT) used for merchant authorization.
@@ -209,6 +211,21 @@ async def initiate_payment(
     message_builder.set_task_id(payment_processor_task_id)
 
   task = await payment_processor_agent.send_a2a_message(message_builder.build())
+
+  # Pass the payment receipt back to the shopping agent if it exists.
+  payment_receipts = artifact_utils.find_canonical_objects(
+      task.artifacts, PAYMENT_RECEIPT_DATA_KEY, PaymentReceipt
+  )
+  if payment_receipts:
+    payment_receipt = artifact_utils.only(payment_receipts)
+    await updater.add_artifact([
+        Part(
+            root=DataPart(
+                data={PAYMENT_RECEIPT_DATA_KEY: payment_receipt.model_dump()}
+            )
+        )
+    ])
+
   await updater.update_status(
       state=task.status.state,
       message=task.status.message,

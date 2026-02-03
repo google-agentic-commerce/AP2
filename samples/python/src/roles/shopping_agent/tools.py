@@ -20,6 +20,7 @@ shopping and purchasing process, such as updating a cart or initiating payment.
 
 from datetime import datetime
 from datetime import timezone
+import os
 import uuid
 
 from a2a.types import Artifact
@@ -33,6 +34,8 @@ from ap2.types.mandate import CartMandate
 from ap2.types.mandate import PAYMENT_MANDATE_DATA_KEY
 from ap2.types.mandate import PaymentMandate
 from ap2.types.mandate import PaymentMandateContents
+from ap2.types.payment_receipt import PAYMENT_RECEIPT_DATA_KEY
+from ap2.types.payment_receipt import PaymentReceipt
 from ap2.types.payment_request import PaymentResponse
 from common import artifact_utils
 from common.a2a_message_builder import A2aMessageBuilder
@@ -107,6 +110,7 @@ async def initiate_payment(tool_context: ToolContext, debug_mode: bool = False):
       .build()
   )
   task = await merchant_agent_client.send_a2a_message(outgoing_message_builder)
+  store_receipt_if_present(task, tool_context)
   tool_context.state["initiate_payment_task_id"] = task.id
   return task.status
 
@@ -148,7 +152,18 @@ async def initiate_payment_with_otp(
   )
 
   task = await merchant_agent_client.send_a2a_message(outgoing_message_builder)
+  store_receipt_if_present(task, tool_context)
   return task.status
+
+
+def store_receipt_if_present(task, tool_context: ToolContext) -> None:
+  """Stores the payment receipt in state."""
+  payment_receipts = artifact_utils.find_canonical_objects(
+      task.artifacts, PAYMENT_RECEIPT_DATA_KEY, PaymentReceipt
+  )
+  if payment_receipts:
+    payment_receipt = artifact_utils.only(payment_receipts)
+    tool_context.state["payment_receipt"] = payment_receipt
 
 
 def create_payment_mandate(
@@ -170,12 +185,21 @@ def create_payment_mandate(
 
   payment_request = cart_mandate.contents.payment_request
   shipping_address = tool_context.state["shipping_address"]
+
+  payment_method = os.environ.get("PAYMENT_METHOD", "CARD")
+  if payment_method == "x402":
+    method_name = "https://www.x402.org/"
+    details = tool_context.state["payment_credential_token"]
+  else:
+    method_name = "CARD"
+    details = {
+        "token": tool_context.state["payment_credential_token"],
+    }
+
   payment_response = PaymentResponse(
       request_id=payment_request.details.id,
-      method_name="CARD",
-      details={
-          "token": tool_context.state["payment_credential_token"],
-      },
+      method_name=method_name,
+      details=details,
       shipping_address=shipping_address,
       payer_email=user_email,
   )

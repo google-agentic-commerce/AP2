@@ -36,6 +36,9 @@ def find_canonical_objects(
   Returns:
     A list of canonical objects of the given type in the artifacts.
   """
+  if artifacts is None:
+    return []
+
   canonical_objects = []
   for artifact in artifacts:
     for part in artifact.parts:
@@ -53,6 +56,9 @@ def get_first_data_part(artifacts: list[Artifact]) -> dict[str, Any]:
   Returns:
     The data contents within the first found DataPart.
   """
+  if artifacts is None:
+    return {}
+
   data_parts = [
       message_utils.get_data_parts(artifact.parts) for artifact in artifacts
   ]

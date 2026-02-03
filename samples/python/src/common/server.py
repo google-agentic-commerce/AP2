@@ -22,7 +22,6 @@ AgentCard and AgentExecutor to launch a Uvicorn server.
 import json
 import logging
 import os
-import pprint
 
 from a2a.server.agent_execution.simple_request_context_builder import SimpleRequestContextBuilder
 from a2a.server.apps.jsonrpc.starlette_app import A2AStarletteApplication
@@ -38,6 +37,9 @@ import uvicorn
 
 from . import watch_log
 from .base_server_executor import BaseServerExecutor
+
+# Constant for the A2A extensions header
+A2A_EXTENSIONS_HEADER = "X-A2A-Extensions"
 
 
 def load_local_agent_card(file_path: str) -> AgentCard:
@@ -129,7 +131,11 @@ class _LoggingMiddleware(BaseHTTPMiddleware):
     self._logger.info("%s", request_body)
 
     # If the extension header is present, log a notice.
-    # TODO
+    extension_header = request.headers.get(A2A_EXTENSIONS_HEADER)
+    if extension_header:
+      self._logger.info(
+          "\n[Extension Header]\n%s: %s", A2A_EXTENSIONS_HEADER, extension_header
+      )
 
     response = await call_next(request)
 

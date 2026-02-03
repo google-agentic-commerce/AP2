@@ -7,6 +7,20 @@
 # Exit immediately if any command exits with a non-zero status.
 set -e
 
+# Default payment method
+PAYMENT_METHOD="CARD"
+
+# Parse command-line arguments
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        --payment-method) PAYMENT_METHOD="${2:?--payment-method requires an argument}"; shift ;;
+        *) echo "Unknown parameter passed: $1"; exit 1 ;;
+    esac
+    shift
+done
+
+export PAYMENT_METHOD
+
 # The directory containing the agents.
 AGENTS_DIR="samples/python/src/roles"
 # A directory to store logs.
@@ -24,8 +38,10 @@ if [ -f .env ]; then
   set +a
 fi
 
-if [ -z "${GOOGLE_API_KEY}" ]; then
+USE_VERTEXAI=$(printf "%s" "${GOOGLE_GENAI_USE_VERTEXAI}" | tr '[:upper:]' '[:lower:]')
+if [ -z "${GOOGLE_API_KEY}" ] && [ "${USE_VERTEXAI}" != "true" ]; then
   echo "Please set your GOOGLE_API_KEY environment variable before running."
+  echo "Alternatively, set GOOGLE_GENAI_USE_VERTEXAI=true to use Vertex AI with ADC."
   exit 1
 fi
 
@@ -36,7 +52,17 @@ if [ ! -d ".venv" ]; then
   uv venv
 fi
 
-source .venv/bin/activate
+# Detect the correct activation script path based on the operating system
+case "$OSTYPE" in
+  msys* | cygwin*)
+    # Windows (Git Bash, MSYS2, or Cygwin)
+    source .venv/Scripts/activate
+    ;;
+  *)
+    # Unix/Linux/macOS
+    source .venv/bin/activate
+    ;;
+esac
 echo "Virtual environment activated."
 
 echo "Installing project in editable mode..."

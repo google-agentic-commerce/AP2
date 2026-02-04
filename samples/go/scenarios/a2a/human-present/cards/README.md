@@ -272,9 +272,9 @@ If running manually, stop each process individually.
 
 ## Resources
 
-- [AP2 Protocol Documentation](../../../../README.md)
-- [Python Sample (with Shopping Agent)](../../../../python/scenarios/a2a/human-present/cards/README.md)
-- [Go Implementation Guide](../../README.md)
+- [AP2 Protocol Documentation](../../../../../../README.md)
+- [Python Sample (with Shopping Agent)](../../../../../python/scenarios/a2a/human-present/cards/README.md)
+- [Go Implementation Guide](../../../../README.md)
 
 ## License
 

@@ -11,3 +11,54 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+"""AP2 type definitions."""
+
+from ap2.types.mandate import (
+    CartContents,
+    CartMandate,
+    IntentMandate,
+    PaymentMandate,
+    PaymentMandateContents,
+    CART_MANDATE_DATA_KEY,
+    INTENT_MANDATE_DATA_KEY,
+    PAYMENT_MANDATE_DATA_KEY,
+)
+
+from ap2.types.risk import (
+    AgentModality,
+    EscalationDecision,
+    FCBEvaluation,
+    FCBState,
+    HumanEscalation,
+    RiskPayload,
+    TripConditionResult,
+    TripConditionStatus,
+    TripConditionType,
+    FCB_EVALUATION_DATA_KEY,
+    RISK_PAYLOAD_DATA_KEY,
+)
+
+__all__ = [
+    # Mandate types
+    "CartContents",
+    "CartMandate",
+    "IntentMandate",
+    "PaymentMandate",
+    "PaymentMandateContents",
+    "CART_MANDATE_DATA_KEY",
+    "INTENT_MANDATE_DATA_KEY",
+    "PAYMENT_MANDATE_DATA_KEY",
+    # Risk types (FCB extension)
+    "AgentModality",
+    "EscalationDecision",
+    "FCBEvaluation",
+    "FCBState",
+    "HumanEscalation",
+    "RiskPayload",
+    "TripConditionResult",
+    "TripConditionStatus",
+    "TripConditionType",
+    "FCB_EVALUATION_DATA_KEY",
+    "RISK_PAYLOAD_DATA_KEY",
+]

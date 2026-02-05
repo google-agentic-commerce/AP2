@@ -1,10 +1,10 @@
 title = "gitleaks config for AP2"
 
 [[allowlist]]
-description = "Namespace identifiers used in tests"
-paths = ["^tests/.*\.py$"]
+description = "Namespace identifiers used in source and tests"
+paths = ["^tests/.*\\.py$", "^src/.*", "^samples/.*"]
 regexes = [
-  "^ap2\.risk\.FCBEvaluation$",
-  "^ap2\.risk\.RiskPayload$",
-  "^ap2\.mandates\.PaymentMandate$"
+  "^ap2\\.risk\\.FCBEvaluation$",
+  "^ap2\\.risk\\.RiskPayload$",
+  "^ap2\\.mandates\\.PaymentMandate$"
 ]

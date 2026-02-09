@@ -119,7 +119,7 @@ class CartMandate(BaseModel):
         2. Payload includes:
           - iss, sub, aud: Identifiers for the merchant (issuer)
             and the intended recipient (audience), like a payment processor.
-          - iat: iat, exp: Timestamps for the token's creation and its
+          - iat, exp: Timestamps for the token's creation and its
             short-lived expiration (e.g., 5-15 minutes) to enhance security.
           - jti: Unique identifier for the JWT to prevent replay attacks.
           - cart_hash: A secure hash of the CartMandate, ensuring

@@ -44,6 +44,7 @@ from ap2.types.payment_request import PaymentOptions
 from ap2.types.payment_request import PaymentRequest
 from common import message_utils
 from common.system_utils import DEBUG_MODE_INSTRUCTIONS
+from common.system_utils import LLM_MODEL
 
 
 async def find_items_workflow(
@@ -68,7 +69,7 @@ async def find_items_workflow(
         """ % DEBUG_MODE_INSTRUCTIONS
 
   llm_response = llm_client.models.generate_content(
-      model="gemini-2.5-flash",
+      model=LLM_MODEL,
       contents=prompt,
       config={
           "response_mime_type": "application/json",

@@ -28,11 +28,12 @@ from .subagents.shipping_address_collector.agent import shipping_address_collect
 from .subagents.shopper.agent import shopper
 from common.retrying_llm_agent import RetryingLlmAgent
 from common.system_utils import DEBUG_MODE_INSTRUCTIONS
+from common.system_utils import LLM_MODEL
 
 
 root_agent = RetryingLlmAgent(
     max_retries=5,
-    model="gemini-2.5-flash",
+    model=LLM_MODEL,
     name="root_agent",
     instruction="""
           You are a shopping agent responsible for helping users find and

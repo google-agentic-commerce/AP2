@@ -20,6 +20,7 @@ shopping and purchasing process.
 
 from google.adk.tools.tool_context import ToolContext
 
+from ap2.types.mandate import CartMandate
 from ap2.types.payment_request import PAYMENT_METHOD_DATA_DATA_KEY
 from common.a2a_message_builder import A2aMessageBuilder
 from common import artifact_utils
@@ -41,7 +42,9 @@ async def get_payment_methods(
   Returns:
     A dictionary of the user's applicable payment methods.
   """
-  cart_mandate = tool_context.state["cart_mandate"]
+  cart_mandate_data = tool_context.state["cart_mandate"]
+  # Reconstruct CartMandate from stored dict
+  cart_mandate = CartMandate.model_validate(cart_mandate_data)
   message_builder = (
       A2aMessageBuilder()
       .set_context_id(tool_context.state["shopping_context_id"])

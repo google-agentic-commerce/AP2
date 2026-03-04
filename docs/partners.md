@@ -14,6 +14,7 @@ build, codify, and adopt A2A as the standard protocol for AI agent payments.
 - [AliExpress](https://www.aliexpress.com/)
 - [Amadeus](https://www.amadeus.com/)
 - [American Express](https://www.americanexpress.com/)
+- [Andru (H&S)](https://andru.ai/)
 - [Ant Group](https://www.antgroup.com/en/)
 - [Ant International](https://www.antinternational.com/)
 - [Auth0](https://auth0.com/)

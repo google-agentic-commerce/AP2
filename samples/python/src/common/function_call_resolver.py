@@ -26,6 +26,7 @@ from a2a.types import Task
 from google import genai
 from google.genai import types
 
+from common.config import MODEL
 
 DataPartContent = dict[str, Any]
 Tool = Callable[[list[DataPartContent], TaskUpdater, Task | None], Any]
@@ -81,7 +82,7 @@ class FunctionCallResolver:
     """
 
     response = self._client.models.generate_content(
-        model="gemini-2.5-flash",
+        model=MODEL,
         contents=prompt,
         config=self._config,
     )

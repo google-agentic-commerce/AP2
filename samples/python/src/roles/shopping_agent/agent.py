@@ -26,13 +26,14 @@ from . import tools
 from .subagents.payment_method_collector.agent import payment_method_collector
 from .subagents.shipping_address_collector.agent import shipping_address_collector
 from .subagents.shopper.agent import shopper
+from common.config import MODEL
 from common.retrying_llm_agent import RetryingLlmAgent
 from common.system_utils import DEBUG_MODE_INSTRUCTIONS
 
 
 root_agent = RetryingLlmAgent(
     max_retries=5,
-    model="gemini-2.5-flash",
+    model=MODEL,
     name="root_agent",
     instruction="""
           You are a shopping agent responsible for helping users find and

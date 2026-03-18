@@ -25,12 +25,13 @@ This is just one of many possible approaches.
 """
 
 from . import tools
+from common.config import MODEL
 from common.retrying_llm_agent import RetryingLlmAgent
 from common.system_utils import DEBUG_MODE_INSTRUCTIONS
 
 
 shopper = RetryingLlmAgent(
-    model="gemini-2.5-flash",
+    model=MODEL,
     name="shopper",
     max_retries=5,
     instruction="""

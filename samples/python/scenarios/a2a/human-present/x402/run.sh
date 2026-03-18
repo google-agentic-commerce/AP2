@@ -100,9 +100,8 @@ fi
 
 # Clear old logs.
 echo "Clearing the logs directory..."
-if [ -d "$LOG_DIR" ]; then
-  rm -f "$LOG_DIR"/*
-fi
+rm -rf "$LOG_DIR"
+mkdir -p "$LOG_DIR"
 
 # Start all the remote agents & servers.
 pids=()
@@ -112,26 +111,26 @@ echo "Starting remote servers and agents as background processes..."
 
 # uv sync is explicitly run before starting any agents.
 # Prevent servers starting in parallel from colliding by trying to sync again.
-UV_RUN_CMD="uv run --no-sync"
+UV_RUN_CMD=("uv" "run" "--no-sync")
 
 if [ -f ".env" ]; then
-  UV_RUN_CMD="$UV_RUN_CMD --env-file .env"
+  UV_RUN_CMD+=("--env-file" ".env")
 fi
 
 echo "-> Starting the Merchant Agent (port:8001 log:$LOG_DIR/merchant_agent.log)..."
-$UV_RUN_CMD --package ap2-samples python -m roles.merchant_agent >"$LOG_DIR/merchant_agent.log" 2>&1 &
+"${UV_RUN_CMD[@]}" --package ap2-samples python -m roles.merchant_agent >"$LOG_DIR/merchant_agent.log" 2>&1 &
 pids+=($!)
 
 echo "-> Starting the Credentials Provider (port:8002 log:$LOG_DIR/credentials_provider_agent.log)..."
-$UV_RUN_CMD --package ap2-samples python -m roles.credentials_provider_agent >"$LOG_DIR/credentials_provider_agent.log" 2>&1 &
+"${UV_RUN_CMD[@]}" --package ap2-samples python -m roles.credentials_provider_agent >"$LOG_DIR/credentials_provider_agent.log" 2>&1 &
 pids+=($!)
 
 echo "-> Starting the Card Processor Agent (port:8003 log:$LOG_DIR/mpp_agent.log)..."
-$UV_RUN_CMD --package ap2-samples python -m roles.merchant_payment_processor_agent >"$LOG_DIR/mpp_agent.log" 2>&1 &
+"${UV_RUN_CMD[@]}" --package ap2-samples python -m roles.merchant_payment_processor_agent >"$LOG_DIR/mpp_agent.log" 2>&1 &
 pids+=($!)
 
 echo ""
 echo "All remote servers are starting."
 
 echo "Starting the Shopping Agent..."
-$UV_RUN_CMD --package ap2-samples adk web --host 0.0.0.0 $AGENTS_DIR
+"${UV_RUN_CMD[@]}" --package ap2-samples adk web --host 0.0.0.0 "$AGENTS_DIR"

@@ -31,6 +31,7 @@ from .remote_agents import merchant_agent_client
 from ap2.types.contact_picker import ContactAddress
 from ap2.types.mandate import CART_MANDATE_DATA_KEY
 from ap2.types.mandate import CartMandate
+from ap2.types.mandate import IntentMandate
 from ap2.types.mandate import PAYMENT_MANDATE_DATA_KEY
 from ap2.types.mandate import PaymentMandate
 from ap2.types.mandate import PaymentMandateContents
@@ -240,6 +241,9 @@ def sign_mandates_on_user_device(tool_context: ToolContext) -> str:
   """
   payment_mandate: PaymentMandate = tool_context.state["payment_mandate"]
   cart_mandate: CartMandate = tool_context.state["cart_mandate"]
+  intent_mandate: IntentMandate | None = tool_context.state.get(
+      "intent_mandate"
+  )
   cart_mandate_hash = _generate_cart_mandate_hash(cart_mandate)
   payment_mandate_hash = _generate_payment_mandate_hash(
       payment_mandate.payment_mandate_contents
@@ -247,9 +251,15 @@ def sign_mandates_on_user_device(tool_context: ToolContext) -> str:
   # A JWT containing the user's digital signature to authorize the transaction.
   # The payload uses hashes to bind the signature to the specific cart and
   # payment details, and includes a nonce to prevent replay attacks.
-  payment_mandate.user_authorization = (
-      cart_mandate_hash + "_" + payment_mandate_hash
-  )
+  hashes = [cart_mandate_hash, payment_mandate_hash]
+
+  # In Human Not Present scenarios, include the intent mandate hash to bind
+  # the payment authorization to the user-signed intent mandate.
+  if intent_mandate:
+    intent_mandate_hash = _generate_intent_mandate_hash(intent_mandate)
+    hashes.append(intent_mandate_hash)
+
+  payment_mandate.user_authorization = "_".join(hashes)
   tool_context.state["signed_payment_mandate"] = payment_mandate
   return payment_mandate.user_authorization
 
@@ -300,6 +310,29 @@ def _generate_cart_mandate_hash(cart_mandate: CartMandate) -> str:
       A string representing the hash of the cart mandate.
   """
   return "fake_cart_mandate_hash_" + cart_mandate.contents.id
+
+
+def _generate_intent_mandate_hash(intent_mandate: IntentMandate) -> str:
+  """Generates a cryptographic hash of the IntentMandate.
+
+  This hash binds the user's payment authorization to the specific
+  user-signed Intent Mandate, ensuring that Human Not Present transactions
+  can be traced back to a verified user intent.
+
+  Note: This is a placeholder implementation for development. A real
+  implementation must use a secure hashing algorithm (e.g., SHA-256) on the
+  canonical representation of the IntentMandate object.
+
+  Args:
+      intent_mandate: The IntentMandate object to hash.
+
+  Returns:
+      A string representing the hash of the intent mandate.
+  """
+  return (
+      "fake_intent_mandate_hash_"
+      + intent_mandate.natural_language_description[:20]
+  )
 
 
 def _generate_payment_mandate_hash(

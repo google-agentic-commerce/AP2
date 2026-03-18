@@ -74,6 +74,25 @@ class IntentMandate(BaseModel):
       ...,
       description="When the intent mandate expires, in ISO 8601 format.",
   )
+  user_authorization: Optional[str] = Field(
+      None,
+      description=(
+          """
+          A base64url-encoded JSON Web Token (JWT) that digitally signs the
+          intent mandate contents by the user's private key. This provides
+          non-repudiable proof of the user's intent and prevents tampering
+          by the shopping agent.
+
+          If this field is present, user_cart_confirmation_required can be
+          set to false, allowing the agent to execute purchases in the
+          user's absence.
+
+          If this field is None, user_cart_confirmation_required must be true,
+          requiring the user to confirm each specific purchase.
+          """
+      ),
+      example="eyJhbGciOiJFUzI1NksiLCJraWQiOiJkaWQ6ZXhhbXBsZ...",
+  )
 
 
 class CartContents(BaseModel):
@@ -154,6 +173,24 @@ class PaymentMandateContents(BaseModel):
       ),
   )
   merchant_agent: str = Field(..., description="Identifier for the merchant.")
+  intent_mandate_id: Optional[str] = Field(
+      None,
+      description=(
+          "Reference to the user-signed Intent Mandate that authorizes "
+          "this transaction in Human Not Present scenarios. This allows "
+          "the payment network to verify that the 'human not present' "
+          "transaction has pre-authorization support from a 'human present' "
+          "intent mandate. Required for HNP transactions."
+      ),
+  )
+  transaction_modality: Optional[str] = Field(
+      None,
+      description=(
+          "Transaction modality: 'human_present' or 'human_not_present'. "
+          "This signals to the payment network whether the user was present "
+          "at the time of payment authorization."
+      ),
+  )
   timestamp: str = Field(
       description=(
           "The date and time the mandate was created, in ISO 8601 format."

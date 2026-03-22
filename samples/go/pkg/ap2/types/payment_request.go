@@ -18,7 +18,7 @@ const PaymentMethodDataDataKey = "payment_request.PaymentMethodData"
 
 type PaymentCurrencyAmount struct {
 	Currency string  `json:"currency"`
-	Value    float64 `json:"value"`
+	Value    string  `json:"value"`
 }
 
 type PaymentItem struct {

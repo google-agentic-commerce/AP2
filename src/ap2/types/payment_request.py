@@ -41,7 +41,7 @@ class PaymentCurrencyAmount(BaseModel):
   currency: str = Field(
       ..., description="The three-letter ISO 4217 currency code."
   )
-  value: float = Field(..., description="The monetary value.")
+  value: str = Field(..., description="The monetary value.")
 
 
 class PaymentItem(BaseModel):

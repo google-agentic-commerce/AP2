@@ -121,7 +121,7 @@ async def _create_and_add_cart_mandate_artifact(
                     "network": "base",
                     "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bda02913",
                     "payTo": "0xMerchantWalletAddress",
-                    "maxAmountRequired": str(int(item.amount.value * 1000000))
+                    "maxAmountRequired": str(int(float(item.amount.value) * 1000000))
                 }]
             }
         )

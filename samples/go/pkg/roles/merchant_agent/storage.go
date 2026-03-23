@@ -15,6 +15,7 @@
 package merchant_agent
 
 import (
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -174,7 +175,7 @@ func (s *Storage) CreateCartMandate(products []Product) *types.CartMandate {
 			Label: product.Name,
 			Amount: types.PaymentCurrencyAmount{
 				Currency: "USD",
-				Value:    product.Price,
+Value:    strconv.FormatFloat(product.Price, 'f', 2, 64),
 			},
 			RefundPeriod: 30,
 		}
@@ -200,7 +201,7 @@ func (s *Storage) CreateCartMandate(products []Product) *types.CartMandate {
 						Label: "Total",
 						Amount: types.PaymentCurrencyAmount{
 							Currency: "USD",
-							Value:    total,
+Value:    strconv.FormatFloat(total, 'f', 2, 64),
 						},
 						RefundPeriod: 30,
 					},

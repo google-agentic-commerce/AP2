@@ -19,6 +19,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/google-agentic-commerce/ap2/samples/go/pkg/ap2/types"
 	"github.com/google-agentic-commerce/ap2/samples/go/pkg/common"
@@ -81,8 +82,8 @@ func generateProductsWithLLM(query string, updater *common.TaskUpdater, storage 
 
 	// Define the schema for structured output using Go struct tags
 	type Amount struct {
-		Currency string  `json:"currency"`
-		Value    float64 `json:"value"`
+		Currency string `json:"currency"`
+		Value    string `json:"value"`
 	}
 
 	type PaymentItem struct {
@@ -109,7 +110,7 @@ func generateProductsWithLLM(query string, updater *common.TaskUpdater, storage 
 							Enum: []string{"USD"},
 						},
 						"value": {
-							Type:        genai.TypeNumber,
+							Type:        genai.TypeString,
 							Description: "Price in USD",
 						},
 					},
@@ -165,7 +166,7 @@ func generateProductsWithLLM(query string, updater *common.TaskUpdater, storage 
 			SKU:         fmt.Sprintf("GEN-%d", i+1),
 			Name:        item.Label,
 			Description: fmt.Sprintf("Generated product for: %s", query),
-			Price:       item.Amount.Value,
+Price:       func() float64 { v, err := strconv.ParseFloat(item.Amount.Value, 64); if err != nil { fmt.Fprintf(os.Stderr, "could not parse price '%s': %v\n", item.Amount.Value, err) }; return v }(),
 			Category:    "Generated",
 		}
 
@@ -221,12 +222,12 @@ func UpdateCart(dataParts []map[string]interface{}, updater *common.TaskUpdater)
 
 	shippingCost := types.PaymentItem{
 		Label:        "Shipping",
-		Amount:       types.PaymentCurrencyAmount{Currency: "USD", Value: 2.00},
+		Amount:       types.PaymentCurrencyAmount{Currency: "USD", Value: "2.00"},
 		RefundPeriod: 30,
 	}
 	taxCost := types.PaymentItem{
 		Label:        "Tax",
-		Amount:       types.PaymentCurrencyAmount{Currency: "USD", Value: 1.50},
+		Amount:       types.PaymentCurrencyAmount{Currency: "USD", Value: "1.50"},
 		RefundPeriod: 30,
 	}
 
@@ -238,9 +239,10 @@ func UpdateCart(dataParts []map[string]interface{}, updater *common.TaskUpdater)
 
 	var newTotal float64
 	for _, item := range cartMandate.Contents.PaymentRequest.Details.DisplayItems {
-		newTotal += item.Amount.Value
+		v, _ := strconv.ParseFloat(item.Amount.Value, 64)
+		newTotal += v
 	}
-	cartMandate.Contents.PaymentRequest.Details.Total.Amount.Value = newTotal
+cartMandate.Contents.PaymentRequest.Details.Total.Amount.Value = strconv.FormatFloat(newTotal, 'f', 2, 64)
 
 	authToken := FakeJWT
 	cartMandate.MerchantAuthorization = &authToken

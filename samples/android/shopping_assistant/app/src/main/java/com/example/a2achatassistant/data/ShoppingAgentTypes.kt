@@ -108,7 +108,7 @@ data class DisplayItem(
   @SerialName("refund_period") val refundPeriod: Int? = null,
 )
 
-@Serializable data class Amount(val currency: String, val value: Double)
+@Serializable data class Amount(val currency: String, val value: String)
 
 @Serializable
 data class ShippingOption(

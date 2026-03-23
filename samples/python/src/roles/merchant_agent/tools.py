@@ -105,11 +105,11 @@ async def update_cart(
     tax_and_shipping_costs = [
         PaymentItem(
             label="Shipping",
-            amount=PaymentCurrencyAmount(currency="USD", value=2.00),
+            amount=PaymentCurrencyAmount(currency="USD", value="2.00"),
         ),
         PaymentItem(
             label="Tax",
-            amount=PaymentCurrencyAmount(currency="USD", value=1.50),
+            amount=PaymentCurrencyAmount(currency="USD", value="1.50"),
         ),
     ]
 
@@ -121,9 +121,9 @@ async def update_cart(
       payment_request.details.display_items.extend(tax_and_shipping_costs)
 
     # Recompute the total amount of the PaymentRequest:
-    payment_request.details.total.amount.value = sum(
-        item.amount.value for item in payment_request.details.display_items
-    )
+    payment_request.details.total.amount.value = str(sum(
+        float(item.amount.value) for item in payment_request.details.display_items
+    ))
 
     # A base64url-encoded JSON Web Token (JWT) that digitally signs the cart
     # contents by the merchant's private key.

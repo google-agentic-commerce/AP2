@@ -43,11 +43,11 @@ fun constructDPCRequest(cartMandate: CartMandate, merchantName: String): String 
   // This nonce should ideally be generated securely for each transaction.
   val nonce = UUID.randomUUID().toString()
 
-  val totalValueString = String.format("%.2f", totalValue)
+  val totalValueString = totalValue
 
   val tableRows =
     cartMandate.contents.paymentRequest.details.displayItems.map { item ->
-      listOf(item.label, "1", item.amount.value.toString(), item.amount.value.toString())
+      listOf(item.label, "1", item.amount.value, item.amount.value)
     }
 
   for (row in tableRows) {

@@ -166,7 +166,7 @@ func generateProductsWithLLM(query string, updater *common.TaskUpdater, storage 
 			SKU:         fmt.Sprintf("GEN-%d", i+1),
 			Name:        item.Label,
 			Description: fmt.Sprintf("Generated product for: %s", query),
-			Price:       func() float64 { v, _ := strconv.ParseFloat(item.Amount.Value, 64); return v }(),
+Price:       func() float64 { v, err := strconv.ParseFloat(item.Amount.Value, 64); if err != nil { fmt.Fprintf(os.Stderr, "could not parse price '%s': %v\n", item.Amount.Value, err) }; return v }(),
 			Category:    "Generated",
 		}
 
@@ -242,7 +242,7 @@ func UpdateCart(dataParts []map[string]interface{}, updater *common.TaskUpdater)
 		v, _ := strconv.ParseFloat(item.Amount.Value, 64)
 		newTotal += v
 	}
-	cartMandate.Contents.PaymentRequest.Details.Total.Amount.Value = strconv.FormatFloat(newTotal, 'f', -1, 64)
+cartMandate.Contents.PaymentRequest.Details.Total.Amount.Value = strconv.FormatFloat(newTotal, 'f', 2, 64)
 
 	authToken := FakeJWT
 	cartMandate.MerchantAuthorization = &authToken

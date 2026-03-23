@@ -175,7 +175,7 @@ func (s *Storage) CreateCartMandate(products []Product) *types.CartMandate {
 			Label: product.Name,
 			Amount: types.PaymentCurrencyAmount{
 				Currency: "USD",
-				Value:    strconv.FormatFloat(product.Price, 'f', -1, 64),
+Value:    strconv.FormatFloat(product.Price, 'f', 2, 64),
 			},
 			RefundPeriod: 30,
 		}
@@ -201,7 +201,7 @@ func (s *Storage) CreateCartMandate(products []Product) *types.CartMandate {
 						Label: "Total",
 						Amount: types.PaymentCurrencyAmount{
 							Currency: "USD",
-							Value:    strconv.FormatFloat(total, 'f', -1, 64),
+Value:    strconv.FormatFloat(total, 'f', 2, 64),
 						},
 						RefundPeriod: 30,
 					},

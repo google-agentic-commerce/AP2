@@ -22,6 +22,7 @@ nav:
       - Core Concepts: topics/core-concepts.md
       - AP2, A2A and MCP: topics/ap2-a2a-and-mcp.md
       - AP2 and x402: topics/ap2-and-x402.md
+      - Exploring Stablecoin Payments: topics/ap2-and-stablecoin-payments.md
       - Privacy and Security: topics/privacy-and-security.md
       - Life of a Transaction: topics/life-of-a-transaction.md
   - AP2 specification: specification.md

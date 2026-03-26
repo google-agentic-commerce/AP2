@@ -16,6 +16,9 @@
 
 The FunctionCallResolver uses a LLM to determine which tool to
 use based on the instructions provided.
+
+Supports both Google GenAI and MiniMax (via OpenAI-compatible API) backends.
+Set ``LLM_PROVIDER=minimax`` and ``MINIMAX_API_KEY`` to use MiniMax.
 """
 
 import logging
@@ -25,6 +28,10 @@ from a2a.server.tasks.task_updater import TaskUpdater
 from a2a.types import Task
 from google import genai
 from google.genai import types
+
+from common.llm_config import LLMProvider
+from common.llm_config import get_model
+from common.llm_config import get_provider
 
 
 DataPartContent = dict[str, Any]
@@ -36,35 +43,42 @@ class FunctionCallResolver:
 
   def __init__(
       self,
-      llm_client: genai.Client,
+      llm_client: genai.Client | None,
       tools: list[Tool],
       instructions: str = "You are a helpful assistant.",
   ):
     """Initialization.
 
     Args:
-      llm_client: The LLM client.
+      llm_client: The LLM client.  May be ``None`` when using a non-Google
+          provider (e.g. MiniMax).
       tools: The list of tools that a request can be resolved to.
       instructions: The instructions to guide the LLM.
     """
+    self._provider = get_provider()
+    self._model = get_model()
+    self._tools = tools
+    self._instructions = instructions
     self._client = llm_client
-    function_declarations = [
-        types.FunctionDeclaration(
-            name=tool.__name__, description=tool.__doc__
-        )
-        for tool in tools
-    ]
-    self._config = types.GenerateContentConfig(
-        system_instruction=instructions,
-        tools=[types.Tool(function_declarations=function_declarations)],
-        automatic_function_calling=types.AutomaticFunctionCallingConfig(
-            disable=True
-        ),
-        # Force the model to call 'any' function, instead of chatting.
-        tool_config=types.ToolConfig(
-            function_calling_config=types.FunctionCallingConfig(mode="ANY")
-        ),
-    )
+
+    if self._provider == LLMProvider.GOOGLE:
+      function_declarations = [
+          types.FunctionDeclaration(
+              name=tool.__name__, description=tool.__doc__
+          )
+          for tool in tools
+      ]
+      self._config = types.GenerateContentConfig(
+          system_instruction=instructions,
+          tools=[types.Tool(function_declarations=function_declarations)],
+          automatic_function_calling=types.AutomaticFunctionCallingConfig(
+              disable=True
+          ),
+          # Force the model to call 'any' function, instead of chatting.
+          tool_config=types.ToolConfig(
+              function_calling_config=types.FunctionCallingConfig(mode="ANY")
+          ),
+      )
 
   def determine_tool_to_use(self, prompt: str) -> str:
     """Determines which tool to use based on a user's prompt.
@@ -79,9 +93,15 @@ class FunctionCallResolver:
         The name of the tool function that the model has determined should be
         called. If no suitable tool is found, it returns "Unknown".
     """
+    if self._provider == LLMProvider.MINIMAX:
+      return self._determine_tool_minimax(prompt)
 
+    return self._determine_tool_google(prompt)
+
+  def _determine_tool_google(self, prompt: str) -> str:
+    """Resolve the tool using Google GenAI."""
     response = self._client.models.generate_content(
-        model="gemini-2.5-flash",
+        model=self._model,
         contents=prompt,
         config=self._config,
     )
@@ -98,3 +118,14 @@ class FunctionCallResolver:
           return part.function_call.name
 
     return "Unknown"
+
+  def _determine_tool_minimax(self, prompt: str) -> str:
+    """Resolve the tool using MiniMax via OpenAI-compatible API."""
+    from common.minimax_client import minimax_resolve_function_call
+
+    return minimax_resolve_function_call(
+        model=self._model,
+        tools=self._tools,
+        system_prompt=self._instructions,
+        user_prompt=prompt,
+    )

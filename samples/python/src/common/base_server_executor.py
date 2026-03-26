@@ -37,12 +37,13 @@ from a2a.types import Task
 from a2a.types import TextPart
 from a2a.utils import message
 from ap2.types.mandate import PAYMENT_MANDATE_DATA_KEY
-from google import genai
 from ap2.types.mandate import PaymentMandate
 from common import message_utils
 from common import watch_log
 from common.a2a_extension_utils import EXTENSION_URI
 from common.function_call_resolver import FunctionCallResolver
+from common.llm_config import LLMProvider
+from common.llm_config import get_provider
 from common.validation import validate_payment_mandate_signature
 
 DataPartContent = dict[str, Any]
@@ -68,7 +69,14 @@ class BaseServerExecutor(AgentExecutor, abc.ABC):
       self._supported_extension_uris = {ext.uri for ext in supported_extensions}
     else:
       self._supported_extension_uris = set()
-    self._client = genai.Client()
+
+    provider = get_provider()
+    if provider == LLMProvider.GOOGLE:
+      from google import genai
+      self._client = genai.Client()
+    else:
+      self._client = None
+
     self._tools = tools
     self._tool_resolver = FunctionCallResolver(
         self._client, self._tools, system_prompt

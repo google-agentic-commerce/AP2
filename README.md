@@ -104,6 +104,35 @@ For either method, you can set the required credentials as environment variables
         export GOOGLE_APPLICATION_CREDENTIALS='/path/to/your/service-account-key.json'
         ```
 
+#### Option 3: [MiniMax](https://www.minimaxi.com/) (Alternative LLM provider)
+
+The samples also support [MiniMax](https://www.minimaxi.com/) as an
+alternative LLM backend. MiniMax offers powerful models such as MiniMax-M2.7
+with up to 1M context window, accessible via an OpenAI-compatible API.
+
+1. Obtain a MiniMax API key from [MiniMax Platform](https://platform.minimaxi.com/).
+2. Set the required environment variables.
+
+    - **As environment variables:**
+
+        ```sh
+        export LLM_PROVIDER='minimax'
+        export MINIMAX_API_KEY='your_minimax_key'
+        ```
+
+    - **In a `.env` file:**
+
+        ```sh
+        LLM_PROVIDER='minimax'
+        MINIMAX_API_KEY='your_minimax_key'
+        ```
+
+    You can optionally override the default model (MiniMax-M2.7):
+
+    ```sh
+    export LLM_MODEL='MiniMax-M2.7-highspeed'
+    ```
+
 ### How to Run a Scenario
 
 To run a specific scenario, follow the instructions in its `README.md`. It will

@@ -15,6 +15,7 @@ dependencies = [
     "google-adk",
     "google-genai",
     "httpx",
+    "openai",
     "requests",
     "ap2"
 ]

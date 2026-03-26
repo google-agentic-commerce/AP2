@@ -98,6 +98,32 @@ Trip conditions are predicate functions that evaluate agent behavior:
 | `TIME_BASED` | Action during restricted period | Trade outside market hours |
 | `DEVIATION` | Significant departure from baseline | Price 30% below historical average |
 | `VENDOR_TRUST` | Untrusted counterparty | New vendor in high-risk region |
+| `CREDENTIAL_CHECK` | Static identity/credential verification | Agent wallet holds KYB attestation |
+
+## Identity vs. Behavioral Risk
+
+AP2 Section 7.4 identifies two complementary dimensions of risk in agent transactions:
+
+### Behavioral Risk (Runtime)
+
+Most trip conditions (`VALUE_THRESHOLD`, `VELOCITY`, `ANOMALY`, etc.) evaluate **what the agent does** — its runtime behavior against predefined thresholds. These are dynamic checks that may change with every transaction.
+
+### Identity Risk (Static)
+
+The `CREDENTIAL_CHECK` trip condition evaluates **what the agent is** — its identity, credentials, and trust signals. This addresses the spec's call-out that "the Shopping Agent's ID becomes synonymous with a bot's identity, which requires new methods of verification and trust."
+
+Examples of credential checks:
+
+- Agent wallet holds governance tokens from a recognized DAO
+- Agent has a KYB (Know Your Business) attestation via [EAS](https://attest.org/) on Base
+- Agent presents a W3C Verifiable Credential from a trusted issuer
+- Agent identity is registered in a trust registry
+
+Credential check results use the standard `TripConditionResult` structure. The `message` field carries human-readable verification details, while implementation-specific data (attestation UIDs, chain references, credential schemas) should flow through `RiskPayload.custom_signals` to keep the core types ecosystem-agnostic.
+
+!!! note
+
+    Future versions may separate identity evaluation into its own dimension within `RiskPayload` (e.g., `identity_evaluation`) to provide richer type support for credential data shapes that differ from behavioral thresholds.
 
 ## Usage in AP2 Messages
 
@@ -278,6 +304,12 @@ riskPayload.AgentID = &agentID
 
 - Confidence that agents operate within guardrails
 - Human oversight for exceptional cases
+
+## Risk Payload in Mandates
+
+As of v0.1-alpha, `RiskPayload` can be included directly on `IntentMandate`, `CartMandate`, and `PaymentMandateContents` via the optional `risk_payload` field. This allows risk signals to travel with the mandate chain, giving networks and issuers structured visibility into the agent's governance state at mandate-signing time.
+
+The `risk_payload` field is fully optional — mandates without it remain valid, ensuring backward compatibility.
 
 ## References
 

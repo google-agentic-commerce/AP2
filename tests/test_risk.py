@@ -47,6 +47,7 @@ class TestTripConditionType:
             "TIME_BASED",
             "DEVIATION",
             "VENDOR_TRUST",
+            "CREDENTIAL_CHECK",
             "CUSTOM",
         ]
         actual = [e.value for e in TripConditionType]
@@ -57,6 +58,18 @@ class TestTripConditionType:
         assert TripConditionType.VALUE_THRESHOLD == "VALUE_THRESHOLD"
         assert TripConditionType.CUMULATIVE_THRESHOLD == "CUMULATIVE_THRESHOLD"
         assert TripConditionType.VELOCITY == "VELOCITY"
+        assert TripConditionType.CREDENTIAL_CHECK == "CREDENTIAL_CHECK"
+
+    def test_credential_check_in_trip_result(self):
+        """Test CREDENTIAL_CHECK can be used in a TripConditionResult."""
+        result = TripConditionResult(
+            condition_type=TripConditionType.CREDENTIAL_CHECK,
+            status=TripConditionStatus.PASS,
+            message="Agent wallet holds valid KYB attestation via EAS on Base",
+            suggestion=None,
+        )
+        assert result.condition_type == TripConditionType.CREDENTIAL_CHECK
+        assert result.status == TripConditionStatus.PASS
 
 
 class TestTripConditionStatus:
@@ -460,3 +473,109 @@ class TestCompleteScenario:
         json_output = json.loads(payload.model_dump_json())
         assert json_output["fcb_evaluation"]["fcb_state"] == "HALF_OPEN"
         assert json_output["custom_signals"]["negotiation_rounds"] == 3
+
+
+class TestMandateRiskPayloadIntegration:
+    """Tests for risk_payload integration into mandate types."""
+
+    def test_intent_mandate_with_risk_payload(self):
+        """Test IntentMandate accepts optional risk_payload."""
+        from ap2.types.mandate import IntentMandate
+
+        payload = RiskPayload(
+            agent_modality=AgentModality.HUMAN_NOT_PRESENT,
+            agent_id="shopping-agent-001",
+        )
+        mandate = IntentMandate(
+            natural_language_description="Red basketball shoes under $200",
+            intent_expiry="2026-03-01T00:00:00Z",
+            risk_payload=payload,
+        )
+        assert mandate.risk_payload is not None
+        assert mandate.risk_payload.agent_id == "shopping-agent-001"
+
+    def test_intent_mandate_without_risk_payload(self):
+        """Test IntentMandate works without risk_payload (backward compat)."""
+        from ap2.types.mandate import IntentMandate
+
+        mandate = IntentMandate(
+            natural_language_description="Red basketball shoes",
+            intent_expiry="2026-03-01T00:00:00Z",
+        )
+        assert mandate.risk_payload is None
+
+    def test_cart_mandate_with_risk_payload(self):
+        """Test CartMandate accepts optional risk_payload."""
+        from ap2.types.mandate import CartContents, CartMandate
+        from ap2.types.payment_request import (
+            PaymentCurrencyAmount,
+            PaymentDetailsInit,
+            PaymentItem,
+            PaymentRequest,
+        )
+
+        payload = RiskPayload(
+            fcb_evaluation=FCBEvaluation(
+                fcb_state=FCBState.CLOSED,
+                trips_evaluated=3,
+                trips_triggered=0,
+            ),
+            agent_modality=AgentModality.HUMAN_NOT_PRESENT,
+        )
+        cart_contents = CartContents(
+            id="cart-001",
+            user_cart_confirmation_required=True,
+            payment_request=PaymentRequest(
+                method_data=[],
+                details=PaymentDetailsInit(
+                    id="details-001",
+                    display_items=[],
+                    total=PaymentItem(
+                        label="Total",
+                        amount=PaymentCurrencyAmount(
+                            currency="USD", value="100.00"
+                        ),
+                    ),
+                ),
+            ),
+            cart_expiry="2026-03-01T00:00:00Z",
+            merchant_name="Test Merchant",
+        )
+        mandate = CartMandate(
+            contents=cart_contents,
+            risk_payload=payload,
+        )
+        assert mandate.risk_payload is not None
+        assert mandate.risk_payload.fcb_evaluation.fcb_state == FCBState.CLOSED
+
+    def test_payment_mandate_contents_with_risk_payload(self):
+        """Test PaymentMandateContents accepts optional risk_payload."""
+        from ap2.types.mandate import PaymentMandateContents
+        from ap2.types.payment_request import (
+            PaymentCurrencyAmount,
+            PaymentItem,
+            PaymentResponse,
+        )
+
+        payload = RiskPayload(
+            agent_modality=AgentModality.HUMAN_NOT_PRESENT,
+            agent_id="b2b-agent-001",
+            cumulative_session_value=235000.0,
+            transaction_count_today=4,
+        )
+        contents = PaymentMandateContents(
+            payment_mandate_id="pm-001",
+            payment_details_id="pd-001",
+            payment_details_total=PaymentItem(
+                label="Total",
+                amount=PaymentCurrencyAmount(currency="USD", value="85000.00"),
+            ),
+            payment_response=PaymentResponse(
+                request_id="req-001",
+                method_name="basic-card",
+            ),
+            merchant_agent="merchant-001",
+            risk_payload=payload,
+        )
+        assert contents.risk_payload is not None
+        assert contents.risk_payload.cumulative_session_value == 235000.0

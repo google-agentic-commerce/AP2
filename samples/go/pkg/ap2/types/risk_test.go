@@ -29,6 +29,7 @@ func TestTripConditionTypes(t *testing.T) {
 		TripConditionTimeBased,
 		TripConditionDeviation,
 		TripConditionVendorTrust,
+		TripConditionCredentialCheck,
 		TripConditionCustom,
 	}
 
@@ -44,6 +45,9 @@ func TestTripConditionTypes(t *testing.T) {
 	}
 	if TripConditionCumulativeThreshold != "CUMULATIVE_THRESHOLD" {
 		t.Errorf("Expected CUMULATIVE_THRESHOLD, got %s", TripConditionCumulativeThreshold)
+	}
+	if TripConditionCredentialCheck != "CREDENTIAL_CHECK" {
+		t.Errorf("Expected CREDENTIAL_CHECK, got %s", TripConditionCredentialCheck)
 	}
 }
 

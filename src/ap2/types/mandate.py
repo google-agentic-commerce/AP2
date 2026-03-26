@@ -21,6 +21,7 @@ from typing import Optional
 from ap2.types.payment_request import PaymentItem
 from ap2.types.payment_request import PaymentRequest
 from ap2.types.payment_request import PaymentResponse
+from ap2.types.risk import RiskPayload
 from pydantic import BaseModel
 from pydantic import Field
 
@@ -74,6 +75,13 @@ class IntentMandate(BaseModel):
       ...,
       description="When the intent mandate expires, in ISO 8601 format.",
   )
+  risk_payload: Optional[RiskPayload] = Field(
+      None,
+      description=(
+          "Optional structured risk payload containing the current risk"
+          " assessment state as defined in Section 7.4."
+      ),
+  )
 
 
 class CartContents(BaseModel):
@@ -111,6 +119,13 @@ class CartMandate(BaseModel):
   """
 
   contents: CartContents = Field(..., description="The contents of the cart.")
+  risk_payload: Optional[RiskPayload] = Field(
+      None,
+      description=(
+          "Optional structured risk payload containing the current risk"
+          " assessment state as defined in Section 7.4."
+      ),
+  )
   merchant_authorization: Optional[str] = Field(
       None,
       description=(""" A base64url-encoded JSON Web Token (JWT) that digitally
@@ -154,6 +169,13 @@ class PaymentMandateContents(BaseModel):
       ),
   )
   merchant_agent: str = Field(..., description="Identifier for the merchant.")
+  risk_payload: Optional[RiskPayload] = Field(
+      None,
+      description=(
+          "Optional structured risk payload containing the current risk"
+          " assessment state as defined in Section 7.4."
+      ),
+  )
   timestamp: str = Field(
       description=(
           "The date and time the mandate was created, in ISO 8601 format."

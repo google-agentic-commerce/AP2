@@ -62,6 +62,9 @@ const (
 	// TripConditionVendorTrust - Transaction with untrusted counterparty.
 	TripConditionVendorTrust TripConditionType = "VENDOR_TRUST"
 
+	// TripConditionCredentialCheck - Static identity/credential verification (e.g., wallet attestation, KYB check).
+	TripConditionCredentialCheck TripConditionType = "CREDENTIAL_CHECK"
+
 	// TripConditionCustom - Implementation-specific trip condition.
 	TripConditionCustom TripConditionType = "CUSTOM"
 )

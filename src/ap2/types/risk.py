@@ -74,6 +74,9 @@ class TripConditionType(str, Enum):
     VENDOR_TRUST = "VENDOR_TRUST"
     """Transaction with unverified or untrusted counterparty."""
 
+    CREDENTIAL_CHECK = "CREDENTIAL_CHECK"
+    """Static identity/credential verification (e.g., wallet attestation, KYB check)."""
+
     CUSTOM = "CUSTOM"
     """Implementation-specific trip condition."""
 

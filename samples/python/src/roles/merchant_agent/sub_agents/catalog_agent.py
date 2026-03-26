@@ -28,7 +28,6 @@ from a2a.types import DataPart
 from a2a.types import Part
 from a2a.types import Task
 from a2a.types import TextPart
-from google import genai
 from pydantic import ValidationError
 
 from .. import storage
@@ -43,6 +42,9 @@ from ap2.types.payment_request import PaymentMethodData
 from ap2.types.payment_request import PaymentOptions
 from ap2.types.payment_request import PaymentRequest
 from common import message_utils
+from common.llm_config import LLMProvider
+from common.llm_config import get_model
+from common.llm_config import get_provider
 from common.system_utils import DEBUG_MODE_INSTRUCTIONS
 
 
@@ -52,7 +54,8 @@ async def find_items_workflow(
     current_task: Task | None,
 ) -> None:
   """Finds products that match the user's IntentMandate."""
-  llm_client = genai.Client()
+  provider = get_provider()
+  model = get_model()
 
   intent_mandate = message_utils.parse_canonical_object(
       INTENT_MANDATE_DATA_KEY, data_parts, IntentMandate
@@ -67,17 +70,12 @@ async def find_items_workflow(
     %s
         """ % DEBUG_MODE_INSTRUCTIONS
 
-  llm_response = llm_client.models.generate_content(
-      model="gemini-2.5-flash",
-      contents=prompt,
-      config={
-          "response_mime_type": "application/json",
-          "response_schema": list[PaymentItem],
-      }
-  )
-  try:
-    items: list[PaymentItem] = llm_response.parsed
+  if provider == LLMProvider.MINIMAX:
+    items = _generate_items_minimax(model, prompt)
+  else:
+    items = _generate_items_google(model, prompt)
 
+  try:
     current_time = datetime.now(timezone.utc)
     item_count = 0
     for item in items:
@@ -100,6 +98,41 @@ async def find_items_workflow(
     )
     await updater.failed(message=error_message)
     return
+
+
+def _generate_items_google(model: str, prompt: str) -> list[PaymentItem]:
+  """Generate items using Google GenAI."""
+  from google import genai
+
+  llm_client = genai.Client()
+  llm_response = llm_client.models.generate_content(
+      model=model,
+      contents=prompt,
+      config={
+          "response_mime_type": "application/json",
+          "response_schema": list[PaymentItem],
+      }
+  )
+  return llm_response.parsed
+
+
+def _generate_items_minimax(model: str, prompt: str) -> list[PaymentItem]:
+  """Generate items using MiniMax via OpenAI-compatible API."""
+  from common.minimax_client import minimax_generate_json
+
+  schema_hint = (
+      "Return a JSON object with a key 'items' containing a list of exactly "
+      "3 PaymentItem objects. Each PaymentItem must have: "
+      "'label' (string, product name without branding), "
+      "'amount' (object with 'currency' string e.g. 'USD' and 'value' float)."
+  )
+  full_prompt = f"{prompt}\n\n{schema_hint}"
+  raw = minimax_generate_json(model=model, prompt=full_prompt)
+
+  items_data = raw.get("items", raw) if isinstance(raw, dict) else raw
+  if isinstance(items_data, dict):
+    items_data = [items_data]
+  return [PaymentItem.model_validate(item) for item in items_data]
 
 
 async def _create_and_add_cart_mandate_artifact(

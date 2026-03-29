@@ -14,19 +14,30 @@
 
 """Contains the definitions of the Agent Payments Protocol mandates."""
 
-from datetime import datetime
-from datetime import timezone
-from typing import Optional
+import uuid
 
-from ap2.types.payment_request import PaymentItem
-from ap2.types.payment_request import PaymentRequest
-from ap2.types.payment_request import PaymentResponse
-from pydantic import BaseModel
-from pydantic import Field
+from datetime import datetime, timezone
+from enum import Enum
+
+from pydantic import BaseModel, Field, model_validator
+
+from ap2.types.payment_request import (
+  PaymentItem,
+  PaymentRequest,
+  PaymentResponse,
+)
+
 
 CART_MANDATE_DATA_KEY = "ap2.mandates.CartMandate"
 INTENT_MANDATE_DATA_KEY = "ap2.mandates.IntentMandate"
 PAYMENT_MANDATE_DATA_KEY = "ap2.mandates.PaymentMandate"
+
+
+class TransactionModality(str, Enum):
+  """Whether the user was present at payment authorization time."""
+
+  HUMAN_PRESENT = "human_present"
+  HUMAN_NOT_PRESENT = "human_not_present"
 
 
 class IntentMandate(BaseModel):
@@ -36,6 +47,11 @@ class IntentMandate(BaseModel):
   human-not-present flows, additional fields will be added to this mandate.
   """
 
+  id: str = Field(
+      default_factory=lambda: uuid.uuid4().hex,
+      description="Unique identifier for this intent mandate, referenced by "
+      "PaymentMandateContents.intent_mandate_id in Human Not Present flows.",
+  )
   user_cart_confirmation_required: bool = Field(
       True,
       description=(
@@ -53,20 +69,20 @@ class IntentMandate(BaseModel):
       ),
       example="High top, old school, red basketball shoes",
   )
-  merchants: Optional[list[str]] = Field(
+  merchants: list[str] | None = Field(
       None,
       description=(
           "Merchants allowed to fulfill the intent. If not set, the shopping"
           " agent is able to work with any suitable merchant."
       ),
   )
-  skus: Optional[list[str]] = Field(
+  skus: list[str] | None = Field(
       None,
       description=(
           "A list of specific product SKUs. If not set, any SKU is allowed."
       ),
   )
-  requires_refundability: Optional[bool] = Field(
+  requires_refundability: bool | None = Field(
       False,
       description="If true, items must be refundable.",
   )
@@ -74,6 +90,33 @@ class IntentMandate(BaseModel):
       ...,
       description="When the intent mandate expires, in ISO 8601 format.",
   )
+  user_authorization: str | None = Field(
+      None,
+      description=(
+          "A base64url-encoded JSON Web Token (JWT) that digitally signs the "
+          "intent mandate contents by the user's private key. This provides "
+          "non-repudiable proof of the user's intent and prevents tampering "
+          "by the shopping agent. "
+          "If this field is present, user_cart_confirmation_required can be "
+          "set to false, allowing the agent to execute purchases in the "
+          "user's absence. "
+          "If this field is None, user_cart_confirmation_required must be "
+          "true, requiring the user to confirm each specific purchase."
+      ),
+      example="eyJhbGciOiJFUzI1NksiLCJraWQiOiJkaWQ6ZXhhbXBsZ...",
+  )
+
+  @model_validator(mode="after")
+  def _validate_user_authorization_rules(self) -> "IntentMandate":
+    if (
+        self.user_authorization is None
+        and not self.user_cart_confirmation_required
+    ):
+      raise ValueError(
+          "user_cart_confirmation_required must be True when "
+          "user_authorization is not provided"
+      )
+    return self
 
 
 class CartContents(BaseModel):
@@ -111,7 +154,7 @@ class CartMandate(BaseModel):
   """
 
   contents: CartContents = Field(..., description="The contents of the cart.")
-  merchant_authorization: Optional[str] = Field(
+  merchant_authorization: str | None = Field(
       None,
       description=(""" A base64url-encoded JSON Web Token (JWT) that digitally
         signs the cart contents, guaranteeing its authenticity and integrity:
@@ -154,12 +197,42 @@ class PaymentMandateContents(BaseModel):
       ),
   )
   merchant_agent: str = Field(..., description="Identifier for the merchant.")
+  intent_mandate_id: str | None = Field(
+      None,
+      description=(
+          "Reference to the user-signed Intent Mandate that authorizes "
+          "this transaction in Human Not Present scenarios. This allows "
+          "the payment network to verify that the 'human not present' "
+          "transaction has pre-authorization support from a 'human present' "
+          "intent mandate. Required when transaction_modality is "
+          "human_not_present."
+      ),
+  )
+  transaction_modality: TransactionModality | None = Field(
+      None,
+      description=(
+          "Transaction modality: whether the user was present at payment "
+          "authorization time. Signals to the payment network in agentic flows."
+      ),
+  )
   timestamp: str = Field(
       description=(
           "The date and time the mandate was created, in ISO 8601 format."
       ),
       default_factory=lambda: datetime.now(timezone.utc).isoformat(),
   )
+
+  @model_validator(mode="after")
+  def _validate_hnp_intent_reference(self) -> "PaymentMandateContents":
+    if (
+        self.transaction_modality == TransactionModality.HUMAN_NOT_PRESENT
+        and not self.intent_mandate_id
+    ):
+      raise ValueError(
+          "intent_mandate_id is required when transaction_modality is "
+          "human_not_present"
+      )
+    return self
 
 
 class PaymentMandate(BaseModel):
@@ -178,7 +251,7 @@ class PaymentMandate(BaseModel):
       ...,
       description="The data contents of the payment mandate.",
   )
-  user_authorization: Optional[str] = Field(
+  user_authorization: str | None = Field(
       None,
       description=(
           """
@@ -191,8 +264,9 @@ class PaymentMandate(BaseModel):
             "aud": ...
             "nonce": ...
             "sd_hash": hash of the issuer-signed jwt
-            "transaction_data": an array containing the secure hashes of 
-              CartMandate and PaymentMandateContents.
+            "transaction_data": an array containing the secure hashes of
+              CartMandate and PaymentMandateContents, and when applicable
+              the Intent Mandate (Human Not Present flows).
 
           """
       ),

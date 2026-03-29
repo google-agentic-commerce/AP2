@@ -18,23 +18,23 @@ Each agent uses individual tools to handle distinct tasks throughout the
 shopping and purchasing process.
 """
 
-from datetime import datetime
-from datetime import timedelta
-from datetime import timezone
+from datetime import datetime, timedelta, timezone
 
 from a2a.types import Artifact
-from google.adk.tools.tool_context import ToolContext
-
-from ap2.types.mandate import CART_MANDATE_DATA_KEY
-from ap2.types.mandate import CartMandate
-from ap2.types.mandate import INTENT_MANDATE_DATA_KEY
-from ap2.types.mandate import IntentMandate
 from common.a2a_message_builder import A2aMessageBuilder
 from common.artifact_utils import find_canonical_objects
+from google.adk.tools.tool_context import ToolContext
 from roles.shopping_agent.remote_agents import merchant_agent_client
 
+from ap2.types.mandate import (
+  CART_MANDATE_DATA_KEY,
+  INTENT_MANDATE_DATA_KEY,
+  CartMandate,
+  IntentMandate,
+)
 
-def create_intent_mandate(
+
+def create_intent_mandate(  # noqa: PLR0913
     natural_language_description: str,
     user_cart_confirmation_required: bool,
     merchants: list[str],
@@ -55,6 +55,12 @@ def create_intent_mandate(
   Returns:
     An IntentMandate object valid for 1 day.
   """
+  # Sample placeholder JWT when the user allows agent checkout without
+  # per-cart confirmation; production must use a real hardware-backed signature.
+  user_authorization = None
+  if not user_cart_confirmation_required:
+    # Sample placeholder; production must use a real hardware-backed JWT.
+    user_authorization = "dev.placeholder.intent_mandate_user_authorization_jwt"
   intent_mandate = IntentMandate(
       natural_language_description=natural_language_description,
       user_cart_confirmation_required=user_cart_confirmation_required,
@@ -64,6 +70,7 @@ def create_intent_mandate(
       intent_expiry=(
           datetime.now(timezone.utc) + timedelta(days=1)
       ).isoformat(),
+      user_authorization=user_authorization,
   )
   tool_context.state["intent_mandate"] = intent_mandate
   return intent_mandate

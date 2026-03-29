@@ -23,12 +23,14 @@ const (
 )
 
 type IntentMandate struct {
+	ID                           string   `json:"id,omitempty"`
 	UserCartConfirmationRequired *bool    `json:"user_cart_confirmation_required,omitempty"`
 	NaturalLanguageDescription   string   `json:"natural_language_description"`
 	Merchants                    []string `json:"merchants,omitempty"`
 	SKUs                         []string `json:"skus,omitempty"`
 	RequiresRefundability        *bool    `json:"requires_refundability,omitempty"`
 	IntentExpiry                 string   `json:"intent_expiry"`
+	UserAuthorization            *string  `json:"user_authorization,omitempty"`
 }
 
 func NewIntentMandate() *IntentMandate {
@@ -75,6 +77,8 @@ type PaymentMandateContents struct {
 	PaymentDetailsTotal PaymentItem     `json:"payment_details_total"`
 	PaymentResponse     PaymentResponse `json:"payment_response"`
 	MerchantAgent       string          `json:"merchant_agent"`
+	IntentMandateID     *string         `json:"intent_mandate_id,omitempty"`
+	TransactionModality *string         `json:"transaction_modality,omitempty"`
 	Timestamp           string          `json:"timestamp,omitempty"`
 }
 

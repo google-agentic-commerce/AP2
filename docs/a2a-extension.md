@@ -128,11 +128,12 @@ The following listing shows the JSON rendering of an IntentMandate Message.
       "kind": "data",
       "data": {
         "ap2.mandates.IntentMandate": {
-          "user_cart_confirmation_required": false,
+          "id": "550e8400-e29b-41d4-a716-446655440000",
+          "user_cart_confirmation_required": true,
           "natural_language_description": "I'd like some cool red shoes in my size",
           "merchants": null,
           "skus": null,
-          "required_refundability": true,
+          "requires_refundability": true,
           "intent_expiry": "2025-09-16T15:00:00Z"
         }
       }

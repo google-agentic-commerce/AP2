@@ -18,27 +18,32 @@ Each agent uses individual tools to handle distinct tasks throughout the
 shopping and purchasing process, such as updating a cart or initiating payment.
 """
 
-from datetime import datetime
-from datetime import timezone
 import os
 import uuid
 
-from a2a.types import Artifact
-from google.adk.tools.tool_context import ToolContext
+from datetime import datetime, timezone
 
-from .remote_agents import credentials_provider_client
-from .remote_agents import merchant_agent_client
-from ap2.types.contact_picker import ContactAddress
-from ap2.types.mandate import CART_MANDATE_DATA_KEY
-from ap2.types.mandate import CartMandate
-from ap2.types.mandate import PAYMENT_MANDATE_DATA_KEY
-from ap2.types.mandate import PaymentMandate
-from ap2.types.mandate import PaymentMandateContents
-from ap2.types.payment_receipt import PAYMENT_RECEIPT_DATA_KEY
-from ap2.types.payment_receipt import PaymentReceipt
-from ap2.types.payment_request import PaymentResponse
+from a2a.types import Artifact
 from common import artifact_utils
 from common.a2a_message_builder import A2aMessageBuilder
+from google.adk.tools.tool_context import ToolContext
+from roles.shopping_agent.remote_agents import (
+  credentials_provider_client,
+  merchant_agent_client,
+)
+
+from ap2.types.contact_picker import ContactAddress
+from ap2.types.mandate import (
+  CART_MANDATE_DATA_KEY,
+  PAYMENT_MANDATE_DATA_KEY,
+  CartMandate,
+  IntentMandate,
+  PaymentMandate,
+  PaymentMandateContents,
+  TransactionModality,
+)
+from ap2.types.payment_receipt import PAYMENT_RECEIPT_DATA_KEY, PaymentReceipt
+from ap2.types.payment_request import PaymentResponse
 
 
 async def update_cart(
@@ -118,10 +123,10 @@ async def initiate_payment(tool_context: ToolContext, debug_mode: bool = False):
 async def initiate_payment_with_otp(
     challenge_response: str, tool_context: ToolContext, debug_mode: bool = False
 ):
-  """Initiates a payment using the payment mandate from state and a
+  """Initiates payment with the mandate from state and an OTP challenge.
 
-    challenge response. In our sample, the challenge response is a one-time
-    password (OTP) sent to the user.
+  In our sample, the challenge response is a one-time password (OTP) sent to
+  the user.
 
   Args:
     challenge_response: The challenge response.
@@ -204,6 +209,18 @@ def create_payment_mandate(
       payer_email=user_email,
   )
 
+  intent_mandate: IntentMandate | None = tool_context.state.get(
+      "intent_mandate",
+  )
+  intent_mandate_id: str | None = None
+  transaction_modality: TransactionModality | None = None
+  if intent_mandate:
+    if intent_mandate.user_authorization:
+      intent_mandate_id = intent_mandate.id
+      transaction_modality = TransactionModality.HUMAN_NOT_PRESENT
+    else:
+      transaction_modality = TransactionModality.HUMAN_PRESENT
+
   payment_mandate = PaymentMandate(
       payment_mandate_contents=PaymentMandateContents(
           payment_mandate_id=uuid.uuid4().hex,
@@ -212,6 +229,8 @@ def create_payment_mandate(
           payment_details_total=payment_request.details.total,
           payment_response=payment_response,
           merchant_agent=cart_mandate.contents.merchant_name,
+          intent_mandate_id=intent_mandate_id,
+          transaction_modality=transaction_modality,
       ),
   )
 
@@ -232,24 +251,30 @@ def sign_mandates_on_user_device(tool_context: ToolContext) -> str:
   concatenating the mandate hashes.
 
   Args:
-      tool_context: The context object used for state management. It is expected
-        to contain the `payment_mandate` and `cart_mandate`.
+      tool_context: The context object used for state management. Expected to
+        contain the `payment_mandate` and `cart_mandate`.
 
   Returns:
       A string representing the simulated user authorization signature (JWT).
   """
   payment_mandate: PaymentMandate = tool_context.state["payment_mandate"]
   cart_mandate: CartMandate = tool_context.state["cart_mandate"]
+  intent_mandate: IntentMandate | None = tool_context.state.get(
+      "intent_mandate",
+  )
   cart_mandate_hash = _generate_cart_mandate_hash(cart_mandate)
   payment_mandate_hash = _generate_payment_mandate_hash(
       payment_mandate.payment_mandate_contents
   )
-  # A JWT containing the user's digital signature to authorize the transaction.
-  # The payload uses hashes to bind the signature to the specific cart and
+  # A JWT containing the user's digital signature to authorize the
+  # transaction. The payload uses hashes to bind the signature to the cart and
   # payment details, and includes a nonce to prevent replay attacks.
-  payment_mandate.user_authorization = (
-      cart_mandate_hash + "_" + payment_mandate_hash
-  )
+  hashes = [cart_mandate_hash, payment_mandate_hash]
+  # When the intent mandate is user-signed (user_authorization set), bind the
+  # payment authorization to that intent for Human Not Present scenarios.
+  if intent_mandate and intent_mandate.user_authorization:
+    hashes.append(_generate_intent_mandate_hash(intent_mandate))
+  payment_mandate.user_authorization = "_".join(hashes)
   tool_context.state["signed_payment_mandate"] = payment_mandate
   return payment_mandate.user_authorization
 
@@ -300,6 +325,26 @@ def _generate_cart_mandate_hash(cart_mandate: CartMandate) -> str:
       A string representing the hash of the cart mandate.
   """
   return "fake_cart_mandate_hash_" + cart_mandate.contents.id
+
+
+def _generate_intent_mandate_hash(intent_mandate: IntentMandate) -> str:
+  """Generates a cryptographic hash of the IntentMandate.
+
+  This hash binds the user's payment authorization to the specific
+  user-signed Intent Mandate, ensuring that Human Not Present transactions
+  can be traced back to a verified user intent.
+
+  Note: This is a placeholder implementation for development. A real
+  implementation must use a secure hashing algorithm (e.g., SHA-256) on the
+  canonical representation of the IntentMandate object.
+
+  Args:
+      intent_mandate: The IntentMandate object to hash.
+
+  Returns:
+      A string representing the hash of the intent mandate.
+  """
+  return "fake_intent_mandate_hash_" + intent_mandate.id
 
 
 def _generate_payment_mandate_hash(

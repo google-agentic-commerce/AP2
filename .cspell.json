@@ -4,6 +4,7 @@
   "caseSensitive": true,
   "useGitignore": true,
   "ignorePaths": [
+    ".ruff.toml",
     ".github/**",
     ".cspell/**",
     ".gemini/**",

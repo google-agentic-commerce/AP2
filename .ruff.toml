@@ -8,6 +8,7 @@ target-version = "py312" # Minimum Python version
 
 [lint]
 ignore = [
+    "UP017",  # datetime.UTC is 3.11+; project supports Python 3.10 (use timezone.utc).
     "COM812",
     "FBT001",
     "FBT002",

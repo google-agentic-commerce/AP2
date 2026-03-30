@@ -47,10 +47,11 @@ This sample consists of:
         export GOOGLE_API_KEY=your_key
         ```
 
-    1.  Add it to the local.properties file.
+    1.  Add it to the local.properties file. Note: the Android app reads
+        `GEMINI_API_KEY` from this file.
 
         ```
-        echo "GOOGLE_API_KEY=your_key" >> samples/android/shopping_assistant/local.properties
+        echo "GEMINI_API_KEY=your_key" >> samples/android/shopping_assistant/local.properties
         ```
 
 3.  **Add the Android SDK path to the local.properties file.**

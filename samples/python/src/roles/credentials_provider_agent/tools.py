@@ -105,9 +105,10 @@ async def handle_get_payment_method_raw_credentials(
     updater: TaskUpdater,
     current_task: Task | None,
 ) -> None:
-  """Exchanges a payment token for the payment method's raw credentials.
+  """Exchanges a payment token for sample-safe processor payment details.
 
-  Updates a task with the payment credentials.
+  Updates a task with non-sensitive payment method metadata. The sample keeps
+  raw wallet-held credential material inside the credentials provider.
 
   Args:
     data_parts: DataPart contents. Should contain a single PaymentMandate.
@@ -123,8 +124,11 @@ async def handle_get_payment_method_raw_credentials(
       "token", {}
   ).get("value", "")
   payment_mandate_id = payment_mandate_contents.payment_mandate_id
+  payer_email = payment_mandate_contents.payment_response.payer_email
 
-  payment_method = account_manager.verify_token(token, payment_mandate_id)
+  payment_method = account_manager.get_payment_method_processing_details(
+      token, payment_mandate_id, payer_email
+  )
   if not payment_method:
     raise ValueError(f"Payment method not found for token: {token}")
   await updater.add_artifact([Part(root=DataPart(data=payment_method))])
@@ -198,6 +202,12 @@ async def handle_signed_payment_mandate(
   payment_mandate_id = (
       payment_mandate.payment_mandate_contents.payment_mandate_id
   )
+  payer_email = (
+      payment_mandate.payment_mandate_contents.payment_response.payer_email
+  )
+  if not payer_email:
+    raise ValueError("payer_email is required in PaymentMandate.")
+  account_manager.validate_token_payer(token, payer_email)
   account_manager.update_token(token, payment_mandate_id)
   await updater.complete()
 

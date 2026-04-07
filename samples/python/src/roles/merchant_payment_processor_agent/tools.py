@@ -196,10 +196,14 @@ async def _complete_payment(
       payment_method,
   )
 
+  credential_reference = {}
+  if isinstance(payment_credential, dict):
+    credential_reference = payment_credential.get("credential_reference", {})
+
   logging.info(
-      "Calling issuer to complete payment for %s with payment credential %s...",
+      "Calling issuer to complete payment for %s with credential reference %s...",
       payment_mandate_id,
-      payment_credential,
+      credential_reference,
   )
   # Call issuer to complete the payment
   payment_receipt = _create_payment_receipt(payment_mandate)

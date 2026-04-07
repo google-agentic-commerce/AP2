@@ -111,6 +111,14 @@ _account_db = {
 _token = {}
 
 
+def _get_token_lookup(token: str) -> dict[str, Any]:
+  """Returns the token metadata for the given token."""
+  account_lookup = _token.get(token, {})
+  if not account_lookup:
+    raise ValueError("Invalid token")
+  return account_lookup
+
+
 def create_token(
     email_address: str, payment_method_alias: str
 ) -> str | dict[str, Any]:
@@ -171,32 +179,78 @@ def update_token(token: str, payment_mandate_id: str) -> None:
     token: The token to update.
     payment_mandate_id: The payment mandate id to associate with the token.
   """
-  if token not in _token:
-    raise ValueError(f"Token {token} not found")
-  if _token[token].get("payment_mandate_id"):
+  if not payment_mandate_id:
+    raise ValueError("payment_mandate_id is required")
+  account_lookup = _get_token_lookup(token)
+  if account_lookup.get("payment_mandate_id"):
     # Do not overwrite the payment mandate id if it is already set.
     return
   _token[token]["payment_mandate_id"] = payment_mandate_id
 
-def verify_token(token: str, payment_mandate_id: str) -> dict[str, Any]:
+
+def validate_token_payer(token: str, payer_email: str) -> None:
+  """Ensures the token was issued for the payer email in the mandate."""
+  if not payer_email:
+    raise ValueError("payer_email is required")
+  account_lookup = _get_token_lookup(token)
+  if account_lookup.get("email_address") != payer_email:
+    raise ValueError("Invalid token")
+
+
+def verify_token(
+    token: str,
+    payment_mandate_id: str,
+    payer_email: str | None = None,
+) -> dict[str, Any]:
   """Look up an account by token.
 
   Args:
     token: The token for look up.
     payment_mandate_id: The payment mandate id associated with the token.
+    payer_email: The email address presented in the payment mandate.
 
   Returns:
     The account for the given token, or status:invalid_token if the token is not
     valid.
   """
-  account_lookup = _token.get(token, {})
-  if not account_lookup:
-    raise ValueError("Invalid token")
+  account_lookup = _get_token_lookup(token)
   if account_lookup.get("payment_mandate_id") != payment_mandate_id:
+    raise ValueError("Invalid token")
+  if payer_email and account_lookup.get("email_address") != payer_email:
     raise ValueError("Invalid token")
   email_address = account_lookup.get("email_address")
   alias = account_lookup.get("payment_method_alias")
   return get_payment_method_by_alias(email_address, alias)
+
+
+def get_payment_method_processing_details(
+    token: str,
+    payment_mandate_id: str,
+    payer_email: str | None = None,
+) -> dict[str, Any]:
+  """Returns processor-safe payment method metadata for the given token.
+
+  The sample merchant payment processor does not need the raw wallet-held
+  credential material. Keep the response limited to non-sensitive method
+  metadata plus an opaque reference that can be logged or handed off without
+  exposing card data.
+  """
+  payment_method = verify_token(token, payment_mandate_id, payer_email)
+  processor_details = {
+      "type": payment_method.get("type"),
+      "alias": payment_method.get("alias"),
+      "credential_reference": {
+          "payment_credential_token": token,
+          "payment_mandate_id": payment_mandate_id,
+      },
+  }
+
+  if payment_method.get("network"):
+    processor_details["network"] = payment_method["network"]
+  if payment_method.get("brand"):
+    processor_details["brand"] = payment_method["brand"]
+
+  return processor_details
 
 
 def get_account_payment_methods(email_address: str) -> list[dict[str, Any]]:

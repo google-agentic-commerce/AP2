@@ -201,7 +201,7 @@ def verify_token(
     token: str,
     payment_mandate_id: str,
     payer_email: str | None = None,
-) -> dict[str, Any]:
+) -> dict[str, Any] | None:
   """Look up an account by token.
 
   Args:

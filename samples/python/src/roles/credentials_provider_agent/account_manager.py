@@ -236,6 +236,8 @@ def get_payment_method_processing_details(
   exposing card data.
   """
   payment_method = verify_token(token, payment_mandate_id, payer_email)
+  if not payment_method:
+    return None
   processor_details = {
       "type": payment_method.get("type"),
       "alias": payment_method.get("alias"),

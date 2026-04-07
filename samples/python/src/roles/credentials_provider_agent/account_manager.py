@@ -227,7 +227,7 @@ def get_payment_method_processing_details(
     token: str,
     payment_mandate_id: str,
     payer_email: str | None = None,
-) -> dict[str, Any]:
+) -> dict[str, Any] | None:
   """Returns processor-safe payment method metadata for the given token.
 
   The sample merchant payment processor does not need the raw wallet-held

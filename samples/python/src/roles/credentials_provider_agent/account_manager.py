@@ -185,7 +185,7 @@ def update_token(token: str, payment_mandate_id: str) -> None:
   if account_lookup.get("payment_mandate_id"):
     # Do not overwrite the payment mandate id if it is already set.
     return
-  _token[token]["payment_mandate_id"] = payment_mandate_id
+  account_lookup["payment_mandate_id"] = payment_mandate_id
 
 
 def validate_token_payer(token: str, payer_email: str) -> None:

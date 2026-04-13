@@ -14,6 +14,14 @@
     "merchants": ["proxies.sx", "render.com"],
     "user_cart_confirmation_required": false
   },
+  {
+  "@context": [
+    "https://www.w3.org/ns/credentials/v2",
+    "https://ap2-protocol.net/v1"
+  ],
+  // cspell:ignore ethr
+  "id": "urn:uuid:58a731d1-b2c3-4d4e-8f9a-1db618e6bfc3",
+  ...
   "proof": {
     "type": "EthereumEip712Signature2021",
     "created": "2026-04-13T10:05:00Z",

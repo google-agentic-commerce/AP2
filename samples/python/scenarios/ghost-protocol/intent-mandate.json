@@ -9,9 +9,9 @@
   "validFrom": "2026-04-13T10:00:00Z",
   "credentialSubject": {
     "id": "did:ethr:0x1db618e6bfc35bd48b91431a55c4948b27e7a539",
-    "natural_language_description": "Allow ghost-protocol-node-v1 to autonomously purchase data proxies and cloud hosting services up to 200 USDC per month.",
+    "natural_language_description": "Allow ghost-protocol-node-v1 to purchase data proxies and hosting up to 200 USDC/mo.",
     "intent_expiry": "2026-12-31T23:59:59Z",
-    "merchants": ["proxies.sx", "render.com", "google-agentic-commerce"],
+    "merchants": ["proxies.sx", "render.com"],
     "user_cart_confirmation_required": false
   },
   "proof": {
@@ -19,16 +19,6 @@
     "created": "2026-04-13T10:05:00Z",
     "verificationMethod": "did:ethr:0x1db618e6bfc35bd48b91431a55c4948b27e7a539#controller",
     "proofPurpose": "assertionMethod",
-    "proofValue": "[PASTE_YOUR_ACTUAL_0x_SIGNATURE_HERE]"
-    matrix:
-- name: Markdown
-  dictionary:
-    wordlist:
-      - ethr
-{
-  "words": ["ethr", "wordlist"],
-  "ignoreWords": []
-}
-    
+    "proofValue": "[PASTE_YOUR_0x_SIGNATURE_HERE]"
   }
 }

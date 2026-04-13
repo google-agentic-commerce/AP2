@@ -1,0 +1,33 @@
+{
+  "@context": [
+    "https://www.w3.org/ns/credentials/v2",
+    "https://ap2-protocol.net/v1"
+  ],
+  "id": "urn:uuid:58a731d1-b2c3-4d4e-8f9a-0x1db618e6bfc3",
+  "type": ["VerifiableCredential", "IntentMandate"],
+  "issuer": "did:ethr:0x1db618e6bfc35bd48b91431a55c4948b27e7a539",
+  "validFrom": "2026-04-13T05:40:00Z",
+  "credentialSubject": {
+    "id": "did:ethr:0x1db618e6bfc35bd48b91431a55c4948b27e7a539",
+    "agentId": "ghost-protocol-node-v1",
+    "isNonCustodial": true,
+    "constraints": {
+      "maxAmount": "200.00",
+      "currency": "USDC",
+      "allowedMerchants": [
+        "proxies.sx",
+        "render.com",
+        "google-agentic-commerce"
+      ],
+      "requiresHumanApproval": false
+    }
+  },
+  "proof": {
+    "type": "DataIntegrityProof",
+    "cryptosuite": "ecdsa-2019",
+    "created": "2026-04-13T05:41:00Z",
+    "verificationMethod": "did:ethr:0x1db618e6bfc35bd48b91431a55c4948b27e7a539#controller",
+    "proofPurpose": "assertionMethod",
+    "proofValue": "[PASTE_YOUR_0x_SIGNATURE_FROM_RABBY_HERE]"
+  }
+}

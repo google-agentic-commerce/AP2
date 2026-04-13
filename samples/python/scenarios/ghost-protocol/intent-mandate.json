@@ -25,5 +25,10 @@
   dictionary:
     wordlist:
       - ethr
+{
+  "words": ["ethr", "wordlist"],
+  "ignoreWords": []
+}
+    
   }
 }

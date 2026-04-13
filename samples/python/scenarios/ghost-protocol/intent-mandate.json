@@ -20,5 +20,10 @@
     "verificationMethod": "did:ethr:0x1db618e6bfc35bd48b91431a55c4948b27e7a539#controller",
     "proofPurpose": "assertionMethod",
     "proofValue": "[PASTE_YOUR_ACTUAL_0x_SIGNATURE_HERE]"
+    matrix:
+- name: Markdown
+  dictionary:
+    wordlist:
+      - ethr
   }
 }

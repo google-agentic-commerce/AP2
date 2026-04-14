@@ -17,9 +17,9 @@
   },
   "proof": {
     "type": "EthereumEip712Signature2021",
-    "created": "2026-04-13T10:05:00Z",
+    "created": "2026-04-14T10:30:00Z",
     "verificationMethod": "did:ethr:0x1db618e6bfc35bd48b91431a55c4948b27e7a539#controller",
     "proofPurpose": "assertionMethod",
-    "proofValue": "PASTE_YOUR_LONG_132_CHAR_SIGNATURE_HERE"
+    "proofValue": "[PASTE_YOUR_LONG_0x_SIGNATURE_HERE]"
   }
 }

@@ -3,15 +3,7 @@
     "https://www.w3.org/ns/credentials/v2",
     "https://ap2-protocol.net/v1"
   ],
-  "id": "urn:uuid:58a731d1-b2c3-4d4e-8f9a-1db618e6bfc3",
-  "type": ["VerifiableCredential", "IntentMandate"],
-  "issuer": "did:ethr:0x1db618e6bfc35bd48b91431a55c4948b27e7a539",
-  "validFrom": "2026-04-13T10:00:00Z",
-  "{
-  "@context": [
-    "https://www.w3.org/ns/credentials/v2",
-    "https://ap2-protocol.net/v1"
-  ],
+  "//": "cspell:ignore ethr",
   "id": "urn:uuid:58a731d1-b2c3-4d4e-8f9a-1db618e6bfc3",
   "type": ["VerifiableCredential", "IntentMandate"],
   "issuer": "did:ethr:0x1db618e6bfc35bd48b91431a55c4948b27e7a539",
@@ -28,22 +20,6 @@
     "created": "2026-04-13T10:05:00Z",
     "verificationMethod": "did:ethr:0x1db618e6bfc35bd48b91431a55c4948b27e7a539#controller",
     "proofPurpose": "assertionMethod",
-    "proofValue": "[PASTE_YOUR_0x_SIGNATURE_HERE]"
-  }
-}
-  {
-  "@context": [
-    "https://www.w3.org/ns/credentials/v2",
-    "https://ap2-protocol.net/v1"
-  ],
-  // cspell:ignore ethr
-  "id": "urn:uuid:58a731d1-b2c3-4d4e-8f9a-1db618e6bfc3",
-  ...
-  "proof": {
-    "type": "EthereumEip712Signature2021",
-    "created": "2026-04-13T10:05:00Z",
-    "verificationMethod": "did:ethr:0x1db618e6bfc35bd48b91431a55c4948b27e7a539#controller",
-    "proofPurpose": "assertionMethod",
-    "proofValue": "[PASTE_YOUR_0x_SIGNATURE_HERE]"
+    "proofValue": "PASTE_YOUR_LONG_132_CHAR_SIGNATURE_HERE"
   }
 }

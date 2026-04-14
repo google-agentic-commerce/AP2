@@ -12,7 +12,7 @@
     "id": "did:ethr:0x1db618e6bfc35bd48b91431a55c4948b27e7a539",
     "natural_language_description": "Allow ghost-protocol-node-v1 to purchase data proxies and hosting up to 200 USDC/mo.",
     "intent_expiry": "2026-12-31T23:59:59Z",
-    "merchants": ["proxies.sx", "render.com"],
+    "merchants": ["proxies.sx", "render.com", "google-agentic-commerce"],
     "user_cart_confirmation_required": false
   },
   "proof": {
@@ -20,6 +20,6 @@
     "created": "2026-04-14T10:30:00Z",
     "verificationMethod": "did:ethr:0x1db618e6bfc35bd48b91431a55c4948b27e7a539#controller",
     "proofPurpose": "assertionMethod",
-    "proofValue": "[PASTE_YOUR_LONG_0x_SIGNATURE_HERE]"
+    "proofValue": "[PASTE_YOUR_132_CHAR_SIGNATURE_HERE]"
   }
 }

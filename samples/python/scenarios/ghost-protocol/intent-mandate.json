@@ -3,6 +3,7 @@
     "https://www.w3.org/ns/credentials/v2",
     "https://ap2-protocol.net/v1"
   ],
+  "//": "cspell:ignore ethr",
   "id": "urn:uuid:58a731d1-b2c3-4d4e-8f9a-1db618e6bfc3",
   "type": ["VerifiableCredential", "IntentMandate"],
   "issuer": "did:ethr:0x1db618e6bfc35bd48b91431a55c4948b27e7a539",
@@ -11,7 +12,7 @@
     "id": "did:ethr:0x1db618e6bfc35bd48b91431a55c4948b27e7a539",
     "natural_language_description": "Allow ghost-protocol-node-v1 to purchase data proxies and hosting up to 200 USDC/mo.",
     "intent_expiry": "2026-12-31T23:59:59Z",
-    "merchants": ["proxies.sx", "render.com"],
+    "merchants": ["proxies.sx", "render.com", "google-agentic-commerce"],
     "user_cart_confirmation_required": false
   },
   "proof": {
@@ -19,9 +20,6 @@
     "created": "2026-04-14T10:30:00Z",
     "verificationMethod": "did:ethr:0x1db618e6bfc35bd48b91431a55c4948b27e7a539#controller",
     "proofPurpose": "assertionMethod",
-    "proofValue": "[PASTE_YOUR_LONG_0x_SIGNATURE_HERE]"
-  },
-  "metadata": {
-    "linter_instructions": "cspell:ignore ethr"
+    "proofValue": "[PASTE_YOUR_132_CHAR_SIGNATURE_HERE]"
   }
 }

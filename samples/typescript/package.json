@@ -1,0 +1,73 @@
+{
+  "name": "ap2-typescript-samples",
+  "version": "0.1.0",
+  "description": "TypeScript samples for the Agent Payments Protocol (AP2).",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint \"src/**/*.ts\" \"test/**/*.ts\"",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "cli": "npx adk run src/roles/shopping/agent.ts",
+    "dev": "concurrently \"npx tsx src/roles/shopping/server.ts\" \"npx tsx src/roles/credentials-provider/server.ts\" \"npx tsx src/roles/payment-processor/server.ts\" \"npx tsx src/roles/merchant/server.ts\" \"npx adk web src/roles/shopping --host localhost -p 3001\""
+  },
+  "keywords": [
+    "ap2",
+    "agent-payments-protocol",
+    "a2a",
+    "adk",
+    "agents"
+  ],
+  "author": "Google LLC",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "@a2a-js/sdk": "^0.3.13",
+    "@digitalbazaar/ed25519-signature-2020": "^5.4.0",
+    "@digitalbazaar/ed25519-verification-key-2020": "^4.2.0",
+    "@digitalbazaar/vc": "^7.3.0",
+    "@google-cloud/opentelemetry-cloud-monitoring-exporter": "^0.21.0",
+    "@google-cloud/opentelemetry-cloud-trace-exporter": "^3.0.0",
+    "@google-cloud/storage": "^7.19.0",
+    "@google/adk": "^0.6.1",
+    "@google/genai": "^1.37.0",
+    "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/api-logs": "^0.205.0",
+    "@opentelemetry/core": "^2.1.0",
+    "@opentelemetry/exporter-logs-otlp-http": "^0.205.0",
+    "@opentelemetry/exporter-metrics-otlp-http": "^0.205.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.205.0",
+    "@opentelemetry/resource-detector-gcp": "^0.40.0",
+    "@opentelemetry/resources": "^2.1.0",
+    "@opentelemetry/sdk-logs": "^0.205.0",
+    "@opentelemetry/sdk-metrics": "^2.1.0",
+    "@opentelemetry/sdk-node": "^0.205.0",
+    "@opentelemetry/sdk-trace-base": "^2.1.0",
+    "@opentelemetry/sdk-trace-node": "^2.1.0",
+    "dotenv": "^17.4.2",
+    "express": "^5.1.0",
+    "uuid": "^13.0.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.4",
+    "@google/adk-devtools": "^0.6.1",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.0.10",
+    "@types/uuid": "^10.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.53.1",
+    "@typescript-eslint/parser": "^8.53.1",
+    "concurrently": "^9.1.2",
+    "eslint": "^9.39.4",
+    "eslint-import-resolver-typescript": "^4.4.4",
+    "eslint-plugin-import": "^2.32.0",
+    "globals": "^17.5.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.58.2",
+    "vitest": "^4.1.4"
+  }
+}

@@ -15,6 +15,15 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install TypeScript Sample Dependencies
+        working-directory: samples/typescript
+        run: npm ci
+
       - name: Lint Code Base
         uses: super-linter/super-linter/slim@v8
         env:

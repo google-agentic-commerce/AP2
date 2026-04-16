@@ -45,6 +45,7 @@ emvco
 endlocal
 envoyproxy
 esac
+ethr
 felixge
 Fiuu
 fontawesome
@@ -64,6 +65,7 @@ gradlew
 Gravitee
 groupcache
 gson
+gwei
 Hashkey
 honnef
 hprof

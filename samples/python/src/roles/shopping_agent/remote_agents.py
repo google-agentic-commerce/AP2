@@ -22,6 +22,7 @@ agent trusts.
 """
 
 from common.a2a_extension_utils import EXTENSION_URI
+from common.a2a_extension_utils import HAGGLE_EXTENSION_URI
 from common.payment_remote_a2a_client import PaymentRemoteA2aClient
 
 
@@ -39,5 +40,19 @@ merchant_agent_client = PaymentRemoteA2aClient(
     base_url="http://localhost:8001/a2a/merchant_agent",
     required_extensions={
         EXTENSION_URI,
+    },
+)
+
+
+# Client used when the shopping agent wants to open a negotiation. Same
+# transport as `merchant_agent_client` but with the haggle extension URI
+# in the required-extensions header so that the merchant activates the
+# haggle-aware code path.
+haggle_merchant_client = PaymentRemoteA2aClient(
+    name="merchant_agent_haggle",
+    base_url="http://localhost:8001/a2a/merchant_agent",
+    required_extensions={
+        EXTENSION_URI,
+        HAGGLE_EXTENSION_URI,
     },
 )

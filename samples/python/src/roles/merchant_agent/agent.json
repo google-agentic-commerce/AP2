@@ -18,6 +18,16 @@
           "uri": "https://sample-card-network.github.io/paymentmethod/types/v1",
           "description": "Supports the Sample Card Network payment method extension",
           "required": true
+        },
+        {
+          "uri": "https://github.com/ap2haggle/ap2/extensions/haggle/v0.1",
+          "description": "Supports real-time negotiation (AP2-Haggle extension).",
+          "required": false,
+          "params": {
+            "supports_negotiation": true,
+            "negotiable_axes": ["price", "currency", "delivery_days", "warranty_months", "payment_terms_net_days", "bundle_skus"],
+            "max_rounds_hint": 8
+          }
         }
       ]
   },

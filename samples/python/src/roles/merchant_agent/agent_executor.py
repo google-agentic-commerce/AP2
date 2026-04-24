@@ -37,6 +37,7 @@ from a2a.types import Part
 from a2a.types import Task
 from a2a.types import TextPart
 
+from . import negotiation_workflow
 from . import tools
 from .sub_agents import catalog_agent
 from common import message_utils
@@ -57,7 +58,18 @@ class MerchantAgentExecutor(BaseServerExecutor):
     You are a merchant agent. Your role is to help users with their shopping
     requests.
 
-    You can find items, update shopping carts, and initiate payments.
+    You can find items, update shopping carts, initiate payments, and
+    participate in real-time negotiations. Route inbound messages to the
+    most specific tool:
+
+      - `negotiate_workflow` when the message carries a NegotiationConstraints
+        DataPart, an Offer DataPart, or asks to open / continue a negotiation.
+        This takes priority over `find_items_workflow` whenever negotiation
+        fields are present.
+      - `find_items_workflow` for one-shot product discovery from an
+        IntentMandate without negotiation constraints.
+      - `update_cart` to add shipping/tax to an existing cart.
+      - `initiate_payment` / `dpc_finish` for payment execution.
 
     %s
   """ % DEBUG_MODE_INSTRUCTIONS
@@ -72,6 +84,7 @@ class MerchantAgentExecutor(BaseServerExecutor):
     agent_tools = [
         tools.update_cart,
         catalog_agent.find_items_workflow,
+        negotiation_workflow.negotiate_workflow,
         tools.initiate_payment,
         tools.dpc_finish,
     ]

@@ -12,16 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""In-memory storage for CartMandates.
+"""In-memory storage for CartMandates and negotiation state.
 
 A CartMandate may be updated multiple times during the course of a shopping
 journey. This storage system is used to persist CartMandates between
-interactions between the shopper and merchant agents.
+interactions between the shopper and merchant agents. It also holds
+negotiation-session state (offer history and per-session merchant context)
+across the A2A round-trips that make up a multi-round bargain.
 """
 
+from typing import Any
 from typing import Optional
 
 from ap2.types.mandate import CartMandate
+from ap2.types.negotiation import Offer
 
 
 def get_cart_mandate(cart_id: str) -> Optional[CartMandate]:
@@ -44,4 +48,29 @@ def get_risk_data(context_id: str) -> Optional[str]:
   return _store.get(context_id)
 
 
-_store = {}
+# --- Negotiation session state ---
+
+
+def set_merchant_context(context_id: str, merchant_context: dict[str, Any]) -> None:
+  """Stores merchant-side private negotiation context (cost floor, etc.)."""
+  _negotiation_context[context_id] = merchant_context
+
+
+def get_merchant_context(context_id: str) -> Optional[dict[str, Any]]:
+  """Retrieves merchant-side private negotiation context."""
+  return _negotiation_context.get(context_id)
+
+
+def append_offer(context_id: str, offer: Offer) -> None:
+  """Appends an Offer to the negotiation's ordered history."""
+  _offer_history.setdefault(context_id, []).append(offer)
+
+
+def get_offer_history(context_id: str) -> list[Offer]:
+  """Returns the ordered Offer history for a negotiation."""
+  return list(_offer_history.get(context_id, []))
+
+
+_store: dict[str, Any] = {}
+_negotiation_context: dict[str, dict[str, Any]] = {}
+_offer_history: dict[str, list[Offer]] = {}

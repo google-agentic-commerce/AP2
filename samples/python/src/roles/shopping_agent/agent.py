@@ -49,6 +49,10 @@ root_agent = RetryingLlmAgent(
           1. Delegate to the `shopper` agent to collect the products the user
              is interested in purchasing. The `shopper` agent will return a
              message indicating if the chosen cart mandate is ready or not.
+             Exception: if the user's original request includes budget ceilings
+             or bargaining intent (phrases like "up to", "max", "no more than",
+             "negotiate", "haggle", "start at", "target price"), proceed to
+             Scenario 1b instead.
           2. Once a success message is received, delegate to the
             `shipping_address_collector` agent to collect the user's shipping
             address.
@@ -90,6 +94,33 @@ root_agent = RetryingLlmAgent(
               user's payment method alias. Format it nicely and give it to the
               user.
 
+         Scenario 1b (negotiation):
+         The user wants to buy something with budget ceilings, a target price,
+         or explicit bargaining intent.
+         1. Delegate to the `shopper` agent to craft an IntentMandate (do not
+            mention a price to that agent — it is trained to exclude price
+            from the IntentMandate). Wait for confirmation of the IntentMandate.
+         2. Ask the user any negotiation details that are still missing:
+            - target_price (preferred final price)
+            - max_price (walk-away ceiling — required)
+            - currency (default USD)
+            - required_terms such as refundability
+            - preferred warranty months and delivery window (use sensible
+              defaults if the user does not care)
+            - negotiation style: cooperative / competitive / collaborative
+         3. Call the `negotiate_purchase` tool with those values. Pass
+            `required_terms_json` as a JSON string, e.g. '{"refundable": true}'.
+            Pass `strategy_hint` as a short sentence that reflects any
+            specific levers the user mentioned (competitor prices, loyalty,
+            urgency, etc.). Pass max_rounds=6 unless the user specifies.
+         4. When the tool returns:
+            - If `status` is "accepted", present the final price, currency,
+              and a short 2-3 round summary of the transcript to the user.
+              Then continue from Scenario 1 step 2 (shipping address).
+            - If `status` is "abandoned" or "rejected" or "expired", explain
+              what happened (use `outcome_summary`) and ask the user whether
+              they want to relax their constraints and retry, or abort.
+
          Scenario 2:
          The user first wants you to describe all the data passed between you,
          tools, and other agents before starting with their shopping prompt.
@@ -112,6 +143,7 @@ root_agent = RetryingLlmAgent(
         tools.create_payment_mandate,
         tools.initiate_payment,
         tools.initiate_payment_with_otp,
+        tools.negotiate_purchase,
         tools.send_signed_payment_mandate_to_credentials_provider,
         tools.sign_mandates_on_user_device,
         tools.update_cart,

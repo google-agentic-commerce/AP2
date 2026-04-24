@@ -15,3 +15,8 @@
 """Utility class for storing A2A related objects."""
 
 EXTENSION_URI = "https://github.com/google-agentic-commerce/ap2/v1"
+
+# AP2-Haggle extension: layered on top of the base AP2 extension above.
+# Agents that declare this URI are willing to engage in multi-round
+# negotiation. See docs/haggle-extension.md for the wire-level spec.
+HAGGLE_EXTENSION_URI = "https://github.com/ap2haggle/ap2/extensions/haggle/v0.1"

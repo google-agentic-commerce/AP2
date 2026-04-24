@@ -8,6 +8,9 @@ __pycache__/
 /out-tsc
 /bazel-out
 
+# Claude Code local worktree state (permission cache, plans, etc.)
+.claude/
+
 # Go binaries
 bin/
 

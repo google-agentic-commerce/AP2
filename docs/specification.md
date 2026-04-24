@@ -950,6 +950,28 @@ impossible. This allows the merchant to capture a high-intent sale and receive
 direct, valuable feedback on product demand, turning a dead end into a
 successful transaction.
 
+### Real-time negotiation between agents
+
+The roadmap item "support for real-time negotiations between buyer and seller
+agents" is addressed in this fork by the
+[AP2-Haggle extension](haggle-extension.md). The extension is **additive**:
+it introduces three new data types (`NegotiationConstraints`, `Offer`,
+`NegotiationOutcome`) carried on new A2A DataPart keys
+(`ap2.haggle.*`), while the three base AP2 mandates remain unchanged.
+
+A negotiation terminates in a standard AP2 `CartMandate`, which means
+downstream credentials providers and payment processors require no
+awareness of the haggling phase. Intermediate offers are unsigned; only the
+final accepted offer becomes a signed CartMandate. The extension supports
+multi-axis bargaining over open dimensions — price, quantity, delivery
+time, warranty, bundle composition, contract length, loyalty-based
+discounts, competitor comparisons, and any other term an implementation
+cares to define — without breaking schema compatibility.
+
+See [Life of a Negotiation](topics/life-of-a-negotiation.md) for the
+end-to-end flow and the [haggle-extension](haggle-extension.md) for the
+wire-level spec.
+
 ## Section 9: A Call for Ecosystem Collaboration
 
 The Agent Payments Protocol provides a mechanism for secure payments, but it's

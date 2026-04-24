@@ -1,0 +1,30 @@
+{
+  "default_margin_bps": 2000,
+  "default_loyalty_tier": "returning",
+  "merchant_strategy_hint": "Start 15-20% above cost_floor. Defend margin with quality and warranty arguments. Trade across axes (warranty, delivery, bundle) before conceding on price.",
+  "competitor_prices": [
+    { "sku": "laptop", "competitor": "RivalStore", "price": 1150.0, "currency": "USD" },
+    { "sku": "coffee_maker", "competitor": "RivalStore", "price": 89.0, "currency": "USD" }
+  ],
+  "items": {
+    "laptop": {
+      "label": "Developer Laptop",
+      "keywords": ["laptop", "notebook", "ultrabook", "macbook"],
+      "cost_floor": 820.0,
+      "currency": "USD",
+      "available_warranty_months": [12, 24, 36]
+    },
+    "coffee_maker": {
+      "label": "Drip Coffee Maker",
+      "keywords": ["coffee maker", "coffee machine", "drip coffee"],
+      "cost_floor": 55.0,
+      "currency": "USD"
+    },
+    "consulting": {
+      "label": "Software Consulting Engagement",
+      "keywords": ["consulting", "contract work", "freelance", "engagement"],
+      "cost_floor": 8000.0,
+      "currency": "USD"
+    }
+  }
+}

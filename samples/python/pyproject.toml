@@ -10,6 +10,7 @@ dependencies = [
     "a2a-sdk",
     "x402-a2a @ git+https://github.com/google-agentic-commerce/a2a-x402.git#subdirectory=python/x402_a2a",
     "absl-py",
+    "anthropic>=0.40.0",
     "flask",
     "flask-cors",
     "google-adk",

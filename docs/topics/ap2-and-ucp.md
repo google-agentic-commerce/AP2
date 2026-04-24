@@ -7,7 +7,9 @@ user’s consent to purchase.
 
 This article aims to help bridge the gap between UCP and AP2 terminology, to
 help readers of both protocols understand exactly how UCP is fully
-AP2-compliant.
+AP2-compliant. You can also read the
+[UCP documentation on AP2 compatibility](https://ucp.dev/documentation/ucp-and-ap2/)
+for the UCP-side perspective.
 
 ## The Checkout Object: UCP’s Implementation of the AP2 CartMandate
 

@@ -119,6 +119,7 @@ otelhttp
 Otherville
 OURCYGPATTERN
 Palo
+Panya
 passcodes
 Paynet
 Payoneer

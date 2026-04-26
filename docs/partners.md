@@ -105,6 +105,7 @@ build, codify, and adopt A2A as the standard protocol for AI agent payments.
 - [Solana](https://solana.com/)
 - [Splitit](https://www.splitit.com/)
 - [Synchrony Financial](https://www.synchrony.com/)
+- [t54](https://www.t54.ai/)
 - [TenPay](https://global.tenpay.com/)
 - [Tether](https://tether.io/)
 - [Thales](https://www.thalesgroup.com/)

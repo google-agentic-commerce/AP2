@@ -81,6 +81,7 @@ build, codify, and adopt A2A as the standard protocol for AI agent payments.
 - [Okta](https://www.okta.com/)
 - [OKX](https://www.okx.com/)
 - [Palo Alto Networks](https://www.paloaltonetworks.com/)
+- [Panya.health](https://panya.health/)
 - [Paxos](https://www.paxos.com/)
 - [Paynet](https://www.paynet.ro/)
 - [Payoneer](https://www.payoneer.com/)

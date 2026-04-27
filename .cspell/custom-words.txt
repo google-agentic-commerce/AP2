@@ -109,6 +109,7 @@ multistep
 Mysten
 nexi
 nosetests
+Nygard
 Nuvei
 objx
 octicons
@@ -147,6 +148,7 @@ ropeproject
 RPCURL
 Rulebook
 screenreaders
+sess
 setlocal
 sharedpref
 Shopcider
@@ -165,6 +167,7 @@ stretchr
 superfences
 Truelayer
 Trulioo
+txns
 udpa
 unmarshal
 viewmodel

@@ -1,0 +1,24 @@
+# Gitleaks configuration
+# https://github.com/gitleaks/gitleaks
+
+title = "AP2 Gitleaks Configuration"
+
+[extend]
+useDefault = true
+
+# Allowlist for false positives
+[allowlist]
+description = "Allowlist for AP2 data key constants"
+
+# AP2 data key patterns (namespace identifiers, not secrets)
+regexTarget = "match"
+regexes = [
+    '''ap2\.(risk|mandates|types)\.[A-Za-z]+''',
+]
+
+# Specific paths with data key constants
+paths = [
+    '''samples/go/pkg/ap2/types/.*\.go''',
+    '''src/ap2/types/.*\.py''',
+    '''tests/test_.*\.py''',
+]

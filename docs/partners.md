@@ -98,6 +98,7 @@ build, codify, and adopt A2A as the standard protocol for AI agent payments.
 - [Riskified](https://www.riskified.com/)
 - [Salesforce](https://www.salesforce.com/)
 - [Sardine](https://www.sardine.ai/)
+- [Semore](https://semore.net/)
 - [ServiceNow](https://www.servicenow.com/)
 - [Shopee](https://shopee.com/)
 - [Shopify](https://www.shopify.com/)

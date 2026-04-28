@@ -1,0 +1,1782 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="The Agent Payments Protocol (AP2) is a solution for enabling gen AI agents to make payments on behalf of users, safely, securely, and in a decentralized and privacy protecting manner. This protocol is a part of the broader ecosystem, which includes agentic protocols like A2A and MCP, and encompasses the global nature of payments.
+">
+      
+      
+        <meta name="author" content="Google">
+      
+      
+        <link rel="canonical" href="https://ap2-protocol.org/ap2/specification/">
+      
+      
+        <link rel="prev" href="../../overview/">
+      
+      
+        <link rel="next" href="../agent_authorization/">
+      
+      
+      <link rel="icon" href="../../assets/ap2-logo-black.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.22">
+    
+    
+      
+        <title>Agent Payments Protocol - AP2 - Agent Payments Protocol Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.84d31ad4.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+  
+  
+    
+      
+      
+    
+  
+    
+      
+      
+    
+  
+    
+      
+      
+    
+  
+    
+      
+      
+    
+  
+    
+      
+      
+    
+  
+    
+      
+      
+    
+  
+    
+      
+      
+    
+  
+    
+      
+      
+    
+  
+    
+      
+      
+    
+  
+    
+      
+      
+    
+  
+    
+      
+      
+    
+  
+    
+      
+      
+    
+  
+  
+  <style>:root{--md-admonition-icon--note:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20448%20512%22%3E%3C%21--%21%20Font%20Awesome%20Free%207.1.0%20by%20%40fontawesome%20-%20https%3A//fontawesome.com%20License%20-%20https%3A//fontawesome.com/license/free%20%28Icons%3A%20CC%20BY%204.0%2C%20Fonts%3A%20SIL%20OFL%201.1%2C%20Code%3A%20MIT%20License%29%20Copyright%202025%20Fonticons%2C%20Inc.--%3E%3Cpath%20d%3D%22M64%20480c-35.3%200-64-28.7-64-64V96c0-35.3%2028.7-64%2064-64h320c35.3%200%2064%2028.7%2064%2064v213.5c0%2017-6.7%2033.3-18.7%2045.3L322.7%20461.3c-12%2012-28.3%2018.7-45.3%2018.7zm325.5-176H296c-13.3%200-24%2010.7-24%2024v93.5z%22/%3E%3C/svg%3E');--md-admonition-icon--abstract:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20448%20512%22%3E%3C%21--%21%20Font%20Awesome%20Free%207.1.0%20by%20%40fontawesome%20-%20https%3A//fontawesome.com%20License%20-%20https%3A//fontawesome.com/license/free%20%28Icons%3A%20CC%20BY%204.0%2C%20Fonts%3A%20SIL%20OFL%201.1%2C%20Code%3A%20MIT%20License%29%20Copyright%202025%20Fonticons%2C%20Inc.--%3E%3Cpath%20d%3D%22M384%20512H96c-53%200-96-43-96-96V96C0%2043%2043%200%2096%200h304c26.5%200%2048%2021.5%2048%2048v288c0%2020.9-13.4%2038.7-32%2045.3V448c17.7%200%2032%2014.3%2032%2032s-14.3%2032-32%2032zM96%20384c-17.7%200-32%2014.3-32%2032s14.3%2032%2032%2032h256v-64zm32-232c0%2013.3%2010.7%2024%2024%2024h176c13.3%200%2024-10.7%2024-24s-10.7-24-24-24H152c-13.3%200-24%2010.7-24%2024m24%2072c-13.3%200-24%2010.7-24%2024s10.7%2024%2024%2024h176c13.3%200%2024-10.7%2024-24s-10.7-24-24-24z%22/%3E%3C/svg%3E');--md-admonition-icon--info:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20512%20512%22%3E%3C%21--%21%20Font%20Awesome%20Free%207.1.0%20by%20%40fontawesome%20-%20https%3A//fontawesome.com%20License%20-%20https%3A//fontawesome.com/license/free%20%28Icons%3A%20CC%20BY%204.0%2C%20Fonts%3A%20SIL%20OFL%201.1%2C%20Code%3A%20MIT%20License%29%20Copyright%202025%20Fonticons%2C%20Inc.--%3E%3Cpath%20d%3D%22M256%20512a256%20256%200%201%200%200-512%20256%20256%200%201%200%200%20512m-32-352a32%2032%200%201%201%2064%200%2032%2032%200%201%201-64%200m-8%2064h48c13.3%200%2024%2010.7%2024%2024v88h8c13.3%200%2024%2010.7%2024%2024s-10.7%2024-24%2024h-80c-13.3%200-24-10.7-24-24s10.7-24%2024-24h24v-64h-24c-13.3%200-24-10.7-24-24s10.7-24%2024-24%22/%3E%3C/svg%3E');--md-admonition-icon--tip:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20512%20512%22%3E%3C%21--%21%20Font%20Awesome%20Free%207.1.0%20by%20%40fontawesome%20-%20https%3A//fontawesome.com%20License%20-%20https%3A//fontawesome.com/license/free%20%28Icons%3A%20CC%20BY%204.0%2C%20Fonts%3A%20SIL%20OFL%201.1%2C%20Code%3A%20MIT%20License%29%20Copyright%202025%20Fonticons%2C%20Inc.--%3E%3Cpath%20d%3D%22M461.2%2018.9C472.7%2024%20480%2035.4%20480%2048v416c0%2012.6-7.3%2024-18.8%2029.1s-24.8%203.2-34.3-5.1l-46.6-40.7c-43.6-38.1-98.7-60.3-156.4-63V480c0%2017.7-14.3%2032-32%2032h-32c-17.7%200-32-14.3-32-32v-96C57.3%20384%200%20326.7%200%20256s57.3-128%20128-128h84.5c61.8-.2%20121.4-22.7%20167.9-63.3L427%2024c9.4-8.3%2022.9-10.2%2034.3-5.1zM224%20320v.2c70.3%202.7%20137.8%2028.5%20192%2073.4V118.3c-54.2%2044.9-121.7%2070.7-192%2073.4z%22/%3E%3C/svg%3E');--md-admonition-icon--success:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20448%20512%22%3E%3C%21--%21%20Font%20Awesome%20Free%207.1.0%20by%20%40fontawesome%20-%20https%3A//fontawesome.com%20License%20-%20https%3A//fontawesome.com/license/free%20%28Icons%3A%20CC%20BY%204.0%2C%20Fonts%3A%20SIL%20OFL%201.1%2C%20Code%3A%20MIT%20License%29%20Copyright%202025%20Fonticons%2C%20Inc.--%3E%3Cpath%20d%3D%22M434.8%2070.1c14.3%2010.4%2017.5%2030.4%207.1%2044.7l-256%20352c-5.5%207.6-14%2012.3-23.4%2013.1s-18.5-2.7-25.1-9.3l-128-128c-12.5-12.5-12.5-32.8%200-45.3s32.8-12.5%2045.3%200l101.5%20101.5%20234-321.7c10.4-14.3%2030.4-17.5%2044.7-7.1z%22/%3E%3C/svg%3E');--md-admonition-icon--question:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20512%20512%22%3E%3C%21--%21%20Font%20Awesome%20Free%207.1.0%20by%20%40fontawesome%20-%20https%3A//fontawesome.com%20License%20-%20https%3A//fontawesome.com/license/free%20%28Icons%3A%20CC%20BY%204.0%2C%20Fonts%3A%20SIL%20OFL%201.1%2C%20Code%3A%20MIT%20License%29%20Copyright%202025%20Fonticons%2C%20Inc.--%3E%3Cpath%20d%3D%22M256%20512a256%20256%200%201%200%200-512%20256%20256%200%201%200%200%20512m0-336c-17.7%200-32%2014.3-32%2032%200%2013.3-10.7%2024-24%2024s-24-10.7-24-24c0-44.2%2035.8-80%2080-80s80%2035.8%2080%2080c0%2047.2-36%2067.2-56%2074.5v3.8c0%2013.3-10.7%2024-24%2024s-24-10.7-24-24v-8.1c0-20.5%2014.8-35.2%2030.1-40.2%206.4-2.1%2013.2-5.5%2018.2-10.3%204.3-4.2%207.7-10%207.7-19.6%200-17.7-14.3-32-32-32zm-32%20192a32%2032%200%201%201%2064%200%2032%2032%200%201%201-64%200%22/%3E%3C/svg%3E');--md-admonition-icon--warning:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20512%20512%22%3E%3C%21--%21%20Font%20Awesome%20Free%207.1.0%20by%20%40fontawesome%20-%20https%3A//fontawesome.com%20License%20-%20https%3A//fontawesome.com/license/free%20%28Icons%3A%20CC%20BY%204.0%2C%20Fonts%3A%20SIL%20OFL%201.1%2C%20Code%3A%20MIT%20License%29%20Copyright%202025%20Fonticons%2C%20Inc.--%3E%3Cpath%20d%3D%22M256%200c14.7%200%2028.2%208.1%2035.2%2021l216%20400c6.7%2012.4%206.4%2027.4-.8%2039.5S486.1%20480%20472%20480H40c-14.1%200-27.2-7.4-34.4-19.5s-7.5-27.1-.8-39.5l216-400c7-12.9%2020.5-21%2035.2-21m0%20352a32%2032%200%201%200%200%2064%2032%2032%200%201%200%200-64m0-192c-18.2%200-32.7%2015.5-31.4%2033.7l7.4%20104c.9%2012.5%2011.4%2022.3%2023.9%2022.3%2012.6%200%2023-9.7%2023.9-22.3l7.4-104c1.3-18.2-13.1-33.7-31.4-33.7z%22/%3E%3C/svg%3E');--md-admonition-icon--failure:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20576%20512%22%3E%3C%21--%21%20Font%20Awesome%20Free%207.1.0%20by%20%40fontawesome%20-%20https%3A//fontawesome.com%20License%20-%20https%3A//fontawesome.com/license/free%20%28Icons%3A%20CC%20BY%204.0%2C%20Fonts%3A%20SIL%20OFL%201.1%2C%20Code%3A%20MIT%20License%29%20Copyright%202025%20Fonticons%2C%20Inc.--%3E%3Cpath%20d%3D%22M480-16c6.9%200%2013%204.4%2015.2%2010.9l13.5%2040.4%2040.4%2013.5C555.6%2051%20560%2057.1%20560%2064s-4.4%2013-10.9%2015.2l-40.4%2013.5-13.5%2040.4c-2.2%206.5-8.3%2010.9-15.2%2010.9s-13-4.4-15.2-10.9l-13.5-40.4-40.4-13.5C404.4%2077%20400%2070.9%20400%2064s4.4-13%2010.9-15.2l40.4-13.5%2013.5-40.4C467-11.6%20473.1-16%20480-16M321.4%2097.4c12.5-12.5%2032.8-12.5%2045.3%200l80%2080c12.5%2012.5%2012.5%2032.8%200%2045.3l-10.9%2010.9c7.9%2022%2012.2%2045.7%2012.2%2070.5%200%20114.9-93.1%20208-208%20208S32%20418.9%2032%20304%20125.1%2096%20240%2096c24.7%200%2048.5%204.3%2070.5%2012.3zM144%20304c0-53%2043-96%2096-96%2013.3%200%2024-10.7%2024-24s-10.7-24-24-24c-79.5%200-144%2064.5-144%20144%200%2013.3%2010.7%2024%2024%2024s24-10.7%2024-24%22/%3E%3C/svg%3E');--md-admonition-icon--danger:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20512%20512%22%3E%3C%21--%21%20Font%20Awesome%20Free%207.1.0%20by%20%40fontawesome%20-%20https%3A//fontawesome.com%20License%20-%20https%3A//fontawesome.com/license/free%20%28Icons%3A%20CC%20BY%204.0%2C%20Fonts%3A%20SIL%20OFL%201.1%2C%20Code%3A%20MIT%20License%29%20Copyright%202025%20Fonticons%2C%20Inc.--%3E%3Cpath%20d%3D%22M416%20427.4c58.5-44%2096-111.6%2096-187.4C512%20107.5%20397.4%200%20256%200S0%20107.5%200%20240c0%2075.8%2037.5%20143.4%2096%20187.4V464c0%2026.5%2021.5%2048%2048%2048h32v-40c0-13.3%2010.7-24%2024-24s24%2010.7%2024%2024v40h64v-40c0-13.3%2010.7-24%2024-24s24%2010.7%2024%2024v40h32c26.5%200%2048-21.5%2048-48zM96%20256a64%2064%200%201%201%20128%200%2064%2064%200%201%201-128%200m256-64a64%2064%200%201%201%200%20128%2064%2064%200%201%201%200-128%22/%3E%3C/svg%3E');--md-admonition-icon--bug:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20640%20512%22%3E%3C%21--%21%20Font%20Awesome%20Free%207.1.0%20by%20%40fontawesome%20-%20https%3A//fontawesome.com%20License%20-%20https%3A//fontawesome.com/license/free%20%28Icons%3A%20CC%20BY%204.0%2C%20Fonts%3A%20SIL%20OFL%201.1%2C%20Code%3A%20MIT%20License%29%20Copyright%202025%20Fonticons%2C%20Inc.--%3E%3Cpath%20d%3D%22M352%200c0-17.7-14.3-32-32-32s-32%2014.3-32%2032v64h-96c-53%200-96%2043-96%2096v224c0%2053%2043%2096%2096%2096h256c53%200%2096-43%2096-96V160c0-53-43-96-96-96h-96zM160%20368c0-13.3%2010.7-24%2024-24h32c13.3%200%2024%2010.7%2024%2024s-10.7%2024-24%2024h-32c-13.3%200-24-10.7-24-24m120%200c0-13.3%2010.7-24%2024-24h32c13.3%200%2024%2010.7%2024%2024s-10.7%2024-24%2024h-32c-13.3%200-24-10.7-24-24m120%200c0-13.3%2010.7-24%2024-24h32c13.3%200%2024%2010.7%2024%2024s-10.7%2024-24%2024h-32c-13.3%200-24-10.7-24-24M224%20176a48%2048%200%201%201%200%2096%2048%2048%200%201%201%200-96m144%2048a48%2048%200%201%201%2096%200%2048%2048%200%201%201-96%200m-304%200c0-17.7-14.3-32-32-32S0%20206.3%200%20224v96c0%2017.7%2014.3%2032%2032%2032s32-14.3%2032-32zm544-32c-17.7%200-32%2014.3-32%2032v96c0%2017.7%2014.3%2032%2032%2032s32-14.3%2032-32v-96c0-17.7-14.3-32-32-32%22/%3E%3C/svg%3E');--md-admonition-icon--example:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20448%20512%22%3E%3C%21--%21%20Font%20Awesome%20Free%207.1.0%20by%20%40fontawesome%20-%20https%3A//fontawesome.com%20License%20-%20https%3A//fontawesome.com/license/free%20%28Icons%3A%20CC%20BY%204.0%2C%20Fonts%3A%20SIL%20OFL%201.1%2C%20Code%3A%20MIT%20License%29%20Copyright%202025%20Fonticons%2C%20Inc.--%3E%3Cpath%20d%3D%22M288%200H128c-17.7%200-32%2014.3-32%2032s14.3%2032%2032%2032v151.5L7.5%20426.3C2.6%20435%200%20444.7%200%20454.7%200%20486.4%2025.6%20512%2057.3%20512h333.4c31.6%200%2057.3-25.6%2057.3-57.3%200-10-2.6-19.8-7.5-28.4L320%20215.5V64c17.7%200%2032-14.3%2032-32S337.7%200%20320%200zm-96%20215.5V64h64v151.5c0%2011.1%202.9%2022.1%208.4%2031.8L306%20320H142l41.6-72.7c5.5-9.7%208.4-20.6%208.4-31.8%22/%3E%3C/svg%3E');--md-admonition-icon--quote:url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%20448%20512%22%3E%3C%21--%21%20Font%20Awesome%20Free%207.1.0%20by%20%40fontawesome%20-%20https%3A//fontawesome.com%20License%20-%20https%3A//fontawesome.com/license/free%20%28Icons%3A%20CC%20BY%204.0%2C%20Fonts%3A%20SIL%20OFL%201.1%2C%20Code%3A%20MIT%20License%29%20Copyright%202025%20Fonticons%2C%20Inc.--%3E%3Cpath%20d%3D%22M0%20216C0%20149.7%2053.7%2096%20120%2096h8c17.7%200%2032%2014.3%2032%2032s-14.3%2032-32%2032h-8c-30.9%200-56%2025.1-56%2056v8h64c35.3%200%2064%2028.7%2064%2064v64c0%2035.3-28.7%2064-64%2064H64c-35.3%200-64-28.7-64-64zm256%200c0-66.3%2053.7-120%20120-120h8c17.7%200%2032%2014.3%2032%2032s-14.3%2032-32%2032h-8c-30.9%200-56%2025.1-56%2056v8h64c35.3%200%2064%2028.7%2064%2064v64c0%2035.3-28.7%2064-64%2064h-64c-35.3%200-64-28.7-64-64z%22/%3E%3C/svg%3E');}</style>
+
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Google+Sans:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Google Sans";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../stylesheets/custom.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-KXMYBJWNQ7"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-KXMYBJWNQ7",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-KXMYBJWNQ7",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="pink" data-md-color-accent="white">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#agentic-payment-protocol-v02" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="AP2 - Agent Payments Protocol Documentation" class="md-header__button md-logo" aria-label="AP2 - Agent Payments Protocol Documentation" data-md-component="logo">
+      
+  <img src="../../assets/ap2-logo-white.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            AP2 - Agent Payments Protocol Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Agent Payments Protocol
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="pink" data-md-color-accent="white"  aria-hidden="true"  type="radio" name="__palette" id="__palette_0">
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/google-agentic-commerce/AP2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    AP2
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="AP2 - Agent Payments Protocol Documentation" class="md-nav__button md-logo" aria-label="AP2 - Agent Payments Protocol Documentation" data-md-component="logo">
+      
+  <img src="../../assets/ap2-logo-white.svg" alt="logo">
+
+    </a>
+    AP2 - Agent Payments Protocol Documentation
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/google-agentic-commerce/AP2" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    AP2
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Executive Summary
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Specification
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            Specification
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Agent Payments Protocol
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    Agent Payments Protocol
+    
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      Roles
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#agentic-vs-non-agentic" class="md-nav__link">
+    <span class="md-ellipsis">
+      Agentic vs Non-Agentic
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mandates" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mandates
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Mandates">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#checkout-mandate" class="md-nav__link">
+    <span class="md-ellipsis">
+      Checkout Mandate
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mandate-versioning" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mandate Versioning
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#payment-mandate" class="md-nav__link">
+    <span class="md-ellipsis">
+      Payment Mandate
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Modes
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Modes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#direct-human-present" class="md-nav__link">
+    <span class="md-ellipsis">
+      Direct (Human Present)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#autonomous-human-not-present" class="md-nav__link">
+    <span class="md-ellipsis">
+      Autonomous (Human Not Present)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Autonomous (Human Not Present)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#agent-to-agent-delegation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Agent-to-Agent Delegation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dispute-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dispute Evidence
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Verification
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Verification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#merchant" class="md-nav__link">
+    <span class="md-ellipsis">
+      Merchant
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#credential-provider-and-network" class="md-nav__link">
+    <span class="md-ellipsis">
+      Credential Provider and Network
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#merchant-payment-processor" class="md-nav__link">
+    <span class="md-ellipsis">
+      Merchant Payment Processor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dispute" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dispute
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extension-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      Extension Points
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Extension Points">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mandate-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mandate Constraints
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checkout-object" class="md-nav__link">
+    <span class="md-ellipsis">
+      Checkout Object
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#payment-instrument" class="md-nav__link">
+    <span class="md-ellipsis">
+      Payment Instrument
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verifiable-digital-credential-formats-vdcs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Verifiable Digital Credential Formats (VDCs)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../agent_authorization/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Agent Authorization Framework
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../flows/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Flows
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../checkout_mandate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Checkout Mandate
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../payment_mandate/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Payment Mandate
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security_and_privacy_considerations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Security and Privacy Considerations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../implementation_considerations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Implementation Considerations
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../glossary/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Glossary
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../faq/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    FAQ
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Samples
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            Samples
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/google-agentic-commerce/AP2/tree/main/code/samples/python/scenarios/a2a/human-present/cards/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Human Present Cards
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/google-agentic-commerce/AP2/tree/main/code/samples/python/scenarios/a2a/human-present/x402/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Human Present x402
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/google-agentic-commerce/AP2/tree/main/code/samples/python/scenarios/a2a/human-not-present/cards/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Human Not Present Cards
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/google-agentic-commerce/AP2/tree/main/code/samples/python/scenarios/a2a/human-not-present/x402/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Human Not Present x402
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="https://github.com/google-agentic-commerce/AP2/tree/main/code/samples/android/scenarios/digital-payment-credentials/run.sh" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Digital Payment Credentials Android
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      Roles
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#agentic-vs-non-agentic" class="md-nav__link">
+    <span class="md-ellipsis">
+      Agentic vs Non-Agentic
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mandates" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mandates
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Mandates">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#checkout-mandate" class="md-nav__link">
+    <span class="md-ellipsis">
+      Checkout Mandate
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mandate-versioning" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mandate Versioning
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#payment-mandate" class="md-nav__link">
+    <span class="md-ellipsis">
+      Payment Mandate
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#modes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Modes
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Modes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#direct-human-present" class="md-nav__link">
+    <span class="md-ellipsis">
+      Direct (Human Present)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#autonomous-human-not-present" class="md-nav__link">
+    <span class="md-ellipsis">
+      Autonomous (Human Not Present)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Autonomous (Human Not Present)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#agent-to-agent-delegation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Agent-to-Agent Delegation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dispute-evidence" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dispute Evidence
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Verification
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Verification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#merchant" class="md-nav__link">
+    <span class="md-ellipsis">
+      Merchant
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#credential-provider-and-network" class="md-nav__link">
+    <span class="md-ellipsis">
+      Credential Provider and Network
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#merchant-payment-processor" class="md-nav__link">
+    <span class="md-ellipsis">
+      Merchant Payment Processor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dispute" class="md-nav__link">
+    <span class="md-ellipsis">
+      Dispute
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#extension-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      Extension Points
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Extension Points">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mandate-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mandate Constraints
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checkout-object" class="md-nav__link">
+    <span class="md-ellipsis">
+      Checkout Object
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#payment-instrument" class="md-nav__link">
+    <span class="md-ellipsis">
+      Payment Instrument
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verifiable-digital-credential-formats-vdcs" class="md-nav__link">
+    <span class="md-ellipsis">
+      Verifiable Digital Credential Formats (VDCs)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+    
+      
+    
+    <a href="https://github.com/google-agentic-commerce/AP2/raw/main/docs/ap2/specification.md" title="View source of this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.22 2H7.78C6.8 2 6 2.8 6 3.78v12.44C6 17.2 6.8 18 7.78 18h12.44c.98 0 1.78-.79 1.78-1.78V3.78C22 2.8 21.2 2 20.22 2m-9.16 13H9v-2.06l6.06-6.06 2.06 2.06zm7.64-7.65-1 1-2.05-2.05 1-1c.21-.22.56-.22.77 0l1.28 1.28c.22.21.22.56 0 .77M4 6H2v14a2 2 0 0 0 2 2h14v-2H4z"/></svg>
+    </a>
+  
+
+
+<h1 id="agentic-payment-protocol-v02">Agentic Payment Protocol (v0.2)<a class="headerlink" href="#agentic-payment-protocol-v02" title="Permanent link">&para;</a></h1>
+<p>The Agentic Payment Protocol (AP2) provides a protocol to secure Agent-performed
+payment transactions. It makes use of the
+<a href="../agent_authorization/">Agent Authorization model</a>.</p>
+<p>This specification describes the following:</p>
+<ul>
+<li>The different roles of entities within AP2.</li>
+<li>The verification responsibilities of these roles.</li>
+<li>A <a href="../checkout_mandate/">Checkout Mandate</a> and
+    <a href="../checkout_mandate/#checkout-receipt">Receipt</a> for securing <em>what</em> is being
+    purchased.</li>
+<li>A linked <a href="../payment_mandate/">Payment Mandate</a> and
+    <a href="../payment_mandate/#payment-receipt">Receipt</a> for the <em>payment</em> of the
+    Checkout.</li>
+<li>How the Checkout and Payment Mandates can be used as evidence at the time of
+    dispute.</li>
+</ul>
+<p>AP2 operates as a security feature within a Commerce Protocol. The exact details
+of the Commerce Protocol (e.g., catalog APIs, checkout updates, and specific
+APIs for communication between the different roles) are outside the scope of
+AP2. AP2 is designed explicitly to be compatible with the Universal Commerce
+Protocol (UCP) and integrates seamlessly.</p>
+<p>Illustrative examples are provided for
+<a href="../flows/#human-present">Human Present ('direct')</a> and
+<a href="../flows/#human-not-present">Human Not Present ('autonomous')</a> flows.</p>
+<h2 id="roles">Roles<a class="headerlink" href="#roles" title="Permanent link">&para;</a></h2>
+<p>AP2 considers five roles, who have different responsibilities from a processing
+and verification perspective. These are as follows:</p>
+<ul>
+<li><strong>Shopping Agent (SA):</strong> The Shopping Agent is the primary agent performing
+    product discovery, building the checkout, and executing the purchase.</li>
+<li><strong>Credential Provider (CP):</strong> The Credential Provider is the source of
+    Payment Credentials for the purchase. They are responsible for verifying
+    that this Agent is authorized to access this Payment Credential, and scoping
+    the Payment Credential appropriately.</li>
+<li><strong>Merchant (M):</strong> The Merchant role is responsible for providing and
+    completing the Checkout. They verify that the Shopping Agent is approved to
+    purchase these particular items and are responsible for the integrity of the
+    inventory, pricing, and any merchant discounts.</li>
+<li><strong>Merchant Payment Processor (MPP):</strong> The Merchant Payment Processor role is
+    responsible for processing payments for purchases. They are responsible for
+    verifying that the Payment Credential shared by the Credential Provider has
+    been authorized to pay for this Checkout instance.</li>
+<li><strong>Trusted Surface (TS):</strong> The Trusted Surface role is a UI surface that is
+    trusted to get informed user consent for an Intent before creating a
+    user-signed Mandate.</li>
+</ul>
+<blockquote>
+<p>Note: While AP2 defines five roles, it is possible for a single entity to play
+multiple (or even all) of the roles. In that case, they would take on all of
+the responsibilities of each role they are playing.</p>
+</blockquote>
+<p>Roles MAY always delegate their responsibilities to another party.</p>
+<h2 id="agentic-vs-non-agentic">Agentic vs Non-Agentic<a class="headerlink" href="#agentic-vs-non-agentic" title="Permanent link">&para;</a></h2>
+<p>Many of these roles can be considered Agentic or Non-Agentic. A role is Agentic
+when:</p>
+<ul>
+<li>Communication to or from the Role is handled by a non-deterministic LLM.</li>
+</ul>
+<p>A role is considered Non-Agentic if:</p>
+<ul>
+<li>Communication to and from the Role is handled using deterministic code that
+    verifies the authenticity and correctness.</li>
+<li>And if no processing done by the role is delegated to an LLM.</li>
+</ul>
+<p>The following roles MAY be agentic or non-agentic:</p>
+<ul>
+<li>Merchant</li>
+<li>Merchant Payment Processor</li>
+<li>Credential Provider</li>
+</ul>
+<p>The following role MUST be non-agentic:</p>
+<ul>
+<li>Trusted Surface</li>
+</ul>
+<p>The following role is expected to be agentic:</p>
+<ul>
+<li>Shopping Agent</li>
+</ul>
+<p>When communication happens between two non-agentic Roles, standard web security
+is sufficient to ensure integrity. However, when either role is agentic, then
+the Agent itself is a potential attacker. As such, additional tamper-evident
+mechanisms are needed to ensure secure communication.</p>
+<p>AP2 assumes that, at a minimum, the Shopping Agent is agentic. In the case where
+the payment journey happens directly between two non-agentic surfaces (such as a
+Trusted Surface communicating directly with a non-agentic Merchant), then
+existing e-commerce security models are sufficient.</p>
+<p>When this document refers to validation or processing for a particular role, it
+MUST happen in deterministic code regardless of whether the role is agentic or
+not.</p>
+<h2 id="mandates">Mandates<a class="headerlink" href="#mandates" title="Permanent link">&para;</a></h2>
+<p>Mandates are the core means that AP2 uses to authorize agents. See
+[Agent Authorization Framework][agent_authorization.md] for a description of
+how this works in the general case.</p>
+<p>AP2 defines two
+Mandate types: Checkout Mandate and Payment Mandate.</p>
+<p>The Checkout and Payment Mandate contents are assembled by the Shopping Agent
+after it has determined what task the user wishes it to perform. The exact
+details of how this is achieved is outside of the scope of this specification.</p>
+<p>The Shopping Agent then uses a Trusted Surface to obtain signed Checkout and
+Payment Mandates, which it will use to authorize payment and complete the
+Checkout.</p>
+<h3 id="checkout-mandate">Checkout Mandate<a class="headerlink" href="#checkout-mandate" title="Permanent link">&para;</a></h3>
+<p>The Checkout Mandate is designed to provide the Merchant cryptographic proof
+that the Shopping Agent is authorized to purchase the Checkout that it has
+assembled.</p>
+<p>The Checkout Mandate is provided by the Shopping Agent and verified by the
+Merchant.</p>
+<p>The The Merchant MUST provide a merchant-signed JWT containing the Checkout to
+the Shopping Agent. The closed Checkout Mandate is bound to this Checkout JWT
+using a cryptographic hash.</p>
+<p>Once the Merchant has accepted or rejected the Checkout Mandate, it MUST return
+a Checkout Receipt.</p>
+<p>For the full details of the Checkout Mandate and Receipt structures, see
+<a href="../checkout_mandate/">Checkout Mandate</a>.</p>
+<h3 id="mandate-versioning">Mandate Versioning<a class="headerlink" href="#mandate-versioning" title="Permanent link">&para;</a></h3>
+<p>Each AP2 Mandate type identifies its schema using the <code>vct</code> claim. The <code>vct</code>
+value includes a numeric suffix that acts as a schema version number (e.g.
+<code>mandate.payment.1</code>, <code>mandate.checkout.open.1</code>). Implementations MUST match the
+exact <code>vct</code> string, including the version suffix. A future incompatible schema
+revision would introduce a new suffix (e.g. <code>.2</code>), allowing old and new versions
+to be distinguished unambiguously.</p>
+<h3 id="payment-mandate">Payment Mandate<a class="headerlink" href="#payment-mandate" title="Permanent link">&para;</a></h3>
+<p>The Payment Mandate is designed to provide the Credential Provider, Network, and
+Merchant Payment Processor cryptographic proof that the Shopping Agent is
+authorized to pay for a particular Checkout.</p>
+<p>The Payment Mandate is provided by the Shopping Agent and verified by the
+Credential Provider, Network, and Merchant Payment Processor.</p>
+<p>The Payment Mandate is bound to a particular Checkout using the cryptographic
+hash of the Checkout JWT. To prevent rainbow table attacks, the Checkout JWT
+MUST be signed using a digital signature scheme (e.g., ECDSA) and not a
+deterministic signature (e.g., Ed25519).</p>
+<p>Once the Merchant Payment Processor has accepted or rejected the Payment
+Mandate, a signed Payment Receipt MUST be returned to the Shopping Agent,
+Credential Provider, and possibly Networks.</p>
+<p>For the full details of the Payment Mandate and Receipt structures, see
+<a href="../payment_mandate/">Payment Mandate</a>.</p>
+<h2 id="modes">Modes<a class="headerlink" href="#modes" title="Permanent link">&para;</a></h2>
+<p>There are two <code>modes</code> that AP2 can consider to operate in.</p>
+<ul>
+<li>
+<p>Human Present (Direct): The User directly sees the closed Checkout and
+    approves it and its payment explicitly.</p>
+</li>
+<li>
+<p>Human Not Present (Autonomous): The User sees and approves a set of
+    constraints over what closed Checkout and Payment would meet their intent.
+    The Shopping Agent then assembles and approves a closed Checkout and Payment
+    Mandate on their behalf using these open Mandates.</p>
+</li>
+</ul>
+<p>Verifiers of Mandates <em>always</em> receive a closed Payment and Checkout Mandate,
+regardless of the mode. The difference is only in how the verification of the
+Mandate is performed.</p>
+<p>In the Direct case, the signature on the closed Mandates is validated as coming
+from a User directly, using a User Credential or a trust list of Agent
+Providers.</p>
+<p>In the Autonomous case, the closed Mandates are signed by an Agent key. Trust in
+this key is provided by open Mandates that are signed by the User or a trust
+list of Agent Providers. Constraints in these Mandates allow the verifier to
+verify that the Checkout and Payment match the User's intent. Only constraints
+relevant to the closed Mandates are shared with the verifier.</p>
+<h3 id="direct-human-present">Direct (Human Present)<a class="headerlink" href="#direct-human-present" title="Permanent link">&para;</a></h3>
+<p>When a Shopping Agent has a Checkout JWT for the closed Checkout from the
+Merchant, they construct the Checkout and Payment Mandate Content and pass it to
+a Trusted Surface for display to the user and signing.</p>
+<p>Upon receiving the Checkout and Payment Mandate, the Shopping Agent forwards the
+Payment Mandate to the Credential Provider (and possibly the Network) for
+Verification. Upon successful verification, the the Shopping Agent receives a
+payment credential.</p>
+<p>The payment credential and a Checkout Mandate are then provided to the Merchant.
+The The Merchant verifies the Checkout with what it created, and initiates
+payment with the Merchant Payment Processor if a Merchant-initiated charge.</p>
+<p>In the case that the payment method pushes funds to the Merchant, the Merchant
+will instead receive confirmation of funds sent, and confirm the receipt of
+those funds.</p>
+<p>Upon completion, a Checkout Receipt is returned to the Shopping Agent, and the
+Payment Receipt is returned to the Shopping Agent, Credential Provider and, if
+applicable, the Network.</p>
+<p>See <a href="../flows/#human-present">Human Present</a> for a detailed example.</p>
+<blockquote>
+<p>Note: Because the User approves the closed Checkout, this can often be
+replaced with a traditional e-commerce journey where the Merchant and the
+Trusted Surface communicate directly.</p>
+</blockquote>
+<h3 id="autonomous-human-not-present">Autonomous (Human Not Present)<a class="headerlink" href="#autonomous-human-not-present" title="Permanent link">&para;</a></h3>
+<p>When a Shopping Agent needs to operate autonomously, it will create open
+Checkout and Payment Mandate Content and have these authorized by the Trusted
+Surface. These MUST include the agent's public key as a <code>cnf</code> claim. This is
+required as it is not yet bound to a particular transaction, and so it needs to
+be constrained for use by the Agent. It is RECOMMENDED to set the <code>exp</code> claim
+for these Mandates to the smallest value that will allow the Shopping Agent to
+complete the assigned task.</p>
+<p>After the Shopping Agent has created an appropriate Checkout, to authorize the
+Checkout, the Shopping Agent MAY now sign it using its Agent Key instead of
+getting approval on a Trusted Surface. It then MUST provide both the user-signed
+open Mandate and the agent-signed closed Mandate to the Verifying Parties, as
+described in the Direct case above.</p>
+<p>Shopping Agents MUST NOT present any subsequent open Payment or Checkout
+Mandates without receiving a rejection receipt from the previous one. This is to
+prevent an Agent approving multiple different Checkouts using the same open
+Mandate.</p>
+<p>To ensure user privacy, Shopping Agents MUST present only the disclosures from
+the open Mandates needed in the evaluation of the closed Mandates.</p>
+<p>Upon completion, a Checkout Receipt is returned to the Shopping Agent, and the
+Payment Receipt is returned to the Shopping Agent, Credential Provider and, if
+applicable, the Network.</p>
+<p>See <a href="../flows/#human-not-present">Human Not Present</a> for a detailed example.</p>
+<blockquote>
+<p>Note: In the current specification, the Shopping Agent needs to determine the
+applicable Mandates and Disclosures ad-hoc based on the Checkout. In the
+future, utilizing an explicit query language in the commerce protocol can help
+practical interoperability.</p>
+</blockquote>
+<h4 id="agent-to-agent-delegation">Agent-to-Agent Delegation<a class="headerlink" href="#agent-to-agent-delegation" title="Permanent link">&para;</a></h4>
+<p>Conceptually, it is possible to use this protocol to support delegation of
+Mandates from one Shopping Agent to another. This is outside the scope of the
+current specification.</p>
+<h2 id="dispute-evidence">Dispute Evidence<a class="headerlink" href="#dispute-evidence" title="Permanent link">&para;</a></h2>
+<p>In the case of a dispute, the Checkout Mandate and Receipt, and Payment Mandate
+and Receipt can be brought together to provide a non-repudiable picture of the
+transaction. Specific details of how this is used for dispute resolution,
+retention, and retrieval requirements are outside the scope of this
+specification.</p>
+<p>The Checkout Mandate and Receipt MAY be able to be provided by the following
+roles:</p>
+<ul>
+<li>Shopping Agent</li>
+<li>Merchant</li>
+</ul>
+<p>The Payment Mandate and Receipt MAY be able to be provided by the following
+roles:</p>
+<ul>
+<li>Shopping Agent</li>
+<li>Credential Provider</li>
+<li>Network</li>
+<li>Merchant Payment Processor</li>
+</ul>
+<p>See <a href="#dispute">Verification: Dispute</a> for the verification rules.</p>
+<blockquote>
+<p>Note: Providing an automated method to retrieve the Checkout Mandate, from
+either the Shopping Agent or the Merchant, would provide substantial utility
+to the ecosystem. The exact details are outside the scope of the current
+version, but would be done by using the Payment Mandate <code>transaction_id</code> as
+the key to request it.</p>
+</blockquote>
+<h2 id="verification">Verification<a class="headerlink" href="#verification" title="Permanent link">&para;</a></h2>
+<p>The following verification rules MUST be followed by these roles upon receipt of
+the Mandate.</p>
+<blockquote>
+<p>Note: A particular role can always delegate the responsibilities to a
+technology provider. For example, a Merchant could have their payment
+processor perform verifications on their behalf. In such a case, the delegate
+follows the verification rules for that role instead.</p>
+</blockquote>
+<h3 id="merchant">Merchant<a class="headerlink" href="#merchant" title="Permanent link">&para;</a></h3>
+<p>The Merchant MUST receive an appropriate Checkout Mandate from a Shopping Agent
+before completing the Checkout.</p>
+<p>They MUST verify the Checkout Mandate as follows:</p>
+<ul>
+<li>Process and verify the Checkout Mandate according to
+    <a href="../agent_authorization/#verification-and-processing-rules">Verification and Processing Rules</a>.</li>
+<li>Verify that the hash of the Checkout JWT sent for approval matches the value
+    included for the <code>checkout_hash</code> claim.</li>
+<li>If open Checkout Mandates are included, verify that the closed Checkout
+    conforms to all of the Constraints by evaluating each Constraint.</li>
+</ul>
+<p>If any step fails, the Merchant MUST return a Checkout Receipt JWT containing
+the appropriate error message.</p>
+<h3 id="credential-provider-and-network">Credential Provider and Network<a class="headerlink" href="#credential-provider-and-network" title="Permanent link">&para;</a></h3>
+<p>The Credential Provider and, if applicable, the Network MUST receive an
+appropriate Payment Mandate from the Shopping Agent before returning a payment
+credential.</p>
+<p>They MUST verify the Payment Mandate as follows:</p>
+<ul>
+<li>Process and verify the Payment Mandate according to
+    <a href="../agent_authorization/#verification-and-processing-rules">Verification and Processing Rules</a>.</li>
+<li>If open Payment Mandates are included, verify that the closed Payment
+    Mandate matches all the Constraints.</li>
+</ul>
+<p>If any step fails, they MUST return a Payment Receipt JWT containing the
+appropriate error to the Shopping Agent.</p>
+<h3 id="merchant-payment-processor">Merchant Payment Processor<a class="headerlink" href="#merchant-payment-processor" title="Permanent link">&para;</a></h3>
+<p>The Merchant Payment Processor MUST receive an appropriate Payment Credential
+from the Merchant before processing the transaction.</p>
+<p>Merchant Payment Processor MUST verify the Payment Credential is appropriately
+scoped to the Checkout. One way this can be done is by providing the Closed
+Payment Mandate inside the Payment Credential.</p>
+<h3 id="dispute">Dispute<a class="headerlink" href="#dispute" title="Permanent link">&para;</a></h3>
+<p>When performing verification at the time of dispute, the following steps MUST be
+followed to ensure the integrity of the Payment and Checkout Mandate and
+Receipts.</p>
+<ul>
+<li>The Checkout Mandate MUST be verified according to the Merchant Verification
+    rules.</li>
+<li>The hash of the <code>checkout_jwt</code> MUST be independently computed from the
+    included <code>checkout_jwt</code>.</li>
+<li>The Checkout Receipt <code>reference</code> MUST match the hash of the closed Checkout
+    Mandate. This is calculated in the same manner as the <code>sd_hash</code> would be.</li>
+<li>The Payment Mandate MUST be verified according to the
+    <a href="#merchant-payment-processor">Merchant Payment Processor</a> section using the
+    <code>checkout_hash</code> from the Checkout Mandate.</li>
+<li>The Payment Receipt reference MUST match the hash of the closed Payment
+    Mandate. This is calculated in the same manner as the <code>sd_hash</code> would be.</li>
+</ul>
+<p>After all these steps have been performed successfully, then the information
+contained in the Checkout Mandate and Payment Mandate is able to be used as
+evidence as to what the user, and each role saw.</p>
+<h2 id="extension-points">Extension Points<a class="headerlink" href="#extension-points" title="Permanent link">&para;</a></h2>
+<p>AP2 provides several extension points to allow it to adapt to meet the needs of
+Agentic Commerce. These are as follows:</p>
+<h3 id="mandate-constraints">Mandate Constraints<a class="headerlink" href="#mandate-constraints" title="Permanent link">&para;</a></h3>
+<p>This extension point is designed to support constraining Agent behavior, while
+supporting more complex autonomous use cases. To define a new constraint, the
+following MUST be specified:</p>
+<ul>
+<li>A uniquely defined <code>type</code>.</li>
+<li>A Schema, including which fields are selectively disclosable.</li>
+<li>The evaluation algorithm.</li>
+</ul>
+<h3 id="checkout-object">Checkout Object<a class="headerlink" href="#checkout-object" title="Permanent link">&para;</a></h3>
+<p>AP2 is agnostic to the contents of the merchant-signed Checkout JWT. It is
+created to be compatible with logically represented Checkout Objects, but it
+does provide an extension point to be adapted to other Checkout Objects. UCP
+itself also provides such extension points within the protocol, which is the
+RECOMMENDED way to support new commerce journeys.</p>
+<h3 id="payment-instrument">Payment Instrument<a class="headerlink" href="#payment-instrument" title="Permanent link">&para;</a></h3>
+<p>AP2 is agnostic to the particular payment instrument used. New Payment
+Instruments are supported by defining a unique <code>type</code> in the Payment Instrument
+JSON object. If necessary, additional properties MAY be defined for that
+specific <code>type</code>.</p>
+<h3 id="verifiable-digital-credential-formats-vdcs">Verifiable Digital Credential Formats (VDCs)<a class="headerlink" href="#verifiable-digital-credential-formats-vdcs" title="Permanent link">&para;</a></h3>
+<p>AP2 specifies the use of <code>SD-JWT</code>s for securing the Payment and Checkout
+Mandates. Payment and Checkout Mandates could be cryptographically secured by
+other VDCs as mentioned in
+<a href="../agent_authorization/">Agent Authorization</a>.</p>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../../overview/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Executive Summary">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Executive Summary
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../agent_authorization/" class="md-footer__link md-footer__link--next" aria-label="Next: Agent Authorization Framework">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Agent Authorization Framework
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright 2025 Google. Licensed under the Apache License, Version 2.0.
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../..", "features": ["announce.dismiss", "content.action.view", "content.code.annotate", "content.code.copy", "content.code.select", "content.tabs.link", "navigation.footer", "navigation.indexes", "navigation.instant", "navigation.instant.progress", "navigation.path", "navigation.top", "navigation.tracking", "toc.follow", {"versioning": {"provider": "mike"}}], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+    
+  </body>
+</html>

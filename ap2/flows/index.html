@@ -13,22 +13,28 @@
         <meta name="author" content="Google">
       
       
+        <link rel="canonical" href="https://ap2-protocol.org/ap2/flows/">
       
       
+        <link rel="prev" href="../agent_authorization/">
       
-      <link rel="icon" href="/assets/ap2-logo-black.svg">
+      
+        <link rel="next" href="../checkout_mandate/">
+      
+      
+      <link rel="icon" href="../../assets/ap2-logo-black.svg">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.22">
     
     
       
-        <title>AP2 - Agent Payments Protocol Documentation</title>
+        <title>Flows - AP2 - Agent Payments Protocol Documentation</title>
       
     
     
-      <link rel="stylesheet" href="/assets/stylesheets/main.84d31ad4.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.84d31ad4.min.css">
       
         
-        <link rel="stylesheet" href="/assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
       
       
   
@@ -112,9 +118,9 @@
       
     
     
-      <link rel="stylesheet" href="/stylesheets/custom.css">
+      <link rel="stylesheet" href="../../stylesheets/custom.css">
     
-    <script>__md_scope=new URL("/",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
   
@@ -149,6 +155,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#flow-examples" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -161,9 +172,9 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="/." title="AP2 - Agent Payments Protocol Documentation" class="md-header__button md-logo" aria-label="AP2 - Agent Payments Protocol Documentation" data-md-component="logo">
+    <a href="../.." title="AP2 - Agent Payments Protocol Documentation" class="md-header__button md-logo" aria-label="AP2 - Agent Payments Protocol Documentation" data-md-component="logo">
       
-  <img src="/assets/ap2-logo-white.svg" alt="logo">
+  <img src="../../assets/ap2-logo-white.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -180,7 +191,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              
+              Flows
             
           </span>
         </div>
@@ -282,9 +293,9 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="/." title="AP2 - Agent Payments Protocol Documentation" class="md-nav__button md-logo" aria-label="AP2 - Agent Payments Protocol Documentation" data-md-component="logo">
+    <a href="../.." title="AP2 - Agent Payments Protocol Documentation" class="md-nav__button md-logo" aria-label="AP2 - Agent Payments Protocol Documentation" data-md-component="logo">
       
-  <img src="/assets/ap2-logo-white.svg" alt="logo">
+  <img src="../../assets/ap2-logo-white.svg" alt="logo">
 
     </a>
     AP2 - Agent Payments Protocol Documentation
@@ -311,7 +322,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -333,7 +344,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/overview/" class="md-nav__link">
+      <a href="../../overview/" class="md-nav__link">
         
   
   
@@ -352,8 +363,10 @@
       
   
   
+    
   
   
+  
     
     
       
@@ -375,11 +388,11 @@
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
@@ -395,7 +408,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             Specification
@@ -409,7 +422,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/ap2/specification/" class="md-nav__link">
+      <a href="../specification/" class="md-nav__link">
         
   
   
@@ -432,7 +445,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/ap2/agent_authorization/" class="md-nav__link">
+      <a href="../agent_authorization/" class="md-nav__link">
         
   
   
@@ -452,10 +465,32 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="/ap2/flows/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Flows
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -466,6 +501,44 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#human-present" class="md-nav__link">
+    <span class="md-ellipsis">
+      Human Present
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#human-not-present" class="md-nav__link">
+    <span class="md-ellipsis">
+      Human Not Present
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -478,7 +551,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/ap2/checkout_mandate/" class="md-nav__link">
+      <a href="../checkout_mandate/" class="md-nav__link">
         
   
   
@@ -501,7 +574,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/ap2/payment_mandate/" class="md-nav__link">
+      <a href="../payment_mandate/" class="md-nav__link">
         
   
   
@@ -524,7 +597,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/ap2/security_and_privacy_considerations/" class="md-nav__link">
+      <a href="../security_and_privacy_considerations/" class="md-nav__link">
         
   
   
@@ -547,7 +620,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/ap2/implementation_considerations/" class="md-nav__link">
+      <a href="../implementation_considerations/" class="md-nav__link">
         
   
   
@@ -577,7 +650,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/glossary/" class="md-nav__link">
+      <a href="../../glossary/" class="md-nav__link">
         
   
   
@@ -599,7 +672,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/faq/" class="md-nav__link">
+      <a href="../../faq/" class="md-nav__link">
         
   
   
@@ -803,6 +876,34 @@
   
   
   
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#human-present" class="md-nav__link">
+    <span class="md-ellipsis">
+      Human Present
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#human-not-present" class="md-nav__link">
+    <span class="md-ellipsis">
+      Human Not Present
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -814,8 +915,207 @@
             <div class="md-content" data-md-component="content">
               <article class="md-content__inner md-typeset">
                 
-  <h1>404 - Not found</h1>
+                  
 
+
+  
+  
+    
+      
+    
+    <a href="https://github.com/google-agentic-commerce/AP2/raw/main/docs/ap2/flows.md" title="View source of this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.22 2H7.78C6.8 2 6 2.8 6 3.78v12.44C6 17.2 6.8 18 7.78 18h12.44c.98 0 1.78-.79 1.78-1.78V3.78C22 2.8 21.2 2 20.22 2m-9.16 13H9v-2.06l6.06-6.06 2.06 2.06zm7.64-7.65-1 1-2.05-2.05 1-1c.21-.22.56-.22.77 0l1.28 1.28c.22.21.22.56 0 .77M4 6H2v14a2 2 0 0 0 2 2h14v-2H4z"/></svg>
+    </a>
+  
+
+
+<h1 id="flow-examples">Flow Examples<a class="headerlink" href="#flow-examples" title="Permanent link">&para;</a></h1>
+<p>There are two categories of flows in AP2: Human Present and Human Not Present.</p>
+<ul>
+<li><em>Human Present</em>: The User <strong>directly</strong> approves the closed Checkout and
+    Payment Mandates.</li>
+<li><em>Human Not Present</em>: The User approves open Checkout and Payment Mandates
+    while the Agent, acting autonomously, presents them along with Agent-signed
+    closed Checkout and Payment Mandates.</li>
+</ul>
+<p>A Human Not Present flow can be turned into a Human Present flow by the Merchant
+(or Credential Provider) returning an <code>unresolved_constraint</code> error and
+bringing the User back into the loop to approve the closed Mandates.</p>
+<p>All flows below are non-normative examples. They assume that appropriate
+enrollment and any necessary User Credentials have been set up in advance.</p>
+<h2 id="human-present">Human Present<a class="headerlink" href="#human-present" title="Permanent link">&para;</a></h2>
+<p>This is the <code>direct</code> flow where the User is present to directly approve the
+closed Payment and Checkout Mandates.</p>
+<figure>
+  <img src="../../assets/ap2_hp_flow.svg" style="width:800px" alt="Diagram showing the overall Human Present flow in AP2">
+  <figcaption align="center">Human Present flow</figcaption>
+</figure>
+
+<p>There are two phases to this flow:</p>
+<p><strong>Phase 1: Shopping</strong></p>
+<figure>
+  <img src="../../assets/ap2_hp_shopping.svg" style="width:800px" alt="Human Present Shopping flow">
+  <figcaption align="center">Human Present Shopping flow</figcaption>
+</figure>
+
+<ol>
+<li>User initiates shopping with the Shopping Agent.</li>
+<li>The Shopping Agent communicates with the Merchant and assembles a cart.</li>
+<li>The Shopping Agent goes to Checkout. The Merchant creates a signed Checkout
+     and requires an appropriate mandate to continue.</li>
+<li>The Shopping Agent retrieves existing Instrument Options from the Credential
+     Provider and selects one.</li>
+</ol>
+<p><strong>Phase 2: Payment</strong></p>
+<figure>
+  <img src="../../assets/ap2_hp_payment.svg" style="width:800px" alt="Human Present Payment flow">
+  <figcaption align="center">Human Present Payment flow</figcaption>
+</figure>
+
+<ol>
+<li>The Shopping Agent constructs Payment and Checkout Mandate Content and
+     requests user approval via a Trusted Surface.<ul>
+<li><em>This could use an external Trusted Surface with the User Credential
+   model, or an internal one using the Trusted Agent Provider model.</em></li>
+</ul>
+</li>
+<li>The Trusted Surface renders the Mandate Content and obtains user
+     authentication (e.g., biometric) and consent.</li>
+<li>The Trusted Surface uses <code>user_sk</code> to sign and create the Payment Mandate
+     and Checkout Mandate.<ul>
+<li><em>The <code>checkout_jwt</code> hash is used to permanently link the Mandates.</em></li>
+<li><em>The <code>user_sk</code> would be the Agent Provider's key in the Trusted Agent
+   Provider model.</em></li>
+</ul>
+</li>
+<li>The Trusted Surface passes the Mandates back to the Shopping Agent.</li>
+<li>The Shopping Agent passes the Payment Mandate to the Credential Provider,
+     who verifies it and creates a payment token.<ul>
+<li><em>As part of this process, the Credential Provider may share the Payment
+   Mandate with the payment network and receive a scoped purchase credential
+   (also called a token).</em></li>
+</ul>
+</li>
+<li>The Shopping Agent sends this token and the Checkout Mandate to the
+     Merchant.</li>
+<li>The Merchant verifies the integrity and content of the Checkout Mandate
+     against the current cart state, then initiates the payment with the token
+     and <code>checkout_jwt</code> hash.</li>
+<li>The Merchant Payment Processor verifies the included Payment Mandate in the
+     token and the binding with the <code>checkout_jwt</code> hash.</li>
+<li>The MPP-signed Payment Receipt is returned to the Shopping Agent,
+     Credential Provider, and Network, and the Merchant-signed Checkout Receipt
+     is returned to the Shopping Agent to indicate success.</li>
+</ol>
+<h2 id="human-not-present">Human Not Present<a class="headerlink" href="#human-not-present" title="Permanent link">&para;</a></h2>
+<figure>
+  <img src="../../assets/ap2_hnp_flow.svg" style="width:800px" alt="Human Not Present flow">
+  <figcaption align="center">Human Not Present flow</figcaption>
+</figure>
+
+<p><strong>Phase 1: Shopping</strong></p>
+<p>In the Human Not Present flow, the Shopping phase is split in two. In the first
+phase, the User sets a shopping task for the Agent. In the second phase, the
+Agent acts autonomously to complete the task without further human interaction.</p>
+<figure>
+  <img src="../../assets/ap2_hnp_shopping.svg" style="width:800px" alt="Human Not Present Shopping flow">
+  <figcaption align="center">Human Not Present Shopping flow</figcaption>
+</figure>
+
+<p><strong>Phase 1a: Shopping (Human Present)</strong></p>
+<p>In this phase, the User provides the agent authorization for autonomous commerce
+in the form of open Checkout and Payment Mandates.</p>
+<ol>
+<li>User initiates shopping with the Shopping Agent.</li>
+<li>The Shopping Agent assembles the appropriate <code>open</code> Mandate Contents for the
+     shopping session and requests user approval via a Trusted Surface.<ul>
+<li><em>This defines a set of constraints where the Shopping Agent can act
+   without requiring further User authorization.</em></li>
+</ul>
+</li>
+<li>The Trusted Surface renders the Mandate Content and obtains user
+     authentication (e.g., biometric) and consent.</li>
+<li>The Trusted Surface uses the <code>user_sk</code> to sign and create the open Checkout
+     and open Payment Mandates.<ul>
+<li><em>The hash of the open Checkout Mandate is included in the open Payment
+   Mandate to permanently link them.</em></li>
+<li><em>The <code>agent_pk</code> is included as a confirmation claim to sender-constrain
+   the Mandate usage.</em></li>
+<li><em>The <code>user_sk</code> would be the Agent Provider key in the Trusted Agent
+   Provider model.</em></li>
+</ul>
+</li>
+</ol>
+<p>The User now leaves the session, having delegated the shopping task to the
+Shopping Agent.</p>
+<p><strong>Phase 1b: Shopping (Human Not Present)</strong></p>
+<p>In this phase, the Agent autonomously assembles a Checkout it believes fulfills
+the assigned task.</p>
+<ol>
+<li>The Shopping Agent communicates with the Merchant and assembles a cart.</li>
+<li>The Shopping Agent goes to Checkout. The Merchant creates a signed Checkout
+     and requires an appropriate mandate to continue.</li>
+</ol>
+<p><strong>Phase 2: Payment (Human Not Present)</strong></p>
+<p>In this phase, the Agent completes the checkout using the provided Mandates.</p>
+<figure>
+  <img src="../../assets/ap2_hnp_payment.svg" style="width:800px" alt="Human Not Present Payment flow">
+  <figcaption align="center">Human Not Present Payment flow</figcaption>
+</figure>
+
+<ol>
+<li>The Shopping Agent selects the appropriate existing open Mandates whose
+     constraints apply to the incoming Checkout.<ul>
+<li><em>The Mandate selection mechanism is outside the scope of this
+   specification.</em></li>
+<li><em>To prevent double-spend, the Shopping Agent MUST NOT create multiple
+   overlapping Mandates until it receives an Action Receipt indicating an
+   error. See the Implementation Considerations section for more details.</em></li>
+</ul>
+</li>
+<li>The Shopping Agent constructs the Payment and Checkout Mandate Contents and
+     signs both closed Mandates using the <code>agent_sk</code>.<ul>
+<li><em>The <code>checkout_jwt</code> hash is used to permanently link them.</em></li>
+<li><em>The <code>sd_hash</code> property of the <code>kb-sd-jwt</code> is used to bind the closed
+ mandate to the open one</em></li>
+</ul>
+</li>
+<li>The Shopping Agent passes the Payment Mandates (Open and Closed) to the
+     Credential Provider, who verifies them and creates a payment token.<ul>
+<li><em>As part of this process, the Credential Provider may share the Payment
+   Mandate with the payment network and receive a scoped purchase credential
+   (also called a token).</em></li>
+</ul>
+</li>
+<li>The Shopping Agent sends this token and the Checkout Mandates (Open and
+     Closed) to the Merchant.</li>
+<li>The Merchant verifies the integrity and content of the closed Checkout
+     Mandate against the current cart state, and verifies that the constraints
+     in the open Checkout Mandate have been met. It then initiates the payment
+     with the token, <code>checkout_jwt</code> hash, and open Checkout Mandate hash.</li>
+<li>The Merchant Payment Processor verifies the included Payment Mandates in the
+     token, as well as the bindings with the <code>checkout_jwt</code> hash and open
+     Checkout Mandate hash.</li>
+<li>The MPP-signed Payment Receipt is returned to the Shopping Agent,
+     Credential Provider, and Network, and the Merchant-signed Checkout Receipt
+     is returned to the Shopping Agent to indicate success.</li>
+</ol>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+                
               </article>
             </div>
           
@@ -835,6 +1135,44 @@
       
         <footer class="md-footer">
   
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../agent_authorization/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Agent Authorization Framework">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Agent Authorization Framework
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../checkout_mandate/" class="md-footer__link md-footer__link--next" aria-label="Next: Checkout Mandate">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Checkout Mandate
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
     
   
   <div class="md-footer-meta md-typeset">
@@ -867,10 +1205,10 @@
     
     
       
-      <script id="__config" type="application/json">{"base": "/", "features": ["announce.dismiss", "content.action.view", "content.code.annotate", "content.code.copy", "content.code.select", "content.tabs.link", "navigation.footer", "navigation.indexes", "navigation.instant", "navigation.instant.progress", "navigation.path", "navigation.top", "navigation.tracking", "toc.follow", {"versioning": {"provider": "mike"}}], "search": "/assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"base": "../..", "features": ["announce.dismiss", "content.action.view", "content.code.annotate", "content.code.copy", "content.code.select", "content.tabs.link", "navigation.footer", "navigation.indexes", "navigation.instant", "navigation.instant.progress", "navigation.path", "navigation.top", "navigation.tracking", "toc.follow", {"versioning": {"provider": "mike"}}], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="/assets/javascripts/bundle.f55a23d4.min.js"></script>
+      <script src="../../assets/javascripts/bundle.f55a23d4.min.js"></script>
       
     
   </body>

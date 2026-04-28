@@ -13,22 +13,28 @@
         <meta name="author" content="Google">
       
       
+        <link rel="canonical" href="https://ap2-protocol.org/ap2/security_and_privacy_considerations/">
       
       
+        <link rel="prev" href="../payment_mandate/">
       
-      <link rel="icon" href="/assets/ap2-logo-black.svg">
+      
+        <link rel="next" href="../implementation_considerations/">
+      
+      
+      <link rel="icon" href="../../assets/ap2-logo-black.svg">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.22">
     
     
       
-        <title>AP2 - Agent Payments Protocol Documentation</title>
+        <title>Security and Privacy Considerations - AP2 - Agent Payments Protocol Documentation</title>
       
     
     
-      <link rel="stylesheet" href="/assets/stylesheets/main.84d31ad4.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.84d31ad4.min.css">
       
         
-        <link rel="stylesheet" href="/assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
       
       
   
@@ -112,9 +118,9 @@
       
     
     
-      <link rel="stylesheet" href="/stylesheets/custom.css">
+      <link rel="stylesheet" href="../../stylesheets/custom.css">
     
-    <script>__md_scope=new URL("/",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
   
@@ -149,6 +155,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#security-and-privacy-considerations" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -161,9 +172,9 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="/." title="AP2 - Agent Payments Protocol Documentation" class="md-header__button md-logo" aria-label="AP2 - Agent Payments Protocol Documentation" data-md-component="logo">
+    <a href="../.." title="AP2 - Agent Payments Protocol Documentation" class="md-header__button md-logo" aria-label="AP2 - Agent Payments Protocol Documentation" data-md-component="logo">
       
-  <img src="/assets/ap2-logo-white.svg" alt="logo">
+  <img src="../../assets/ap2-logo-white.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -180,7 +191,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              
+              Security and Privacy Considerations
             
           </span>
         </div>
@@ -282,9 +293,9 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="/." title="AP2 - Agent Payments Protocol Documentation" class="md-nav__button md-logo" aria-label="AP2 - Agent Payments Protocol Documentation" data-md-component="logo">
+    <a href="../.." title="AP2 - Agent Payments Protocol Documentation" class="md-nav__button md-logo" aria-label="AP2 - Agent Payments Protocol Documentation" data-md-component="logo">
       
-  <img src="/assets/ap2-logo-white.svg" alt="logo">
+  <img src="../../assets/ap2-logo-white.svg" alt="logo">
 
     </a>
     AP2 - Agent Payments Protocol Documentation
@@ -311,7 +322,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -333,7 +344,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/overview/" class="md-nav__link">
+      <a href="../../overview/" class="md-nav__link">
         
   
   
@@ -352,8 +363,10 @@
       
   
   
+    
   
   
+  
     
     
       
@@ -375,11 +388,11 @@
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
@@ -395,7 +408,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             Specification
@@ -409,7 +422,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/ap2/specification/" class="md-nav__link">
+      <a href="../specification/" class="md-nav__link">
         
   
   
@@ -432,7 +445,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/ap2/agent_authorization/" class="md-nav__link">
+      <a href="../agent_authorization/" class="md-nav__link">
         
   
   
@@ -455,7 +468,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/ap2/flows/" class="md-nav__link">
+      <a href="../flows/" class="md-nav__link">
         
   
   
@@ -478,7 +491,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/ap2/checkout_mandate/" class="md-nav__link">
+      <a href="../checkout_mandate/" class="md-nav__link">
         
   
   
@@ -501,7 +514,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/ap2/payment_mandate/" class="md-nav__link">
+      <a href="../payment_mandate/" class="md-nav__link">
         
   
   
@@ -521,10 +534,32 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="/ap2/security_and_privacy_considerations/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Security and Privacy Considerations
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -535,6 +570,128 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#security-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security Considerations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#manipulated-checkout" class="md-nav__link">
+    <span class="md-ellipsis">
+      Manipulated Checkout
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manipulated-payment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Manipulated Payment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#payment-credential-theft" class="md-nav__link">
+    <span class="md-ellipsis">
+      Payment Credential Theft
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manipulated-discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      Manipulated Discovery
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#double-spend" class="md-nav__link">
+    <span class="md-ellipsis">
+      Double Spend
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#privacy-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Privacy Considerations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Privacy Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#open-checkout-and-payment-mandate-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      Open Checkout and Payment Mandate Constraints
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checkout-and-payment-data-minimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Checkout and Payment Data Minimization
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rainbow-table-attacks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Rainbow Table Attacks
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -547,7 +704,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/ap2/implementation_considerations/" class="md-nav__link">
+      <a href="../implementation_considerations/" class="md-nav__link">
         
   
   
@@ -577,7 +734,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/glossary/" class="md-nav__link">
+      <a href="../../glossary/" class="md-nav__link">
         
   
   
@@ -599,7 +756,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/faq/" class="md-nav__link">
+      <a href="../../faq/" class="md-nav__link">
         
   
   
@@ -803,6 +960,118 @@
   
   
   
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#security-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Security Considerations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#manipulated-checkout" class="md-nav__link">
+    <span class="md-ellipsis">
+      Manipulated Checkout
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manipulated-payment" class="md-nav__link">
+    <span class="md-ellipsis">
+      Manipulated Payment
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#payment-credential-theft" class="md-nav__link">
+    <span class="md-ellipsis">
+      Payment Credential Theft
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manipulated-discovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      Manipulated Discovery
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#double-spend" class="md-nav__link">
+    <span class="md-ellipsis">
+      Double Spend
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#privacy-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      Privacy Considerations
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Privacy Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#open-checkout-and-payment-mandate-constraints" class="md-nav__link">
+    <span class="md-ellipsis">
+      Open Checkout and Payment Mandate Constraints
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checkout-and-payment-data-minimization" class="md-nav__link">
+    <span class="md-ellipsis">
+      Checkout and Payment Data Minimization
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rainbow-table-attacks" class="md-nav__link">
+    <span class="md-ellipsis">
+      Rainbow Table Attacks
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -814,8 +1083,169 @@
             <div class="md-content" data-md-component="content">
               <article class="md-content__inner md-typeset">
                 
-  <h1>404 - Not found</h1>
+                  
 
+
+  
+  
+    
+      
+    
+    <a href="https://github.com/google-agentic-commerce/AP2/raw/main/docs/ap2/security_and_privacy_considerations.md" title="View source of this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.22 2H7.78C6.8 2 6 2.8 6 3.78v12.44C6 17.2 6.8 18 7.78 18h12.44c.98 0 1.78-.79 1.78-1.78V3.78C22 2.8 21.2 2 20.22 2m-9.16 13H9v-2.06l6.06-6.06 2.06 2.06zm7.64-7.65-1 1-2.05-2.05 1-1c.21-.22.56-.22.77 0l1.28 1.28c.22.21.22.56 0 .77M4 6H2v14a2 2 0 0 0 2 2h14v-2H4z"/></svg>
+    </a>
+  
+
+
+<h1 id="security-and-privacy-considerations">Security and Privacy Considerations<a class="headerlink" href="#security-and-privacy-considerations" title="Permanent link">&para;</a></h1>
+<h2 id="security-considerations">Security Considerations<a class="headerlink" href="#security-considerations" title="Permanent link">&para;</a></h2>
+<p>Agentic commerce introduces numerous potential security risks. Given the current
+state of agent security, AP2 assumes that preventing prompt injection attacks
+is infeasible. Therefore, all LLMs and Agents MUST be considered potential
+attackers and are explicitly included in the threat model.</p>
+<h3 id="manipulated-checkout">Manipulated Checkout<a class="headerlink" href="#manipulated-checkout" title="Permanent link">&para;</a></h3>
+<p><strong>Threat:</strong></p>
+<ul>
+<li>An attacker steals a signed and authorized Payment Mandate to use it with an
+  unrelated Checkout.</li>
+</ul>
+<p><strong>Mitigation</strong></p>
+<ul>
+<li>The Payment Mandate MUST contain a reference to its associated Checkout.</li>
+<li>This is via <code>transaction_id</code> for closed Payment Mandates and the 
+ <code>mandate.payment.reference</code> constraint for open ones.</li>
+</ul>
+<p><strong>Threat:</strong></p>
+<ul>
+<li>An attacker reuses an open Payment Mandate with a different closed Payment
+  Mandate.</li>
+<li>An attacker reuses an open Payment Mandate to approve a different closed
+  Checkout Mandate.</li>
+</ul>
+<p><strong>Mitigation</strong></p>
+<ul>
+<li>Closed Mandates MUST contain the <code>sd_hash</code> claim to bind them to the
+  presented open Mandate.</li>
+<li>Open Mandates MUST contain the Agent's key (via a <code>cnf</code> claim) so that
+  only the agent could create a Closed Mandate with a valid signature.</li>
+</ul>
+<p><strong>Threat:</strong></p>
+<ul>
+<li>An attacker mismatches a closed Mandate with a different open Mandate.</li>
+</ul>
+<p><strong>Mitigation</strong></p>
+<ul>
+<li>Closed Mandates MUST contain the <code>sd_hash</code> claim to bind them to the
+  presented open Mandate.</li>
+</ul>
+<p><strong>Threat:</strong></p>
+<ul>
+<li>An attacker uses a closed Checkout Mandate with a different checkout session.</li>
+</ul>
+<p><strong>Mittigation</strong></p>
+<ul>
+<li>Merchant MUST verify that <code>checkout_hash</code> matches the hash of the
+  latest <code>checkout_jwt</code>.</li>
+</ul>
+<h3 id="manipulated-payment">Manipulated Payment<a class="headerlink" href="#manipulated-payment" title="Permanent link">&para;</a></h3>
+<p><strong>Threat:</strong></p>
+<ul>
+<li>A Shopping or Credential Provider Agent manipulates the Payment in transit,
+  or requests payment without (or differing from) the User's approved Mandate.
+  This causes the Credential Provider to execute a Payment not approved by the
+  Trusted Surface.</li>
+</ul>
+<p><strong>Mitigation:</strong></p>
+<ul>
+<li>The Merchant Payment Processor and Credential Provider MUST verify the User's
+  signature on the Payment Mandate to ensure its integrity.</li>
+<li>The <code>checkout_hash</code> embedded in the <code>transaction_id</code> securely links the
+  payment to the associated Checkout Mandate.</li>
+<li>Constraint evaluation ensures the payment amounts and payees comply with the
+  authorized limits.</li>
+</ul>
+<h3 id="payment-credential-theft">Payment Credential Theft<a class="headerlink" href="#payment-credential-theft" title="Permanent link">&para;</a></h3>
+<p><strong>Threat:</strong></p>
+<ul>
+<li>An attacker steals the User's Payment Credential or Token after its release
+  to perform a payment in an unauthorized context.</li>
+</ul>
+<p><strong>Mitigation:</strong></p>
+<ul>
+<li>The Payment Credential/Token MUST ONLY be released to the Merchant upon the
+  receipt and verification of a final Payment Mandate. This binds the token to
+  the specific transaction.</li>
+</ul>
+<h3 id="manipulated-discovery">Manipulated Discovery<a class="headerlink" href="#manipulated-discovery" title="Permanent link">&para;</a></h3>
+<p><strong>Threat:</strong></p>
+<ul>
+<li>Prompt injection causes the Shopping Agent to select malicious products or
+  make poor purchase decisions.</li>
+</ul>
+<p><strong>Mitigation:</strong></p>
+<ul>
+<li>The Merchant signature ensures the integrity of the offering.</li>
+<li>Even if the LLM fails to make the optimal choice, constraint enforcement
+  during closed Mandate verification ensures that the worst-case financial and
+  logical impacts are strictly bounded.</li>
+</ul>
+<h3 id="double-spend">Double Spend<a class="headerlink" href="#double-spend" title="Permanent link">&para;</a></h3>
+<p><strong>Threat:</strong></p>
+<ul>
+<li>A prompt injected, or otherwise malicious Shopping Agent attempts to approve
+  multiple valid Checkouts using the same open Mandate.</li>
+</ul>
+<p><strong>Mitigation:</strong></p>
+<ul>
+<li>The non-deterministic portion of the Shopping Agent MUST avoid signing
+  multiple, overlapping closed Mandates for the same open Mandate without
+  receiving Receipts rejecting the previously released Mandates.</li>
+<li>These Receipts MUST be integrity protected from the Shopping Agent's LLM.</li>
+<li>Credential Provider, Networks or MPPs MAY reject multiple overlapping
+ Mandates, or invalidate previously issued payment tokens.</li>
+</ul>
+<h2 id="privacy-considerations">Privacy Considerations<a class="headerlink" href="#privacy-considerations" title="Permanent link">&para;</a></h2>
+<h3 id="open-checkout-and-payment-mandate-constraints">Open Checkout and Payment Mandate Constraints<a class="headerlink" href="#open-checkout-and-payment-mandate-constraints" title="Permanent link">&para;</a></h3>
+<p>Open Checkout and Payment Mandate Constraints MAY contain information that is
+not applicable to the particular Checkout that would leak unnecessary user
+intent. Selective Disclosure MUST be used to preserve user privacy.</p>
+<p>To enhance user privacy the Trusted Surface MAY insert decoy digests as
+ described in RFC9901 Section 4.2.5.</p>
+<h3 id="checkout-and-payment-data-minimization">Checkout and Payment Data Minimization<a class="headerlink" href="#checkout-and-payment-data-minimization" title="Permanent link">&para;</a></h3>
+<p>To preserve user privacy and the principle of data minimization, Selective
+Disclosure is used to allow the Checkout Mandate and Payment Mandate to be
+shared with the relevant parties for securing the Checkout and Payment
+respectively. The <code>checkout_hash</code> links these Mandates allowing them to be
+joined in the case of a Dispute.</p>
+<blockquote>
+<p>Note: The information contained within the Mandates, or the Mandates
+themselves could be shared with other parties if appropriate agreements or
+channels exist, but that is outside the scope of AP2.</p>
+</blockquote>
+<h3 id="rainbow-table-attacks">Rainbow Table Attacks<a class="headerlink" href="#rainbow-table-attacks" title="Permanent link">&para;</a></h3>
+<p>Digests in SD-JWTs (for Payment and Checkout Mandates as well as Constraints)
+MUST include a salt with sufficient entropy to prevent guessing the plaintext.
+See RFC9901 Section 9.1. For more details.</p>
+<p>The <code>checkout_hash</code> makes use of the entropy already included in the JWT
+signature to prevent guessing the Checkout contents. If a signing algorithm
+(e.g. deterministic signature scheme such as <code>Ed25519</code>) is used that does not
+include this then a salt of sufficient entropy MUST be present in the Checkout.</p>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+                
               </article>
             </div>
           
@@ -835,6 +1265,44 @@
       
         <footer class="md-footer">
   
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../payment_mandate/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Payment Mandate">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Payment Mandate
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../implementation_considerations/" class="md-footer__link md-footer__link--next" aria-label="Next: Implementation Considerations">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Implementation Considerations
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
     
   
   <div class="md-footer-meta md-typeset">
@@ -867,10 +1335,10 @@
     
     
       
-      <script id="__config" type="application/json">{"base": "/", "features": ["announce.dismiss", "content.action.view", "content.code.annotate", "content.code.copy", "content.code.select", "content.tabs.link", "navigation.footer", "navigation.indexes", "navigation.instant", "navigation.instant.progress", "navigation.path", "navigation.top", "navigation.tracking", "toc.follow", {"versioning": {"provider": "mike"}}], "search": "/assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"base": "../..", "features": ["announce.dismiss", "content.action.view", "content.code.annotate", "content.code.copy", "content.code.select", "content.tabs.link", "navigation.footer", "navigation.indexes", "navigation.instant", "navigation.instant.progress", "navigation.path", "navigation.top", "navigation.tracking", "toc.follow", {"versioning": {"provider": "mike"}}], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="/assets/javascripts/bundle.f55a23d4.min.js"></script>
+      <script src="../../assets/javascripts/bundle.f55a23d4.min.js"></script>
       
     
   </body>

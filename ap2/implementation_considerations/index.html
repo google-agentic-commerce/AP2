@@ -13,22 +13,28 @@
         <meta name="author" content="Google">
       
       
+        <link rel="canonical" href="https://ap2-protocol.org/ap2/implementation_considerations/">
       
       
+        <link rel="prev" href="../security_and_privacy_considerations/">
       
-      <link rel="icon" href="/assets/ap2-logo-black.svg">
+      
+        <link rel="next" href="../../glossary/">
+      
+      
+      <link rel="icon" href="../../assets/ap2-logo-black.svg">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.22">
     
     
       
-        <title>AP2 - Agent Payments Protocol Documentation</title>
+        <title>Implementation Considerations - AP2 - Agent Payments Protocol Documentation</title>
       
     
     
-      <link rel="stylesheet" href="/assets/stylesheets/main.84d31ad4.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.84d31ad4.min.css">
       
         
-        <link rel="stylesheet" href="/assets/stylesheets/palette.06af60db.min.css">
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
       
       
   
@@ -112,9 +118,9 @@
       
     
     
-      <link rel="stylesheet" href="/stylesheets/custom.css">
+      <link rel="stylesheet" href="../../stylesheets/custom.css">
     
-    <script>__md_scope=new URL("/",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
   
@@ -149,6 +155,11 @@
     <label class="md-overlay" for="__drawer"></label>
     <div data-md-component="skip">
       
+        
+        <a href="#implementation-considerations" class="md-skip">
+          Skip to content
+        </a>
+      
     </div>
     <div data-md-component="announce">
       
@@ -161,9 +172,9 @@
 
 <header class="md-header md-header--shadow" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="/." title="AP2 - Agent Payments Protocol Documentation" class="md-header__button md-logo" aria-label="AP2 - Agent Payments Protocol Documentation" data-md-component="logo">
+    <a href="../.." title="AP2 - Agent Payments Protocol Documentation" class="md-header__button md-logo" aria-label="AP2 - Agent Payments Protocol Documentation" data-md-component="logo">
       
-  <img src="/assets/ap2-logo-white.svg" alt="logo">
+  <img src="../../assets/ap2-logo-white.svg" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -180,7 +191,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              
+              Implementation Considerations
             
           </span>
         </div>
@@ -282,9 +293,9 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="/." title="AP2 - Agent Payments Protocol Documentation" class="md-nav__button md-logo" aria-label="AP2 - Agent Payments Protocol Documentation" data-md-component="logo">
+    <a href="../.." title="AP2 - Agent Payments Protocol Documentation" class="md-nav__button md-logo" aria-label="AP2 - Agent Payments Protocol Documentation" data-md-component="logo">
       
-  <img src="/assets/ap2-logo-white.svg" alt="logo">
+  <img src="../../assets/ap2-logo-white.svg" alt="logo">
 
     </a>
     AP2 - Agent Payments Protocol Documentation
@@ -311,7 +322,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/." class="md-nav__link">
+      <a href="../.." class="md-nav__link">
         
   
   
@@ -333,7 +344,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/overview/" class="md-nav__link">
+      <a href="../../overview/" class="md-nav__link">
         
   
   
@@ -352,8 +363,10 @@
       
   
   
+    
   
   
+  
     
     
       
@@ -375,11 +388,11 @@
     
     
     
-    <li class="md-nav__item md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
           
           <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
@@ -395,7 +408,7 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             Specification
@@ -409,7 +422,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/ap2/specification/" class="md-nav__link">
+      <a href="../specification/" class="md-nav__link">
         
   
   
@@ -432,7 +445,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/ap2/agent_authorization/" class="md-nav__link">
+      <a href="../agent_authorization/" class="md-nav__link">
         
   
   
@@ -455,7 +468,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/ap2/flows/" class="md-nav__link">
+      <a href="../flows/" class="md-nav__link">
         
   
   
@@ -478,7 +491,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/ap2/checkout_mandate/" class="md-nav__link">
+      <a href="../checkout_mandate/" class="md-nav__link">
         
   
   
@@ -501,7 +514,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/ap2/payment_mandate/" class="md-nav__link">
+      <a href="../payment_mandate/" class="md-nav__link">
         
   
   
@@ -524,7 +537,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/ap2/security_and_privacy_considerations/" class="md-nav__link">
+      <a href="../security_and_privacy_considerations/" class="md-nav__link">
         
   
   
@@ -544,10 +557,32 @@
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="/ap2/implementation_considerations/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    Implementation Considerations
+    
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -558,6 +593,122 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      Roles
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Roles">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#merchant" class="md-nav__link">
+    <span class="md-ellipsis">
+      Merchant
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#merchant-payment-processor" class="md-nav__link">
+    <span class="md-ellipsis">
+      Merchant Payment Processor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shopping-agent" class="md-nav__link">
+    <span class="md-ellipsis">
+      Shopping Agent
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#credential-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      Credential Provider
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trusted-surface" class="md-nav__link">
+    <span class="md-ellipsis">
+      Trusted Surface
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#agent-identification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Agent Identification
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hashes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hashes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#agent-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      Agent Key
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mandate-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mandate Management
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -577,7 +728,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/glossary/" class="md-nav__link">
+      <a href="../../glossary/" class="md-nav__link">
         
   
   
@@ -599,7 +750,7 @@
   
   
     <li class="md-nav__item">
-      <a href="/faq/" class="md-nav__link">
+      <a href="../../faq/" class="md-nav__link">
         
   
   
@@ -803,6 +954,112 @@
   
   
   
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      Roles
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Roles">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#merchant" class="md-nav__link">
+    <span class="md-ellipsis">
+      Merchant
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#merchant-payment-processor" class="md-nav__link">
+    <span class="md-ellipsis">
+      Merchant Payment Processor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#shopping-agent" class="md-nav__link">
+    <span class="md-ellipsis">
+      Shopping Agent
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#credential-provider" class="md-nav__link">
+    <span class="md-ellipsis">
+      Credential Provider
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trusted-surface" class="md-nav__link">
+    <span class="md-ellipsis">
+      Trusted Surface
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#agent-identification" class="md-nav__link">
+    <span class="md-ellipsis">
+      Agent Identification
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#hashes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Hashes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#agent-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      Agent Key
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mandate-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      Mandate Management
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
   
 </nav>
                   </div>
@@ -814,8 +1071,167 @@
             <div class="md-content" data-md-component="content">
               <article class="md-content__inner md-typeset">
                 
-  <h1>404 - Not found</h1>
+                  
 
+
+  
+  
+    
+      
+    
+    <a href="https://github.com/google-agentic-commerce/AP2/raw/main/docs/ap2/implementation_considerations.md" title="View source of this page" class="md-content__button md-icon">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.22 2H7.78C6.8 2 6 2.8 6 3.78v12.44C6 17.2 6.8 18 7.78 18h12.44c.98 0 1.78-.79 1.78-1.78V3.78C22 2.8 21.2 2 20.22 2m-9.16 13H9v-2.06l6.06-6.06 2.06 2.06zm7.64-7.65-1 1-2.05-2.05 1-1c.21-.22.56-.22.77 0l1.28 1.28c.22.21.22.56 0 .77M4 6H2v14a2 2 0 0 0 2 2h14v-2H4z"/></svg>
+    </a>
+  
+
+
+<h1 id="implementation-considerations">Implementation Considerations<a class="headerlink" href="#implementation-considerations" title="Permanent link">&para;</a></h1>
+<h2 id="roles">Roles<a class="headerlink" href="#roles" title="Permanent link">&para;</a></h2>
+<p>Below describes what each role needs to care about and examples of how
+this role might be implemented in the payment ecosystem.</p>
+<h3 id="merchant">Merchant<a class="headerlink" href="#merchant" title="Permanent link">&para;</a></h3>
+<p>The Merchant needs to implement the following:</p>
+<ul>
+<li>Provide a Catalog and Checkout endpoints to the Shopping Agent to allow it
+    to perform a commerce protocol, for example as described by the 
+    <a href="https://ucp.dev/">Universal Commerce Protocol</a>.</li>
+<li>Generate a signed Checkout JWT. </li>
+<li>Verify the <a href="../checkout_mandate/">Checkout Mandate</a><ul>
+<li>Or delegate this to a technology provider (such as the MPP).</li>
+</ul>
+</li>
+<li>Complete the Checkout with the Merchant Payment Processor using the Checkout
+    Mandate hash and <code>payment_token</code> (scoped to the Payment Mandate).<ul>
+<li>Or implement this MPP role themselves.</li>
+</ul>
+</li>
+<li>Generate a signed <a href="../checkout_mandate/#checkout-receipt">Checkout Receipt</a>
+    with appropriate status and return it to the Shopping Agent.</li>
+</ul>
+<p>Some examples of how the Merchant role could be structured:</p>
+<ul>
+<li>Merchant with UCP endpoints.</li>
+<li>A Merchant Agent that communicates over agent-to-agent (a2a) with the Shopping Agent, and
+    then to the Merchant backend via UCP.</li>
+<li>Combined Merchant and Merchant Payment Processor. </li>
+<li>A Merchant with delegated Checkout Mandate verification. <ul>
+<li>Here the Merchant would provide the Checkout Mandate to a technology
+  provider for verification, and proceed if verification passes.</li>
+</ul>
+</li>
+</ul>
+<h3 id="merchant-payment-processor">Merchant Payment Processor<a class="headerlink" href="#merchant-payment-processor" title="Permanent link">&para;</a></h3>
+<p>The Merchant Payment Processor needs to implement the following:</p>
+<ul>
+<li>Receive the payment token from the Merchant</li>
+<li>Verify the <a href="../payment_mandate/">Payment Mandate</a> in the payment token.</li>
+<li>Generate a signed <a href="../payment_mandate/#payment-receipt">Payment Receipt</a>,
+    which is made available to the Shopping Agent, Credential Provider and Network.</li>
+<li>Process or verify payment</li>
+</ul>
+<h3 id="shopping-agent">Shopping Agent<a class="headerlink" href="#shopping-agent" title="Permanent link">&para;</a></h3>
+<p>The Shopping Agent needs to implement the following: </p>
+<ul>
+<li>Agentic Shopping to determine user intent.</li>
+<li>Selecting a payment instrument from a Credential Provider.</li>
+<li>Creation of Checkout and Payment Mandate Content.</li>
+<li>Obtaining signed Checkout and Payment Mandates via a Trusted Surface.</li>
+<li>Present the <a href="../payment_mandate/">Payment Mandate</a> to the Credential
+    Provider to get the payment token. This involves:<ul>
+<li>Selecting the appropriate Mandate from storage.</li>
+<li>Key-binding with an Agent key (as needed).</li>
+<li>Data minimization through Selective Disclosure.</li>
+<li>Preventing double spend and handling receipt management. </li>
+</ul>
+</li>
+<li>Presenting the <a href="../checkout_mandate/">Checkout Mandate</a> to the Merchant as part of
+    completing the Checkout. This involves:<ul>
+<li>Selecting the appropriate Mandate from storage.</li>
+<li>Key-binding with an Agent key (as needed).</li>
+<li>Data minimization through Selective Disclosure.</li>
+<li>Preventing double spend and handling receipt management.</li>
+</ul>
+</li>
+<li>Receiving Receipts and handling success and error.</li>
+</ul>
+<h3 id="credential-provider">Credential Provider<a class="headerlink" href="#credential-provider" title="Permanent link">&para;</a></h3>
+<p>The Credential Provider needs to implement the following:</p>
+<ul>
+<li>Providing payment instruments to the Shopping Agent.</li>
+<li>Verify the <a href="../payment_mandate/">Payment Mandate</a>.</li>
+<li>Obtaining the payment token from the network using the Payment Mandate, or initiate sending of funds to the merchant.</li>
+<li>Releasing the payment token or funding reference number.</li>
+<li>Receiving and storing the
+    <a href="../payment_mandate/#payment-receipt">Payment Receipt</a>.</li>
+</ul>
+<p>Examples of how the Credential Provider role can be implemented: </p>
+<ul>
+<li>A user's digital Wallet, or payment network that the Shopping Agent links with.</li>
+<li>A store of payment instruments provided by the Shopping Agent directly.</li>
+<li>A store of Payment instruments provided by the Merchant.</li>
+</ul>
+<h3 id="trusted-surface">Trusted Surface<a class="headerlink" href="#trusted-surface" title="Permanent link">&para;</a></h3>
+<p>The Trusted Surface represents UI that is trusted by all parties to obtain
+authorization and consent from the end user. It is responsible for: </p>
+<ul>
+<li>Displaying Checkout and Payment Mandate Content to the User.</li>
+<li>Obtaining user authorization and consent. </li>
+<li>Creating signed Checkout and Payment Mandates and delegating them to the
+    Shopping Agent. </li>
+</ul>
+<p>This role can be played by a lot of different entities. Some examples include:</p>
+<ul>
+<li>A deterministic part of the Shopping Agent application.</li>
+<li>A standalone User Wallet, or Issuer application.</li>
+<li>Trusted User Agents (such as mobile Platforms or Browsers).</li>
+</ul>
+<h2 id="agent-identification">Agent Identification<a class="headerlink" href="#agent-identification" title="Permanent link">&para;</a></h2>
+<p>AP2 is designed to constrain Agent behaviors without them having to be inherently
+trustworthy. As part of implementing a Commerce Protocol, Merchants or Trusted
+Surfaces MAY wish to only work with trusted Agents. These details are left to
+the Commerce Protocol layer.</p>
+<h2 id="hashes">Hashes<a class="headerlink" href="#hashes" title="Permanent link">&para;</a></h2>
+<p>When calculating hashes it is important that the same representation is used.
+This is typically achieved by providing the base64url encoded representation of
+JSON structures. For dispute resolution this will mean storing the SD-JWTs,
+along with their disclosures, for the Mandates in their compact serialization.
+This is to allow easy computation of the <code>sd_hash</code>, <code>checkout_hash</code>, and Receipt
+<code>reference</code>.</p>
+<p>For consistency, the same hashing algorithm is required for both the SD-JWT
+digests and <code>checkout_hash</code>.</p>
+<h2 id="agent-key">Agent Key<a class="headerlink" href="#agent-key" title="Permanent link">&para;</a></h2>
+<p>One important portion of the Autonomous flows is the Agent's key. This is used
+to transaction-bind the open Mandates and prevent their re-use. It is also used
+to prevent double spend by preventing the release of overlapping closed Mandates.</p>
+<p>One way to implement this is through tool calling, where deterministic code
+verifies the closed Mandate being created before being signed. This
+responsibility could also be delegated by the Shopping Agent to a technology
+provider.</p>
+<h2 id="mandate-management">Mandate Management<a class="headerlink" href="#mandate-management" title="Permanent link">&para;</a></h2>
+<p>As Mandates are long-lived, the Shopping Agent SHOULD provide a mechanism to
+manage active Mandates (along with the tasks they are being used in).
+Limiting the duration of active Mandates, and providing
+notifications to the User, even when executing autonomously, is important to
+keep the User in control of their Shopping Agent.</p>
+<p>In the case of external Trusted Surfaces it could make sense
+to allow for management of delegated Mandates but that is outside the scope of
+this specification.</p>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+                
               </article>
             </div>
           
@@ -835,6 +1251,44 @@
       
         <footer class="md-footer">
   
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../security_and_privacy_considerations/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Security and Privacy Considerations">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Security and Privacy Considerations
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../../glossary/" class="md-footer__link md-footer__link--next" aria-label="Next: Glossary">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Glossary
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
     
   
   <div class="md-footer-meta md-typeset">
@@ -867,10 +1321,10 @@
     
     
       
-      <script id="__config" type="application/json">{"base": "/", "features": ["announce.dismiss", "content.action.view", "content.code.annotate", "content.code.copy", "content.code.select", "content.tabs.link", "navigation.footer", "navigation.indexes", "navigation.instant", "navigation.instant.progress", "navigation.path", "navigation.top", "navigation.tracking", "toc.follow", {"versioning": {"provider": "mike"}}], "search": "/assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"base": "../..", "features": ["announce.dismiss", "content.action.view", "content.code.annotate", "content.code.copy", "content.code.select", "content.tabs.link", "navigation.footer", "navigation.indexes", "navigation.instant", "navigation.instant.progress", "navigation.path", "navigation.top", "navigation.tracking", "toc.follow", {"versioning": {"provider": "mike"}}], "search": "../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="/assets/javascripts/bundle.f55a23d4.min.js"></script>
+      <script src="../../assets/javascripts/bundle.f55a23d4.min.js"></script>
       
     
   </body>

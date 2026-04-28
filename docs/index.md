@@ -144,29 +144,21 @@ See more in the sample [Flows](ap2/flows.md).
 
 <div class="grid cards" markdown>
 
-- **Human Present Cards**
+- **Human Not Present Cards**
 
     ---
 
-    A sample demonstrating a human-present transaction using traditional card payments.
+    A sample demonstrating an autonomous transaction where the agent acts without human presence, using traditional card payments.
 
-    [:octicons-arrow-right-24: Go to sample](https://github.com/google-agentic-commerce/AP2/tree/main/samples/python/scenarios/a2a/human-present/cards/)
+    [:octicons-arrow-right-24: Go to sample](https://github.com/google-agentic-commerce/AP2/tree/main/code/samples/python/scenarios/a2a/human-not-present/cards/)
 
-- **Human Present x402**
-
-    ---
-
-    A sample demonstrating a human-present transaction using the x402 protocol for payments.
-
-    [:octicons-arrow-right-24: Go to sample](https://github.com/google-agentic-commerce/AP2/tree/main/samples/python/scenarios/a2a/human-present/x402/)
-
-- **Human Not Present**
+- **Human Not Present x402**
 
     ---
 
-    A sample demonstrating an autonomous transaction where the agent acts without human presence.
+    A sample demonstrating an autonomous transaction where the agent acts without human presence, using the x402 protocol for payments.
 
-    [:octicons-arrow-right-24: Go to sample](https://github.com/google-agentic-commerce/AP2/tree/main/samples/python/scenarios/a2a/human-not-present/)
+    [:octicons-arrow-right-24: Go to sample](https://github.com/google-agentic-commerce/AP2/tree/main/code/samples/python/scenarios/a2a/human-not-present/x402/)
 
 - **Digital Payment Credentials Android**
 
@@ -174,7 +166,15 @@ See more in the sample [Flows](ap2/flows.md).
 
     A sample demonstrating the use of digital payment credentials on an Android device.
 
-    [:octicons-arrow-right-24: Go to sample](https://github.com/google-agentic-commerce/AP2/tree/main/samples/android/scenarios/digital-payment-credentials/run.sh)
+    [:octicons-arrow-right-24: Go to sample](https://github.com/google-agentic-commerce/AP2/tree/main/code/samples/android/scenarios/digital-payment-credentials/)
+
+- **Human Present Cards**
+
+    ---
+
+    A sample demonstrating a human-present transaction using traditional card payments.
+
+    [:octicons-arrow-right-24: Go to sample](https://github.com/google-agentic-commerce/AP2/tree/main/code/samples/python/scenarios/a2a/human-present/cards/)
 
 </div>
 

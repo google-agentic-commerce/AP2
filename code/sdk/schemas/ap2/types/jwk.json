@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ap2-protocol.org/schemas/types/jwk_public_key.json",
+  "title": "JsonWebKey",
+  "description": "An EC P-256 public key in JWK format (RFC 7517).",
+  "type": "object",
+  "required": ["kty"],
+  "properties": {
+    "kty": {
+      "type": "string",
+      "const": "EC",
+      "description": "Key type."
+    },
+    "crv": {
+      "type": "string",
+      "const": "P-256",
+      "description": "Curve name."
+    },
+    "x": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{43}$",
+      "description": "Base64url-encoded x coordinate of the EC public key."
+    },
+    "y": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9_-]{43}$",
+      "description": "Base64url-encoded y coordinate of the EC public key."
+    },
+    "use": {
+      "type": "string",
+      "enum": ["sig", "enc"],
+      "description": "Public key use. 'sig' for signature, 'enc' for encryption."
+    },
+    "key_ops": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["sign", "verify", "encrypt", "decrypt", "wrapKey", "unwrapKey", "deriveKey", "deriveBits"]
+      },
+      "description": "Key operations. Identifies the operations the key is intended for."
+    },
+    "alg": {
+      "type": "string",
+      "const": "ES256",
+      "description": "Algorithm. Must be 'ES256' for P-256 curve signing."
+    },
+    "kid": {
+      "type": "string",
+      "description": "Key ID (§4.5). Arbitrary string used to match a specific key."
+    },
+    "x5u": {
+      "type": "string",
+      "format": "uri",
+      "description": "X.509 URL (§4.6). URI pointing to an X.509 public key certificate or chain."
+    },
+    "x5c": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "X.509 certificate chain (§4.7). Array of base64-encoded (not base64url) DER PKIX certificates."
+    },
+    "x5t": {
+      "type": "string",
+      "description": "X.509 SHA-1 thumbprint (§4.8). Base64url-encoded SHA-1 digest of the DER encoding of the certificate."
+    },
+    "x5t#S256": {
+      "type": "string",
+      "description": "X.509 SHA-256 thumbprint (§4.9). Base64url-encoded SHA-256 digest of the DER encoding of the certificate."
+    }
+  },
+  "additionalProperties": false
+}

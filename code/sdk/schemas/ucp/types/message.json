@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ap2-protocol.org/schemas/types/message.json",
+  "title": "Message",
+  "description": "Container for error, warning, or info messages. Matches UCP types/message.json (2026-04-08).",
+  "oneOf": [
+    { "$ref": "message_error.json" },
+    { "$ref": "message_warning.json" },
+    { "$ref": "message_info.json" }
+  ]
+}

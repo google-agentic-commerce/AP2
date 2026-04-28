@@ -14,9 +14,9 @@ This repository contains code samples and demos of the Agent Payments Protocol.
 
 [![A2A Intro Video](https://img.youtube.com/vi/jSHj0z9Gi24/hqdefault.jpg)](https://youtu.be/jSHj0z9Gi24?si=JyzMu2wZCMpVuxvv)
 
-### AP2 on The Agent Factory
+### AP2 on The Agent Factory - September 2025
 
-[![The Agent Factory - Episode 8: Agent payments, can you do my shopping?](https://img.youtube.com/vi/T1MtWnEYXM0/hqdefault.jpg)](https://youtu.be/T1MtWnEYXM0?si=QkJWnAiav0JAP9F6)
+[![The Agent Factory (September 2025) - Episode 8: Agent payments, can you do my shopping?](https://img.youtube.com/vi/T1MtWnEYXM0/hqdefault.jpg)](https://youtu.be/T1MtWnEYXM0?si=QkJWnAiav0JAP9F6)
 
 ## About the Samples
 

@@ -1,6 +1,10 @@
 # How to Contribute
 
-We would love to accept your patches and contributions to this project.
+The core specification has been donated to
+[FIDO](https://blog.google/products-and-platforms/platforms/google-pay/agent-payments-protocol-fido-alliance/).
+Please get involved to continue to develop the specification.
+
+Contributions to this repo going forward are to the samples and sdk only.
 
 ## Before you begin
 

@@ -17,8 +17,10 @@ hide:
 Economy.** It's designed to enable secure, reliable, and interoperable agent
 commerce for developers, merchants, and the payments industry. The protocol is
 available as an extension for the open-source
-[Agent2Agent (A2A) protocol](https://a2a-protocol.org/), with more integrations
+[Agent2Agent (A2A) protocol](https://a2a-protocol.org/) and
+[Universal Commerce Protocol](https://ucp.dev/documentation/ucp-and-ap2/) with more integrations
 in progress.
+
 
 <!-- prettier-ignore-start -->
 !!! abstract ""
@@ -38,26 +40,25 @@ in progress.
 
     ---
 
-      <iframe width="560" height="315" src="https://www.youtube.com/embed/yLTp3ic2j5c?si=kfASyAVW8QpzUTho" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+      <iframe width="560" height="315" src="https://www.youtube.com/embed/jSHj0z9Gi24?si=jDx8luqpw35nbDKy" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 - :material-file-document-outline:{ .lg .middle } **Read the docs**
 
     ---
 
-    [:octicons-arrow-right-24: Google Cloud announcement of AP2](https://cloud.google.com/blog/products/ai-machine-learning/announcing-agents-to-payments-ap2-protocol)
+    [:octicons-arrow-right-24: AP2 v0.2 Release and FIDO Alliance Donation](https://blog.google/products-and-platforms/platforms/google-pay/agent-payments-protocol-fido-alliance/)
 
-    Explore the detailed technical definition of the AP2 protocol
+    [:octicons-arrow-right-24: FIDO Alliance to Develop Standards for Trusted AI Agent Interactions](https://fidoalliance.org/fido-alliance-to-develop-standards-for-trusted-ai-agent-interactions/)
 
-    [:octicons-arrow-right-24: Agent Payments Protocol Specification](./specification.md)
+    [:octicons-arrow-right-24: Agent Payments Protocol Announcement (9/16/2025)](https://cloud.google.com/blog/products/ai-machine-learning/announcing-agents-to-payments-ap2-protocol)
 
-    Review key topics
+    &nbsp;
 
-    [:octicons-arrow-right-24: Overview](topics/what-is-ap2.md)<br>
-    [:octicons-arrow-right-24: Core Concepts](topics/core-concepts.md)<br>
-    [:octicons-arrow-right-24: AP2 and UCP](topics/ap2-and-ucp.md)<br>
-    [:octicons-arrow-right-24: AP2, A2A and MCP](topics/ap2-a2a-and-mcp.md)<br>
-    [:octicons-arrow-right-24: AP2 and x402](topics/ap2-and-x402.md)<br>
-    [:octicons-arrow-right-24: Privacy and Security](topics/privacy-and-security.md)<br>
+    **Explore the detailed technical definition of the AP2 protocol**
+
+    [:octicons-arrow-right-24: Agent Payments Protocol Specification](ap2/specification.md)
+
+    [:octicons-arrow-right-24: AP2 and UCP integration guide](https://ucp.dev/documentation/ucp-and-ap2/)
 
 </div>
 
@@ -74,7 +75,8 @@ broken, leading to critical questions that current systems cannot answer:
 - **Authenticity:** How can a merchant be sure an agent's request accurately
     reflects the user's true intent, without errors or AI "hallucinations"?
 - **Accountability:** If a fraudulent or incorrect transaction occurs, who is
-    accountable—the user, the agent's developer, the merchant, or the issuer?
+    accountable—the user, the agent's developer, the merchant, the issuer, the
+    PSP, or the orchestration layer?
 
 This ambiguity creates a crisis of trust that could significantly limit
 adoption. Without a common protocol, we risk a fragmented ecosystem of
@@ -104,65 +106,75 @@ create a secure and fair ecosystem:
     resolution and building confidence for all participants.
 - **Global and Future-Proof:** Designed as a global foundation, the initial
     version supports common "pull" payment methods like credit and debit cards.
-    The roadmap includes "push" payments such as real-time bank transfers (e.g.,
-    UPI and PIX) and digital currencies.
+    The roadmap includes e-wallets, "push" payments such as real-time bank
+    transfers (e.g., UPI and PIX), and digital currencies, recognizing that
+    many countries do not have real-time banking systems.
 
 ---
 
 ## Key Concept: Verifiable Digital Credentials (VDCs)
 
 The Agent Payments Protocol engineers trust into the system using **verifiable
-digital credentials (VDCs)**. VDCs are tamper-evident, cryptographically signed digital
-objects that serve as the building blocks of a transaction. They are the data
-payloads that agents create and exchange. There are three primary types:
+digital credentials (VDCs)**. VDCs are tamper-evident, cryptographically signed
+digital objects that serve as the building blocks of a transaction. There are
+two primary types of mandates, each existing in two stages:
 
-- **The Intent Mandate:** This VDC captures the conditions under which an AI
-    Agent can make a purchase on behalf of the user, particularly in
-    "human-not-present" scenarios. It provides the agent with authority to
-    execute a transaction within defined constraints.
-- **The Cart Mandate:** This VDC captures the user's final, explicit
-    authorization for a specific cart, including the exact items and price, in
-    "human-present" scenarios. The user's cryptographic signature on this
-    mandate provides non-repudiable proof of their intent.
-- **The Payment Mandate:** A separate VDC shared with the payment network and
-    issuer, designed to signal AI agent involvement and user presence
-    (human-present or not) to help assess transaction context.
+- **Checkout Mandate**: Captures the reference to the specific items and
+  purchase details negotiated between the agent and the merchant, and is
+  **shared with the merchant**.
+    - **Open**: Captures the user's constraints and goals for the transaction
+      before a specific cart is finalized for autonomous execution.
+    - **Closed**: Captures the user's (or agent's) authorization for a specific,
+      finalized checkout.
+- **Payment Mandate**: Authorizes a payment against a specific payment
+  instrument, and is **shared with the Credential Provider, Networks and the
+  Merchant Payment Processor**.
+    - **Open**: Captures the user's constraints on payment (e.g., budget,
+      allowed instruments) for autonomous execution.
+    - **Closed**: Captures the authorization for a specific transaction amount
+      bound to a finalized checkout.
 
-These VDCs operate within a defined role-based architecture and can handle both
-"human-present" and "human-not-present" transaction types.
+These VDCs operate within a defined role-based architecture and are chained
+together to provide a complete, verifiable audit trail for both human-present
+and human-not-present transactions.
 
-Learn more in [Core Concepts](topics/core-concepts.md).
+See more in the sample [Flows](ap2/flows.md).
 
 ## See it in action
 
 <div class="grid cards" markdown>
 
-- **Human Present Cards**
+- **Human Not Present Cards**
 
     ---
 
-    A sample demonstrating a human-present transaction using traditional card
-    payments.
+    A sample demonstrating an autonomous transaction where the agent acts without human presence, using traditional card payments.
 
-    [:octicons-arrow-right-24: Go to sample](https://github.com/google-agentic-commerce/AP2/tree/main/samples/python/scenarios/a2a/human-present/cards/)
+    [:octicons-arrow-right-24: Go to sample](https://github.com/google-agentic-commerce/AP2/tree/main/code/samples/python/scenarios/a2a/human-not-present/cards/)
 
-- **Human Present x402**
+- **Human Not Present x402**
 
     ---
 
-    A sample demonstrating a human-present transaction using the x402 protocol
-    for payments.
+    A sample demonstrating an autonomous transaction where the agent acts without human presence, using the x402 protocol for payments.
 
-    [:octicons-arrow-right-24: Go to sample](https://github.com/google-agentic-commerce/AP2/tree/main/samples/python/scenarios/a2a/human-present/x402/)
+    [:octicons-arrow-right-24: Go to sample](https://github.com/google-agentic-commerce/AP2/tree/main/code/samples/python/scenarios/a2a/human-not-present/x402/)
 
 - **Digital Payment Credentials Android**
 
     ---
 
-    A sample demonstrating the use of digital payment credentials on an Android
-    device.
+    A sample demonstrating the use of digital payment credentials on an Android device.
 
-    [:octicons-arrow-right-24: Go to sample](https://github.com/google-agentic-commerce/AP2/tree/main/samples/android/scenarios/digital-payment-credentials/run.sh)
+    [:octicons-arrow-right-24: Go to sample](https://github.com/google-agentic-commerce/AP2/tree/main/code/samples/android/scenarios/digital-payment-credentials/)
+
+- **Human Present Cards**
+
+    ---
+
+    A sample demonstrating a human-present transaction using traditional card payments.
+
+    [:octicons-arrow-right-24: Go to sample](https://github.com/google-agentic-commerce/AP2/tree/main/code/samples/python/scenarios/a2a/human-present/cards/)
 
 </div>
 
@@ -175,8 +187,7 @@ part of a larger picture to unlock the full potential of agent-enabled commerce.
 We actively seek your feedback and contributions to help build the future of
 commerce.
 
-The complete technical specification, documentation, and reference
-implementations are hosted in our public GitHub repository.
+Our public GitHub repo hosts the lastest version of AP2 specification, documentation and SDK. Standardization of the specification will continue within the Agentic Authentication Technical and Payments Technical Working Groups in FIDO.
 
 You can get started today by:
 

@@ -29,6 +29,8 @@ Crossmint
 cryptographical
 CYGPATTERN
 Dafiti
+disclosable
+Disclosable
 davecgh
 dcql
 Dcql

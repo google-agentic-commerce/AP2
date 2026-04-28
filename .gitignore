@@ -185,6 +185,10 @@ Thumbs.db
 
 .logs/
 
+# AP2 sample runtime state (generated per run by scenario run scripts)
+.temp-db/
+.adk/
+
 ### Gradle ###
 .gradle
 **/build/
@@ -193,11 +197,12 @@ Thumbs.db
 # Ignore Gradle GUI config
 gradle-app.setting
 
-# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
-!gradle-wrapper.jar
-
-# Avoid ignore Gradle wrapper properties
-!gradle-wrapper.properties
+# Gradle wrapper and local config (Android sample)
+gradlew
+gradlew.bat
+gradle-wrapper.jar
+gradle-wrapper.properties
+local.properties
 
 # Cache of project
 .gradletasknamecache
@@ -211,3 +216,5 @@ gradle-app.setting
 ### Gradle Patch ###
 # Java heap dump
 *.hprof
+
+*.code-workspace

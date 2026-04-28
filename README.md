@@ -12,7 +12,7 @@ This repository contains code samples and demos of the Agent Payments Protocol.
 
 ## Intro to AP2 Video
 
-[![A2A Intro Video](https://img.youtube.com/vi/yLTp3ic2j5c/hqdefault.jpg)](https://goo.gle/ap2-video)
+[![A2A Intro Video](https://img.youtube.com/vi/jSHj0z9Gi24/hqdefault.jpg)](https://youtu.be/jSHj0z9Gi24?si=JyzMu2wZCMpVuxvv)
 
 ### AP2 on The Agent Factory
 
@@ -20,7 +20,7 @@ This repository contains code samples and demos of the Agent Payments Protocol.
 
 ## About the Samples
 
-These samples use [Agent Development Kit (ADK)](https://google.github.io/adk-docs/) and Gemini 2.5 Flash.
+These samples use [Agent Development Kit (ADK)](https://google.github.io/adk-docs/) and Gemini 3.1 Flash Lite Preview.
 
 The Agent Payments Protocol doesn't require the use of either. While these were
 used in the samples, you're free to use any tools you prefer to build your
@@ -28,10 +28,25 @@ agents.
 
 ## Navigating the Repository
 
+The top-level layout is:
+
+- [**`docs/`**](docs/) — specification, flows, FAQ, and MkDocs sources.
+- [**`code/`**](code/) — all source code, organized by artifact:
+    - [**`code/sdk/`**](code/sdk/) — the AP2 SDK (Python lives at
+      [`code/sdk/python/ap2/`](code/sdk/python/ap2/)).
+    - [**`code/samples/`**](code/samples/) — reference implementations and
+      scenarios.
+    - [**`code/web-client/`**](code/web-client/) — the demo web client
+      (Vite + React).
+
 The **`samples`** directory contains a collection of curated scenarios meant to
 demonstrate the key components of the Agent Payments Protocol.
 
-The scenarios can be found in the [**`samples/android/scenarios`**](samples/android/scenarios) and [**`samples/python/scenarios`**](samples/python/scenarios) directories.
+The scenarios can be found in:
+
+- [**`code/samples/python/scenarios`**](code/samples/python/scenarios) — Python.
+- [**`code/samples/go/scenarios`**](code/samples/go/scenarios) — Go.
+- [**`code/samples/android/scenarios`**](code/samples/android/scenarios) — Android.
 
 Each scenario contains:
 
@@ -39,14 +54,19 @@ Each scenario contains:
 - a `run.sh` script to simplify the process of running the scenario locally.
 
 This demonstration features various agents and servers, with most source code
-located in [**`samples/python/src`**](samples/python/src/). Scenarios that use an Android app as the
-shopping assistant have their source code in [**`samples/android`**](samples/android/).
+located in [**`code/samples/python/src`**](code/samples/python/src/).
+Scenarios that use an Android app as the shopping assistant have their source
+code in [**`code/samples/android`**](code/samples/android/); Go roles live in
+[**`code/samples/go`**](code/samples/go/).
+
+For the SDK API reference see
+[**`code/sdk/python/ap2/sdk/README.md`**](code/sdk/python/ap2/sdk/README.md).
 
 ## Quickstart
 
 ### Prerequisites
 
-- Python 3.10 or higher
+- Python 3.11 or higher
 - [`uv`](https://docs.astral.sh/uv/getting-started/installation/) package manager
 
 ### Setup
@@ -115,19 +135,30 @@ generally follow this pattern:
     cd AP2
     ```
 
-1. Run the run script to install dependencies & start the agents.
+1. Run the run script to install dependencies & start the agents. The exact
+   path depends on the scenario — for example, the human-present card
+   payment flow:
 
     ```sh
-    bash samples/python/scenarios/your-scenario-name/run.sh
+    bash code/samples/python/scenarios/a2a/human-present/cards/run.sh
     ```
+
+    Other scenarios live alongside it under
+    `code/samples/python/scenarios/`, `code/samples/go/scenarios/`, and
+    `code/samples/android/scenarios/` (see each scenario's `README.md`
+    for the exact invocation).
 
 1. Navigate to the Shopping Agent URL and begin engaging.
 
 ### Installing the AP2 Types Package
 
-The protocol's core objects are defined in the [`src/ap2/types`](src/ap2/types)
-directory. A PyPI package will be published at a later time. Until then, you can
-install the types package directly using this command:
+The protocol's core objects are defined under
+[`code/sdk/python/ap2/`](code/sdk/python/ap2/) — Pydantic models in
+[`models/`](code/sdk/python/ap2/models/) and
+[`sdk/generated/`](code/sdk/python/ap2/sdk/generated/), canonical JSON schemas
+in [`schemas/`](code/sdk/python/ap2/schemas/). A PyPI package will be published
+at a later time. Until then, you can install the package directly using this
+command:
 
 ```sh
 uv pip install git+https://github.com/google-agentic-commerce/AP2.git@main

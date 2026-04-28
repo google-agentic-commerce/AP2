@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ap2-protocol.org/schemas/checkout_receipt.json",
+  "title": "Checkout Receipt",
+  "description": "Receipt that supplies information about the final state of a checkout.",
+  "type": "object",
+  "properties": {
+    "status": {
+      "description": "The status of the checkout.",
+      "$ref": "types/receipt_status.json"
+    },
+    "iss": {
+      "type": "string",
+      "description": "The issuer of the receipt."
+    },
+    "iat": {
+      "type": "integer",
+      "description": "The creation timestamp as a Unix epoch."
+    },
+    "reference": {
+      "type": "string",
+      "description": "The hash of the closed Mandate that this receipt is binding to."
+    },
+    "error": {
+      "type": "string",
+      "description": "A unique error code. Present if and only if status is Error."
+    },
+    "error_description": {
+      "type": "string",
+      "description": "A human-readable error description. Present if and only if status is Error."
+    },
+    "order_id": {
+      "type": "string",
+      "description": "A reference to the order for the checkout. Present if and only if status is Success."
+    }
+  },
+  "required": [
+    "status",
+    "iss",
+    "iat",
+    "reference"
+  ],
+  "oneOf": [
+    {
+      "title": "Checkout Receipt Success",
+      "properties": {
+        "status": {
+          "const": "Success"
+        }
+      },
+      "required": [
+        "order_id"
+      ]
+    },
+    {
+      "title": "Checkout Receipt Error",
+      "properties": {
+        "status": {
+          "const": "Error"
+        }
+      },
+      "required": [
+        "error",
+        "error_description"
+      ]
+    }
+  ]
+}

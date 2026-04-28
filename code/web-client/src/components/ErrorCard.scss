@@ -1,0 +1,56 @@
+.error-card {
+  max-width: min(85%, var(--chat-card-max-width, 440px));
+  background: #1c1917;
+  border: 1px solid #7f1d1d;
+  border-radius: 12px;
+  padding: 14px 16px;
+
+  .error-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+
+    .error-icon-wrapper {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: rgba(239, 68, 68, 0.2);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .error-icon {
+        font-size: 12px;
+        color: #f87171;
+      }
+    }
+
+    .error-label {
+      font-family: 'Geist', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      color: #fca5a5;
+    }
+
+    .error-type {
+      margin-left: auto;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
+      color: #f87171;
+    }
+  }
+
+  .error-message {
+    font-family: 'Geist', sans-serif;
+    font-size: 13px;
+    color: #d6d3d1;
+    margin: 0;
+    line-height: 1.5;
+  }
+}

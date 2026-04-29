@@ -11,8 +11,8 @@
       width: 20px;
       height: 20px;
       border-radius: 50%;
-      background: rgba(52, 211, 153, 0.15);
-      border: 1px solid rgba(52, 211, 153, 0.3);
+      background: rgb(52 211 153 / 15%);
+      border: 1px solid rgb(52 211 153 / 30%);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -59,7 +59,7 @@
     border: none;
     padding: 10px 16px;
     border-radius: 9px;
-    font-family: "Geist", sans-serif;
+    font-family: Geist, sans-serif;
     font-size: 13px;
     font-weight: 600;
     cursor: pointer;
@@ -122,7 +122,7 @@
   .item-details {
     .item-name {
       display: block;
-      font-family: "Geist", sans-serif;
+      font-family: Geist, sans-serif;
       font-size: 13px;
       font-weight: 500;
       color: #e2e8f0;

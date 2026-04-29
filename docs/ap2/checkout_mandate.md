@@ -64,7 +64,7 @@ pointer='#/$defs/allowed_merchants') }}
 `allowed`. If they are not present, or if the `allowed`
 contains no revealed elements, the constraint is invalid.
 
-##### Example
+#### Example
 
 ```json
 {
@@ -99,13 +99,13 @@ pointer='#/$defs/line_items') }}
 One way to implement this is as a maximal flow problem. The graph is defined as
 follows:
 
-1.  Create a node for each `items` entry.
-2.  Provide an edge from the source to each `items` node with a capacity equal
+1. Create a node for each `items` entry.
+2. Provide an edge from the source to each `items` node with a capacity equal
     to the quantity.
-3.  Create a node for each item ID in the Checkout.
-4.  Provide an edge from each Checkout item node to the sink with a capacity
+3. Create a node for each item ID in the Checkout.
+4. Provide an edge from each Checkout item node to the sink with a capacity
     equal to the total quantity of that item ID in the checkout.
-5.  Provide an edge with infinite capacity between each `items` node and each
+5. Provide an edge with infinite capacity between each `items` node and each
     Checkout item node that matches the revealed `acceptable_items` for that
     item.
 
@@ -117,7 +117,7 @@ quantity and the total checkout `items` quantity.
 > but consideration must be given to how multiple duplicate orders can be
 > prevented.
 
-##### Example
+#### Example
 
 ```json
 {

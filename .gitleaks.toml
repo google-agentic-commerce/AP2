@@ -1,0 +1,7 @@
+title = "AP2 gitleaks configuration"
+
+[allowlist]
+description = "Example tokens in documentation are not real secrets"
+paths = [
+  '''docs/'''
+]

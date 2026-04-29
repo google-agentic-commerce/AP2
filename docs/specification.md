@@ -347,6 +347,48 @@ below information.
     as evidence during representment with the network/issuer as defined by
     network rules.
 
+##### 4.1.3.1 Cart-to-Payment Mandate Binding
+
+A PaymentMandate is not a standalone credential — it is explicitly bound to a
+specific, merchant-authorised CartMandate (or IntentMandate in the
+human-not-present flow). This binding is what closes the consent integrity
+chain: the goods the user approved, the cart the merchant signed, and the
+payment that is ultimately executed must all refer to the same transaction.
+
+**Normative requirements for Human-Present transactions:**
+
+1. **Explicit cart reference.**
+   `PaymentMandateContents` MUST include `cart_mandate_id` (set to
+   `CartMandate.contents.id`) and `cart_mandate_hash` so that the bound cart
+   can be identified and re-verified by any downstream party without out-of-band
+   communication.
+
+2. **Canonical hash algorithm.**
+   `cart_mandate_hash` MUST be computed as:
+
+   ```
+   cart_mandate_hash = hex(sha256(JCS(CartMandate)))
+   ```
+
+   where JCS denotes the JSON Canonicalization Scheme defined in
+   [RFC 8785](https://www.rfc-editor.org/rfc/rfc8785). JCS produces a
+   deterministic byte sequence regardless of the serialisation language or
+   floating-point formatting (e.g., `120.0` in Python, `120` in Go, and `120`
+   in TypeScript all canonicalise identically), ensuring that verifiers built
+   in different languages produce the same digest for logically equivalent carts.
+
+3. **Verifier obligations.**
+   Before releasing credentials or initiating payment, the Credential Provider,
+   Merchant, and Merchant Payment Processor MUST each:
+   - Retrieve the CartMandate referenced by `cart_mandate_id`.
+   - Recompute `hex(sha256(JCS(CartMandate)))`.
+   - Compare the recomputed digest to `cart_mandate_hash`.
+   - **MUST reject** the transaction if the values do not match.
+
+   A mismatch indicates that the PaymentMandate was constructed against a
+   different cart than the one presented to and approved by the user, and the
+   transaction MUST NOT proceed.
+
 This architecture represents a significant evolution from traditional,
 imperative API calls (e.g., `create_order`) to a model of "contractual
 conversation." The protocol messages are not simply commands; they are steps in

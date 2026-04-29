@@ -20,8 +20,11 @@ shopping and purchasing process, such as updating a cart or initiating payment.
 
 from datetime import datetime
 from datetime import timezone
+import hashlib
 import os
 import uuid
+
+import rfc8785
 
 from a2a.types import Artifact
 from google.adk.tools.tool_context import ToolContext
@@ -204,6 +207,7 @@ def create_payment_mandate(
       payer_email=user_email,
   )
 
+  cart_mandate_hash = _generate_cart_mandate_hash(cart_mandate)
   payment_mandate = PaymentMandate(
       payment_mandate_contents=PaymentMandateContents(
           payment_mandate_id=uuid.uuid4().hex,
@@ -212,6 +216,8 @@ def create_payment_mandate(
           payment_details_total=payment_request.details.total,
           payment_response=payment_response,
           merchant_agent=cart_mandate.contents.merchant_name,
+          cart_mandate_id=cart_mandate.contents.id,
+          cart_mandate_hash=cart_mandate_hash,
       ),
   )
 
@@ -240,7 +246,13 @@ def sign_mandates_on_user_device(tool_context: ToolContext) -> str:
   """
   payment_mandate: PaymentMandate = tool_context.state["payment_mandate"]
   cart_mandate: CartMandate = tool_context.state["cart_mandate"]
-  cart_mandate_hash = _generate_cart_mandate_hash(cart_mandate)
+  # cart_mandate_hash is already embedded in payment_mandate_contents;
+  # re-read it here so the user_authorization signs the same bytes that
+  # create_payment_mandate committed to.
+  cart_mandate_hash = (
+      payment_mandate.payment_mandate_contents.cart_mandate_hash
+      or _generate_cart_mandate_hash(cart_mandate)
+  )
   payment_mandate_hash = _generate_payment_mandate_hash(
       payment_mandate.payment_mandate_contents
   )
@@ -283,46 +295,39 @@ async def send_signed_payment_mandate_to_credentials_provider(
 
 
 def _generate_cart_mandate_hash(cart_mandate: CartMandate) -> str:
-  """Generates a cryptographic hash of the CartMandate.
+  """Returns sha256(RFC 8785 canonical form of CartMandate).
 
-  This hash serves as a tamper-proof reference to the specific merchant-signed
-  cart offer that the user has approved.
-
-  Note: This is a placeholder implementation for development. A real
-  implementation must use a secure hashing algorithm (e.g., SHA-256) on the
-  canonical representation of the CartMandate object.
+  Produces a deterministic, cross-language hash of the merchant-signed cart
+  by serialising the CartMandate via JSON Canonicalization Scheme (JCS,
+  RFC 8785) before hashing.  This guarantees that Python float ``120.0``,
+  Go ``120``, and TypeScript ``120`` all yield the same digest for logically
+  identical carts.
 
   Args:
-      cart_mandate: The complete CartMandate object, including the merchant's
-        authorization.
+      cart_mandate: The complete CartMandate, including merchant_authorization.
 
   Returns:
-      A string representing the hash of the cart mandate.
+      Lowercase hex SHA-256 digest string.
   """
-  return "fake_cart_mandate_hash_" + cart_mandate.contents.id
+  cart_dict = cart_mandate.model_dump(mode="json")
+  canonical_bytes = rfc8785.dumps(cart_dict)
+  return hashlib.sha256(canonical_bytes).hexdigest()
 
 
 def _generate_payment_mandate_hash(
     payment_mandate_contents: PaymentMandateContents,
 ) -> str:
-  """Generates a cryptographic hash of the PaymentMandateContents.
-
-  This hash creates a tamper-proof reference to the specific payment details
-  the user is about to authorize.
-
-  Note: This is a placeholder implementation for development. A real
-  implementation must use a secure hashing algorithm (e.g., SHA-256) on the
-  canonical representation of the PaymentMandateContents object.
+  """Returns sha256(RFC 8785 canonical form of PaymentMandateContents).
 
   Args:
       payment_mandate_contents: The payment mandate contents to hash.
 
   Returns:
-      A string representing the hash of the payment mandate contents.
+      Lowercase hex SHA-256 digest string.
   """
-  return (
-      "fake_payment_mandate_hash_" + payment_mandate_contents.payment_mandate_id
-  )
+  contents_dict = payment_mandate_contents.model_dump(mode="json")
+  canonical_bytes = rfc8785.dumps(contents_dict)
+  return hashlib.sha256(canonical_bytes).hexdigest()
 
 
 def _parse_cart_mandates(artifacts: list[Artifact]) -> list[CartMandate]:

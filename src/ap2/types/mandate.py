@@ -154,6 +154,22 @@ class PaymentMandateContents(BaseModel):
       ),
   )
   merchant_agent: str = Field(..., description="Identifier for the merchant.")
+  cart_mandate_id: Optional[str] = Field(
+      None,
+      description=(
+          "The unique identifier of the CartMandate this PaymentMandate is"
+          " bound to. MUST equal CartMandate.contents.id."
+      ),
+  )
+  cart_mandate_hash: Optional[str] = Field(
+      None,
+      description=(
+          "A hex-encoded SHA-256 digest of the canonical CartMandate, computed"
+          " as sha256(RFC_8785(CartMandate)). Verifiers MUST recompute this"
+          " value and MUST reject the mandate if it does not match before"
+          " releasing credentials or initiating payment."
+      ),
+  )
   timestamp: str = Field(
       description=(
           "The date and time the mandate was created, in ISO 8601 format."

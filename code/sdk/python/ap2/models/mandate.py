@@ -162,6 +162,21 @@ class PaymentMandateContents(BaseModel):
         ),
         default_factory=lambda: datetime.now(UTC).isoformat(),
     )
+    cart_mandate_id: str | None = Field(
+        None,
+        description=(
+            'The unique identifier of the CartMandate bound to this payment. '
+            'SHOULD be populated on every new PaymentMandate.'
+        ),
+    )
+    cart_mandate_hash: str | None = Field(
+        None,
+        description=(
+            'hex(sha256(RFC 8785 canonical form of CartMandate)). '
+            'Verifiers MUST recompute this hash and MUST reject the mandate '
+            'if the value does not match (AP2 section 4.1.3.1).'
+        ),
+    )
 
 
 class PaymentMandate(BaseModel):

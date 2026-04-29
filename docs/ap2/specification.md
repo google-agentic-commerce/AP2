@@ -163,6 +163,29 @@ Credential Provider, and possibly Networks.
 For the full details of the Payment Mandate and Receipt structures, see
 [Payment Mandate](payment_mandate.md).
 
+#### Cart-to-Payment Mandate Binding
+
+The PaymentMandate MUST be bound to the CartMandate it authorises. This
+prevents a malicious or misconfigured agent substituting a different cart
+after the user has expressed intent.
+
+1. `PaymentMandateContents` MUST include a `cart_mandate_id` field
+   referencing the bound `CartMandate`, and a `cart_mandate_hash` field
+   containing `hex(sha256(JCS(CartMandate)))` where JCS is the JSON
+   Canonicalization Scheme defined in RFC 8785. Using JCS eliminates
+   cross-language float-serialisation ambiguity (e.g., `120.0` in Python vs
+   `120` in Go produce different byte sequences without canonicalisation).
+
+2. The `cart_mandate_hash` MUST be computed with all `null`/`None` optional
+   fields excluded, so that producers and verifiers using languages with
+   different default serialisation behaviour (e.g., Go `omitempty`) derive
+   the same canonical form.
+
+3. Before releasing credentials or initiating payment, the Credential
+   Provider, Merchant, and Merchant Payment Processor each MUST recompute
+   `hex(sha256(JCS(CartMandate)))` and compare it to `cart_mandate_hash`. A
+   mismatch MUST cause the transaction to be rejected.
+
 ## Modes
 
 There are two `modes` that AP2 can consider to operate in.

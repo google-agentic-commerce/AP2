@@ -29,14 +29,14 @@ Crossmint
 cryptographical
 CYGPATTERN
 Dafiti
-disclosable
-Disclosable
 davecgh
 dcql
 Dcql
 DCQL
 deviceauth
 Dfile
+disclosable
+Disclosable
 dmypy
 Doku
 Dorg
@@ -47,6 +47,7 @@ emvco
 endlocal
 envoyproxy
 esac
+fastmcp
 felixge
 Fiuu
 fontawesome
@@ -115,6 +116,7 @@ Nuvei
 objx
 octicons
 okhttp
+omitempty
 opentelemetry
 otelgrpc
 otelhttp
@@ -142,6 +144,7 @@ renamesourcefileattribute
 representment
 repudiable
 Revolut
+rfc8785
 Riskified
 ROOTDIRS
 ROOTDIRSRAW

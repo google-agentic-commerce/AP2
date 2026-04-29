@@ -18,7 +18,14 @@
  * chronologically ordered list suitable for the Mandates tab.
  */
 
-import type {ChatMessage, MandateChainsFetched, MandateEntry, MandatesSigned, MonitoringStatus, PurchaseComplete, ToolCallArtifact,} from '../types';
+import type {
+  ChatMessage,
+  MandateChainsFetched,
+  MandateEntry,
+  MandatesSigned,
+  PurchaseComplete,
+  ToolCallArtifact,
+} from '../types';
 
 type Draft = Omit<MandateEntry, 'id'>;
 
@@ -86,9 +93,8 @@ function purchaseEntries(msg: ChatMessage, pc: PurchaseComplete): Draft[] {
   return out;
 }
 
-function toolCallEntries(msg: ChatMessage, tc: ToolCallArtifact): Draft[] {
+function toolCallEntries(_msg: ChatMessage, _tc: ToolCallArtifact): Draft[] {
   const out: Draft[] = [];
-  const args = tc.args ?? {};
   return out;
 }
 
@@ -170,8 +176,6 @@ export function deriveMandateEntries(messages: ChatMessage[]): MandateEntry[] {
         break;
     }
   }
-
-
 
   const seen = new Set<string>();
   const result: MandateEntry[] = [];

@@ -1,5 +1,5 @@
-import type {MonitoringStatus} from '../types';
-import './MonitoringCard.scss';
+import type { MonitoringStatus } from "../types";
+import "./MonitoringCard.scss";
 
 interface Props {
   status: MonitoringStatus;
@@ -39,10 +39,10 @@ export function MonitoringCard({
           <div className="status-cell">
             <span className="cell-label">Price</span>
             <span
-              className={`cell-value ${status.current_price != null ? 'has-price' : 'no-price'}`}>
+              className={`cell-value ${status.current_price != null ? "has-price" : "no-price"}`}>
               {status.current_price != null
                 ? `$${current.toFixed(2)}`
-                : '— checking'}
+                : "— checking"}
             </span>
           </div>
           <div className="status-cell">
@@ -52,14 +52,14 @@ export function MonitoringCard({
           <div className="status-cell">
             <span className="cell-label">Available</span>
             <span
-              className={`cell-value ${available ? 'available-yes' : 'available-no'}`}>
-              {available ? '✓ In stock' : '✗ Not yet'}
+              className={`cell-value ${available ? "available-yes" : "available-no"}`}>
+              {available ? "✓ In stock" : "✗ Not yet"}
             </span>
           </div>
         </div>
 
         <div className="progress-track">
-          <div className="progress-bar" style={{width: `${pct}%`}} />
+          <div className="progress-bar" style={{ width: `${pct}%` }} />
         </div>
         <div className="info-text">
           You can close this window. Purchase will execute automatically when

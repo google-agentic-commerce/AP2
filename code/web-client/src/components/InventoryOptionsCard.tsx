@@ -1,6 +1,6 @@
-import {useState} from 'react';
-import type {InventoryMatch, InventoryOptionsArtifact} from '../types';
-import './InventoryOptionsCard.scss';
+import { useState } from "react";
+import type { InventoryMatch, InventoryOptionsArtifact } from "../types";
+import "./InventoryOptionsCard.scss";
 
 interface Props {
   inventory: InventoryOptionsArtifact;
@@ -18,10 +18,9 @@ function ItemRow({
 }) {
   return (
     <button
-      className={`item-card ${onClick ? 'clickable' : ''} ${selected ? 'selected' : ''}`}
+      className={`item-card ${onClick ? "clickable" : ""} ${selected ? "selected" : ""}`}
       type="button"
-      onClick={onClick}
->
+      onClick={onClick}>
       <div className="row-content">
         {selected && (
           <div className="selected-icon">
@@ -53,12 +52,12 @@ function ItemRow({
   );
 }
 
-export function InventoryOptionsCard({inventory, onSelect}: Props) {
+export function InventoryOptionsCard({ inventory, onSelect }: Props) {
   const [userSelected, setUserSelected] = useState<string | undefined>(
-    inventory.selected,
+    inventory.selected
   );
   const [hasConfirmed, setHasConfirmed] = useState(false);
-  const selected = userSelected ?? inventory.selected ?? '';
+  const selected = userSelected ?? inventory.selected ?? "";
   const canConfirm = !!onSelect && !!selected && !hasConfirmed;
 
   return (
@@ -89,9 +88,9 @@ export function InventoryOptionsCard({inventory, onSelect}: Props) {
         ))}
       </div>
       <p className="info-text">
-        I&apos;ve queried the merchant inventory via Merchant MCP and found{' '}
+        I&apos;ve queried the merchant inventory via Merchant MCP and found{" "}
         {inventory.matches.length} option
-        {inventory.matches.length === 1 ? '' : 's'} above. Please select which
+        {inventory.matches.length === 1 ? "" : "s"} above. Please select which
         item you want, then I&apos;ll create the purchase mandate and start
         monitoring the price.
       </p>
@@ -101,15 +100,15 @@ export function InventoryOptionsCard({inventory, onSelect}: Props) {
             <>
               Selected <span className="selected-item-id">{selected}</span>
               {hasConfirmed
-                ? '. Creating mandate…'
-                : '. Click &quot;Confirm selection&quot; to create the mandate.'}
+                ? ". Creating mandate…"
+                : ". Click &quot;Confirm selection&quot; to create the mandate."}
             </>
           ) : (
-            'Choose an option above.'
+            "Choose an option above."
           )
         ) : (
           <>
-            Selected <span className="selected-item-id">{selected || '—'}</span>
+            Selected <span className="selected-item-id">{selected || "—"}</span>
           </>
         )}
       </div>

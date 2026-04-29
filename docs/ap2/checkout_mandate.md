@@ -44,9 +44,9 @@ this MUST be the Checkout object.
 The following constraints are defined in this document for use with the open
 Checkout Mandates:
 
--   **Allowed Merchant:** Constrains the Merchants that this Checkout Mandate
+- **Allowed Merchant:** Constrains the Merchants that this Checkout Mandate
     can be used with.
--   **Line Items:** Defines the valid set of Line Items to be included in the
+- **Line Items:** Defines the valid set of Line Items to be included in the
     Checkout Mandate.
 
 ### Allowed Merchants
@@ -64,7 +64,8 @@ pointer='#/$defs/allowed_merchants') }}
 `allowed`. If they are not present, or if the `allowed`
 contains no revealed elements, the constraint is invalid.
 
-**Example**
+##### Example
+
 ```json
 {
   "type":  "checkout.allowed_merchants",
@@ -89,11 +90,11 @@ pointer='#/$defs/line_items') }}
 
 **Evaluation**: This constraint is met when:
 
--   Each `items` entry in the constraint has a total quantity of matching items
+- Each `items` entry in the constraint has a total quantity of matching items
     in the Checkout.
--   An item matches an `items` entry if its ID is present in the revealed
+- An item matches an `items` entry if its ID is present in the revealed
     `acceptable_items`.
--   No `items` entry or item in the Checkout may be used more than once.
+- No `items` entry or item in the Checkout may be used more than once.
 
 One way to implement this is as a maximal flow problem. The graph is defined as
 follows:
@@ -116,7 +117,8 @@ quantity and the total checkout `items` quantity.
 > but consideration must be given to how multiple duplicate orders can be
 > prevented.
 
-**Example**
+##### Example
+
 ```json
 {
   "type":  "checkout.line_items",
@@ -139,15 +141,18 @@ quantity and the total checkout `items` quantity.
   ]
 }
 ```
+
 This would be fulfilled by the following combinations:
-  - Item: Red Style, Item: The Best Socks
-  - Item: Blue Style, Item 3: The Best Socks
+
+- Item: Red Style, Item: The Best Socks
+- Item: Blue Style, Item 3: The Best Socks
 
 But it would be invalid to have a Checkout containing:
-  - Item: Red Style, Item: Blue Style
-  - Item: Red Style
-  - Item: Blue Style
-  - Item: The Best Socks
+
+- Item: Red Style, Item: Blue Style
+- Item: Red Style
+- Item: Blue Style
+- Item: The Best Socks
 
 ## Checkout Receipt
 
@@ -247,10 +252,11 @@ The Checkout Receipt conforms to the following Schema:
 
 #### Encoded Token
 
-```
+<!-- cspell:disable -->
+```text
 eyJhbGciOiAiRVMyNTYiLCAidHlwIjogImV4YW1wbGUrc2Qtand0IiwgImtpZCI6ICJhZ2VudC1wcm92aWRlci1rZXktMSJ9.eyJkZWxlZ2F0ZV9wYXlsb2FkIjogW3siLi4uIjogIlF0WFRKdFdxZzk5OUNtVVdHakhGVFdNa1JQZ3VEZmVLM3dHU2FJbmQtZHcifV0sICJfc2RfYWxnIjogInNoYS0yNTYifQ.HvCGk7ye_c0LN2-NFG13wfyu3LA--rckTPGm36ugO2aRvsded7ngw1py8W3JF7wBpoQnsKr17tNTF3zLeYcoWA~WyI0bjNMXy0zX0ZtMkdneUZBRjhDdF9nIiwgeyJpZCI6ICJzdXBlcnNob2VfbGltaXRlZF9lZGl0aW9uX2dvbGRfc25lYWtlcl93b21lbnNfOV8wIiwgInRpdGxlIjogIlN1cGVyU2hvZSBMaW1pdGVkIEVkaXRpb24gR29sZCJ9XQ~WyIyelBMNnZxTEJnMldZQWRiVzktMWxRIiwgeyJpZCI6ICJtZXJjaGFudF8xIiwgIm5hbWUiOiAiRGVtbyBNZXJjaGFudCIsICJ3ZWJzaXRlIjogImh0dHBzOi8vZGVtby1tZXJjaGFudC5leGFtcGxlIn1d~WyJsYUFvV0tOUnVHbndSRWpKV1lKN3BnIiwgeyJ2Y3QiOiAibWFuZGF0ZS5jaGVja291dC5vcGVuLjEiLCAiY29uc3RyYWludHMiOiBbeyJ0eXBlIjogImNoZWNrb3V0LmxpbmVfaXRlbXMiLCAiaXRlbXMiOiBbeyJpZCI6ICJsaW5lXzEiLCAiYWNjZXB0YWJsZV9pdGVtcyI6IFt7Ii4uLiI6ICJ5M2FvY0FEMnJoWXBKUU9VTU4wMTZmYURGR2tUQkdFRFZsMVIxVFJIZGJ3In1dLCAicXVhbnRpdHkiOiAxfV19LCB7InR5cGUiOiAiY2hlY2tvdXQuYWxsb3dlZF9tZXJjaGFudHMiLCAiYWxsb3dlZCI6IFt7Ii4uLiI6ICJhNVVNQWR4Q2tfTVJheXlWZFJocElBWjBaaGpWTEVxMWcyQld5cndLVXdnIn1dfV0sICJjbmYiOiB7Imp3ayI6IHsiY3J2IjogIlAtMjU2IiwgImt0eSI6ICJFQyIsICJ4IjogIlFwU3l4UFFIeTM4eGNreXZEcjU0Z1ozVDQyemo5aUx0VjRrb3liNVUyN2MiLCAieSI6ICIzN0hMZDdKSmlueGpKSW44SjdIaWpzc29lY0JsZmhkVy1nVUw3ZmVJOWx3In19LCAiaWF0IjogMTc3NzM0MjM1NywgImV4cCI6IDE3NzczNDU5NTd9XQ~
 ```
-
+<!-- cspell:enable -->
 
 ### Closed Checkout Mandate SD-JWT plus disclosures
 
@@ -331,11 +337,13 @@ eyJhbGciOiAiRVMyNTYiLCAidHlwIjogImV4YW1wbGUrc2Qtand0IiwgImtpZCI6ICJhZ2VudC1wcm92
 
 #### Encoded Token
 
-```
+<!-- cspell:disable -->
+```text
 eyJhbGciOiAiRVMyNTYiLCAidHlwIjogImtiK3NkLWp3dCJ9.eyJkZWxlZ2F0ZV9wYXlsb2FkIjogW3siLi4uIjogIjdWTFktZUtURlNTaExvWlJYWTVqWGNEMlVIbTFKdlBtb0FOWVJxcXh5MzQifV0sICJpYXQiOiAxNzc3MzQyMzc2LCAiYXVkIjogIm1lcmNoYW50IiwgIm5vbmNlIjogImI5YzhkN2U2ZjVhNGIzYzJkMWUwZjlhOGI3YzZkNWU0IiwgInNkX2hhc2giOiAiRnpMb3hiYnRnUUdZWnhvU00yTkpZSnRrRlRTc2RmVUJvVkVRMTJrN0pOOCIsICJfc2RfYWxnIjogInNoYS0yNTYifQ.lSjkli6K3NbKlWOl1gJdWDwiyL88yJVyx32ZJHmvCXfRoItnchXw-MLUDEJv7o9lmTeipS42qNt7Z_oGSnRH1w~WyJzeGhweEtyZ0dKd3lxTUVNOVdJNVN3IiwgeyJfc2QiOiBbIjNBOVV5WkpvZncyZU1QLUx4MnRZYU5wQ2N1QjhlbG5od3dMaFpMd3FRRk0iXSwgInZjdCI6ICJtYW5kYXRlLmNoZWNrb3V0LjEiLCAiY2hlY2tvdXRfaGFzaCI6ICJOaXZXaHVxZnpjdlpOYXB2SUVKMi0zdHNkUUxraXVJY3llMmc0NldWZ1g4In1d~WyJ3LW4xbGVGVDZ6OHJIVE5Id3I1V293IiwgImNoZWNrb3V0X2p3dCIsICJleUpoYkdjaU9pQWlSVk15TlRZaUxDQWlkSGx3SWpvZ0lrcFhWQ0lzSUNKcmFXUWlPaUFpYldWeVkyaGhiblF0YTJWNUxURWlmUS5leUpwWkNJNklDSXdPVFF4TkRFME5TMWlOekJpTFRRNE0yRXRZamcxWXkxaFlUQm1ZVEJqTkRVNE1EQWlMQ0FpYldWeVkyaGhiblFpT2lCN0ltbGtJam9nSW0xbGNtTm9ZVzUwWHpFaUxDQWlibUZ0WlNJNklDSkVaVzF2SUUxbGNtTm9ZVzUwSWl3Z0luZGxZbk5wZEdVaU9pQWlhSFIwY0hNNkx5OWtaVzF2TFcxbGNtTm9ZVzUwTG1WNFlXMXdiR1VpZlN3Z0lteHBibVZmYVhSbGJYTWlPaUJiZXlKcFpDSTZJQ0pzYVY4d0lpd2dJbWwwWlcwaU9pQjdJbWxrSWpvZ0luTjFjR1Z5YzJodlpWOXNhVzFwZEdWa1gyVmthWFJwYjI1ZloyOXNaRjl6Ym1WaGEyVnlYM2R2YldWdWMxODVYekFpTENBaWRHbDBiR1VpT2lBaVUzVndaWEp6YUc5bElFeHBiV2wwWldRZ1JXUnBkR2x2YmlCSGIyeGtJRk51WldGclpYSWdWMjl0Wlc1eklEa2lMQ0FpY0hKcFkyVWlPaUF4T1Rrd01IMHNJQ0p4ZFdGdWRHbDBlU0k2SURFc0lDSjBiM1JoYkhNaU9pQmJleUowZVhCbElqb2dJbk4xWW5SdmRHRnNJaXdnSW1GdGIzVnVkQ0k2SURFNU9UQXdmU3dnZXlKMGVYQmxJam9nSW5SdmRHRnNJaXdnSW1GdGIzVnVkQ0k2SURFNU9UQXdmVjE5WFN3Z0luTjBZWFIxY3lJNklDSnBibU52YlhCc1pYUmxJaXdnSW1OMWNuSmxibU41SWpvZ0lsVlRSQ0lzSUNKMGIzUmhiSE1pT2lCYmV5SjBlWEJsSWpvZ0luTjFZblJ2ZEdGc0lpd2dJbUZ0YjNWdWRDSTZJREU1T1RBd2ZTd2dleUowZVhCbElqb2dJblJ2ZEdGc0lpd2dJbUZ0YjNWdWRDSTZJREU1T1RBd2ZWMHNJQ0pzYVc1cmN5STZJRnQ3SW5SNWNHVWlPaUFpY0hKcGRtRmplVjl3YjJ4cFkza2lMQ0FpZFhKc0lqb2dJbWgwZEhCek9pOHZhSFIwY0hNdkwyUmxiVzh0YldWeVkyaGhiblF1WlhoaGJYQnNaUzl3Y21sMllXTjVJbjBzSUhzaWRIbHdaU0k2SUNKMFpYSnRjMTl2Wmw5elpYSjJhV05sSWl3Z0luVnliQ0k2SUNKb2RIUndjem92TDJoMGRIQnpMeTlrWlcxdkxXMWxjbU5vWVc1MExtVjRZVzF3YkdVdmRHOXpJbjFkZlEuUC1WS3poeUp1bzktUlBpTjVheW5naDdmTFVLY09QQWVaejczU09Zd2Q1UDlZWG1HTE9yTFRXeGdYdkd5UVF0dERETTVELUc0czE5dnhfVTY1ZHJ1UmciXQ~
 ```
+<!-- cspell:enable -->
 
-### Open Checkout Mandate chained with a Closed Checkout Mandate after processing the delegate SD-JWT.
+### Open Checkout Mandate chained with a Closed Checkout Mandate after processing the delegate SD-JWT
 
 ```json
 {
@@ -497,9 +505,11 @@ eyJhbGciOiAiRVMyNTYiLCAidHlwIjogImtiK3NkLWp3dCJ9.eyJkZWxlZ2F0ZV9wYXlsb2FkIjogW3s
 
 #### Encoded Token
 
-```
+<!-- cspell:disable -->
+```text
 eyJhbGciOiAiRVMyNTYiLCAidHlwIjogImV4YW1wbGUrc2Qtand0IiwgImtpZCI6ICJhZ2VudC1wcm92aWRlci1rZXktMSJ9.eyJkZWxlZ2F0ZV9wYXlsb2FkIjogW3siLi4uIjogIlF0WFRKdFdxZzk5OUNtVVdHakhGVFdNa1JQZ3VEZmVLM3dHU2FJbmQtZHcifV0sICJfc2RfYWxnIjogInNoYS0yNTYifQ.HvCGk7ye_c0LN2-NFG13wfyu3LA--rckTPGm36ugO2aRvsded7ngw1py8W3JF7wBpoQnsKr17tNTF3zLeYcoWA~WyI0bjNMXy0zX0ZtMkdneUZBRjhDdF9nIiwgeyJpZCI6ICJzdXBlcnNob2VfbGltaXRlZF9lZGl0aW9uX2dvbGRfc25lYWtlcl93b21lbnNfOV8wIiwgInRpdGxlIjogIlN1cGVyU2hvZSBMaW1pdGVkIEVkaXRpb24gR29sZCJ9XQ~WyIyelBMNnZxTEJnMldZQWRiVzktMWxRIiwgeyJpZCI6ICJtZXJjaGFudF8xIiwgIm5hbWUiOiAiRGVtbyBNZXJjaGFudCIsICJ3ZWJzaXRlIjogImh0dHBzOi8vZGVtby1tZXJjaGFudC5leGFtcGxlIn1d~WyJsYUFvV0tOUnVHbndSRWpKV1lKN3BnIiwgeyJ2Y3QiOiAibWFuZGF0ZS5jaGVja291dC5vcGVuLjEiLCAiY29uc3RyYWludHMiOiBbeyJ0eXBlIjogImNoZWNrb3V0LmxpbmVfaXRlbXMiLCAiaXRlbXMiOiBbeyJpZCI6ICJsaW5lXzEiLCAiYWNjZXB0YWJsZV9pdGVtcyI6IFt7Ii4uLiI6ICJ5M2FvY0FEMnJoWXBKUU9VTU4wMTZmYURGR2tUQkdFRFZsMVIxVFJIZGJ3In1dLCAicXVhbnRpdHkiOiAxfV19LCB7InR5cGUiOiAiY2hlY2tvdXQuYWxsb3dlZF9tZXJjaGFudHMiLCAiYWxsb3dlZCI6IFt7Ii4uLiI6ICJhNVVNQWR4Q2tfTVJheXlWZFJocElBWjBaaGpWTEVxMWcyQld5cndLVXdnIn1dfV0sICJjbmYiOiB7Imp3ayI6IHsiY3J2IjogIlAtMjU2IiwgImt0eSI6ICJFQyIsICJ4IjogIlFwU3l4UFFIeTM4eGNreXZEcjU0Z1ozVDQyemo5aUx0VjRrb3liNVUyN2MiLCAieSI6ICIzN0hMZDdKSmlueGpKSW44SjdIaWpzc29lY0JsZmhkVy1nVUw3ZmVJOWx3In19LCAiaWF0IjogMTc3NzM0MjM1NywgImV4cCI6IDE3NzczNDU5NTd9XQ~~eyJhbGciOiAiRVMyNTYiLCAidHlwIjogImtiK3NkLWp3dCJ9.eyJkZWxlZ2F0ZV9wYXlsb2FkIjogW3siLi4uIjogIjdWTFktZUtURlNTaExvWlJYWTVqWGNEMlVIbTFKdlBtb0FOWVJxcXh5MzQifV0sICJpYXQiOiAxNzc3MzQyMzc2LCAiYXVkIjogIm1lcmNoYW50IiwgIm5vbmNlIjogImI5YzhkN2U2ZjVhNGIzYzJkMWUwZjlhOGI3YzZkNWU0IiwgInNkX2hhc2giOiAiRnpMb3hiYnRnUUdZWnhvU00yTkpZSnRrRlRTc2RmVUJvVkVRMTJrN0pOOCIsICJfc2RfYWxnIjogInNoYS0yNTYifQ.lSjkli6K3NbKlWOl1gJdWDwiyL88yJVyx32ZJHmvCXfRoItnchXw-MLUDEJv7o9lmTeipS42qNt7Z_oGSnRH1w~WyJzeGhweEtyZ0dKd3lxTUVNOVdJNVN3IiwgeyJfc2QiOiBbIjNBOVV5WkpvZncyZU1QLUx4MnRZYU5wQ2N1QjhlbG5od3dMaFpMd3FRRk0iXSwgInZjdCI6ICJtYW5kYXRlLmNoZWNrb3V0LjEiLCAiY2hlY2tvdXRfaGFzaCI6ICJOaXZXaHVxZnpjdlpOYXB2SUVKMi0zdHNkUUxraXVJY3llMmc0NldWZ1g4In1d~WyJ3LW4xbGVGVDZ6OHJIVE5Id3I1V293IiwgImNoZWNrb3V0X2p3dCIsICJleUpoYkdjaU9pQWlSVk15TlRZaUxDQWlkSGx3SWpvZ0lrcFhWQ0lzSUNKcmFXUWlPaUFpYldWeVkyaGhiblF0YTJWNUxURWlmUS5leUpwWkNJNklDSXdPVFF4TkRFME5TMWlOekJpTFRRNE0yRXRZamcxWXkxaFlUQm1ZVEJqTkRVNE1EQWlMQ0FpYldWeVkyaGhiblFpT2lCN0ltbGtJam9nSW0xbGNtTm9ZVzUwWHpFaUxDQWlibUZ0WlNJNklDSkVaVzF2SUUxbGNtTm9ZVzUwSWl3Z0luZGxZbk5wZEdVaU9pQWlhSFIwY0hNNkx5OWtaVzF2TFcxbGNtTm9ZVzUwTG1WNFlXMXdiR1VpZlN3Z0lteHBibVZmYVhSbGJYTWlPaUJiZXlKcFpDSTZJQ0pzYVY4d0lpd2dJbWwwWlcwaU9pQjdJbWxrSWpvZ0luTjFjR1Z5YzJodlpWOXNhVzFwZEdWa1gyVmthWFJwYjI1ZloyOXNaRjl6Ym1WaGEyVnlYM2R2YldWdWMxODVYekFpTENBaWRHbDBiR1VpT2lBaVUzVndaWEp6YUc5bElFeHBiV2wwWldRZ1JXUnBkR2x2YmlCSGIyeGtJRk51WldGclpYSWdWMjl0Wlc1eklEa2lMQ0FpY0hKcFkyVWlPaUF4T1Rrd01IMHNJQ0p4ZFdGdWRHbDBlU0k2SURFc0lDSjBiM1JoYkhNaU9pQmJleUowZVhCbElqb2dJbk4xWW5SdmRHRnNJaXdnSW1GdGIzVnVkQ0k2SURFNU9UQXdmU3dnZXlKMGVYQmxJam9nSW5SdmRHRnNJaXdnSW1GdGIzVnVkQ0k2SURFNU9UQXdmVjE5WFN3Z0luTjBZWFIxY3lJNklDSnBibU52YlhCc1pYUmxJaXdnSW1OMWNuSmxibU41SWpvZ0lsVlRSQ0lzSUNKMGIzUmhiSE1pT2lCYmV5SjBlWEJsSWpvZ0luTjFZblJ2ZEdGc0lpd2dJbUZ0YjNWdWRDSTZJREU1T1RBd2ZTd2dleUowZVhCbElqb2dJblJ2ZEdGc0lpd2dJbUZ0YjNWdWRDSTZJREU1T1RBd2ZWMHNJQ0pzYVc1cmN5STZJRnQ3SW5SNWNHVWlPaUFpY0hKcGRtRmplVjl3YjJ4cFkza2lMQ0FpZFhKc0lqb2dJbWgwZEhCek9pOHZhSFIwY0hNdkwyUmxiVzh0YldWeVkyaGhiblF1WlhoaGJYQnNaUzl3Y21sMllXTjVJbjBzSUhzaWRIbHdaU0k2SUNKMFpYSnRjMTl2Wmw5elpYSjJhV05sSWl3Z0luVnliQ0k2SUNKb2RIUndjem92TDJoMGRIQnpMeTlrWlcxdkxXMWxjbU5vWVc1MExtVjRZVzF3YkdVdmRHOXpJbjFkZlEuUC1WS3poeUp1bzktUlBpTjVheW5naDdmTFVLY09QQWVaejczU09Zd2Q1UDlZWG1HTE9yTFRXeGdYdkd5UVF0dERETTVELUc0czE5dnhfVTY1ZHJ1UmciXQ~
 ```
+<!-- cspell:enable -->
 
 ## Common Types
 

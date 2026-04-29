@@ -126,7 +126,7 @@ export const MessageRenderer = ({
       : undefined;
     return (
       <div className="agent-composite-msg">
-        {proseText && proseText.trim() && <AgentProse text={proseText} />}
+        {proseText?.trim() && <AgentProse text={proseText} />}
         <ProductPreviewUnavailableCard preview={preview} />
       </div>
     );
@@ -183,7 +183,7 @@ export const MessageRenderer = ({
 
     return (
       <div className="agent-composite-msg">
-        {proseText && proseText.trim() && <AgentProse text={proseText} />}
+        {proseText?.trim() && <AgentProse text={proseText} />}
         <MandateApproval
           mandate={mandateWithName}
           trustedSurface={trustedSurface}

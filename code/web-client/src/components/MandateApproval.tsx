@@ -68,6 +68,7 @@ export function MandateApproval({
         <div className="mandate-header">
           <div className="icon-wrapper">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <title>Mandate</title>
               <path
                 d="M8 2L10.5 6.5H14L10.5 9L12 13.5L8 11L4 13.5L5.5 9L2 6.5H5.5L8 2Z"
                 strokeLinejoin="round"
@@ -133,7 +134,7 @@ export function MandateApproval({
 
               {hasCurrentPrice && (
                 <div className="reference-price-note">
-                  Reference price: ${current!.toFixed(2)} (list)
+                  Reference price: ${current?.toFixed(2) ?? "0.00"} (list)
                 </div>
               )}
             </>
@@ -148,7 +149,7 @@ export function MandateApproval({
                   },
                   {
                     label: 'Current',
-                    value: hasCurrentPrice ? `$${current!.toFixed(2)}` : '—',
+                    value: hasCurrentPrice ? `$${current?.toFixed(2) ?? "0.00"}` : '—',
                     accent: '#f87171',
                   },
                   {label: 'Qty', value: String(qty), accent: '#94a3b8'},
@@ -187,6 +188,7 @@ export function MandateApproval({
           {/* Payment method row */}
           <div className="fop-row">
             <svg width="32" height="20" viewBox="0 0 32 20" fill="none">
+              <title>Payment card</title>
               <rect
                 width="32"
                 height="20"
@@ -243,8 +245,9 @@ export function MandateApproval({
 
           {state === 'idle' && (
             <div className="action-buttons">
-              <button className="approve-button" onClick={handleSign}>
+              <button type="button" className="approve-button" onClick={handleSign}>
                 <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                  <title>Approve</title>
                   <path
                     d="M7 1L8.8 4.8L13 5.3L10 8.2L10.7 12.4L7 10.5L3.3 12.4L4 8.2L1 5.3L5.2 4.8L7 1Z"
                     stroke="white"
@@ -255,7 +258,7 @@ export function MandateApproval({
                 </svg>
                 Approve & Sign
               </button>
-              <button className="reject-button" onClick={onReject}>
+              <button type="button" className="reject-button" onClick={onReject}>
                 Reject
               </button>
             </div>
@@ -272,6 +275,7 @@ export function MandateApproval({
             <div className="signed-state">
               <div className="success-badge">
                 <svg width="10" height="10" viewBox="0 0 10 10">
+                  <title>Signed</title>
                   <path
                     d="M2 5l2 2 4-4"
                     stroke="white"

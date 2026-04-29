@@ -25,7 +25,7 @@ const AppHeader = ({usedServers}: {usedServers: Set<string>}) => {
     },
   ];
 
-  const flow = (import.meta as any).env?.VITE_FLOW;
+  const flow = (import.meta as {env?: {VITE_FLOW?: string}}).env?.VITE_FLOW;
 
   return (
     <div className="app-header">
@@ -69,11 +69,13 @@ const TabBar = ({
 }) => (
   <div className="tab-bar">
     <button
+      type="button"
       className={`tab ${activeTab === 'chat' ? 'active' : ''}`}
       onClick={() => onChange('chat')}>
       Chat
     </button>
     <button
+      type="button"
       className={`tab ${activeTab === 'mandates' ? 'active' : ''}`}
       onClick={() => onChange('mandates')}>
       Mandates
@@ -125,6 +127,7 @@ const ChatInput = ({input, setInput, handleSend, loading}: ChatInputProps) => (
       className="chat-input"
     />
     <button
+      type="button"
       onClick={() =>
         handleSend({fallbackIfEmpty: DEFAULT_CHAT_STARTER_MESSAGE})
       }
@@ -141,6 +144,7 @@ const ChatInput = ({input, setInput, handleSend, loading}: ChatInputProps) => (
 
 export default function App() {
   const chatState: ChatState = useChat();
+  const {messages} = chatState;
   const [activeTab, setActiveTab] = useState<TabKey>('chat');
   const bottomRef = useRef<HTMLDivElement>(null);
 
@@ -148,7 +152,7 @@ export default function App() {
     if (activeTab === 'chat') {
       bottomRef.current?.scrollIntoView({behavior: 'smooth'});
     }
-  }, [chatState.messages, activeTab]);
+  }, [messages, activeTab]);
 
   return (
     <div className="app-container">

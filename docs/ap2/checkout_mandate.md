@@ -28,11 +28,11 @@ The algorithm used MUST be the same as the SD-JWT, as defined by the `_sd_alg`
 claim in the base payload, or `sha-256` if not present.
 
 Before releasing credentials or initiating payment, the Credential Provider,
-Merchant, and Merchant Payment Processor each MUST independently recompute
-`checkout_hash` by applying the `_sd_alg` algorithm (or `sha-256` if absent)
-to the raw bytes of the `checkout_jwt` value and comparing the result to the
-`checkout_hash` field. If the values do not match, the verifier MUST reject
-the mandate and MUST NOT proceed with the transaction.
+Merchant, and Merchant Payment Processor each MUST verify that the `checkout_hash`
+field's value matches a computed hash of the `checkout_jwt` value. The hash
+MUST be computed by applying the `_sd_alg` algorithm (or `sha-256` if absent)
+to the raw bytes of the `checkout_jwt` value. If the values do not match, the
+verifier MUST reject the mandate and MUST NOT proceed with the transaction.
 
 `checkout_jwt` is the merchant-signed JWT containing the details of the
 checkout. The details of the payload are outside the scope of this

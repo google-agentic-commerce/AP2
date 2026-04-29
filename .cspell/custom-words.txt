@@ -163,6 +163,8 @@ spyderproject
 spyproject
 stablecoins
 stdr
+sublabel
+Sublabel
 stretchr
 superfences
 Truelayer

@@ -55,8 +55,8 @@ def validate_cart_mandate_hash(
   Recomputes sha256(RFC_8785(CartMandate)) and compares it against
   PaymentMandateContents.cart_mandate_hash per AP2 section 4.1.3.1.
 
-  None values are excluded from the serialised dict so that optional fields
-  omitted by Python match the behaviour of Go's ``omitempty`` tag, giving a
+  None values are excluded from the serialized dict so that optional fields
+  omitted by Python match the behavior of Go's ``omitempty`` tag, giving a
   consistent canonical form across language implementations.
 
   Verifiers MUST call this gate before releasing credentials or initiating
@@ -91,7 +91,7 @@ def validate_cart_mandate_hash(
     raise ValueError(
         f"CartMandate hash mismatch: mandate carries {expected!r} but "
         f"recomputed {actual!r}. PaymentMandate does not match the "
-        "merchant-authorised CartMandate."
+        "merchant-authorized CartMandate."
     )
 
   logging.info(

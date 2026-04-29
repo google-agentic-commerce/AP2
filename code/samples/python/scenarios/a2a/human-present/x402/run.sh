@@ -82,7 +82,7 @@ fi
 # Clear old logs.
 echo "Clearing the logs directory..."
 if [ -d "$LOG_DIR" ]; then
-  rm -f "$LOG_DIR"/*
+  rm -rf "$LOG_DIR" && mkdir -p "$LOG_DIR"
 fi
 
 # Shared temp directory for keys and state across all agents.

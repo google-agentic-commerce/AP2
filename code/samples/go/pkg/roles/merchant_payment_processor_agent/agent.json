@@ -1,0 +1,32 @@
+{
+  "name": "MerchantPaymentProcessorAgent",
+  "description": "An agent that processes payments on behalf of merchants.",
+  "url": "http://localhost:8003/a2a/merchant_payment_processor_agent",
+  "preferredTransport": "JSONRPC",
+  "protocolVersion": "0.3.0",
+  "version": "1.0.0",
+  "defaultInputModes": ["json"],
+  "defaultOutputModes": ["json"],
+  "capabilities": {
+      "extensions": [
+        {
+          "uri": "https://github.com/google-agentic-commerce/ap2/v1",
+          "description": "Supports the Agent Payments Protocol.",
+          "required": true
+        },
+        {
+          "uri": "https://sample-card-network.github.io/paymentmethod/types/v1",
+          "description": "Supports the Sample Card Network payment method extension",
+          "required": true
+        }
+      ]
+  },
+  "skills": [
+    {
+      "id": "initiate_payment",
+      "name": "Initiate Payment",
+      "description": "Processes a payment using the provided payment mandate.",
+      "tags": ["payment", "processing"]
+    }
+  ]
+}

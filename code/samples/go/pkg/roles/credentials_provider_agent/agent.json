@@ -1,0 +1,27 @@
+{
+  "name": "CredentialsProviderAgent",
+  "description": "An agent that manages user payment credentials and wallet.",
+  "url": "http://localhost:8002/a2a/credentials_provider",
+  "preferredTransport": "JSONRPC",
+  "protocolVersion": "0.3.0",
+  "version": "1.0.0",
+  "defaultInputModes": ["json"],
+  "defaultOutputModes": ["json"],
+  "capabilities": {
+      "extensions": [
+        {
+          "uri": "https://github.com/google-agentic-commerce/ap2/v1",
+          "description": "Supports the Agent Payments Protocol.",
+          "required": true
+        }
+      ]
+  },
+  "skills": [
+    {
+      "id": "get_payment_method",
+      "name": "Get Payment Method",
+      "description": "Retrieves user's payment method details.",
+      "tags": ["credentials", "payment"]
+    }
+  ]
+}

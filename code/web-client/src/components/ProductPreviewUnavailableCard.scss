@@ -1,0 +1,126 @@
+.product-preview-unavailable-container {
+  max-width: min(85%, var(--chat-card-max-width, 440px));
+}
+
+.product-preview-card {
+  background: linear-gradient(145deg, #12181f 0%, #0c1018 100%);
+  border: 1px solid #ca8a04;
+  border-radius: 14px;
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #ca8a04, #eab308, #ca8a04);
+  }
+
+  .preview-badge {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: #ca8a04;
+    padding: 3px 10px;
+    border: 1px solid rgba(202, 138, 4, 0.3);
+    border-radius: 100px;
+    margin-bottom: 14px;
+    letter-spacing: 0.04em;
+  }
+
+  .emoji-display {
+    font-size: 48px;
+    text-align: center;
+    margin: 8px 0 14px;
+    filter: drop-shadow(0 4px 12px rgba(202, 138, 4, 0.15));
+  }
+
+  .product-name {
+    font-family: 'Geist', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #e2e8f0;
+    margin-bottom: 4px;
+  }
+
+  .product-subtitle {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: #6b7280;
+    margin-bottom: 14px;
+  }
+
+  .metadata-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+
+    .meta-item {
+      background: #0a0e14;
+      border: 1px solid #1a2332;
+      border-radius: 8px;
+      padding: 8px 10px;
+
+      .meta-label {
+        font-size: 10px;
+        color: #4b5563;
+        font-family: 'IBM Plex Mono', monospace;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        margin-bottom: 3px;
+      }
+
+      .meta-value {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 14px;
+        font-weight: 500;
+
+        &.price {
+          color: #ca8a04;
+        }
+        &.drop {
+          color: #60a5fa;
+        }
+      }
+    }
+  }
+
+  .status-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    background: rgba(202, 138, 4, 0.06);
+    border: 1px solid rgba(202, 138, 4, 0.15);
+    border-radius: 8px;
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #ca8a04;
+      animation: preview-pulse 2s ease infinite;
+    }
+
+    .status-text {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: #ca8a04;
+    }
+  }
+}
+
+@keyframes preview-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}

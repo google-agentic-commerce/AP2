@@ -1,0 +1,138 @@
+.receipt-card-container {
+  max-width: min(85%, var(--chat-card-max-width, 440px));
+}
+
+.receipt-card {
+  background: #061412;
+  border: 1px solid #064e3b;
+  border-radius: 14px;
+  overflow: hidden;
+
+  .success-header {
+    padding: 16px;
+    background: linear-gradient(135deg, #064e3b, #022c22);
+    border-bottom: 1px solid #065f46;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .success-badge {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #16a34a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      animation: badge-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s both;
+      flex-shrink: 0;
+    }
+
+    .title-container {
+      .title {
+        font-family: 'Geist', sans-serif;
+        font-size: 14px;
+        font-weight: 700;
+        color: #4ade80;
+      }
+
+      .subtitle {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 10px;
+        color: #059669;
+      }
+    }
+  }
+
+  .receipt-body {
+    padding: 16px;
+
+    .display-name {
+      font-family: 'Instrument Serif', serif;
+      font-size: 18px;
+      color: #d1fae5;
+      margin-bottom: 4px;
+    }
+
+    .order-id {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: #047857;
+      margin-bottom: 16px;
+    }
+
+    .info-grid {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+
+      .grid-item {
+        flex: 1;
+        background: #0a1f1a;
+        border: 1px solid #064e3b;
+        border-radius: 8px;
+        padding: 10px 12px;
+
+        .item-label {
+          font-size: 10px;
+          color: #047857;
+          font-family: 'IBM Plex Mono', monospace;
+          text-transform: uppercase;
+          letter-spacing: 0.06em;
+          margin-bottom: 4px;
+        }
+
+        .item-value {
+          font-family: 'IBM Plex Mono', monospace;
+          font-size: 18px;
+          font-weight: 500;
+          color: #4ade80;
+        }
+      }
+    }
+
+    .chain-box {
+      background: #040d0b;
+      border: 1px solid #0a2520;
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+
+      .chain-label {
+        font-size: 10px;
+        color: #047857;
+        font-family: 'IBM Plex Mono', monospace;
+        margin-bottom: 8px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .chain-row {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 4px;
+
+        span {
+          font-family: 'IBM Plex Mono', monospace;
+          font-size: 10px;
+        }
+
+        .row-label {
+          color: #065f46;
+          min-width: 160px;
+        }
+
+        .row-value {
+          color: #34d399;
+        }
+      }
+    }
+
+    .timestamp {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      color: #064e3b;
+      text-align: right;
+    }
+  }
+}

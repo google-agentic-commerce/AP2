@@ -1,0 +1,62 @@
+{
+  "name": "CredentialsProvider",
+  "description": "An agent that holds a user's payment credentials.",
+  "capabilities": {
+      "extensions": [
+        {
+          "uri": "https://github.com/google-agentic-commerce/ap2/v1",
+          "description": "Supports the Agent Payments Protocol.",
+          "required": true
+        },
+        {
+          "uri": "https://sample-card-network.github.io/paymentmethod/types/v1",
+          "description": "Supports the Sample Card Network payment method extension",
+          "required": true
+        }
+      ]
+  },
+  "skills": [
+    {
+      "id": "initiate_payment",
+      "name": "Initiate Payment",
+      "description": "Initiates a payment with the correct payment processor.",
+      "tags": ["payments"]
+    },
+    {
+      "id": "get_eligible_payment_methods",
+      "name": "Get Eligible Payment Methods",
+      "description": "Provides a list of eligible payment methods for a particular purchase.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "email_address": {
+            "type": "string",
+            "description": "The email address associated with the user's account."
+          }
+        },
+        "required": ["email_address"]
+      },
+      "tags": ["eligible", "payment", "methods"]
+    },
+    {
+      "id": "get_account_shipping_address",
+      "name": "Get Shipping Address",
+      "description": "Fetches the shipping address from a user's wallet.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "email_address": {
+            "type": "string",
+            "description": "The email address associated with the user's account."
+          }
+        },
+        "required": ["email_address"]
+      },
+      "tags": ["account", "shipping"]
+    }
+  ],
+  "defaultInputModes": ["text/plain"],
+  "defaultOutputModes": ["application/json"],
+  "url": "http://localhost:8002/a2a/credentials_provider",
+  "version": "1.0.0"
+}

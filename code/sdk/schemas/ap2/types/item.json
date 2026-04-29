@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ap2-protocol.org/schemas/types/item.json",
+  "title": "Item",
+  "description": "Product details for a line item. Matches UCP types/item.json (2026-04-08).",
+  "type": "object",
+  "required": ["id", "title", "price"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "The product identifier, often the SKU, required to resolve the product details associated with this line item."
+    },
+    "title": {
+      "type": "string",
+      "description": "Product title."
+    },
+    "price": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Unit price in the currency's minor unit as defined by ISO 4217."
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Product image URI.",
+      "format": "uri"
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "id": "shopping_agent_v2",
+  "name": "Delegated Shopper",
+  "description": "Single-purpose agent that buys on the user's behalf when conditions are met: limited or timed drops (user not present), or price-cap monitoring, using AP2 open and closed mandates",
+  "url": "http://localhost:8080/a2a/shopping_agent",
+  "version": "1.0.0",
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false,
+    "stateTransitionHistory": true
+  },
+  "defaultInputModes": ["text/plain", "application/json"],
+  "defaultOutputModes": ["text/plain", "application/json"],
+  "skills": [
+    {
+      "id": "delegated_purchase",
+      "name": "Drop & price delegated purchase",
+      "description": "Handles limited drops and price-cap monitoring: conversational budget agreement, signed mandates, then autonomous purchase when the item is available within the user's cap.",
+      "inputModes": ["text/plain", "application/json"],
+      "outputModes": ["application/json"],
+      "examples": [
+        "When is the next drop of SuperShoe limited edition gold sneakers? I need a size 9 women.",
+        "I'm at work during the drop — can you buy the SuperShoe pair if I cap at $200?"
+      ],
+      "tags": ["llm"]
+    }
+  ]
+}

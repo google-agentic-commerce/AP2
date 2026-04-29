@@ -1,0 +1,294 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ap2-protocol.org/schemas/payment_mandate_open.json",
+  "title": "Open Payment Mandate",
+  "description": "Agreement between a user and an agent (or chain of agents) to authorize future payment actions.",
+  "type": "object",
+  "required": [
+    "vct",
+    "constraints",
+    "cnf"
+  ],
+  "properties": {
+    "vct": {
+      "type": "string",
+      "description": "Verifiable Credential Type claim as defined in SD-JWT. MUST be 'mandate.payment.open'.",
+      "const": "mandate.payment.open.1",
+      "default": "mandate.payment.open.1"
+    },
+    "constraints": {
+      "type": "array",
+      "description": "Array of constraints that the future checkout action must abide by.",
+      "items": {
+        "oneOf": [
+          {
+            "$ref": "#/$defs/agent_recurrence"
+          },
+          {
+            "$ref": "#/$defs/allowed_payees"
+          },
+          {
+            "$ref": "#/$defs/allowed_payment_instruments"
+          },
+          {
+            "$ref": "#/$defs/allowed_pisps"
+          },
+          {
+            "$ref": "#/$defs/amount_range"
+          },
+          {
+            "$ref": "#/$defs/budget"
+          },
+          {
+            "$ref": "#/$defs/execution_date"
+          },
+          {
+            "$ref": "#/$defs/payment_reference"
+          }
+        ]
+      },
+      "contains": {
+        "$ref": "#/$defs/payment_reference"
+      }
+    },
+    "cnf": {
+      "type": "object",
+      "description": "Confirmation claim as defined in RFC 7800 section 3.1. Used for key binding."
+    },
+    "payee": {
+      "description": "The merchant receiving the payment.",
+      "$ref": "types/merchant.json"
+    },
+    "payment_amount": {
+      "description": "Transaction amount object containing currency (ISO 4217 code, e.g., \"USD\") and amount (integer minor units per ISO 4217, e.g., 27999 = $279.99). Pre-set by the user at time of mandate creation.",
+      "$ref": "types/amount.json"
+    },
+    "payment_instrument": {
+      "description": "The payment instrument used.",
+      "$ref": "types/payment_instrument.json"
+    },
+    "pisp": {
+      "description": "The Payment Initiation Service Provider.",
+      "$ref": "types/pisp.json"
+    },
+    "execution_date": {
+      "type": "string",
+      "description": "ISO8601 date of execution of payment. When absent indicates immediate execution."
+    },
+    "risk_data": {
+      "type": "object",
+      "description": "An map of relevant risk signals collected by the trusted surface at time of mandate creation."
+    },
+    "iat": {
+      "type": "integer",
+      "description": "The creation timestamp as a Unix epoch."
+    },
+    "exp": {
+      "type": "integer",
+      "description": "The expiration timestamp as a Unix epoch."
+    }
+  },
+  "$defs": {
+    "allowed_payees": {
+      "type": "object",
+      "description": "Defines the set of possible payees.",
+      "required": [
+        "type",
+        "allowed"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Constraint type identifier.",
+          "const": "payment.allowed_payees",
+          "default": "payment.allowed_payees"
+        },
+        "allowed": {
+          "type": "array",
+          "description": "Array of allowed Merchant objects.",
+          "items": {
+            "$ref": "types/merchant.json"
+          },
+          "x-selectively-disclosable-array": true
+        }
+      }
+    },
+    "amount_range": {
+      "type": "object",
+      "description": "Defines the valid range for the payment amount",
+      "required": [
+        "type",
+        "currency",
+        "max"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Constraint type identifier.",
+          "const": "payment.amount_range",
+          "default": "payment.amount_range"
+        },
+        "currency": {
+          "type": "string",
+          "description": "ISO4217 Alpha-3 currency code."
+        },
+        "max": {
+          "type": "integer",
+          "description": "Maximum allowed amount in minor (cents) unit of currency."
+        },
+        "min": {
+          "type": "integer",
+          "description": "Minimal amount in minor (cents) unit of currency. If absent, there is no minimum."
+        }
+      }
+    },
+    "payment_reference": {
+      "type": "object",
+      "description": "Constrains the payment to a specific checkout reference.",
+      "required": [
+        "type",
+        "conditional_transaction_id"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Constraint type identifier.",
+          "const": "payment.reference",
+          "default": "payment.reference"
+        },
+        "conditional_transaction_id": {
+          "type": "string",
+          "description": "Digest of the associated Open Checkout Mandate."
+        }
+      }
+    },
+    "agent_recurrence": {
+      "type": "object",
+      "description": "Provides conditions for the agent to reuse this Payment Mandate multiple times.",
+      "required": [
+        "type",
+        "frequency"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Constraint type identifier.",
+          "const": "payment.agent_recurrence",
+          "default": "payment.agent_recurrence"
+        },
+        "frequency": {
+          "type": "string",
+          "description": "Frequency of allowed recurrences.",
+          "enum": [
+            "ON_DEMAND",
+            "DAILY",
+            "WEEKLY",
+            "BIWEEKLY",
+            "MONTHLY",
+            "QUARTERLY",
+            "ANNUALLY"
+          ]
+        },
+        "max_occurrences": {
+          "type": "integer",
+          "description": "Maximum number of allowed occurrences."
+        }
+      }
+    },
+    "allowed_payment_instruments": {
+      "type": "object",
+      "description": "Defines the set of possible payment instruments for this Payment Mandate.",
+      "required": [
+        "type",
+        "allowed"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Constraint type identifier.",
+          "const": "payment.allowed_payment_instruments",
+          "default": "payment.allowed_payment_instruments"
+        },
+        "allowed": {
+          "type": "array",
+          "description": "Array of allowed payment instruments.",
+          "items": {
+            "$ref": "types/payment_instrument.json"
+          },
+          "x-selectively-disclosable-array": true
+        }
+      }
+    },
+    "allowed_pisps": {
+      "type": "object",
+      "description": "Defines the set of Payment Initiation Service Providers (PISPs) authorized to facilitate the transaction.",
+      "required": [
+        "type",
+        "allowed"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Constraint type identifier.",
+          "const": "payment.allowed_pisps",
+          "default": "payment.allowed_pisps"
+        },
+        "allowed": {
+          "type": "array",
+          "description": "Array of allowed PISPs.",
+          "items": {
+            "$ref": "types/pisp.json"
+          }
+        }
+      }
+    },
+    "budget": {
+      "type": "object",
+      "description": "Defines the maximum total amount that can be spent when using the payment.agent_recurrence constraint.",
+      "required": [
+        "type",
+        "max",
+        "currency"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Constraint type identifier.",
+          "const": "payment.budget",
+          "default": "payment.budget"
+        },
+        "max": {
+          "type": "number",
+          "description": "Maximum amount for the budget."
+        },
+        "currency": {
+          "type": "string",
+          "description": "ISO4217 Alpha-3 defining the currency of the amount."
+        }
+      }
+    },
+    "execution_date": {
+      "type": "object",
+      "description": "Defines the valid time window for the payment execution.",
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Constraint type identifier.",
+          "const": "payment.execution_date",
+          "default": "payment.execution_date"
+        },
+        "not_before": {
+          "type": "string",
+          "description": "Earliest valid execution date."
+        },
+        "not_after": {
+          "type": "string",
+          "description": "Latest valid execution date."
+        }
+      }
+    }
+  }
+}

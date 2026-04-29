@@ -1,0 +1,58 @@
+.mcp-trace {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  border-radius: 7px;
+  margin-left: 4px;
+  transition: all 0.15s;
+
+  // Default (Greenish for Merchant MCP)
+  background: rgba(52, 211, 153, 0.08);
+  border: 1px solid rgba(52, 211, 153, 0.25);
+
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #34d399;
+    flex-shrink: 0;
+  }
+
+  .label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: #94a3b8;
+    letter-spacing: -0.01em;
+
+    .message {
+      margin-left: 4px;
+      opacity: 0.9;
+    }
+  }
+
+  // Modifiers
+  &.server-credential {
+    background: rgba(139, 92, 246, 0.08);
+    border-color: rgba(139, 92, 246, 0.25);
+    .status-dot {
+      background: #a78bfa;
+    }
+  }
+
+  &.server-shopping {
+    background: rgba(96, 165, 250, 0.08);
+    border-color: rgba(96, 165, 250, 0.25);
+    .status-dot {
+      background: #60a5fa;
+    }
+  }
+
+  &.server-merchant {
+    background: rgba(52, 211, 153, 0.08);
+    border-color: rgba(52, 211, 153, 0.25);
+    .status-dot {
+      background: #34d399;
+    }
+  }
+}

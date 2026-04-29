@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ap2-protocol.org/schemas/types/line_item.json",
+  "title": "LineItem",
+  "description": "UCP line item (dev.ucp.shopping 2026-04-08). Uses nested item object for product details.",
+  "type": "object",
+  "required": ["id", "item", "quantity", "totals"],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique line-item identifier."
+    },
+    "item": {
+      "$ref": "item.json"
+    },
+    "quantity": {
+      "type": "integer",
+      "description": "Quantity of the item being purchased.",
+      "minimum": 1
+    },
+    "totals": {
+      "type": "array",
+      "description": "Per-line-item totals breakdown.",
+      "items": { "$ref": "total.json" }
+    },
+    "parent_id": {
+      "type": "string",
+      "description": "Parent line item identifier for nested structures."
+    }
+  }
+}

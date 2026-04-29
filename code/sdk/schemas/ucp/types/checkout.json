@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ap2-protocol.org/schemas/types/checkout.json",
+  "title": "Checkout",
+  "description": "UCP Checkout object (dev.ucp.shopping.checkout 2026-04-08). The merchant field is an AP2 extension for mandate binding.",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "id",
+    "line_items",
+    "status",
+    "currency",
+    "totals",
+    "links"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier of the checkout session."
+    },
+    "merchant": {
+      "description": "The merchant associated with the checkout.",
+      "$ref": "merchant.json"
+    },
+    "line_items": {
+      "type": "array",
+      "description": "Array of line items in the checkout.",
+      "items": {
+        "$ref": "line_item.json"
+      }
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "incomplete",
+        "requires_escalation",
+        "ready_for_complete",
+        "complete_in_progress",
+        "completed",
+        "canceled"
+      ],
+      "description": "Checkout state indicating the current phase."
+    },
+    "currency": {
+      "type": "string",
+      "description": "ISO-4217 3-letter alphabetic currency code."
+    },
+    "totals": {
+      "type": "array",
+      "description": "Pricing breakdown. Must contain exactly one subtotal and one total entry.",
+      "items": {
+        "$ref": "total.json"
+      }
+    },
+    "links": {
+      "type": "array",
+      "items": {
+        "$ref": "link.json"
+      }
+    },
+    "buyer": {
+      "$ref": "buyer.json",
+      "description": "Representation of the buyer."
+    },
+    "messages": {
+      "type": "array",
+      "items": {
+        "$ref": "message.json"
+      },
+      "description": "List of messages with error and info about the checkout session state."
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "continue_url": {
+      "type": "string",
+      "format": "uri"
+    }
+  }
+}

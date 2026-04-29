@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ap2-protocol.org/schemas/types/total.json",
+  "title": "Total",
+  "description": "A cost breakdown entry with a category, amount, and optional display text.",
+  "type": "object",
+  "required": ["type", "amount"],
+  "properties": {
+    "type": {
+      "type": "string",
+      "description": "Cost category: subtotal, discount, items_discount, fulfillment, tax, fee, total."
+    },
+    "display_text": {
+      "type": "string"
+    },
+    "amount": {
+      "type": "integer",
+      "description": "Signed amount in minor currency units."
+    }
+  }
+}

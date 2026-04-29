@@ -1,0 +1,150 @@
+site_name: AP2 - Agent Payments Protocol Documentation
+site_url: https://ap2-protocol.org/
+site_description: >
+  The Agent Payments Protocol (AP2) is a solution for enabling gen AI agents to make payments on
+  behalf of users, safely, securely, and in a decentralized and privacy protecting manner.
+  This protocol is a part of the broader ecosystem, which includes agentic protocols like A2A and
+  MCP, and encompasses the global nature of payments.
+site_author: Google
+site_dir: site
+edit_uri: edit/main/docs/
+
+extra:
+  analytics:
+    provider: google
+    property: G-KXMYBJWNQ7
+
+# Navigation
+nav:
+  - Home: index.md
+  - Executive Summary: overview.md
+  - Specification:
+      - Agent Payments Protocol: ap2/specification.md
+      - Agent Authorization Framework: ap2/agent_authorization.md
+      - Flows: ap2/flows.md
+      - Checkout Mandate: ap2/checkout_mandate.md
+      - Payment Mandate: ap2/payment_mandate.md
+      - Security and Privacy Considerations: ap2/security_and_privacy_considerations.md
+      - Implementation Considerations: ap2/implementation_considerations.md
+  - Glossary: glossary.md
+  - FAQ: faq.md
+  - Samples:
+      - Human Present Cards: https://github.com/google-agentic-commerce/AP2/tree/main/code/samples/python/scenarios/a2a/human-present/cards/
+      - Human Present x402: https://github.com/google-agentic-commerce/AP2/tree/main/code/samples/python/scenarios/a2a/human-present/x402/
+      - Human Not Present Cards: https://github.com/google-agentic-commerce/AP2/tree/main/code/samples/python/scenarios/a2a/human-not-present/cards/
+      - Human Not Present x402: https://github.com/google-agentic-commerce/AP2/tree/main/code/samples/python/scenarios/a2a/human-not-present/x402/
+      - Digital Payment Credentials Android: https://github.com/google-agentic-commerce/AP2/tree/main/code/samples/android/scenarios/digital-payment-credentials/run.sh
+
+# Repository
+repo_name: AP2
+repo_url: https://github.com/google-agentic-commerce/AP2
+
+# Copyright
+copyright: Copyright 2025 Google. Licensed under the Apache License, Version 2.0.
+
+# Custom CSS
+extra_css:
+  - stylesheets/custom.css
+
+# Configuration
+theme:
+  name: material
+  font:
+    text: Google Sans
+    code: Roboto Mono
+  logo: assets/ap2-logo-white.svg
+  favicon: assets/ap2-logo-black.svg
+  icon:
+    repo: fontawesome/brands/github
+    view: material/pencil-box-multiple
+    admonition:
+      note: fontawesome/solid/note-sticky
+      abstract: fontawesome/solid/book
+      info: fontawesome/solid/circle-info
+      tip: fontawesome/solid/bullhorn
+      success: fontawesome/solid/check
+      question: fontawesome/solid/circle-question
+      warning: fontawesome/solid/triangle-exclamation
+      failure: fontawesome/solid/bomb
+      danger: fontawesome/solid/skull
+      bug: fontawesome/solid/robot
+      example: fontawesome/solid/flask
+      quote: fontawesome/solid/quote-left
+  palette:
+    - scheme: default
+      primary: pink
+      accent: white
+  features:
+    - announce.dismiss
+    - content.action.view
+    - content.code.annotate
+    - content.code.copy
+    - content.code.select
+    - content.tabs.link
+    - navigation.footer
+    - navigation.indexes
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.path
+    - navigation.top
+    - navigation.tracking
+    - toc.follow
+    - versioning:
+        provider: mike
+
+# Extensions
+markdown_extensions:
+  - meta
+  - footnotes
+  - admonition
+  - attr_list
+  - md_in_html
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets:
+      url_download: true
+      dedent_subsections: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - toc:
+      permalink: true
+
+# Plugins
+plugins:
+  - search
+  - macros:
+      module_name: docs/create_table
+  - llmstxt:
+      full_output: llms-full.txt
+      sections:
+        "Introduction":
+          - index.md
+        "Specification":
+          - overview.md
+          - ap2/specification.md
+          - ap2/flows.md
+          - ap2/checkout_mandate.md
+          - ap2/payment_mandate.md
+          - ap2/security_and_privacy_considerations.md
+          - ap2/implementation_considerations.md
+          - ap2/agent_authorization.md
+        "Additional Resources":
+          - glossary.md
+          - faq.md

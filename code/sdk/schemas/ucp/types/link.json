@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ap2-protocol.org/schemas/types/link.json",
+  "title": "Link",
+  "description": "A typed URL reference for legal compliance or informational links.",
+  "type": "object",
+  "required": ["type", "url"],
+  "properties": {
+    "type": { "type": "string" },
+    "url": { "type": "string", "format": "uri" },
+    "title": { "type": "string" }
+  }
+}

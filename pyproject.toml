@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ap2"
+version = "0.1"
+description = "Agent Payments Protocol"
+dependencies = [
+    "cryptography==46.0.5",
+    "jwcrypto==1.5.6",
+    "pydantic==2.12.5",
+    "sd-jwt==0.10.4",
+    "pytest==9.0.2",
+    "py"
+]
+keywords = ["payments", "a2a", "ap2"]
+license = { text = "Apache-2.0" }
+readme = "README.md"
+requires-python = ">=3.11"
+
+[tool.setuptools.packages.find]
+where = ["code/sdk/python"]
+
+[tool.pytest.ini_options]
+python_files = ["*_tests.py"]
+
+[tool.uv.workspace]
+members = ["code/samples/python"]

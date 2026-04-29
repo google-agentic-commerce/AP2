@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ap2-protocol.org/schemas/open_checkout_mandate",
+  "title": "Open Checkout Mandate",
+  "description": "Agreement between a user and an agent (or chain of agents) to authorize future checkout actions.",
+  "type": "object",
+  "required": [
+    "vct",
+    "constraints",
+    "cnf"
+  ],
+  "properties": {
+    "vct": {
+      "type": "string",
+      "description": "Verifiable Credential Type claim as defined in SD-JWT. MUST be 'mandate.checkout.open'.",
+      "const": "mandate.checkout.open.1",
+      "default": "mandate.checkout.open.1"
+    },
+    "constraints": {
+      "type": "array",
+      "description": "Array of constraints that the future checkout action must abide by.",
+      "items": {
+        "anyOf": [
+          {
+            "$ref": "#/$defs/allowed_merchants"
+          },
+          {
+            "$ref": "#/$defs/line_items"
+          }
+        ]
+      },
+      "contains": {
+        "$ref": "#/$defs/line_items"
+      }
+    },
+    "cnf": {
+      "type": "object",
+      "description": "Confirmation claim defined in RFC 7800 section 3.1. Used for key binding."
+    },
+    "iat": {
+      "type": "integer",
+      "description": "The creation timestamp as a Unix epoch."
+    },
+    "exp": {
+      "type": "integer",
+      "description": "The expiration timestamp as a Unix epoch."
+    }
+  },
+  "$defs": {
+    "allowed_merchants": {
+      "type": "object",
+      "description": "Defines the set of possible merchants for this Checkout Mandate.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Constraint type identifier.",
+          "const": "checkout.allowed_merchants",
+          "default": "checkout.allowed_merchants"
+        },
+        "allowed": {
+          "type": "array",
+          "description": "Array of allowed Merchant objects.",
+          "items": {
+            "$ref": "types/merchant.json"
+          },
+          "x-selectively-disclosable-array": true
+        }
+      },
+      "required": [
+        "type",
+        "allowed"
+      ]
+    },
+    "line_items": {
+      "type": "object",
+      "description": "Defines the sets of line items that are to be present in the Checkout Mandate.",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Constraint type identifier.",
+          "const": "checkout.line_items",
+          "default": "checkout.line_items"
+        },
+        "items": {
+          "type": "array",
+          "description": "Array of line item requirements.",
+          "items": {
+            "$ref": "#/$defs/line_item_requirements"
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "type",
+        "items"
+      ]
+    },
+    "line_item_requirements": {
+      "type": "object",
+      "description": "Defines a line item that must be present in the Checkout Mandate.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Identifier for the line item requirement."
+        },
+        "acceptable_items": {
+          "type": "array",
+          "description": "Defines a set of line items that are acceptable for this line item requirement. One and only one must be present in the Checkout Mandate.",
+          "items": {
+            "$ref": "#/$defs/item"
+          },
+          "x-selectively-disclosable-array": true
+        },
+        "quantity": {
+          "type": "integer",
+          "description": "Required quantity of matching items.",
+          "exclusiveMinimum": 0
+        }
+      },
+      "required": [
+        "id",
+        "acceptable_items",
+        "quantity"
+      ]
+    },
+    "item": {
+      "type": "object",
+      "description": "Defines an item that may be present in the Checkout Mandate.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the line item. Will often be the SKU."
+        },
+        "title": {
+          "type": "string",
+          "description": "Title of the item."
+        }
+      },
+      "required": [
+        "id",
+        "title"
+      ]
+    }
+  }
+}

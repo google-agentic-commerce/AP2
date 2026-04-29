@@ -29,6 +29,10 @@ type IntentMandate struct {
 	SKUs                         []string `json:"skus,omitempty"`
 	RequiresRefundability        *bool    `json:"requires_refundability,omitempty"`
 	IntentExpiry                 string   `json:"intent_expiry"`
+	// Budget is the maximum total amount the agent is authorized to spend when
+	// fulfilling this intent. If set, the agent must not place orders whose
+	// total exceeds this value.
+	Budget *PaymentCurrencyAmount `json:"budget,omitempty"`
 }
 
 func NewIntentMandate() *IntentMandate {

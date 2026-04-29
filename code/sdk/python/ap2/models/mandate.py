@@ -17,6 +17,7 @@
 from datetime import UTC, datetime
 
 from ap2.models.payment_request import (
+    PaymentCurrencyAmount,
     PaymentItem,
     PaymentRequest,
     PaymentResponse,
@@ -73,6 +74,14 @@ class IntentMandate(BaseModel):
     intent_expiry: str = Field(
         ...,
         description='When the intent mandate expires, in ISO 8601 format.',
+    )
+    budget: PaymentCurrencyAmount | None = Field(
+        None,
+        description=(
+            'The maximum total amount the agent is authorized to spend when'
+            ' fulfilling this intent. If set, the agent must not place orders'
+            ' whose total exceeds this value.'
+        ),
     )
 
 

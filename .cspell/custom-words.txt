@@ -7,6 +7,8 @@ agentic
 Agentic
 agenticpayments
 Algorand
+ALGOVOI
+AlgoVoi
 androidx
 Applebot
 appname

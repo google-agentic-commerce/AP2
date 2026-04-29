@@ -1,11 +1,11 @@
-import './UserActionCard.scss';
+import "./UserActionCard.scss";
 
 interface Props {
   label: string;
   sublabel?: string;
 }
 
-export function UserActionCard({label, sublabel}: Props) {
+export function UserActionCard({ label, sublabel }: Props) {
   return (
     <div className="user-action-container">
       <div className="action-badge">

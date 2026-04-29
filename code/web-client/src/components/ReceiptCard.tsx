@@ -1,27 +1,27 @@
-import type { PurchaseComplete } from '../types';
-import './ReceiptCard.scss';
+import type { PurchaseComplete } from "../types";
+import "./ReceiptCard.scss";
 
 function getAmountCharge(
-  closedMandateContent?: Record<string, unknown>,
+  closedMandateContent?: Record<string, unknown>
 ): number {
   const amountObj = closedMandateContent?.payment_amount as
     | { amount?: number }
     | undefined;
   const amountValue = amountObj?.amount;
-  return typeof amountValue === 'number' ? amountValue / 100 : 0;
+  return typeof amountValue === "number" ? amountValue / 100 : 0;
 }
 
 function getPaymentMethod(
-  closedMandateContent?: Record<string, unknown>,
+  closedMandateContent?: Record<string, unknown>
 ): string {
   const instrument = closedMandateContent?.payment_instrument as
     | Record<string, unknown>
     | undefined;
-  if (instrument?.description && typeof instrument.description === 'string')
+  if (instrument?.description && typeof instrument.description === "string")
     return instrument.description;
-  if (instrument?.type && typeof instrument.type === 'string')
+  if (instrument?.type && typeof instrument.type === "string")
     return instrument.type;
-  return 'Card';
+  return "Card";
 }
 
 interface Props {
@@ -35,7 +35,7 @@ export function ReceiptCard({ purchase, itemName }: Props) {
     | undefined;
   const amount = getAmountCharge(closedMandateContent);
   const paymentMethod = getPaymentMethod(closedMandateContent);
-  const displayName = itemName ?? 'Order';
+  const displayName = itemName ?? "Order";
 
   return (
     <div className="msg-agent receipt-card-container">
@@ -79,12 +79,12 @@ export function ReceiptCard({ purchase, itemName }: Props) {
             <div className="chain-label">Transaction chain</div>
             {[
               {
-                label: 'Merchant MCP',
-                steps: 'check_product → cart → checkout → complete',
+                label: "Merchant MCP",
+                steps: "check_product → cart → checkout → complete",
               },
               {
-                label: 'Credential Provider MCP',
-                steps: 'issue_payment_credential (verify + issue)',
+                label: "Credential Provider MCP",
+                steps: "issue_payment_credential (verify + issue)",
               },
             ].map((s) => (
               <div key={s.label} className="chain-row">
@@ -95,13 +95,13 @@ export function ReceiptCard({ purchase, itemName }: Props) {
           </div>
 
           <div className="timestamp">
-            {new Date().toLocaleString('en-US', {
-              month: 'short',
-              day: 'numeric',
-              year: 'numeric',
-              hour: '2-digit',
-              minute: '2-digit',
-              timeZoneName: 'short',
+            {new Date().toLocaleString("en-US", {
+              month: "short",
+              day: "numeric",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+              timeZoneName: "short",
             })}
           </div>
         </div>

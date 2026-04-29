@@ -1,31 +1,35 @@
-import {useEffect, useRef, useState} from 'react';
-import './App.scss';
-import {MandateViewer} from './components/MandateViewer';
-import {MessageRenderer} from './components/MessageRenderer';
-import {TypingIndicator} from './components/TypingIndicator';
-import {DEFAULT_CHAT_STARTER_MESSAGE} from './config';
-import {type ChatState, useChat} from './hooks/useChat';
+import { useEffect, useRef, useState } from "react";
+import "./App.scss";
+import { MandateViewer } from "./components/MandateViewer";
+import { MessageRenderer } from "./components/MessageRenderer";
+import { TypingIndicator } from "./components/TypingIndicator";
+import { DEFAULT_CHAT_STARTER_MESSAGE } from "./config";
+import { type ChatState, useChat } from "./hooks/useChat";
 
 // ==========================================
 // SUB-COMPONENTS
 // ==========================================
 
-const AppHeader = ({usedServers}: {usedServers: Set<string>}) => {
+const AppHeader = ({ usedServers }: { usedServers: Set<string> }) => {
   const servers = [
     {
-      label: 'Shopping Agent',
-      key: 'Shopping Agent',
-      className: 'server-shopping',
+      label: "Shopping Agent",
+      key: "Shopping Agent",
+      className: "server-shopping",
     },
-    {label: 'Merchant MCP', key: 'Merchant MCP', className: 'server-merchant'},
     {
-      label: 'Credential Provider MCP',
-      key: 'Credential Provider MCP',
-      className: 'server-credential',
+      label: "Merchant MCP",
+      key: "Merchant MCP",
+      className: "server-merchant",
+    },
+    {
+      label: "Credential Provider MCP",
+      key: "Credential Provider MCP",
+      className: "server-credential",
     },
   ];
 
-  const flow = (import.meta as {env?: {VITE_FLOW?: string}}).env?.VITE_FLOW;
+  const flow = (import.meta as { env?: { VITE_FLOW?: string } }).env?.VITE_FLOW;
 
   return (
     <div className="app-header">
@@ -35,8 +39,8 @@ const AppHeader = ({usedServers}: {usedServers: Set<string>}) => {
       <div className="title-container">
         <div className="title">
           Delegated Shopper
-          {flow === 'x402' && <span className="flow-badge x402">x402</span>}
-          {flow === 'card' && <span className="flow-badge card">Card</span>}
+          {flow === "x402" && <span className="flow-badge x402">x402</span>}
+          {flow === "card" && <span className="flow-badge card">Card</span>}
         </div>
         <div className="subtitle">
           A2A · Human-not-present · Merchant MCP · Credential Provider MCP
@@ -46,7 +50,7 @@ const AppHeader = ({usedServers}: {usedServers: Set<string>}) => {
         {servers.map((b) => (
           <div
             key={b.key}
-            className={`server-badge ${usedServers.has(b.key) ? 'active' : ''} ${b.className}`}>
+            className={`server-badge ${usedServers.has(b.key) ? "active" : ""} ${b.className}`}>
             <div className="dot" />
             <span className="label">{b.label}</span>
           </div>
@@ -56,7 +60,7 @@ const AppHeader = ({usedServers}: {usedServers: Set<string>}) => {
   );
 };
 
-type TabKey = 'chat' | 'mandates';
+type TabKey = "chat" | "mandates";
 
 const TabBar = ({
   activeTab,
@@ -70,14 +74,14 @@ const TabBar = ({
   <div className="tab-bar">
     <button
       type="button"
-      className={`tab ${activeTab === 'chat' ? 'active' : ''}`}
-      onClick={() => onChange('chat')}>
+      className={`tab ${activeTab === "chat" ? "active" : ""}`}
+      onClick={() => onChange("chat")}>
       Chat
     </button>
     <button
       type="button"
-      className={`tab ${activeTab === 'mandates' ? 'active' : ''}`}
-      onClick={() => onChange('mandates')}>
+      className={`tab ${activeTab === "mandates" ? "active" : ""}`}
+      onClick={() => onChange("mandates")}>
       Mandates
       {mandateCount > 0 && <span className="tab-count">{mandateCount}</span>}
     </button>
@@ -95,10 +99,10 @@ const EmptyChatState = () => (
       via Merchant MCP + Credential Provider MCP
     </div>
     <p className="suggestion">
-      Try:{' '}
+      Try:{" "}
       <em>
-        &quot;When is the SuperShoe limited edition Gold sneaker drop? I need size 9
-        women&apos;s.&quot;
+        &quot;When is the SuperShoe limited edition Gold sneaker drop? I need
+        size 9 women&apos;s.&quot;
       </em>
     </p>
     <p className="suggestion-enter-hint">
@@ -109,18 +113,23 @@ const EmptyChatState = () => (
 
 type ChatInputProps = Pick<
   ChatState,
-  'handleSend' | 'input' | 'loading' | 'setInput'
+  "handleSend" | "input" | "loading" | "setInput"
 >;
 
-const ChatInput = ({input, setInput, handleSend, loading}: ChatInputProps) => (
+const ChatInput = ({
+  input,
+  setInput,
+  handleSend,
+  loading,
+}: ChatInputProps) => (
   <div className="input-area">
     <input
       value={input}
       onChange={(e) => setInput(e.target.value)}
       onKeyDown={(e) =>
-        e.key === 'Enter' &&
+        e.key === "Enter" &&
         !loading &&
-        handleSend({fallbackIfEmpty: DEFAULT_CHAT_STARTER_MESSAGE})
+        handleSend({ fallbackIfEmpty: DEFAULT_CHAT_STARTER_MESSAGE })
       }
       placeholder="e.g. When is the SuperShoe limited edition Gold sneaker drop? I need size 9 women's."
       disabled={loading}
@@ -129,7 +138,7 @@ const ChatInput = ({input, setInput, handleSend, loading}: ChatInputProps) => (
     <button
       type="button"
       onClick={() =>
-        handleSend({fallbackIfEmpty: DEFAULT_CHAT_STARTER_MESSAGE})
+        handleSend({ fallbackIfEmpty: DEFAULT_CHAT_STARTER_MESSAGE })
       }
       disabled={loading}
       className="send-button">
@@ -144,13 +153,13 @@ const ChatInput = ({input, setInput, handleSend, loading}: ChatInputProps) => (
 
 export default function App() {
   const chatState: ChatState = useChat();
-  const {messages} = chatState;
-  const [activeTab, setActiveTab] = useState<TabKey>('chat');
+  const { messages } = chatState;
+  const [activeTab, setActiveTab] = useState<TabKey>("chat");
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (activeTab === 'chat' && messages.length > 0) {
-      bottomRef.current?.scrollIntoView({behavior: 'smooth'});
+    if (activeTab === "chat" && messages.length > 0) {
+      bottomRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages, activeTab]);
 
@@ -163,7 +172,7 @@ export default function App() {
         mandateCount={chatState.mandates.length}
       />
 
-      {activeTab === 'chat' ? (
+      {activeTab === "chat" ? (
         <>
           <div className="messages-container">
             {chatState.messages.length > 0 ? (

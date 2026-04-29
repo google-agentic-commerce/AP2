@@ -25,9 +25,9 @@ import type {
   MandatesSigned,
   PurchaseComplete,
   ToolCallArtifact,
-} from '../types';
+} from "../types";
 
-type Draft = Omit<MandateEntry, 'id'>;
+type Draft = Omit<MandateEntry, "id">;
 
 /** Stable string key for dedup (same token OR same decoded JSON object). */
 function entryKey(d: Draft): string {
@@ -36,13 +36,13 @@ function entryKey(d: Draft): string {
     // For tool-call-derived entries, identify by stable discriminators so we
     // don't emit duplicates if the stream replays the same tool invocation.
     const p = d.rawPayload;
-    if (typeof p.checkout_hash === 'string') {
+    if (typeof p.checkout_hash === "string") {
       return `${d.kind}:hash:${p.checkout_hash}`;
     }
-    if (typeof p.transaction_id === 'string') {
+    if (typeof p.transaction_id === "string") {
       return `${d.kind}:tx:${p.transaction_id}`;
     }
-    if (typeof p.mandate_chain_id === 'string' && typeof p.aud === 'string') {
+    if (typeof p.mandate_chain_id === "string" && typeof p.aud === "string") {
       return `${d.kind}:${p.aud}:${p.mandate_chain_id}`;
     }
     return `${d.kind}:payload:${JSON.stringify(p)}`;
@@ -56,10 +56,13 @@ function purchaseEntries(msg: ChatMessage, pc: PurchaseComplete): Draft[] {
 
   // Closed payment mandate -- token form.
   const closedPaymentToken = extra.closed_payment_mandate;
-  if (typeof closedPaymentToken === 'string' && closedPaymentToken.includes('~')) {
+  if (
+    typeof closedPaymentToken === "string" &&
+    closedPaymentToken.includes("~")
+  ) {
     out.push({
-      kind: 'closed_payment_mandate',
-      title: 'Closed Payment Mandate',
+      kind: "closed_payment_mandate",
+      title: "Closed Payment Mandate",
       subtitle: pc.order_id,
       timestamp: msg.timestamp,
       rawToken: closedPaymentToken,
@@ -68,10 +71,13 @@ function purchaseEntries(msg: ChatMessage, pc: PurchaseComplete): Draft[] {
 
   // Closed checkout mandate -- token form.
   const closedCheckoutToken = extra.closed_checkout_mandate;
-  if (typeof closedCheckoutToken === 'string' && closedCheckoutToken.includes('~')) {
+  if (
+    typeof closedCheckoutToken === "string" &&
+    closedCheckoutToken.includes("~")
+  ) {
     out.push({
-      kind: 'closed_checkout_mandate',
-      title: 'Closed Checkout Mandate',
+      kind: "closed_checkout_mandate",
+      title: "Closed Checkout Mandate",
       subtitle: pc.order_id,
       timestamp: msg.timestamp,
       rawToken: closedCheckoutToken,
@@ -80,10 +86,10 @@ function purchaseEntries(msg: ChatMessage, pc: PurchaseComplete): Draft[] {
 
   // Checkout JWT (merchant-signed, not an SD-JWT).
   const checkoutJwt = extra.checkout_jwt;
-  if (typeof checkoutJwt === 'string' && checkoutJwt.split('.').length === 3) {
+  if (typeof checkoutJwt === "string" && checkoutJwt.split(".").length === 3) {
     out.push({
-      kind: 'checkout_jwt',
-      title: 'Checkout JWT',
+      kind: "checkout_jwt",
+      title: "Checkout JWT",
       subtitle: pc.order_id,
       timestamp: msg.timestamp,
       rawToken: checkoutJwt,
@@ -102,70 +108,74 @@ function toolCallEntries(_msg: ChatMessage, _tc: ToolCallArtifact): Draft[] {
 export function deriveMandateEntries(messages: ChatMessage[]): MandateEntry[] {
   const drafts: Draft[] = [];
   for (const msg of messages) {
-    const data = msg.artifactData as {type?: string} | undefined;
+    const data = msg.artifactData as { type?: string } | undefined;
     if (!data) continue;
 
     switch (data.type) {
-      case 'mandates_signed': {
+      case "mandates_signed": {
         const ms = data as unknown as MandatesSigned;
         if (ms.open_checkout_mandate) {
           drafts.push({
-            kind: 'open_checkout_mandate',
-            title: 'Open Checkout Mandate',
+            kind: "open_checkout_mandate",
+            title: "Open Checkout Mandate",
             timestamp: msg.timestamp,
             rawToken: ms.open_checkout_mandate,
           });
         }
         if (ms.open_payment_mandate) {
           drafts.push({
-            kind: 'open_payment_mandate',
-            title: 'Open Payment Mandate',
+            kind: "open_payment_mandate",
+            title: "Open Payment Mandate",
             timestamp: msg.timestamp,
             rawToken: ms.open_payment_mandate,
           });
         }
         break;
       }
-      case 'purchase_complete':
-        drafts.push(...purchaseEntries(msg, data as unknown as PurchaseComplete));
+      case "purchase_complete":
+        drafts.push(
+          ...purchaseEntries(msg, data as unknown as PurchaseComplete)
+        );
         break;
-      case 'tool_call':
-        drafts.push(...toolCallEntries(msg, data as unknown as ToolCallArtifact));
+      case "tool_call":
+        drafts.push(
+          ...toolCallEntries(msg, data as unknown as ToolCallArtifact)
+        );
         break;
-      case 'mandate_chains_fetched': {
+      case "mandate_chains_fetched": {
         const mcf = data as unknown as MandateChainsFetched;
         if (mcf.payment_mandate_chain) {
           drafts.push({
-            kind: 'mandate_chain',
-            title: 'Payment Mandate Chain',
+            kind: "mandate_chain",
+            title: "Payment Mandate Chain",
             timestamp: msg.timestamp,
             rawToken: mcf.payment_mandate_chain,
           });
 
           // Extract closed payment mandate
-          const parts = mcf.payment_mandate_chain.split('~~');
+          const parts = mcf.payment_mandate_chain.split("~~");
           const closedToken = parts[parts.length - 1];
           drafts.push({
-            kind: 'closed_payment_mandate',
-            title: 'Closed Payment Mandate',
+            kind: "closed_payment_mandate",
+            title: "Closed Payment Mandate",
             timestamp: msg.timestamp,
             rawToken: closedToken,
           });
         }
         if (mcf.checkout_mandate_chain) {
           drafts.push({
-            kind: 'mandate_chain',
-            title: 'Checkout Mandate Chain',
+            kind: "mandate_chain",
+            title: "Checkout Mandate Chain",
             timestamp: msg.timestamp,
             rawToken: mcf.checkout_mandate_chain,
           });
 
           // Extract closed checkout mandate
-          const parts = mcf.checkout_mandate_chain.split('~~');
+          const parts = mcf.checkout_mandate_chain.split("~~");
           const closedToken = parts[parts.length - 1];
           drafts.push({
-            kind: 'closed_checkout_mandate',
-            title: 'Closed Checkout Mandate',
+            kind: "closed_checkout_mandate",
+            title: "Closed Checkout Mandate",
             timestamp: msg.timestamp,
             rawToken: closedToken,
           });
@@ -183,7 +193,7 @@ export function deriveMandateEntries(messages: ChatMessage[]): MandateEntry[] {
     const key = entryKey(d);
     if (seen.has(key)) continue;
     seen.add(key);
-    result.push({...d, id: `mandate_${result.length}_${d.timestamp}`});
+    result.push({ ...d, id: `mandate_${result.length}_${d.timestamp}` });
   }
   return result;
 }

@@ -175,9 +175,9 @@ export default function App() {
       {activeTab === "chat" ? (
         <>
           <div className="messages-container">
-            {chatState.messages.length > 0 ? (
+            {messages.length > 0 ? (
               <div className="messages-list">
-                {chatState.messages.map((msg) => (
+                {messages.map((msg) => (
                   <MessageRenderer
                     key={msg.id}
                     msg={msg}

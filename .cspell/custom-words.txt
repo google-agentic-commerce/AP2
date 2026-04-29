@@ -29,14 +29,14 @@ Crossmint
 cryptographical
 CYGPATTERN
 Dafiti
-disclosable
-Disclosable
 davecgh
 dcql
 Dcql
 DCQL
 deviceauth
 Dfile
+disclosable
+Disclosable
 dmypy
 Doku
 Dorg
@@ -58,6 +58,7 @@ gemini
 genai
 generativeai
 genproto
+gitleaks
 glog
 gofmt
 gopkg

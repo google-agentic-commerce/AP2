@@ -43,6 +43,7 @@ export function ReceiptCard({ purchase, itemName }: Props) {
         <div className="success-header">
           <div className="success-badge">
             <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <title>Purchase confirmed</title>
               <path
                 d="M4 9l3.5 3.5 6.5-7"
                 stroke="white"

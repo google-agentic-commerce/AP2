@@ -149,7 +149,7 @@ export default function App() {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (activeTab === 'chat') {
+    if (activeTab === 'chat' && messages.length > 0) {
       bottomRef.current?.scrollIntoView({behavior: 'smooth'});
     }
   }, [messages, activeTab]);

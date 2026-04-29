@@ -11,6 +11,7 @@ export function UserActionCard({label, sublabel}: Props) {
       <div className="action-badge">
         <div className="check-icon">
           <svg width="8" height="8" viewBox="0 0 8 8">
+            <title>Action confirmed</title>
             <path
               d="M1.5 4l2 2 3-3"
               stroke="white"

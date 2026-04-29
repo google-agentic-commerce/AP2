@@ -21,9 +21,9 @@ function ItemRow({
       className={`item-card ${onClick ? "clickable" : ""} ${selected ? "selected" : ""}`}
       type="button"
       onClick={onClick}>
-      <div className="row-content">
+      <span className="row-content">
         {selected && (
-          <div className="selected-icon">
+          <span className="selected-icon">
             <svg width="8" height="8" viewBox="0 0 8 8">
               <title>Selected</title>
               <path
@@ -34,20 +34,20 @@ function ItemRow({
                 strokeLinecap="round"
               />
             </svg>
-          </div>
+          </span>
         )}
-        {!selected && <div className="unselected-circle" />}
-        <div className="item-details">
-          <div className="item-name">{item.name}</div>
-          <div className="item-id">{item.item_id}</div>
-        </div>
-      </div>
-      <div className="price-wrapper">
-        <div className="item-price">${item.price.toFixed(2)}</div>
+        {!selected && <span className="unselected-circle" />}
+        <span className="item-details">
+          <span className="item-name">{item.name}</span>
+          <span className="item-id">{item.item_id}</span>
+        </span>
+      </span>
+      <span className="price-wrapper">
+        <span className="item-price">${item.price.toFixed(2)}</span>
         {item.stock != null && (
-          <div className="item-stock">{item.stock} in stock</div>
+          <span className="item-stock">{item.stock} in stock</span>
         )}
-      </div>
+      </span>
     </button>
   );
 }

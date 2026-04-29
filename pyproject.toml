@@ -7,7 +7,7 @@ name = "ap2"
 version = "0.1"
 description = "Agent Payments Protocol"
 dependencies = [
-    "cryptography==46.0.5",
+    "cryptography==46.0.7",
     "jwcrypto==1.5.6",
     "pydantic==2.12.5",
     "sd-jwt==0.10.4",

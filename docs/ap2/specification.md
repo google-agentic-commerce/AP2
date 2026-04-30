@@ -100,7 +100,7 @@ not.
 ## Mandates
 
 Mandates are the core means that AP2 uses to authorize agents. See
-[Agent Authorization Framework][agent_authorization.md] for a description of
+[Agent Authorization Framework](agent_authorization.md) for a description of
 how this works in the general case.
 
 AP2 defines two

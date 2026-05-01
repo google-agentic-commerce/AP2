@@ -63,7 +63,7 @@ def evaluate_budget(
             f' got {new_amount.currency}'
         ]
 
-    budget_max_cents = int(budget.max_dollars * 100)
+    budget_max_cents = round(budget.max_dollars * 100)
     total = context.total_amount + new_amount.amount
 
     if total > budget_max_cents:
@@ -117,7 +117,7 @@ def demo_overspend() -> None:
     print()
 
     total = ctx_a.total_amount + ctx_b.total_amount
-    overspend = total - int(budget.max_dollars * 100)
+    overspend = total - round(budget.max_dollars * 100)
     print(f'Total spent: ${total / 100:.2f}')
     print(f'Budget:      ${budget.max_dollars:.2f}')
     print(f'Overspent:   ${overspend / 100:.2f}')

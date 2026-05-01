@@ -159,6 +159,17 @@ class AuthorizeResult:
     remaining: int | None = None
 
 
+@dataclass
+class BudgetState:
+    """Result of a query call."""
+
+    mandate_id: str
+    budget: int
+    spent: int
+    held: int
+    remaining: int
+
+
 class BudgetAuthority:
     """External budget authority with four verbs.
 
@@ -178,6 +189,7 @@ class BudgetAuthority:
         self._budgets: dict[str, int] = {}
         self._spent: dict[str, int] = {}
         self._holds: dict[str, Hold] = {}
+        self._held_by_mandate: dict[str, int] = {}
         self._keys: dict[str, str] = {}
 
     def register_mandate(
@@ -188,6 +200,7 @@ class BudgetAuthority:
         """Register a mandate with a budget limit."""
         self._budgets[mandate_id] = budget_cents
         self._spent.setdefault(mandate_id, 0)
+        self._held_by_mandate.setdefault(mandate_id, 0)
 
     def authorize(
         self,
@@ -222,11 +235,15 @@ class BudgetAuthority:
                 remaining=remaining,
             )
 
-        hold_id = f'hold_{uuid.uuid4().hex[:16]}'
+        hold_id = f'hold_{uuid.uuid4().hex}'
         self._holds[hold_id] = Hold(
             hold_id=hold_id,
             mandate_id=mandate_id,
             amount=amount_cents,
+        )
+        self._held_by_mandate[mandate_id] = (
+            self._held_by_mandate.get(mandate_id, 0)
+            + amount_cents
         )
         self._keys[idempotency_key] = hold_id
 
@@ -243,6 +260,7 @@ class BudgetAuthority:
             return False
         hold.status = HoldStatus.COMMITTED
         self._spent[hold.mandate_id] += hold.amount
+        self._held_by_mandate[hold.mandate_id] -= hold.amount
         return True
 
     def refund(self, hold_id: str) -> bool:
@@ -251,36 +269,27 @@ class BudgetAuthority:
         if not hold or hold.status != HoldStatus.HELD:
             return False
         hold.status = HoldStatus.REFUNDED
+        self._held_by_mandate[hold.mandate_id] -= hold.amount
         return True
 
-    def query(
-        self, mandate_id: str,
-    ) -> dict[str, int | str]:
+    def query(self, mandate_id: str) -> BudgetState:
         """Query budget state."""
         budget_max = self._budgets.get(mandate_id, 0)
         spent = self._spent.get(mandate_id, 0)
-        held = self._active_holds(mandate_id)
-        return {
-            'mandate_id': mandate_id,
-            'budget': budget_max,
-            'spent': spent,
-            'held': held,
-            'remaining': budget_max - spent - held,
-        }
+        held = self._held_by_mandate.get(mandate_id, 0)
+        return BudgetState(
+            mandate_id=mandate_id,
+            budget=budget_max,
+            spent=spent,
+            held=held,
+            remaining=budget_max - spent - held,
+        )
 
     def _remaining(self, mandate_id: str) -> int:
         budget = self._budgets.get(mandate_id, 0)
         spent = self._spent.get(mandate_id, 0)
-        held = self._active_holds(mandate_id)
+        held = self._held_by_mandate.get(mandate_id, 0)
         return budget - spent - held
-
-    def _active_holds(self, mandate_id: str) -> int:
-        return sum(
-            h.amount
-            for h in self._holds.values()
-            if h.mandate_id == mandate_id
-            and h.status == HoldStatus.HELD
-        )
 
 
 def demo_budget_authority() -> None:
@@ -338,10 +347,9 @@ def demo_budget_authority() -> None:
 
     state = authority.query(mandate_id)
     print('Final state:')
-    print(f'  Budget:    ${int(state["budget"]) / 100:.2f}')
-    print(f'  Spent:     ${int(state["spent"]) / 100:.2f}')
-    remaining = int(state['remaining']) / 100
-    print(f'  Remaining: ${remaining:.2f}')
+    print(f'  Budget:    ${state.budget / 100:.2f}')
+    print(f'  Spent:     ${state.spent / 100:.2f}')
+    print(f'  Remaining: ${state.remaining / 100:.2f}')
     print()
     print('Budget enforced across both merchants.')
 

@@ -47,3 +47,13 @@ jobs:
           VALIDATE_TRIVY: false
           VALIDATE_PYTHON_RUFF: false
           VALIDATE_PYTHON_RUFF_FORMAT: false
+          # The project uses Biome for TypeScript/TSX linting (BIOME_LINT above).
+          # Super-linter warns that running both Biome and ESLint on the same files
+          # causes conflicts; disable the ESLint-based TS/TSX linters so Biome is
+          # the single source of truth for TypeScript quality.
+          # ESLint false-positives also appear because:
+          #   - TSX: super-linter ESLint lacks node_modules so all imports fail
+          #   - TSX: react/react-in-jsx-scope is obsolete for React 17+ JSX transform
+          #   - TYPESCRIPT_ES: browser APIs (fetch, crypto) flagged as unsupported Node builtins
+          VALIDATE_TSX: false
+          VALIDATE_TYPESCRIPT_ES: false

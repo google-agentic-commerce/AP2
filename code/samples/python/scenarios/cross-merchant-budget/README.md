@@ -11,11 +11,11 @@ each merchant only sees its own transaction history. When an agent shops at
 multiple merchants under the same mandate, each merchant evaluates the budget
 independently:
 
-```
+```text
 Agent mandate: $100 budget
 
-Merchant A: BudgetEvaluator(total_amount=0, new_spend=60) → ✅ pass
-Merchant B: BudgetEvaluator(total_amount=0, new_spend=60) → ✅ pass
+Merchant A: BudgetEvaluator(total_amount=0, new_spend=60) → pass
+Merchant B: BudgetEvaluator(total_amount=0, new_spend=60) → pass
 
 Total spent: $120. Budget: $100. Overspent.
 ```
@@ -28,21 +28,21 @@ that feeds `total_amount` is local to each merchant.
 An external budget authority that both merchants call before accepting payment.
 The authority maintains a single ledger and exposes four verbs:
 
-| Verb | Purpose |
-|------|---------|
-| `authorize(mandate_id, amount, idempotency_key)` | Atomically check + hold |
-| `commit(hold_id)` | Confirm after successful payment |
-| `refund(hold_id)` | Release if payment fails |
-| `query(mandate_id)` | Check remaining budget |
+| Verb                                               | Purpose                          |
+| -------------------------------------------------- | -------------------------------- |
+| `authorize(mandate_id, amount, idempotency_key)`   | Atomically check + hold          |
+| `commit(hold_id)`                                  | Confirm after successful payment |
+| `refund(hold_id)`                                  | Release if payment fails         |
+| `query(mandate_id)`                                | Check remaining budget           |
 
 The `authorize` call is atomic: it decrements the budget and returns a hold in
 one operation. There is no separate "check remaining" call that could race.
 
-```
+```text
 Agent mandate: $100 budget
 
-Merchant A: authority.authorize(mandate, 60) → ✅ hold_1 (remaining: 40)
-Merchant B: authority.authorize(mandate, 60) → ❌ rejected (40 < 60)
+Merchant A: authority.authorize(mandate, 60) → hold_1 (remaining: 40)
+Merchant B: authority.authorize(mandate, 60) → rejected (40 < 60)
 
 Total spent: $60. Budget enforced.
 ```

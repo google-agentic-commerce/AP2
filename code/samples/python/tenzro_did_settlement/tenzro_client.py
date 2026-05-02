@@ -26,6 +26,7 @@ All methods are blocking ``requests`` calls. Errors raise
 from __future__ import annotations
 
 import os
+import threading
 from dataclasses import dataclass
 from typing import Any
 
@@ -81,6 +82,9 @@ class TenzroClient:
         self.timeout_secs = timeout_secs
         self._session = session or requests.Session()
         self._next_id = 1
+        # Guards ``_next_id`` so the same client can be shared across
+        # threads without two concurrent calls picking the same RPC id.
+        self._id_lock = threading.Lock()
 
     # ------------------------------------------------------------------
     # Low-level JSON-RPC helper
@@ -94,8 +98,9 @@ class TenzroClient:
         array element. We use the array form, matching the EVM-compat
         convention.
         """
-        rpc_id = self._next_id
-        self._next_id += 1
+        with self._id_lock:
+            rpc_id = self._next_id
+            self._next_id += 1
         body = {
             "jsonrpc": "2.0",
             "id": rpc_id,

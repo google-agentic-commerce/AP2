@@ -206,7 +206,7 @@ def build_payment_mandate(cart: CartMandate) -> PaymentMandate:
             request_id=cart.contents.payment_request.details.id,
             method_name=TENZRO_CHANNEL_PAYMENT_METHOD,
             details={
-                "channel_id": f"chan-{uuid.uuid4().hex[:8]}",
+                "channel_id": f"channel-{uuid.uuid4().hex[:8]}",
                 "payer_did": PRINCIPAL_DID,
                 "delegate_did": DELEGATE_DID,
             },
@@ -337,13 +337,15 @@ def local_validate_mandates(
     ip = intent_vdc["payload"]
     cp = cart_vdc["payload"]
     results: list[tuple[str, bool, str]] = []
+    # Capture once so all expiry checks observe the same instant.
+    now = datetime.now(UTC)
 
     # 1. AP2 IntentMandate constraints
     intent_ok = (
         cp["total_amount"] <= ip["max_amount"]
         and ip["agent_did"] == cp["agent_did"]
         and (not ip["allowed_merchants"] or cp["merchant_did"] in ip["allowed_merchants"])
-        and datetime.fromisoformat(ip["expires_at"]) > datetime.now(UTC)
+        and datetime.fromisoformat(ip["expires_at"]) > now
     )
     results.append(
         (
@@ -357,7 +359,7 @@ def local_validate_mandates(
     recomputed = sum(item["total"] for item in cp["items"])
     cart_ok = (
         recomputed == cp["total_amount"]
-        and datetime.fromisoformat(cp["expires_at"]) > datetime.now(UTC)
+        and datetime.fromisoformat(cp["expires_at"]) > now
     )
     results.append(
         (
@@ -368,11 +370,11 @@ def local_validate_mandates(
     )
 
     # 3. TDIP DelegationScope (protocol-level ceiling)
-    deleg_ok = cp["total_amount"] <= delegation_cap_cents
+    delegation_ok = cp["total_amount"] <= delegation_cap_cents
     results.append(
         (
             "TDIP DelegationScope",
-            deleg_ok,
+            delegation_ok,
             f"{cp['total_amount']} cents <= {delegation_cap_cents} cents scope cap",
         )
     )
@@ -432,7 +434,10 @@ def settle(
     service_proof_hash = hashlib.sha256(
         payment_mandate.model_dump_json().encode("utf-8")
     ).digest()
-    service_proof_int = int.from_bytes(service_proof_hash[:4], "little")
+    # Reduce mod the KoalaBear field prime (2^31 - 2^24 + 1 = 2,130,706,433)
+    # so the witness is always a valid field element. Without this, ~50% of
+    # 4-byte LE samples exceed the modulus and the prover rejects the witness.
+    service_proof_int = int.from_bytes(service_proof_hash[:4], "little") % 2130706433
 
     proof_env = client.create_zk_proof_settlement(
         payer_balance=10_000,          # cents — payer has $100 in channel

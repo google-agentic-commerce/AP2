@@ -1,0 +1,15 @@
+# Pinned deps for the AP2 DID-based settlement sample.
+#
+# The AP2 SDK itself is consumed via the parent samples workspace
+# (see code/samples/python/pyproject.toml, which lists `ap2` as a
+# workspace member). When running this sample standalone, install the
+# SDK from the AP2 repo first:
+#
+#   pip install -e <AP2_REPO>/code/sdk/python/ap2
+#
+# Then install the deps below.
+
+requests==2.32.5
+pydantic>=2.7,<3
+pytest==8.3.4
+responses==0.25.6

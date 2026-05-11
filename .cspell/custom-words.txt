@@ -3,6 +3,7 @@ absl
 achatassistant
 ACMRTUXB
 Adyen
+aeoess
 agentic
 Agentic
 agenticpayments
@@ -26,6 +27,7 @@ Connor
 contentnegotiation
 credman
 Crossmint
+crosswalked
 cryptographical
 CYGPATTERN
 Dafiti
@@ -60,6 +62,7 @@ generativeai
 genproto
 glog
 gofmt
+goodmeta
 gopkg
 gradletasknamecache
 gradlew
@@ -148,6 +151,7 @@ ROOTDIRSRAW
 ropeproject
 RPCURL
 Rulebook
+runcycles
 screenreaders
 setlocal
 sharedpref

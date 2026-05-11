@@ -1,0 +1,39 @@
+# go/google3metadata
+# proto-file: devtools/metadata/metadata.proto
+# proto-message: MetaData
+# Format: google3/devtools/metadata/metadata.proto (go/google3metadata)
+
+name: "ap2"
+description: "AP2 is a project to build a next generation of AI agents for the payments industry."
+
+third_party {
+  identifier {
+    type: "Piper"
+    value: "http://google3/third_party/ap2"
+    primary_source: true
+  }
+  identifier: {
+    type: "Git"
+    value: "https://github.com/google-agentic-commerce/ap2"
+    primary_source: false
+  }
+}
+
+presubmit: {
+  auto_reviewers: "agentic-payments-team"
+  suggested_reviewers: "agentic-payments-team"
+  path_expression: "//depot/google3/third_party/ap2/..."
+
+  # Eventually check description to ensure that changes to ap2 contain public notes
+  # to be added to the corresponding git commit messages.
+}
+
+exported {
+  copybara {
+    config_path: "//depot/google3/third_party/ap2/copy.bara.sky"
+  }
+  owning_team_email: "agentic-payments-team@google.com"
+  path_expression: "//depot/google3/third_party/ap2/..."
+  reason: OPEN_SOURCE
+  description: "Open sourcing ap2 repo"
+}

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ap2-protocol.org/schemas/types/merchant.json",
+  "title": "Merchant",
+  "description": "Schema defining a Mechant object",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the merchant."
+    },
+    "name": {
+      "type": "string",
+      "description": "Human-readable name of the merchant."
+    },
+    "website": {
+      "type": "string",
+      "description": "Website belonging to the merchant."
+    }
+  },
+  "required": [
+    "id",
+    "name"
+  ]
+}

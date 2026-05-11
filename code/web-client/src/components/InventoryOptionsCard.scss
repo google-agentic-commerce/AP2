@@ -1,0 +1,155 @@
+.inventory-options-container {
+  max-width: min(85%, var(--chat-card-max-width, 440px));
+
+  .header-wrapper {
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .icon-wrapper {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: rgba(52, 211, 153, 0.15);
+      border: 1px solid rgba(52, 211, 153, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tool-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: #34d399;
+    }
+  }
+
+  .item-list {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .info-text {
+    margin-top: 10px;
+    margin-bottom: 0;
+    font-size: 13px;
+    color: #94a3b8;
+    line-height: 1.5;
+  }
+
+  .status-text {
+    margin-top: 8px;
+    font-size: 12.5px;
+    color: #6b7280;
+    line-height: 1.5;
+
+    .selected-item-id {
+      color: #93c5fd;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+    }
+  }
+
+  .confirm-button {
+    margin-top: 12px;
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 9px;
+    font-family: 'Geist', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+
+    &:hover {
+      filter: brightness(1.12);
+    }
+
+    &:active {
+      transform: scale(0.97);
+    }
+  }
+}
+
+.item-card {
+  padding: 10px 14px;
+  border-radius: 10px;
+  transition: all 0.15s;
+  border: 1px solid #1f2937;
+  background: #0f1117;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  &.clickable {
+    cursor: pointer;
+  }
+
+  &.selected {
+    border-color: #3b82f6;
+    background: #0c1a2e;
+  }
+
+  .row-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .selected-icon {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #2563eb;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .unselected-circle {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1px solid #374151;
+    flex-shrink: 0;
+  }
+
+  .item-details {
+    .item-name {
+      font-family: 'Geist', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: #e2e8f0;
+    }
+
+    .item-id {
+      font-size: 11px;
+      color: #6b7280;
+      margin-top: 1px;
+    }
+  }
+
+  .price-wrapper {
+    text-align: right;
+    flex-shrink: 0;
+    margin-left: 12px;
+
+    .item-price {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 14px;
+      font-weight: 500;
+      color: #e2e8f0;
+    }
+
+    .item-stock {
+      font-size: 10px;
+      color: #4b5563;
+      margin-top: 1px;
+    }
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ap2-protocol.org/schemas/types/pisp.json",
+  "title": "PISP",
+  "description": "Schema defining a Payment Initiation Service Provider (PISP) object",
+  "type": "object",
+  "properties": {
+    "legal_name": {
+      "type": "string",
+      "description": "Legal name of the PISP."
+    },
+    "brand_name": {
+      "type": "string",
+      "description": "Brand name of the PISP."
+    },
+    "domain_name": {
+      "type": "string",
+      "description": "Domain name of the PISP as secured by the [eIDAS] QWAC certificate of the TPP."
+    }
+  },
+  "required": [
+    "legal_name",
+    "brand_name",
+    "domain_name"
+  ]
+}

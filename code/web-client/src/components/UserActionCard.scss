@@ -1,0 +1,42 @@
+.user-action-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 2px;
+
+  .action-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 14px;
+    background: #0c1a2e;
+    border: 1px solid #1e3a5f;
+    border-radius: 100px;
+    animation: badge-pop 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+
+    .check-icon {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #16a34a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .label {
+      font-family: 'Geist', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      color: #93c5fd;
+    }
+
+    .sublabel {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      color: #1d4ed8;
+      background: rgba(29, 78, 216, 0.15);
+      padding: 1px 6px;
+      border-radius: 4px;
+    }
+  }
+}

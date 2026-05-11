@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ap2-protocol.org/schemas/types/message_warning.json",
+  "title": "MessageWarning",
+  "description": "Warning message. Matches UCP types/message_warning.json (2026-04-08).",
+  "type": "object",
+  "required": ["type", "code", "content"],
+  "properties": {
+    "type": {
+      "type": "string",
+      "const": "warning",
+      "description": "Message type discriminator."
+    },
+    "path": {
+      "type": "string",
+      "description": "JSONPath (RFC 9535) to related field."
+    },
+    "code": {
+      "type": "string",
+      "description": "Warning code."
+    },
+    "content": {
+      "type": "string",
+      "description": "Human-readable warning message."
+    },
+    "content_type": {
+      "type": "string",
+      "enum": ["plain", "markdown"],
+      "default": "plain"
+    },
+    "presentation": {
+      "type": "string",
+      "default": "notice",
+      "description": "Rendering contract: 'notice' or 'disclosure'."
+    },
+    "image_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL to a required visual element."
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Reference URL for more information."
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ap2-protocol.org/schemas/types/payment_instrument.json",
+  "title": "Payment Instrument",
+  "description": "Instrument used for payment.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "unique identifier for this instrument"
+    },
+    "type": {
+      "type": "string",
+      "description": "unique string identifying this category of instrument"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of the instrument to be displayed to the user for informational purposes"
+    }
+  },
+  "required": [
+    "id",
+    "type"
+  ]
+}

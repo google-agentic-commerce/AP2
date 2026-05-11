@@ -1,0 +1,79 @@
+.mandate-viewer {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  .viewer-header {
+    .viewer-title {
+      font-family: 'Instrument Serif', serif;
+      font-size: 24px;
+      color: #e2e8f0;
+    }
+
+    .viewer-subtitle {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: #4b5563;
+      margin-top: 2px;
+    }
+  }
+
+  .phase-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .phase-header {
+      .phase-title {
+        font-family: 'Geist', sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        color: #94a3b8;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+
+      .phase-blurb {
+        font-family: 'IBM Plex Mono', monospace;
+        font-size: 11px;
+        color: #4b5563;
+        margin-top: 2px;
+      }
+    }
+
+    .phase-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+  }
+}
+
+.mandate-viewer-empty {
+  max-width: 500px;
+  margin: 80px auto 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .icon {
+    font-size: 36px;
+    margin-bottom: 4px;
+  }
+
+  .title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 22px;
+    color: #4b5563;
+  }
+
+  .subtitle {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: #374151;
+    line-height: 1.7;
+  }
+}

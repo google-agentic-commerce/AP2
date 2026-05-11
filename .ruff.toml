@@ -6,6 +6,11 @@ indent-width = 4 # Google Style Guide §3.4: 4 spaces
 
 target-version = "py312" # Minimum Python version
 
+force-exclude = true
+extend-exclude = [
+    "code/sdk/python/ap2/sdk/generated",
+]
+
 [lint]
 ignore = [
     "COM812",
@@ -113,6 +118,19 @@ inline-quotes = "single"
 "__init__.py" = ["F401"]  # Ignore unused imports in __init__.py
 "*_test.py" = ["D", "ANN"]  # Ignore docstring and annotation issues in test files
 "test_*.py" = ["D", "ANN"]  # Ignore docstring and annotation issues in test files
+# AP2 pytest convention is `*_tests.py` (plural); grant the same test
+# relaxations plus pragmatic rules that are fine in tests:
+#   - B017:    assert-raises-exception (deliberate `pytest.raises(Exception)`).
+#   - C408:    unnecessary-collection-call.
+#   - PLC0415: import-outside-top-level (late-imported helpers inside tests).
+#   - RUF003:  em-dash characters in docstrings are intentional.
+#   - RUF043:  match= patterns used with literal-looking strings.
+#   - E501:    long tokens / JSON literals are common in test fixtures.
+"*_tests.py" = [
+    "D", "ANN", "PLR2004", "SLF001", "PLR0913", "S101",
+    "B017", "C408", "PLC0415", "RUF003", "RUF043", "E501",
+]
+"conftest.py" = ["D", "ANN", "C408", "E501"]
 
 [format]
 docstring-code-format = true

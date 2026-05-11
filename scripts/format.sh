@@ -92,7 +92,7 @@ CHANGED_FILES=""
 
 if $FORMAT_ALL; then
   echo "Finding all tracked Python files in the repository..."
-  CHANGED_FILES=$(git ls-files -- '*.py' ':!src/a2a/grpc/*')
+  CHANGED_FILES=$(git ls-files -- '*.py')
 else
   echo "Finding changed Python files based on git diff..."
   TARGET_BRANCH="origin/${GITHUB_BASE_REF:-main}"
@@ -100,8 +100,7 @@ else
 
   MERGE_BASE=$(git merge-base HEAD "$TARGET_BRANCH")
 
-  # Get python files changed in this PR, excluding grpc generated files.
-  CHANGED_FILES=$(git diff --name-only --diff-filter=ACMRTUXB "$MERGE_BASE" HEAD -- '*.py' ':!src/a2a/grpc/*')
+  CHANGED_FILES=$(git diff --name-only --diff-filter=ACMRTUXB "$MERGE_BASE" HEAD -- '*.py')
 fi
 
 # Exit if no files were found

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ap2-protocol.org/schemas/types/amount.json",
+  "title": "Amount",
+  "description": "Schema defining an Amount and Current object",
+  "type": "object",
+  "properties": {
+    "amount": {
+      "type": "integer",
+      "description": "Amount in minor units, according to the ISO-4217 spec."
+    },
+    "currency": {
+      "type": "string",
+      "description": "ISO-4217 3-letter alphabetic currency code of the payment."
+    }
+  },
+  "required": [
+    "amount",
+    "currency"
+  ]
+}

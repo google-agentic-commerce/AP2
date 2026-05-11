@@ -131,37 +131,59 @@ def demo_overspend() -> None:
 # =========================================================
 
 
-class HoldStatus(Enum):
-    """Status of a budget hold."""
+class Decision(Enum):
+    """Canonical three-way decision from a budget authority.
+
+    ALLOW             — full requested amount approved.
+    ALLOW_WITH_CAPS   — partial budget remains; approved for
+                        less than requested. Canonical for
+                        divisible / metered budgets (API
+                        credits, streaming, stablecoin
+                        cents). Not exercised in this retail
+                        sample. Callers MUST treat as DENY
+                        if they cannot accept partial
+                        fulfillment.
+    DENY              — no budget remains, or other error.
+    """
+
+    ALLOW = 'allow'
+    ALLOW_WITH_CAPS = 'allow_with_caps'
+    DENY = 'deny'
+
+
+class ReservationStatus(Enum):
+    """Status of a budget reservation."""
 
     HELD = 'held'
     COMMITTED = 'committed'
-    REFUNDED = 'refunded'
+    RELEASED = 'released'
 
 
 @dataclass
-class Hold:
-    """A budget hold placed by the authority."""
+class Reservation:
+    """A budget reservation placed by the authority."""
 
-    hold_id: str
+    reservation_id: str
     mandate_id: str
     amount: int
-    status: HoldStatus = HoldStatus.HELD
+    status: ReservationStatus = ReservationStatus.HELD
 
 
 @dataclass
-class AuthorizeResult:
-    """Result of an authorize call."""
+class ReserveResult:
+    """Result of a reserve call."""
 
-    approved: bool
-    hold_id: str | None = None
+    decision: Decision
+    reservation_id: str | None = None
     reason: str | None = None
     remaining: int | None = None
+    allowed_amount: int | None = None
+    requested_amount: int | None = None
 
 
 @dataclass
 class BudgetState:
-    """Result of a query call."""
+    """Result of a query_budget call."""
 
     mandate_id: str
     budget: int
@@ -171,24 +193,37 @@ class BudgetState:
 
 
 class BudgetAuthority:
-    """External budget authority with four verbs.
+    """External budget authority.
 
-    Maintains a single ledger across all merchants.
-    The authorize call is atomic: it checks the budget and
-    places a hold in one operation.
+    Maintains a single ledger across all merchants. The
+    reserve call is atomic: checks the budget and places a
+    reservation in one operation.
 
-    Verbs:
-        authorize — atomically check + hold
-        commit    — confirm after successful payment
-        refund    — release if payment fails
-        query     — check remaining budget
+    Canonical six-verb interface (see
+    goodmeta/agent-payments-landscape Budget Authority
+    Protocol). This sample demonstrates four:
+
+        reserve            — atomically check + hold
+        commit             — confirm after successful payment
+        release            — return unspent reservation
+                             before commit
+        query_budget       — snapshot of budget state
+
+    Two additional verbs are part of the canonical interface
+    but out of scope for this minimal sample:
+
+        refund(reservation_id, amount)
+            — reverse an already-committed amount
+              (post-commit, distinct from release)
+        query_reservation(reservation_id)
+            — per-reservation state lookup
     """
 
     def __init__(self) -> None:
         """Initialize empty ledger."""
         self._budgets: dict[str, int] = {}
         self._spent: dict[str, int] = {}
-        self._holds: dict[str, Hold] = {}
+        self._reservations: dict[str, Reservation] = {}
         self._held_by_mandate: dict[str, int] = {}
         self._keys: dict[str, str] = {}
 
@@ -202,42 +237,53 @@ class BudgetAuthority:
         self._spent.setdefault(mandate_id, 0)
         self._held_by_mandate.setdefault(mandate_id, 0)
 
-    def authorize(
+    def reserve(
         self,
         mandate_id: str,
         amount_cents: int,
         idempotency_key: str,
-    ) -> AuthorizeResult:
-        """Atomically check budget and place hold."""
+    ) -> ReserveResult:
+        """Atomically check budget and place reservation.
+
+        This retail sample emits ALLOW or DENY only. The
+        canonical interface also defines ALLOW_WITH_CAPS for
+        divisible / metered budgets (see Cycles for an
+        implementation that emits it).
+        """
         if idempotency_key in self._keys:
-            hid = self._keys[idempotency_key]
-            return AuthorizeResult(
-                approved=True,
-                hold_id=hid,
+            rid = self._keys[idempotency_key]
+            res = self._reservations[rid]
+            return ReserveResult(
+                decision=Decision.ALLOW,
+                reservation_id=rid,
                 remaining=self._remaining(mandate_id),
+                allowed_amount=res.amount,
+                requested_amount=res.amount,
             )
 
         budget_max = self._budgets.get(mandate_id)
         if budget_max is None:
-            return AuthorizeResult(
-                approved=False,
+            return ReserveResult(
+                decision=Decision.DENY,
                 reason='Unknown mandate',
+                requested_amount=amount_cents,
             )
 
         remaining = self._remaining(mandate_id)
         if amount_cents > remaining:
-            return AuthorizeResult(
-                approved=False,
+            return ReserveResult(
+                decision=Decision.DENY,
                 reason=(
                     f'Budget exceeded: {amount_cents} > '
                     f'{remaining} remaining'
                 ),
                 remaining=remaining,
+                requested_amount=amount_cents,
             )
 
-        hold_id = f'hold_{uuid.uuid4().hex}'
-        self._holds[hold_id] = Hold(
-            hold_id=hold_id,
+        reservation_id = f'res_{uuid.uuid4().hex}'
+        self._reservations[reservation_id] = Reservation(
+            reservation_id=reservation_id,
             mandate_id=mandate_id,
             amount=amount_cents,
         )
@@ -245,35 +291,41 @@ class BudgetAuthority:
             self._held_by_mandate.get(mandate_id, 0)
             + amount_cents
         )
-        self._keys[idempotency_key] = hold_id
+        self._keys[idempotency_key] = reservation_id
 
-        return AuthorizeResult(
-            approved=True,
-            hold_id=hold_id,
+        return ReserveResult(
+            decision=Decision.ALLOW,
+            reservation_id=reservation_id,
             remaining=remaining - amount_cents,
+            allowed_amount=amount_cents,
+            requested_amount=amount_cents,
         )
 
-    def commit(self, hold_id: str) -> bool:
-        """Confirm a hold after successful payment."""
-        hold = self._holds.get(hold_id)
-        if not hold or hold.status != HoldStatus.HELD:
+    def commit(self, reservation_id: str) -> bool:
+        """Confirm a reservation after successful payment."""
+        res = self._reservations.get(reservation_id)
+        if not res or res.status != ReservationStatus.HELD:
             return False
-        hold.status = HoldStatus.COMMITTED
-        self._spent[hold.mandate_id] += hold.amount
-        self._held_by_mandate[hold.mandate_id] -= hold.amount
+        res.status = ReservationStatus.COMMITTED
+        self._spent[res.mandate_id] += res.amount
+        self._held_by_mandate[res.mandate_id] -= res.amount
         return True
 
-    def refund(self, hold_id: str) -> bool:
-        """Release a hold when payment fails."""
-        hold = self._holds.get(hold_id)
-        if not hold or hold.status != HoldStatus.HELD:
+    def release(self, reservation_id: str) -> bool:
+        """Return an unspent reservation before commit.
+
+        Pre-commit only. Use refund (not implemented here)
+        for post-commit reversal.
+        """
+        res = self._reservations.get(reservation_id)
+        if not res or res.status != ReservationStatus.HELD:
             return False
-        hold.status = HoldStatus.REFUNDED
-        self._held_by_mandate[hold.mandate_id] -= hold.amount
+        res.status = ReservationStatus.RELEASED
+        self._held_by_mandate[res.mandate_id] -= res.amount
         return True
 
-    def query(self, mandate_id: str) -> BudgetState:
-        """Query budget state."""
+    def query_budget(self, mandate_id: str) -> BudgetState:
+        """Snapshot of budget state across all reservations."""
         budget_max = self._budgets.get(mandate_id, 0)
         spent = self._spent.get(mandate_id, 0)
         held = self._held_by_mandate.get(mandate_id, 0)
@@ -292,6 +344,14 @@ class BudgetAuthority:
         return budget - spent - held
 
 
+def _format_decision(result: ReserveResult) -> str:
+    if result.decision == Decision.ALLOW:
+        return 'ALLOW'
+    if result.decision == Decision.ALLOW_WITH_CAPS:
+        return 'ALLOW_WITH_CAPS'
+    return 'DENY'
+
+
 def demo_budget_authority() -> None:
     """Show budget authority preventing overspend."""
     print()
@@ -304,48 +364,51 @@ def demo_budget_authority() -> None:
     authority = BudgetAuthority()
     authority.register_mandate(mandate_id, 10000)
 
-    # Merchant A: authorize $60
-    result_a = authority.authorize(
+    # Merchant A: reserve $60 → ALLOW
+    result_a = authority.reserve(
         mandate_id, 6000, uuid.uuid4().hex,
     )
-    label = 'APPROVED' if result_a.approved else 'DENIED'
-    print('Merchant A: authorize($60.00)')
-    print(f'  Result: {label}')
-    print(f'  Hold: {result_a.hold_id}')
+    print('Merchant A: reserve($60.00)')
+    print(f'  Decision: {_format_decision(result_a)}')
+    print(f'  Reservation: {result_a.reservation_id}')
     remaining_a = (result_a.remaining or 0) / 100
     print(f'  Remaining: ${remaining_a:.2f}')
-    if result_a.approved and result_a.hold_id:
-        authority.commit(result_a.hold_id)
+    if (
+        result_a.decision == Decision.ALLOW
+        and result_a.reservation_id
+    ):
+        authority.commit(result_a.reservation_id)
         print('  Payment succeeded -> committed')
     print()
 
-    # Merchant B: authorize $60 — should be denied
-    result_b = authority.authorize(
+    # Merchant B: reserve $60 → DENY (only $40 left, indivisible item)
+    result_b = authority.reserve(
         mandate_id, 6000, uuid.uuid4().hex,
     )
-    label = 'APPROVED' if result_b.approved else 'DENIED'
-    print('Merchant B: authorize($60.00)')
-    print(f'  Result: {label}')
-    if not result_b.approved:
+    print('Merchant B: reserve($60.00)')
+    print(f'  Decision: {_format_decision(result_b)}')
+    if result_b.reason:
         print(f'  Reason: {result_b.reason}')
     print()
 
-    # Merchant B: retry with smaller amount
-    result_c = authority.authorize(
+    # Merchant B: retry $35 → ALLOW
+    result_c = authority.reserve(
         mandate_id, 3500, uuid.uuid4().hex,
     )
-    label = 'APPROVED' if result_c.approved else 'DENIED'
-    print('Merchant B: authorize($35.00) — retry')
-    print(f'  Result: {label}')
-    if result_c.approved and result_c.hold_id:
+    print('Merchant B: reserve($35.00) — retry')
+    print(f'  Decision: {_format_decision(result_c)}')
+    if (
+        result_c.decision == Decision.ALLOW
+        and result_c.reservation_id
+    ):
         remaining_c = (result_c.remaining or 0) / 100
-        print(f'  Hold: {result_c.hold_id}')
+        print(f'  Reservation: {result_c.reservation_id}')
         print(f'  Remaining: ${remaining_c:.2f}')
-        authority.commit(result_c.hold_id)
+        authority.commit(result_c.reservation_id)
         print('  Payment succeeded -> committed')
     print()
 
-    state = authority.query(mandate_id)
+    state = authority.query_budget(mandate_id)
     print('Final state:')
     print(f'  Budget:    ${state.budget / 100:.2f}')
     print(f'  Spent:     ${state.spent / 100:.2f}')

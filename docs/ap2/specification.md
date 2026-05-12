@@ -123,7 +123,7 @@ assembled.
 The Checkout Mandate is provided by the Shopping Agent and verified by the
 Merchant.
 
-The The Merchant MUST provide a merchant-signed JWT containing the Checkout to
+The Merchant MUST provide a merchant-signed JWT containing the Checkout to
 the Shopping Agent. The closed Checkout Mandate is bound to this Checkout JWT
 using a cryptographic hash.
 
@@ -197,11 +197,11 @@ a Trusted Surface for display to the user and signing.
 
 Upon receiving the Checkout and Payment Mandate, the Shopping Agent forwards the
 Payment Mandate to the Credential Provider (and possibly the Network) for
-Verification. Upon successful verification, the the Shopping Agent receives a
+Verification. Upon successful verification, the Shopping Agent receives a
 payment credential.
 
 The payment credential and a Checkout Mandate are then provided to the Merchant.
-The The Merchant verifies the Checkout with what it created, and initiates
+The Merchant verifies the Checkout with what it created, and initiates
 payment with the Merchant Payment Processor if a Merchant-initiated charge.
 
 In the case that the payment method pushes funds to the Merchant, the Merchant

@@ -197,7 +197,7 @@ a Trusted Surface for display to the user and signing.
 
 Upon receiving the Checkout and Payment Mandate, the Shopping Agent forwards the
 Payment Mandate to the Credential Provider (and possibly the Network) for
-Verification. Upon successful verification, the Shopping Agent receives a
+verification. Upon successful verification, the Shopping Agent receives a
 payment credential.
 
 The payment credential and a Checkout Mandate are then provided to the Merchant.

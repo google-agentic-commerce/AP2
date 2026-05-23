@@ -25,3 +25,8 @@ coverage/
 
 # Debug logs
 *.log
+
+# Runtime state
+.temp-db/
+scenarios/**/.logs/
+scenarios/**/.temp-db/

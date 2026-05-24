@@ -13,9 +13,9 @@ def discover_trustboost():
     r = requests.get(f"{TRUSTBOOST_URL}/.well-known/agent-card.json", timeout=10)
     r.raise_for_status()
     card = r.json()
-    print(f"[TrustBoost] {card['name']} v{card['version']}")
-    print(f"[TrustBoost] Languages: {card['languages']}")
-    print(f"[TrustBoost] Compliance: {card['compliance']}")
+    print(f"[TrustBoost] {card.get('name', 'Unknown')} v{card.get('version', '?')}")
+    print(f"[TrustBoost] Languages: {card.get('languages', [])}")
+    print(f"[TrustBoost] Compliance: {card.get('compliance', [])}")
     return card
 
 
@@ -23,18 +23,17 @@ def sanitize_pii(text, context="general"):
     print(f"\n[Sanitizing] {len(text)} chars, context={context}")
 
     # x402 flow: call without payment -> HTTP 402 -> pay -> retry
-    probe = requests.post(f"{TRUSTBOOST_URL}/sanitize", json={"text": text}, timeout=10)
-    if probe.status_code == 402:
-        x402 = probe.json().get("x402", {})
-        accepts = x402.get("accepts", [{}])[0]
-        print(f"[x402] HTTP 402 - {accepts.get('amount')} {accepts.get('currency')} on {accepts.get('network')}")
+    payload = {"text": text, "context": context}
+    r = requests.post(f"{TRUSTBOOST_URL}/sanitize", json=payload, timeout=10)
+    if r.status_code == 402:
+        x402 = r.json().get("x402", {})
+        accepts_list = x402.get("accepts", [])
+        if accepts_list:
+            acc = accepts_list[0]
+            print(f"[x402] HTTP 402 - {acc.get('amount')} {acc.get('currency')} on {acc.get('network')}")
         print(f"[x402] Paying autonomously with tx_hash={TX_HASH}")
-
-    r = requests.post(
-        f"{TRUSTBOOST_URL}/sanitize",
-        json={"text": text, "tx_hash": TX_HASH, "wallet_address": WALLET, "context": context},
-        timeout=30
-    )
+        payload.update({"tx_hash": TX_HASH, "wallet_address": WALLET})
+        r = requests.post(f"{TRUSTBOOST_URL}/sanitize", json=payload, timeout=30)
     r.raise_for_status()
     data = r.json().get("data", {})
 
@@ -69,7 +68,7 @@ def main():
         print(f"\n[{t['lang']}] {t['text']}")
         try:
             sanitize_pii(t["text"], t["ctx"])
-        except Exception as e:
+        except requests.exceptions.RequestException as e:
             print(f"[Error] {e}")
 
     print("\nPII sanitized. Safe to proceed with AP2 payment.")

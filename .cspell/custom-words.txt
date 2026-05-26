@@ -201,3 +201,5 @@ sanitize
 sanitized
 sanitizer
 trustboost
+HDFRZN
+mainnet

@@ -18,12 +18,14 @@ TrustBoost to redact PII and receive immutable proof on Solana.
 
 ## Quick Start
 
+```bash
 pip install -r requirements.txt
 python agent.py
+```
 
 ## Resources
 
-- TrustBoost: https://github.com/teodorofodocrispin-cmyk/TrustBoost-PII-Sanitizer
-- Agent Card: https://api.trustboost.dev/.well-known/agent-card.json
-- Health: https://api.trustboost.dev/health
-- AP2 docs: https://ap2-protocol.org
+- [TrustBoost](https://github.com/teodorofodocrispin-cmyk/TrustBoost-PII-Sanitizer)
+- [Agent Card](https://api.trustboost.dev/.well-known/agent-card.json)
+- [Health](https://api.trustboost.dev/health)
+- [AP2 docs](https://ap2-protocol.org)

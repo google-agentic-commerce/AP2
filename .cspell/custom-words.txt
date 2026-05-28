@@ -7,8 +7,8 @@ agentic
 Agentic
 agenticpayments
 Algorand
-algovoi
 AlgoVoi
+algovoi
 androidx
 Applebot
 appname
@@ -16,15 +16,15 @@ ASGI
 authorisation
 Authorisation
 bazel
-behavioural
 Behavioural
+behavioural
 Blackhawk
 Boku
 BVNK
-Canonicalisation
 canonicalisation
-canonicalise
+Canonicalisation
 Canonicalise
+canonicalise
 canonicalised
 canonicalises
 celerybeat
@@ -44,8 +44,8 @@ CYGPATTERN
 Dafiti
 datatracker
 davecgh
-Dcql
 dcql
+Dcql
 DCQL
 deviceauth
 Dfile
@@ -106,8 +106,8 @@ Klarna
 kotlin
 kotlinx
 Kotlinx
-ktor
 Ktor
+ktor
 KXMYBJWNQ
 Lazada
 libpeerconnection
@@ -123,8 +123,8 @@ micropayments
 Mispick
 Momo
 Monee
-MSYS
 msys
+MSYS
 multistep
 Mysten
 nexi
@@ -148,6 +148,8 @@ paypal
 Payplug
 pids
 pmezard
+POCA
+poca
 Proguard
 proguard
 prometheus
@@ -157,6 +159,8 @@ pymdownx
 pypa
 pypackages
 recognised
+Recurr
+recurr
 reemademo
 refundability
 renamesourcefileattribute

@@ -109,7 +109,7 @@ mutation of the bound mandate invalidates the binding.
 The receipt MAY chain forward into the post-settlement lifecycle. An
 `ALLOW` verdict for mandate-setup typically chains:
 
-```
+```text
 compliance receipt (ALLOW)
     |
     v   (subject_hash referenced as mandate_ref on next step)

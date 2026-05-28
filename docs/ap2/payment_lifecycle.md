@@ -60,7 +60,7 @@ canonicalisation.
 | `cancellation_reason` | string (closed enum) | `USER_REQUESTED` / `MERCHANT_REQUESTED` / `COMPLIANCE_TERMINATED` / `EXPIRED`. |
 | `cancellation_timestamp_ms` | integer | Epoch milliseconds when the cancellation event was recorded. MUST be integer. |
 | `effective_from_ms` | integer | Epoch milliseconds when the cancellation takes legal effect. MUST be `>= cancellation_timestamp_ms`. |
-| `jurisdiction_flags` | ordered array of string | ISO-3166-1 alpha-2 codes; primary jurisdiction first. Array order significant under RFC 8785 §3.2.3. |
+| `jurisdiction_flags` | ordered array of string | ISO 3166-1 alpha-2 codes; primary jurisdiction first. Array order significant under RFC 8785 §3.2.3. |
 | `mandate_ref` | string | `sha256:{hex}` reference to the JCS-canonical Payment Mandate this cancellation terminates. |
 
 ### The closed enumeration: `cancellation_reason`
@@ -102,7 +102,7 @@ canonicalisation.
 | Field | Type | Description |
 | :---- | :--- | :---------- |
 | `canon_version` | string | In-band canonicalisation pin. Fixed `jcs-rfc8785-v1`. |
-| `jurisdiction_flags` | ordered array of string | ISO-3166-1 alpha-2 codes; primary jurisdiction first. Array order significant. |
+| `jurisdiction_flags` | ordered array of string | ISO 3166-1 alpha-2 codes; primary jurisdiction first. Array order significant. |
 | `original_payment_ref` | string | `sha256:{hex}` reference to the original payment record (compliance receipt `content_hash`, settlement attestation, or operator-specific reference). |
 | `refund_amount` | object | `{amount_minor: string, asset_id: string}`. String `amount_minor` avoids float-precision and JS-integer-overflow concerns. |
 | `refund_provider_did` | string | DID URI identifying the refund-issuing party. |

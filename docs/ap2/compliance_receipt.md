@@ -97,7 +97,7 @@ implementations themselves are AlgoVoi-authored:
 - [`algovoi-substrate`](https://pypi.org/project/algovoi-substrate/) on PyPI
 - [`@algovoi/substrate`](https://www.npmjs.com/package/@algovoi/substrate) on npm
 
-Both Apache 2.0.
+Both packages are published under Apache 2.0.
 
 ## Composition
 

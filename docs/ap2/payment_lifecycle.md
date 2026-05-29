@@ -43,10 +43,10 @@ canonicalisation.
 
 ```json
 {
-  "canon_version": "jcs-rfc8785-v1",
   "cancellation_provider_did": "did:web:api.algovoi.co.uk",
   "cancellation_reason": "USER_REQUESTED",
   "cancellation_timestamp_ms": 1716494400000,
+  "canon_version": "jcs-rfc8785-v1",
   "effective_from_ms": 1716537600000,
   "jurisdiction_flags": ["GB", "EU"],
   "mandate_ref": "sha256:0dd5d0b76c9b9281fdeb2509ad38ab132b16a17385ca01d976ff9e6e12563a0f"
@@ -55,10 +55,10 @@ canonicalisation.
 
 | Field | Type | Description |
 | :---- | :--- | :---------- |
-| `canon_version` | string | In-band canonicalisation pin. Fixed `jcs-rfc8785-v1`. |
 | `cancellation_provider_did` | string | DID URI of the issuing party. |
 | `cancellation_reason` | string (closed enum) | `USER_REQUESTED` / `MERCHANT_REQUESTED` / `COMPLIANCE_TERMINATED` / `EXPIRED`. |
 | `cancellation_timestamp_ms` | integer | Epoch milliseconds when the cancellation event was recorded. MUST be integer. |
+| `canon_version` | string | In-band canonicalisation pin. Fixed `jcs-rfc8785-v1`. |
 | `effective_from_ms` | integer | Epoch milliseconds when the cancellation takes legal effect. MUST be `>= cancellation_timestamp_ms`. |
 | `jurisdiction_flags` | ordered array of string | ISO 3166-1 alpha-2 codes; primary jurisdiction first. Array order significant under RFC 8785 §3.2.3. |
 | `mandate_ref` | string | `sha256:{hex}` reference to the JCS-canonical Payment Mandate this cancellation terminates. |

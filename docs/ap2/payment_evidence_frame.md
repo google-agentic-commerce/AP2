@@ -153,14 +153,14 @@ representing a `payment_admission` event (compliance screening outcome
   "canon_version": "urn:x402:canonicalisation:jcs-rfc8785-v1",
   "claim_type": "payment_admission",
   "frame_id": "sha256:9badca886409ed26d09adfe6ce133a53100909dd4544d4ad160e130b6a755f29",
-  "frame_provider_did": "did:key:z6MkgExzvcpvxrghf4Q3285xqSdenhRZHcP6wc5UvY6VVaz5",
+  "frame_provider_did": "did:web:compliance.example.com",
   "frame_timestamp_ms": 1780143974835,
   "pef_version": "1",
   "receipt": {
     "canon_version": "jcs-rfc8785-v1",
     "jurisdiction_flags": ["UK", "EU"],
     "payer_ref": "sha256:e0f023d54479255752bac099d0565984b5884afec0f1a1ebe27e0eaf70a205ba",
-    "screen_provider_did": "did:key:z6MkgExzvcpvxrghf4Q3285xqSdenhRZHcP6wc5UvY6VVaz5",
+    "screen_provider_did": "did:web:compliance.example.com",
     "screen_result": "ALLOW",
     "screen_timestamp_ms": 1780143974835
   },

@@ -92,12 +92,11 @@ Both formats canonicalise under the same RFC 8785 (JCS) discipline,
 which is byte-for-byte cross-validated across eight independent
 implementations (Python, TypeScript, Go, Rust, Java, PHP, .NET, Ruby)
 per the AlgoVoi 8-impl matrix. The receipt-format reference
-implementations themselves are AlgoVoi-authored:
+implementations themselves are AlgoVoi-authored and published under
+Apache 2.0:
 
 - [`algovoi-substrate`](https://pypi.org/project/algovoi-substrate/) on PyPI
 - [`@algovoi/substrate`](https://www.npmjs.com/package/@algovoi/substrate) on npm
-
-Both packages are published under Apache 2.0.
 
 ## Composition
 

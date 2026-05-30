@@ -67,7 +67,7 @@ REQUIRED except `signature`.
 | `frame_provider_did` | string | DID URI identifying the party that constructed the frame. |
 | `frame_timestamp_ms` | integer | Unix epoch milliseconds at which the frame was constructed. |
 | `canon_version` | string | In-band canonicalisation pin. Fixed `urn:x402:canonicalisation:jcs-rfc8785-v1` for this version. |
-| `signature` | string | OPTIONAL. RFC 9421 HTTP Message Signature string over the frame. Adding `signature` to an existing frame does NOT change `frame_id`. |
+| `signature` | string | OPTIONAL. RFC 9421 detached signature over the frame. The value is a serialised `Signature-Input` and `Signature` header pair (RFC 9421 sections 4.1 and 4.2) encoded as a single string in the form `sig1=(<covered-components>);..., :sig1:<base64>:`. The covered components MUST include `"@request-target"` replaced by the canonical `frame_id` as the request target surrogate; implementations MUST define a fixed component list in a companion profile. Adding `signature` to an existing frame does NOT change `frame_id`. |
 
 ## frame_id Derivation
 
@@ -204,10 +204,16 @@ document. The PEF adds the following considerations:
   allows a malicious framer to substitute a different receipt body.
 - `frame_id` stability is predicated on deterministic JCS canonicalisation.
   Consumers MUST use a conforming RFC 8785 implementation when re-deriving
-  `frame_id` for verification.
+  `frame_id` for verification. When a consumer requests or retrieves a frame
+  by `frame_id`, it MUST compute the `frame_id` from the received frame and
+  verify that it matches the requested identifier before processing the frame.
+  Accepting a frame without this check allows a compromised provider to
+  substitute a different frame in response to a known `frame_id` reference.
 - The `frame_provider_did` field is informational within the unsigned frame.
-  If the `signature` field is present, consumers SHOULD verify it before
-  treating `frame_provider_did` as authoritative.
+  If the `signature` field is present, consumers MUST verify it. If
+  verification fails, the frame MUST be rejected. A consumer MUST NOT treat
+  `frame_provider_did` as authoritative unless the signature is absent (in
+  which case no DID binding is claimed) or present and verified successfully.
 - The embedded `receipt` may carry personal data (for example, `payer_ref`).
   Transport of PEF frames MUST use a confidential channel when the `receipt`
   contains personally identifiable information or payment reference data.

@@ -82,6 +82,16 @@ canonicalisation pin URI `urn:x402:canonicalisation:jcs-rfc8785-v1`,
 defined in IETF Internet-Draft
 [`draft-hopley-x402-canonicalisation-jcs-v1`](https://datatracker.ietf.org/doc/draft-hopley-x402-canonicalisation-jcs-v1/).
 
+### Signature preimage
+
+The `signature` field is **excluded from the JCS preimage**. To sign,
+the issuer removes the `signature` field from the object, computes the
+RFC 8785 canonical bytes of the remaining fields, and signs those bytes.
+The resulting signature is then stored in the `signature` field of the
+serialised envelope. This is the standard JCS signing pattern (see also
+RFC 8785 section 3.2) and avoids any circular dependency between the
+canonical form and its signature.
+
 The discipline is byte-for-byte cross-validated across eight independent
 implementations (Python, TypeScript, Go, Rust, Java, PHP, .NET, Ruby)
 per the AlgoVoi 8-impl matrix. Reference implementations:
@@ -106,8 +116,10 @@ compliance receipt (ALLOW)       settlement attestation (SETTLED)
 ```
 
 The `issuer_references` array records which upstream attestations were
-considered. A relying party MAY walk the reference chain to verify each
-upstream attestation independently.
+considered. A relying party MAY retrieve and inspect each upstream
+attestation independently. If an upstream attestation is retrieved, the
+relying party MUST verify that its canonical hash matches the recorded
+`content_hash` before using it as additional evidence.
 
 ## Authorship and Substrate-Author Position
 
@@ -138,9 +150,12 @@ It is orthogonal to:
 See the AP2 [Security and Privacy Considerations](security_and_privacy_considerations.md)
 document. The Trust Query adds the following considerations:
 
-- The `issuer_references` array MUST be evaluated before accepting the
-  composite verdict; a verifier MUST re-derive the canonical hash of each
-  referenced attestation before trusting the composite.
+- Retrieval of upstream attestations referenced in `issuer_references` is
+  OPTIONAL; a relying party MAY accept the composite verdict without
+  independently fetching each referenced attestation. However, if an
+  upstream attestation is retrieved, the relying party MUST re-derive its
+  canonical hash and verify it matches the recorded `content_hash` before
+  treating the attestation as additional supporting evidence.
 - `PROVISIONAL` and `INSUFFICIENT_EVIDENCE` verdicts MUST be treated
   conservatively; downstream systems MUST NOT promote either to `TRUSTED`
   without additional out-of-band evidence.

@@ -1,4 +1,4 @@
-aapt
+﻿aapt
 absl
 achatassistant
 ACMRTUXB
@@ -138,6 +138,7 @@ paypal
 Payplug
 pids
 pmezard
+preimage
 proguard
 prometheus
 protoc
@@ -162,6 +163,8 @@ Rulebook
 samla
 SAMLA
 screenreaders
+serialised
+Serialised
 setlocal
 sharedpref
 Shopcider

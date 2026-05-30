@@ -57,7 +57,7 @@ digest were present and reject the message.
 ## Multi-hop Proxy-chain Survival
 
 AP2 deployments that route mandate requests through intermediary hops
-(e.g. Network-layer proxies, Merchant Payment Processors acting as
+(e.g., Network-layer proxies, Merchant Payment Processors acting as
 intermediaries) MUST preserve the original `Signature` and `Signature-Input`
 headers end-to-end. Intermediaries that modify the covered components
 invalidate the original signature; such modifications MUST NOT occur without
@@ -104,7 +104,7 @@ document. HTTP Message Signing adds the following:
 - The `created` RFC 9421 parameter SHOULD be included on payment proof
   submissions to provide a signed timestamp; verifiers SHOULD reject
   signatures with `created` values outside an acceptable clock-skew window.
-- Keyid resolution MUST follow an out-of-band discipline agreed between
+- `keyid` resolution MUST follow an out-of-band discipline agreed between
   AP2 participants; the `keyid` parameter does not itself constitute
   proof of identity without that discipline.
 - Content-Digest verification MUST precede signature acceptance; a

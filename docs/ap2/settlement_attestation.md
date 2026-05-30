@@ -46,7 +46,7 @@ canonicalisation.
 
 | Field | Type | Description |
 | :---- | :--- | :---------- |
-| `amount_microunits` | integer | Settled amount in chain-native microunits. MUST be integer. RFC 3339 string forms rejected. |
+| `amount_microunits` | integer | Settled amount in chain-native microunits. MUST be a JSON integer; string-encoded representations are rejected at canonicalisation time. |
 | `asset_id` | string | CAIP-19 asset identifier of the settled asset. |
 | `canon_version` | string | In-band canonicalisation pin. Fixed `jcs-rfc8785-v1` for this version. |
 | `chain` | string | CAIP-2 chain identifier. |

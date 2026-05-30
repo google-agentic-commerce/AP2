@@ -53,11 +53,11 @@ All four roles are implemented in TypeScript:
 
 Obtain a Google API key from
 [Google AI Studio](https://aistudio.google.com/apikey), then create a `.env`
-file in `samples/typescript/`:
+file in `code/samples/typescript/`:
 
 ```sh
-cp samples/typescript/.env.example samples/typescript/.env
-# Edit samples/typescript/.env and fill in GOOGLE_API_KEY
+cp code/samples/typescript/.env.example code/samples/typescript/.env
+# Edit code/samples/typescript/.env and fill in GOOGLE_API_KEY
 ```
 
 Alternatively, configure Vertex AI by setting `GOOGLE_GENAI_USE_VERTEXAI=true`
@@ -66,7 +66,7 @@ along with `GOOGLE_CLOUD_PROJECT` and `GOOGLE_CLOUD_LOCATION`.
 ### Install dependencies
 
 ```sh
-cd samples/typescript
+cd code/samples/typescript
 npm install
 ```
 
@@ -75,7 +75,7 @@ npm install
 ### Option 1: Run everything with one command
 
 ```sh
-bash samples/typescript/scenarios/a2a/human-present/cards/run.sh
+bash code/samples/typescript/scenarios/a2a/human-present/cards/run.sh
 ```
 
 This starts the three backend agents and the Shopping Agent web UI.

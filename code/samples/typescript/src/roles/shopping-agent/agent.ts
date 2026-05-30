@@ -28,8 +28,8 @@ import {
 
 // Import sub_agents
 import { shopperAgent } from './subagents/shopper/agent.js';
-import { shippingCollectorAgent } from './subagents/shipping-collector/agent.js';
-import { paymentCollectorAgent } from './subagents/payment-collector/agent.js';
+import { shippingCollectorAgent } from './subagents/shipping-address-collector/agent.js';
+import { paymentCollectorAgent } from './subagents/payment-method-collector/agent.js';
 
 /**
  * Shopping Agent (ADK)

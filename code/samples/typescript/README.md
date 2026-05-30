@@ -27,7 +27,7 @@ Node.js, or edge runtimes:
 ## Project Structure
 
 ```text
-samples/typescript/
+code/samples/typescript/
 ├── src/
 │   ├── roles/                  # Agent role implementations and entry points
 │   │   ├── shopping/           # Shopping Agent (root orchestrator)

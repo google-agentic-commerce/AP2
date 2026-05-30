@@ -20,7 +20,7 @@ import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { z, type ZodTypeAny } from 'zod';
+import { z } from 'zod';
 
 import {
   assembleAndSignMandatesTool,
@@ -48,11 +48,11 @@ async function makeMcpClient(serverEntry: string): Promise<Client> {
   return client;
 }
 
-function mcpTool<S extends ZodTypeAny>(
+function mcpTool(
   client: Client,
   toolName: string,
   description: string,
-  parameters: S,
+  parameters: z.ZodObject<z.ZodRawShape>,
 ): FunctionTool {
   return new FunctionTool({
     name: toolName,

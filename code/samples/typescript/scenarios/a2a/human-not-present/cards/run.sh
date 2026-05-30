@@ -11,7 +11,7 @@ set -eu
 
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly TS_SAMPLES_ROOT="$(cd "$SCRIPT_DIR/../../../../" && pwd)"
-readonly REPO_ROOT="$(cd "$TS_SAMPLES_ROOT/../../" && pwd)"
+readonly REPO_ROOT="$(cd "$TS_SAMPLES_ROOT/../../../" && pwd)"
 readonly LOG_DIR="$SCRIPT_DIR/.logs"
 readonly TEMP_DB_DIR="$SCRIPT_DIR/.temp-db"
 

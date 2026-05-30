@@ -19,15 +19,15 @@
   },
   "overrides": [
     {
-      "files": ["samples/**/*.ts"],
+      "files": ["code/samples/**/*.ts"],
       "parserOptions": {
-        "project": "./samples/typescript/tsconfig.json"
+        "project": "./code/samples/typescript/tsconfig.json"
       },
       "settings": {
         "import/resolver": {
           "typescript": {
             "alwaysTryTypes": true,
-            "project": "./samples/typescript/tsconfig.json"
+            "project": "./code/samples/typescript/tsconfig.json"
           }
         }
       },

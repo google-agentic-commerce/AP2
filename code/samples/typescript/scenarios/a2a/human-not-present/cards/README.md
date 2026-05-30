@@ -52,7 +52,7 @@ echo "GOOGLE_API_KEY=your_key" > .env
 ## Execution
 
 ```sh
-bash samples/typescript/scenarios/a2a/human-not-present/cards/run.sh
+bash code/samples/typescript/scenarios/a2a/human-not-present/cards/run.sh
 ```
 
 Ports:
@@ -69,7 +69,7 @@ Ports:
 1. Start the stack:
 
    ```sh
-   bash samples/typescript/scenarios/a2a/human-not-present/cards/run.sh
+   bash code/samples/typescript/scenarios/a2a/human-not-present/cards/run.sh
    ```
 
 2. Send the initial intent to the shopping agent over A2A (the agent runs

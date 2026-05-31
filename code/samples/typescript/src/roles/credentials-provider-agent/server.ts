@@ -22,7 +22,7 @@ import { sessionService } from '../../common/config/session.js';
 import { BaseAgentExecutor } from '../../common/server/base-executor.js';
 import { bootstrapServer } from '../../common/server/bootstrap.js';
 import { DATA_KEYS, A2A_DATA_KEYS } from '../../common/constants/index.js';
-import { initKeyManager } from '../../common/vc/index.js';
+import * as accountManager from './account-manager.js';
 
 const runner = new Runner({
   appName: 'ap2-credentials-provider',
@@ -132,9 +132,9 @@ const agentCard: AgentCard = {
   version: '1.0.0',
 };
 
-// Initialize the VC key manager before starting the server so
-// the credentials-provider can issue and verify Verifiable Credentials.
-initKeyManager().then(() => {
+// Initialize the issuer ES256 key before starting the server so the
+// credentials-provider can issue and verify SD-JWT payment credentials.
+accountManager.initIssuerKey().then(() => {
   bootstrapServer({
     agentCard,
     agentExecutor,

@@ -20,14 +20,16 @@
  * Each 'account' contains a user's payment methods and shipping address.
  * For demonstration purposes, several accounts are pre-populated with sample data.
  *
- * Token creation now issues W3C Verifiable Credentials (VCs) via
- * @digitalbazaar/vc with Ed25519Signature2020 signatures.
+ * Token creation issues SD-JWT payment credentials signed with the
+ * credentials-provider's ES256 key (AP2 v0.2). Sensitive payment method
+ * fields are made selectively disclosable.
  */
 import {
-  issuePaymentCredential,
-  verifyAndExtractSubject,
-} from '../../common/vc/index.js';
-import type { VerifiableCredential } from '../../common/vc/index.js';
+  issueOpenMandate,
+  verifyMandate,
+  generateKeyPair,
+  type Es256KeyPair,
+} from '../../common/sdjwt/index.js';
 
 export type PaymentMethod = {
   type: string;
@@ -161,9 +163,9 @@ const accountDb: { [email: string]: Account } = {
 };
 
 /**
- * Token store: maps a serialized VC (the "token" string) to its metadata.
- * The VC itself is the token — it cryptographically binds the payment method
- * to the issuer. The store tracks the mandate association.
+ * Token store: maps a serialized SD-JWT (the "token" string) to its metadata.
+ * The SD-JWT itself is the token — it cryptographically binds the payment
+ * method to the issuer. The store tracks the mandate association.
  */
 const tokens: {
   [token: string]: {
@@ -174,15 +176,61 @@ const tokens: {
 } = {};
 
 /**
- * Creates a token for an account by issuing a W3C Verifiable Credential.
+ * The credentials-provider's ES256 issuer keypair. Used to sign payment
+ * credential SD-JWTs and to verify them on the way back. The same keypair's
+ * public key is also bound into `cnf.jwk` as the holder key for these demo
+ * tokens (no separate holder key is involved at issuance time).
+ */
+let issuerKey: Es256KeyPair | null = null;
+
+/**
+ * Initializes the issuer ES256 keypair. Idempotent — repeated calls after the
+ * first are no-ops, so it is safe to invoke during server boot.
+ */
+export async function initIssuerKey(): Promise<void> {
+  if (issuerKey) {
+    return;
+  }
+  issuerKey = await generateKeyPair();
+}
+
+/**
+ * Returns the initialized issuer keypair.
  *
- * The VC embeds the payment method data as the credentialSubject and is
- * signed with the credentials-provider's Ed25519 key. The serialized VC
- * (JSON string) serves as the token.
+ * @throws Error if {@link initIssuerKey} has not been called yet.
+ */
+function getIssuerKey(): Es256KeyPair {
+  if (!issuerKey) {
+    throw new Error('Issuer key not initialized. Call initIssuerKey() first.');
+  }
+  return issuerKey;
+}
+
+/**
+ * Payment method fields that carry sensitive data and should be made
+ * selectively disclosable in the issued SD-JWT.
+ */
+const DISCLOSABLE_FIELDS = [
+  'cryptogram',
+  'token',
+  'card_holder_name',
+  'card_expiration',
+  'card_billing_address',
+  'account_number',
+  'account_identifier',
+];
+
+/**
+ * Creates a token for an account by issuing an SD-JWT payment credential.
+ *
+ * The SD-JWT embeds the payment method data as claims and is signed with the
+ * credentials-provider's ES256 issuer key. Sensitive payment method fields are
+ * made selectively disclosable. The serialized SD-JWT string serves as the
+ * token.
  *
  * @param emailAddress - The email address of the account.
  * @param paymentMethodAlias - The alias of the payment method.
- * @returns The serialized VC token for the payment method.
+ * @returns The serialized SD-JWT token for the payment method.
  */
 export const createToken = async (
   emailAddress: string,
@@ -195,14 +243,33 @@ export const createToken = async (
     );
   }
 
-  // Issue a W3C Verifiable Credential containing the payment method data.
-  const credential: VerifiableCredential = await issuePaymentCredential({
-    subjectId: `mailto:${emailAddress}`,
-    paymentMethod: paymentMethod as unknown as Record<string, unknown>,
-  });
+  const key = getIssuerKey();
 
-  // Serialize the VC to use as the token string
-  const token = JSON.stringify(credential);
+  // Build the claim set from the payment method fields plus credential
+  // metadata. The credential `type` claim ("PaymentCredential") shadows the
+  // payment method's own `type` field (e.g. "CARD"), so the latter is
+  // preserved under `payment_method_type` and restored on verification.
+  const claims: Record<string, unknown> = {
+    ...(paymentMethod as unknown as Record<string, unknown>),
+    payment_method_type: paymentMethod.type,
+    sub: `mailto:${emailAddress}`,
+    payment_method_alias: paymentMethodAlias,
+    type: 'PaymentCredential',
+    iat: Math.floor(Date.now() / 1000),
+  };
+
+  // Only the sensitive fields actually present on this payment method are
+  // declared as selectively disclosable.
+  const disclosable = DISCLOSABLE_FIELDS.filter((field) => field in claims);
+
+  // Issue an SD-JWT payment credential signed by the issuer key. The issuer's
+  // public key is also bound as the holder key (cnf.jwk).
+  const token = await issueOpenMandate({
+    claims,
+    disclosable,
+    issuerPrivateJwk: key.privateKey,
+    holderPublicJwk: key.publicKey,
+  });
 
   tokens[token] = {
     emailAddress,
@@ -231,15 +298,16 @@ export const updateToken = (token: string, paymentMandateId: string): void => {
 };
 
 /**
- * Verify a token (serialized VC) and return the payment method.
+ * Verify a token (serialized SD-JWT) and return the payment method.
  *
- * Performs cryptographic verification of the VC signature, checks the
- * mandate binding, and extracts the payment method from the credential subject.
+ * Performs cryptographic verification of the SD-JWT issuer signature, checks
+ * the in-memory mandate binding, and reconstructs the payment method from the
+ * verified claims.
  *
- * @param token - The serialized VC token.
+ * @param token - The serialized SD-JWT token.
  * @param paymentMandateId - The payment mandate id associated with the token.
- * @returns The payment method extracted from the verified VC.
- * @throws Error if the token/VC is invalid or mandate doesn't match.
+ * @returns The payment method extracted from the verified SD-JWT.
+ * @throws Error if the token is invalid or the mandate doesn't match.
  */
 export const verifyToken = async (
   token: string,
@@ -254,21 +322,32 @@ export const verifyToken = async (
     throw new Error("Invalid token");
   }
 
-  // Cryptographically verify the VC
-  let credential: VerifiableCredential;
-  try {
-    credential = JSON.parse(token) as VerifiableCredential;
-  } catch {
-    throw new Error("Invalid token: not a valid VC");
+  const key = getIssuerKey();
+
+  // Cryptographically verify the SD-JWT issuer signature.
+  const { payload } = await verifyMandate({
+    mandateSdJwt: token,
+    issuerPublicJwk: key.publicKey,
+  });
+
+  // Reconstruct the PaymentMethod from the verified claims. Strip the
+  // credential metadata (sub, payment_method_alias, type, iat) and the
+  // holder-binding `cnf` claim. The credential `type` ("PaymentCredential")
+  // is dropped; the payment method's own `type` (e.g. "CARD") was stashed in
+  // `payment_method_type` at issuance and is restored here.
+  const {
+    sub: _sub,
+    payment_method_alias: _alias,
+    type: _credentialType,
+    iat: _iat,
+    cnf: _cnf,
+    payment_method_type: paymentMethodType,
+    ...rest
+  } = payload;
+  const paymentMethodData: Record<string, unknown> = { ...rest };
+  if (paymentMethodType !== undefined) {
+    paymentMethodData.type = paymentMethodType;
   }
-
-  const subject = await verifyAndExtractSubject(credential);
-
-  // Reconstruct the PaymentMethod from the VC subject.
-  // Strip only the VC-specific `id` (subject DID/URI) and `paymentMandateId`
-  // metadata. The `type` field is kept because it holds the payment method
-  // type (e.g., "CARD"), not the JSON-LD type.
-  const { id: _id, paymentMandateId: _mandateId, ...paymentMethodData } = subject;
   return paymentMethodData as unknown as PaymentMethod;
 };
 

@@ -12,60 +12,75 @@
  * Exposes one MCP tool consumed by the shopping agent v2 over stdio:
  *   initiate_payment
  *
- * NOTE: Minimum viable port. Mandate verification, token-store lookup, and
- * receipt signing are STUBBED. Tool contract mirrors the v0.2 Python server.
+ * Settles the payment and signs a real ES256 payment receipt with the PSP key
+ * (the same receipt the PSP trigger server produces). Token-store lookup is
+ * still simplified. Tool contract mirrors the v0.2 Python server.
  */
 
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { randomUUID } from 'node:crypto';
 import { z } from 'zod';
+import { signJwtEs256, loadOrCreateKeyPair } from '../../common/sdjwt/index.js';
+
+const TEMP_DB = process.env.TEMP_DB_DIR ?? '.temp-db';
 
 const server = new McpServer({
   name: 'merchant-payment-processor-mcp',
   version: '0.2.0',
 });
 
-server.tool(
+server.registerTool(
   'initiate_payment',
   {
-    payment_token: z.string(),
-    checkout_jwt_hash: z.string(),
-    open_checkout_hash: z.string(),
+    description:
+      'Initiate and settle a payment for a previously issued payment token, bound to ' +
+      'the checkout-JWT and open-checkout hashes, returning a (stubbed) signed PSP receipt.',
+    inputSchema: {
+      payment_token: z.string(),
+      checkout_jwt_hash: z.string(),
+      open_checkout_hash: z.string(),
+    },
   },
   async ({ payment_token, checkout_jwt_hash, open_checkout_hash }) => {
     if (!payment_token || !checkout_jwt_hash || !open_checkout_hash) {
+      const error = {
+        error: 'missing_fields',
+        message:
+          'payment_token, checkout_jwt_hash, and open_checkout_hash are required',
+      };
       return {
-        content: [
-          {
-            type: 'text',
-            text: JSON.stringify({
-              error: 'missing_fields',
-              message:
-                'payment_token, checkout_jwt_hash, and open_checkout_hash are required',
-            }),
-          },
-        ],
+        content: [{ type: 'text', text: JSON.stringify(error) }],
+        structuredContent: error,
+        isError: true,
       };
     }
-    // STUB: real impl looks up token, verifies mandate chain, settles payment,
-    // signs receipt with PSP key, and POSTs to credentials-provider trigger.
-    const receipt = `psp_receipt.${randomUUID()}.stub_sig`;
+    // Settle and sign a real ES256 payment receipt with the PSP key.
+    const psp = await loadOrCreateKeyPair(TEMP_DB, 'psp');
+    const receipt = await signJwtEs256(
+      {
+        iss: 'merchant-payment-processor',
+        receipt_id: randomUUID(),
+        iat: Math.floor(Date.now() / 1000),
+        checkout_jwt_hash,
+        open_checkout_hash,
+        payment_token,
+        status: 'settled',
+      },
+      psp.privateKey,
+    );
+    const result = {
+      status: 'settled',
+      payment_receipt: receipt,
+      checkout_jwt_hash,
+      open_checkout_hash,
+      amount: 1500,
+      currency: 'USD',
+      timestamp: Math.floor(Date.now() / 1000),
+    };
     return {
-      content: [
-        {
-          type: 'text',
-          text: JSON.stringify({
-            status: 'settled',
-            payment_receipt: receipt,
-            checkout_jwt_hash,
-            open_checkout_hash,
-            amount: 1500,
-            currency: 'USD',
-            timestamp: Math.floor(Date.now() / 1000),
-          }),
-        },
-      ],
+      content: [{ type: 'text', text: JSON.stringify(result) }],
+      structuredContent: result,
     };
   },
 );

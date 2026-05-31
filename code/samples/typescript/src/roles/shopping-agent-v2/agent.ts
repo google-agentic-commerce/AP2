@@ -9,18 +9,27 @@
  *
  * Shopping Agent v2 — Human-Not-Present.
  *
- * Single LlmAgent (MVP — Python has a consent/monitoring/purchase hierarchy)
- * that owns three MCP toolsets (merchant, credentials-provider, payment-processor)
- * plus the mandate helper tools. Each MCP toolset is a long-lived stdio Client
- * connected to the corresponding `*-mcp/server.ts` subprocess.
+ * Mirrors the Python `shopping_agent_v2` sub-agent hierarchy:
+ *   consent_agent (root) -> monitoring_agent -> purchase_agent (leaf).
+ *
+ * - consent_agent: drop/budget dialogue + open-mandate signing, then transfers
+ *   to monitoring.
+ * - monitoring_agent: watches price/availability, transfers to purchase when the
+ *   open-mandate constraints are satisfied and the item is available.
+ * - purchase_agent: runs the autonomous purchase pipeline (assemble cart ->
+ *   create checkout -> closed-mandate presentations -> issue payment credential
+ *   -> complete checkout -> verify receipts).
+ *
+ * Each agent owns its OWN set of MCPToolset instances (separate stdio
+ * connections) per ADK best practice — sharing a single toolset across agents
+ * causes stdio connection conflicts (see google/adk-python#712). Each MCP
+ * toolset launches the corresponding `*-mcp/server.ts` as a stdio subprocess.
  */
 
-import { FunctionTool, LlmAgent } from '@google/adk';
-import { Client } from '@modelcontextprotocol/sdk/client/index.js';
-import { StdioClientTransport } from '@modelcontextprotocol/sdk/client/stdio.js';
+import { LlmAgent, MCPToolset } from '@google/adk';
+import type { BaseTool } from '@google/adk';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { z } from 'zod';
 
 import {
   assembleAndSignMandatesTool,
@@ -28,167 +37,144 @@ import {
   createCheckoutPresentationTool,
   createPaymentPresentationTool,
   verifyCheckoutReceiptTool,
+  resetTempDbTool,
 } from './mandate-tools.js';
+import { CONSENT_INSTRUCTION } from './prompts/consent.js';
+import { MONITORING_INSTRUCTION } from './prompts/monitoring.js';
+import { PURCHASE_INSTRUCTION } from './prompts/purchase.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const ROLES_DIR = path.resolve(__dirname, '..');
 
-async function makeMcpClient(serverEntry: string): Promise<Client> {
-  const transport = new StdioClientTransport({
-    command: 'npx',
-    args: ['tsx', serverEntry],
-    env: {
-      ...process.env,
-      LOGS_DIR: process.env.LOGS_DIR ?? path.resolve(ROLES_DIR, '../../.logs'),
-      TEMP_DB_DIR: process.env.TEMP_DB_DIR ?? path.resolve(ROLES_DIR, '../../.temp-db'),
-    } as Record<string, string>,
-  });
-  const client = new Client({ name: 'shopping-agent-v2', version: '0.2.0' });
-  await client.connect(transport);
-  return client;
-}
+const MERCHANT_SERVER = path.join(ROLES_DIR, 'merchant-agent-mcp/server.ts');
+const CREDENTIAL_SERVER = path.join(ROLES_DIR, 'credentials-provider-mcp/server.ts');
+const PSP_SERVER = path.join(ROLES_DIR, 'merchant-payment-processor-mcp/server.ts');
 
-function mcpTool(
-  client: Client,
-  toolName: string,
-  description: string,
-  parameters: z.ZodObject<z.ZodRawShape>,
-): FunctionTool {
-  return new FunctionTool({
-    name: toolName,
-    description,
-    parameters,
-    execute: async (args: unknown) => {
-      const result = (await client.callTool({
-        name: toolName,
-        arguments: args as Record<string, unknown>,
-      })) as { content?: Array<{ type: string; text?: string }> };
-      const first = result.content?.[0];
-      if (first?.type === 'text' && first.text) {
-        try { return JSON.parse(first.text); } catch { return first.text; }
-      }
-      return result;
+const MCP_ENV = {
+  ...process.env,
+  LOGS_DIR: process.env.LOGS_DIR ?? path.resolve(ROLES_DIR, '../../.logs'),
+  TEMP_DB_DIR: process.env.TEMP_DB_DIR ?? path.resolve(ROLES_DIR, '../../.temp-db'),
+} as Record<string, string>;
+
+/**
+ * Build a fresh MCPToolset that launches an `*-mcp/server.ts` over stdio.
+ *
+ * A new instance is created per call (and per agent) on purpose: sharing one
+ * toolset across agents reuses the same stdio session and conflicts.
+ *
+ * @param serverEntry Absolute path to the MCP server entrypoint.
+ * @param toolFilter Optional allowlist of tool names or a predicate.
+ * @returns A configured MCPToolset.
+ */
+function makeMcpToolset(
+  serverEntry: string,
+  toolFilter?: string[] | ((tool: BaseTool) => boolean),
+): MCPToolset {
+  return new MCPToolset(
+    {
+      type: 'StdioConnectionParams',
+      serverParams: {
+        command: 'npx',
+        args: ['tsx', serverEntry],
+        env: MCP_ENV,
+      },
+      timeout: 60_000,
     },
-  });
+    toolFilter,
+  );
 }
 
-const merchantClient = await makeMcpClient(path.join(ROLES_DIR, 'merchant-agent-mcp/server.ts'));
-const credentialsClient = await makeMcpClient(path.join(ROLES_DIR, 'credentials-provider-mcp/server.ts'));
-const pspClient = await makeMcpClient(path.join(ROLES_DIR, 'merchant-payment-processor-mcp/server.ts'));
+const MODEL = process.env.AGENT_MODEL ?? 'gemini-2.5-flash';
 
-const merchantTools = [
-  mcpTool(
-    merchantClient,
-    'search_inventory',
-    'Search the merchant inventory by natural-language description. Returns at most one matching product. Stock is 0 until a price-drop trigger fires.',
-    z.object({
-      product_description: z.string(),
-      constraint_price_cap: z.number().nullable().optional(),
-    }),
-  ),
-  mcpTool(
-    merchantClient,
-    'check_product',
-    'Return the current price and availability of a known item_id (e.g. supershoe_size_9_0). Stock becomes >0 only after the trigger fires.',
-    z.object({
-      item_id: z.string(),
-      constraint_price_cap: z.number().nullable().optional(),
-    }),
-  ),
-  mcpTool(
-    merchantClient,
-    'assemble_cart',
-    'Build a cart for the given item_id and qty after check_product reports available=true.',
-    z.object({ item_id: z.string(), qty: z.number().int().positive() }),
-  ),
-  mcpTool(
-    merchantClient,
-    'create_checkout',
-    'Issue an ES256-signed checkout JWT for the cart and the open checkout mandate.',
-    z.object({ cart_id: z.string(), open_checkout_mandate_id: z.string() }),
-  ),
-  mcpTool(
-    merchantClient,
-    'complete_checkout',
-    'Hand the issued payment credential back to the merchant to finalize the order and emit a checkout receipt.',
-    z.object({ checkout_jwt: z.string(), payment_credential: z.unknown().optional() }),
-  ),
-];
+/**
+ * Reformat any MCP/mandate tool error into a structured artifact and escalate
+ * so the LLM reliably stops and emits exactly {type:'error', error, message}.
+ *
+ * Returning a replacement object becomes the tool result the model sees, and
+ * setting `context.actions.escalate` halts further sub-agent processing.
+ */
+const errorEscalationCallback = ({
+  tool,
+  response,
+  context,
+}: {
+  tool: BaseTool;
+  args: Record<string, unknown>;
+  response: Record<string, unknown>;
+  context: { actions: { escalate?: boolean } };
+}): Record<string, unknown> | undefined => {
+  if (response && typeof response === 'object' && 'error' in response) {
+    const error = (response as { error: unknown }).error;
+    const message = 'message' in response ? (response as { message: unknown }).message : String(response);
+    context.actions.escalate = true;
+    const errorJson = JSON.stringify({ type: 'error', error, message });
+    return {
+      error,
+      message,
+      action_required:
+        `STOP all processing for tool "${tool.name}". Emit EXACTLY this JSON ` +
+        `as your complete response, nothing else: ${errorJson}`,
+    };
+  }
+  return undefined;
+};
 
-const credentialsTools = [
-  mcpTool(
-    credentialsClient,
-    'issue_payment_credential',
-    'Verify the closed payment mandate chain and issue a scoped, single-use payment token.',
-    z.object({
-      payment_mandate_chain_id: z.string(),
-      open_checkout_hash: z.string(),
-      checkout_jwt_hash: z.string(),
-      payment_nonce: z.string(),
-    }),
-  ),
-  mcpTool(
-    credentialsClient,
-    'revoke_payment_credential',
-    'Revoke a previously issued payment token.',
-    z.object({ payment_token: z.string() }),
-  ),
-  mcpTool(
-    credentialsClient,
-    'verify_payment_receipt',
-    'Verify a PSP-signed payment receipt against the issued payment token.',
-    z.object({ payment_receipt: z.string() }),
-  ),
-];
-
-const pspTools = [
-  mcpTool(
-    pspClient,
-    'initiate_payment',
-    'Submit a settlement request to the PSP using the issued payment token. Returns a signed payment receipt.',
-    z.object({
-      payment_token: z.string(),
-      checkout_jwt_hash: z.string(),
-      open_checkout_hash: z.string(),
-    }),
-  ),
-];
-
-export const shoppingAgentV2 = new LlmAgent({
-  name: 'root_agent',
-  model: process.env.AGENT_MODEL ?? 'gemini-2.5-flash',
+export const purchaseAgent = new LlmAgent({
+  name: 'purchase_agent',
+  model: MODEL,
   description:
-    'Human-Not-Present shopping agent. Captures user intent, signs an open mandate, ' +
-    'monitors merchant for price/availability, and autonomously executes the purchase ' +
-    'when the constraint is satisfied.',
-  instruction: `You are a Human-Not-Present shopping agent.
-
-Flow:
-1. Capture the user's intent (item, price cap, expiry). Call search_inventory once to register the item and get its item_id.
-2. Call assembleAndSignMandates with the natural_language_description, constraint_price_cap, and an expires_at_iso string (1 hour from now). This produces open_checkout_mandate_id, open_payment_mandate_id, and their hashes.
-3. To check current state, call check_product with the item_id from step 1.
-4. Call checkConstraintsAgainstMandate with the open_checkout_mandate_id, current_price, and available. If satisfies = false, tell the user you'll keep watching and stop.
-5. When satisfies = true, execute the autonomous purchase:
-   a. assemble_cart(item_id, qty=1)
-   b. create_checkout(cart_id, open_checkout_mandate_id)
-   c. createCheckoutPresentation, createPaymentPresentation
-   d. issue_payment_credential(payment_mandate_chain_id, open_checkout_hash, checkout_jwt_hash, payment_nonce — generate a random nonce)
-   e. initiate_payment(payment_token, checkout_jwt_hash, open_checkout_hash)
-   f. complete_checkout(checkout_jwt, payment_credential)
-   g. verify_payment_receipt, verifyCheckoutReceipt
-6. Surface a brief receipt summary to the user.
-
-If a tool returns an object with an "error" key, STOP and return the error verbatim.`,
+    'Executes the autonomous purchase flow once price and availability satisfy ' +
+    'the open mandates: assemble_cart, create_checkout, closed mandates, ' +
+    'issue_payment_credential, complete_checkout, and receipt verification.',
+  instruction: PURCHASE_INSTRUCTION,
+  outputKey: 'purchase_result',
   tools: [
-    assembleAndSignMandatesTool,
     checkConstraintsAgainstMandateTool,
     createCheckoutPresentationTool,
     createPaymentPresentationTool,
     verifyCheckoutReceiptTool,
-    ...merchantTools,
-    ...credentialsTools,
-    ...pspTools,
+    makeMcpToolset(MERCHANT_SERVER),
+    makeMcpToolset(CREDENTIAL_SERVER),
+    // The purchase agent must NOT settle directly via the PSP; filter out
+    // initiate_payment (mirrors the Python tool_filter lambda).
+    makeMcpToolset(PSP_SERVER, (tool) => tool.name !== 'initiate_payment'),
   ],
+  afterToolCallback: errorEscalationCallback,
 });
+
+export const monitoringAgent = new LlmAgent({
+  name: 'monitoring_agent',
+  model: MODEL,
+  description:
+    'Holds the open mandates and monitors item price and availability via ' +
+    'check_product. Transfers to purchase_agent when the price is within the ' +
+    'mandate and the merchant reports the item as available.',
+  instruction: MONITORING_INSTRUCTION,
+  outputKey: 'monitoring_result',
+  tools: [checkConstraintsAgainstMandateTool, makeMcpToolset(MERCHANT_SERVER)],
+  subAgents: [purchaseAgent],
+  afterToolCallback: errorEscalationCallback,
+});
+
+export const consentAgent = new LlmAgent({
+  name: 'consent_agent',
+  model: MODEL,
+  description:
+    'Handles drop/budget dialogue, item selection, and open-mandate signing. ' +
+    'Transfers to monitoring_agent after the mandates are approved or on ' +
+    '"Check price now".',
+  instruction: CONSENT_INSTRUCTION,
+  outputKey: 'consent_result',
+  tools: [
+    resetTempDbTool,
+    assembleAndSignMandatesTool,
+    checkConstraintsAgainstMandateTool,
+    makeMcpToolset(MERCHANT_SERVER),
+  ],
+  subAgents: [monitoringAgent],
+  afterToolCallback: errorEscalationCallback,
+});
+
+export const shoppingAgentV2 = consentAgent;
 
 export { shoppingAgentV2 as rootAgent };

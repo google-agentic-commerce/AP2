@@ -1,0 +1,140 @@
+/**
+ * Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Rejection-path tests for the Verifiable Intent chain — the security
+ * properties that MUST hold: expired credentials, missing/wrong issuer key, and
+ * delegation to an out-of-mandate payee are all refused. Seed batch for the
+ * autonomous improvement loop (see BACKLOG.md). Runs in-process, no servers.
+ */
+
+import { describe, it, expect } from 'vitest';
+import {
+  ACCEPTABLE_ITEMS,
+  MERCHANTS,
+  PAYMENT_INSTRUMENT,
+  ROLE_KIDS,
+  type ViKeyPair,
+  createAgentFulfillment,
+  createCheckoutJwt,
+  checkoutHashFromJwt,
+  createUserMandateAutonomous,
+  decodeSdJwt,
+  findProduct,
+  generateEs256Key,
+  issueIssuerCredential,
+  verifyChain,
+  verifyPaymentChainAndConstraints,
+} from '../../src/common/vi/index.js';
+
+async function makeKey(name: string): Promise<ViKeyPair> {
+  const { publicKey, privateKey } = await generateEs256Key();
+  return { publicKey, privateKey, kid: ROLE_KIDS[name] ?? `${name}-key-1` };
+}
+
+const NOW = 1_900_000_000;
+
+/** Build a full, valid autonomous fulfillment for the tennis-racket scenario. */
+async function buildChain() {
+  const issuer = await makeKey('issuer');
+  const user = await makeKey('user');
+  const agent = await makeKey('agent');
+  const merchant = await makeKey('merchant');
+
+  const l1 = await issueIssuerCredential({ userPublicJwk: user.publicKey, issuer, sub: 'u', iat: NOW });
+  const l2 = await createUserMandateAutonomous({
+    l1Serialized: l1,
+    user,
+    agentPublicJwk: agent.publicKey,
+    agentKid: agent.kid,
+    promptSummary: 'racket',
+    iat: NOW,
+    merchants: MERCHANTS,
+    acceptableItems: ACCEPTABLE_ITEMS,
+    paymentInstrument: PAYMENT_INSTRUMENT,
+    amountMin: 0,
+    amountMax: 40000,
+  });
+  const racket = findProduct('BAB86345')!;
+  const checkoutJwt = await createCheckoutJwt([{ sku: racket.sku }], merchant);
+  const checkoutHash = checkoutHashFromJwt(checkoutJwt);
+  const fulfillment = await createAgentFulfillment({
+    l2Serialized: l2,
+    agent,
+    checkoutJwt,
+    checkoutHash,
+    payee: MERCHANTS[0],
+    itemId: racket.sku,
+    amount: racket.price,
+    paymentInstrument: PAYMENT_INSTRUMENT,
+    iat: NOW,
+  });
+  return { issuer, user, agent, merchant, l1, l2, checkoutJwt, checkoutHash, fulfillment, racket };
+}
+
+describe('Verifiable Intent — rejection paths', () => {
+  it('rejects an expired L3 (verified well after its exp)', async () => {
+    const { issuer, l1, fulfillment } = await buildChain();
+    // L3 exp = iat + 300; verify ~1h later → expired.
+    const outcome = await verifyPaymentChainAndConstraints({
+      l1Serialized: l1,
+      l2PaymentSerialized: fulfillment.l2PaymentSerialized,
+      l3PaymentSerialized: fulfillment.l3PaymentSerialized,
+      issuerPublicJwk: issuer.publicKey,
+      currentTime: NOW + 3600,
+    });
+    expect(outcome.valid).toBe(false);
+    expect(outcome.result.valid).toBe(false);
+  });
+
+  it('fails closed when no issuer key is provided and verification is not skipped', async () => {
+    const { l1, fulfillment } = await buildChain();
+    const result = await verifyChain(
+      decodeSdJwt(l1),
+      decodeSdJwt(fulfillment.l2PaymentSerialized),
+      {
+        l3Payment: decodeSdJwt(fulfillment.l3PaymentSerialized),
+        l1Serialized: l1,
+        l2PaymentSerialized: fulfillment.l2PaymentSerialized,
+        currentTime: NOW,
+        // intentionally: no issuerPublicJwk, no skipIssuerVerification
+      },
+    );
+    expect(result.valid).toBe(false);
+  });
+
+  it('rejects a chain verified against the wrong issuer key', async () => {
+    const { l1, fulfillment } = await buildChain();
+    const wrongIssuer = await makeKey('issuer');
+    const outcome = await verifyPaymentChainAndConstraints({
+      l1Serialized: l1,
+      l2PaymentSerialized: fulfillment.l2PaymentSerialized,
+      l3PaymentSerialized: fulfillment.l3PaymentSerialized,
+      issuerPublicJwk: wrongIssuer.publicKey,
+      currentTime: NOW,
+    });
+    expect(outcome.valid).toBe(false);
+  });
+
+  it('refuses to build a fulfillment for a payee outside the mandate', async () => {
+    const { agent, l2, checkoutJwt, checkoutHash, racket } = await buildChain();
+    await expect(
+      createAgentFulfillment({
+        l2Serialized: l2,
+        agent,
+        checkoutJwt,
+        checkoutHash,
+        payee: { id: 'merchant-unknown', name: 'Not Allowed', website: 'https://nope.example' },
+        itemId: racket.sku,
+        amount: racket.price,
+        paymentInstrument: PAYMENT_INSTRUMENT,
+        iat: NOW,
+      }),
+    ).rejects.toThrow();
+  });
+});

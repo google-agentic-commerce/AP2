@@ -22,14 +22,23 @@
  *
  * Token creation issues SD-JWT payment credentials signed with the
  * credentials-provider's ES256 key (AP2 v0.2). Sensitive payment method
- * fields are made selectively disclosable.
+ * fields are made selectively disclosable. Built directly on the Verifiable
+ * Intent SD-JWT primitives (@verifiable-intent/core): the issuer signs a
+ * selective-disclosure SD-JWT with a `cnf.jwk` holder-binding key (RFC 7800),
+ * and verification checks the issuer signature and resolves the disclosures.
  */
 import {
-  issueOpenMandate,
-  verifyMandate,
-  generateKeyPair,
-  type Es256KeyPair,
-} from '../../common/sdjwt/index.js';
+  createDisclosure,
+  createSdArray,
+  createSdJwt,
+  decodeSdJwt,
+  type Es256Jwk,
+  generateEs256Key,
+  resolveDisclosures,
+  verifySdJwtSignature,
+} from '../../common/vi/index.js';
+
+type IssuerKeyPair = { publicKey: Es256Jwk; privateKey: Es256Jwk };
 
 export type PaymentMethod = {
   type: string;
@@ -181,7 +190,7 @@ const tokens: {
  * public key is also bound into `cnf.jwk` as the holder key for these demo
  * tokens (no separate holder key is involved at issuance time).
  */
-let issuerKey: Es256KeyPair | null = null;
+let issuerKey: IssuerKeyPair | null = null;
 
 /**
  * Initializes the issuer ES256 keypair. Idempotent — repeated calls after the
@@ -191,7 +200,7 @@ export async function initIssuerKey(): Promise<void> {
   if (issuerKey) {
     return;
   }
-  issuerKey = await generateKeyPair();
+  issuerKey = await generateEs256Key();
 }
 
 /**
@@ -199,7 +208,7 @@ export async function initIssuerKey(): Promise<void> {
  *
  * @throws Error if {@link initIssuerKey} has not been called yet.
  */
-function getIssuerKey(): Es256KeyPair {
+function getIssuerKey(): IssuerKeyPair {
   if (!issuerKey) {
     throw new Error('Issuer key not initialized. Call initIssuerKey() first.');
   }
@@ -262,14 +271,25 @@ export const createToken = async (
   // declared as selectively disclosable.
   const disclosable = DISCLOSABLE_FIELDS.filter((field) => field in claims);
 
-  // Issue an SD-JWT payment credential signed by the issuer key. The issuer's
-  // public key is also bound as the holder key (cnf.jwk).
-  const token = await issueOpenMandate({
-    claims,
-    disclosable,
-    issuerPrivateJwk: key.privateKey,
-    holderPublicJwk: key.publicKey,
-  });
+  // Build the selective disclosures for the sensitive fields, and the always-
+  // visible payload for everything else (plus the cnf holder-binding key).
+  const disclosures = disclosable.map((field) => createDisclosure(field, claims[field]));
+  const payload: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(claims)) {
+    if (!disclosable.includes(k)) {
+      payload[k] = v;
+    }
+  }
+  // cnf is never selectively disclosed (RFC 7800). For these demo credentials
+  // the issuer's own public key is bound as the holder key.
+  payload.cnf = { jwk: key.publicKey };
+  payload._sd = createSdArray(disclosures);
+  payload._sd_alg = 'sha-256';
+
+  // Issue + serialize the SD-JWT payment credential signed by the issuer key.
+  const header = { alg: 'ES256', typ: 'sd+jwt' };
+  const sdJwt = await createSdJwt(header, payload, disclosures, key.privateKey);
+  const token = sdJwt.serialize();
 
   tokens[token] = {
     emailAddress,
@@ -324,23 +344,29 @@ export const verifyToken = async (
 
   const key = getIssuerKey();
 
-  // Cryptographically verify the SD-JWT issuer signature.
-  const { payload } = await verifyMandate({
-    mandateSdJwt: token,
-    issuerPublicJwk: key.publicKey,
-  });
+  // Cryptographically verify the SD-JWT issuer signature, then resolve the
+  // selective disclosures into the full claim set.
+  const sdJwt = decodeSdJwt(token);
+  const signatureValid = await verifySdJwtSignature(sdJwt, key.publicKey);
+  if (!signatureValid) {
+    throw new Error('Invalid token: SD-JWT signature verification failed');
+  }
+  const payload = resolveDisclosures(sdJwt);
 
   // Reconstruct the PaymentMethod from the verified claims. Strip the
-  // credential metadata (sub, payment_method_alias, type, iat) and the
-  // holder-binding `cnf` claim. The credential `type` ("PaymentCredential")
-  // is dropped; the payment method's own `type` (e.g. "CARD") was stashed in
-  // `payment_method_type` at issuance and is restored here.
+  // credential metadata (sub, payment_method_alias, type, iat), the SD-JWT
+  // machinery (_sd, _sd_alg), and the holder-binding `cnf` claim. The
+  // credential `type` ("PaymentCredential") is dropped; the payment method's
+  // own `type` (e.g. "CARD") was stashed in `payment_method_type` at issuance
+  // and is restored here.
   const {
     sub: _sub,
     payment_method_alias: _alias,
     type: _credentialType,
     iat: _iat,
     cnf: _cnf,
+    _sd: _sdHashes,
+    _sd_alg: _sdAlg,
     payment_method_type: paymentMethodType,
     ...rest
   } = payload;

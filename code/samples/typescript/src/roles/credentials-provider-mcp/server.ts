@@ -26,7 +26,8 @@ import { randomUUID } from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { z } from 'zod';
-import { verifyMandate, verifyJwtEs256, loadPublicJwk, type Es256KeyPair } from '../../common/sdjwt/index.js';
+import { verifyJwtEs256, loadPublicJwk } from '../../common/sdjwt/index.js';
+import { loadViPublicJwk, verifyPaymentChainAndConstraints } from '../../common/vi/index.js';
 
 const TEMP_DB = process.env.TEMP_DB_DIR ?? '.temp-db';
 
@@ -40,13 +41,6 @@ function readTempFile(filename: string): string | null {
   }
 }
 
-/** The user (issuer) public key persisted by the shopping agent's mandate-tools. */
-function loadUserPublicJwk(): JsonWebKey | null {
-  const raw = readTempFile('user_key.jwk.json');
-  if (!raw) return null;
-  return (JSON.parse(raw) as Es256KeyPair).publicKey;
-}
-
 const server = new McpServer({
   name: 'credentials-provider-mcp',
   version: '0.2.0',
@@ -56,56 +50,52 @@ server.registerTool(
   'issue_payment_credential',
   {
     description:
-      'Issue a scoped single-use payment token for a verified payment mandate chain, ' +
-      'bound to the open-checkout and checkout-JWT hashes and a payment nonce.',
+      'Verify the payment-side Verifiable Intent chain (L1 issuer -> L2 user mandate -> L3a agent ' +
+      'payment fulfillment) and enforce the mandate constraints (STRICT). Only on a valid chain ' +
+      'whose amount/payee satisfy the user mandate is a scoped single-use payment token issued.',
     inputSchema: {
       payment_mandate_chain_id: z.string(),
-      open_checkout_hash: z.string(),
-      checkout_jwt_hash: z.string(),
-      payment_nonce: z.string().optional(),
     },
   },
-  async ({ payment_mandate_chain_id, open_checkout_hash, checkout_jwt_hash }) => {
-    if (!payment_mandate_chain_id || !open_checkout_hash || !checkout_jwt_hash) {
-      const error = {
-        error: 'missing_fields',
-        message: 'payment_mandate_chain_id, open_checkout_hash, checkout_jwt_hash are required',
-      };
+  async ({ payment_mandate_chain_id }) => {
+    if (!payment_mandate_chain_id) {
+      const error = { error: 'missing_fields', message: 'payment_mandate_chain_id is required' };
       return {
         content: [{ type: 'text', text: JSON.stringify(error) }],
         structuredContent: error,
         isError: true,
       };
     }
-    // Load the presented closed payment-mandate (KB-SD-JWT) the agent persisted.
-    const presented = readTempFile(`${payment_mandate_chain_id}.sdjwt`);
-    if (!presented) {
-      const error = { error: 'mandate_not_found', message: payment_mandate_chain_id };
+    // Load the agent-produced payment chain artifacts (L3a + L2 payment presentation) + L1.
+    const l3Payment = readTempFile(`${payment_mandate_chain_id}.sdjwt`);
+    const l2Payment = readTempFile(`${payment_mandate_chain_id}.l2.sdjwt`);
+    const l1 = readTempFile('l1.sdjwt');
+    if (!l3Payment || !l2Payment || !l1) {
+      const error = { error: 'payment_chain_artifacts_missing', message: payment_mandate_chain_id };
       return { content: [{ type: 'text', text: JSON.stringify(error) }], structuredContent: error, isError: true };
     }
-    const issuerPublicJwk = loadUserPublicJwk();
+    const issuerPublicJwk = loadViPublicJwk(TEMP_DB, 'issuer');
     if (!issuerPublicJwk) {
-      const error = { error: 'issuer_key_unavailable', message: 'user_key.jwk.json not found in TEMP_DB' };
+      const error = { error: 'issuer_key_unavailable', message: 'issuer key not found in TEMP_DB' };
       return { content: [{ type: 'text', text: JSON.stringify(error) }], structuredContent: error, isError: true };
     }
 
-    // Verify the issuer (user) SD-JWT signature AND the agent Key-Binding JWT
-    // against cnf.jwk, requiring the holder binding to commit to the SPECIFIC
-    // checkout (nonce === checkout_jwt_hash). This is the hash-binding check:
-    // a payment presentation made for a different checkout is rejected here,
-    // and a forged/unbound presentation fails signature/KB verification.
+    // Verify the payment chain (issuer sig, L2->L1 binding, agent L3 key + sd_hash
+    // binding) AND enforce the user mandate constraints in STRICT mode. A forged
+    // chain fails signature/binding; an out-of-policy amount/payee fails constraints.
     try {
-      const { keyBound } = await verifyMandate({
-        mandateSdJwt: presented,
+      const outcome = await verifyPaymentChainAndConstraints({
+        l1Serialized: l1,
+        l2PaymentSerialized: l2Payment,
+        l3PaymentSerialized: l3Payment,
         issuerPublicJwk,
-        nonce: checkout_jwt_hash,
       });
-      if (!keyBound) {
-        const error = { error: 'checkout_binding_failed', message: 'payment mandate not holder-bound to this checkout_jwt_hash' };
+      if (!outcome.valid) {
+        const error = { error: 'payment_chain_invalid', message: outcome.errors.join('; ') };
         return { content: [{ type: 'text', text: JSON.stringify(error) }], structuredContent: error, isError: true };
       }
     } catch (e) {
-      const error = { error: 'mandate_verification_failed', message: String(e) };
+      const error = { error: 'payment_chain_verification_failed', message: String(e) };
       return { content: [{ type: 'text', text: JSON.stringify(error) }], structuredContent: error, isError: true };
     }
 

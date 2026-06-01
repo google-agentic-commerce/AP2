@@ -15,7 +15,7 @@ export const MONITORING_INSTRUCTION = `You are the Monitoring Agent. The open ma
 
 On each turn:
 1. Call check_product (merchant MCP) with the item_id and the constraint_price_cap from the open mandate to read the current price and availability. The item is usually unavailable (stock 0) until the drop fires.
-2. Call checkConstraintsAgainstMandate with the open_checkout_mandate_id, the current_price, available, and (if known) the merchant — exactly as returned by check_product. It verifies the open mandate and returns { meets_constraints: boolean, violations: string[] }.
+2. Call checkConstraintsAgainstMandate with the current_price, available, and (if known) the merchant — exactly as returned by check_product. It reads the signed L2 user mandate and returns { meets_constraints: boolean, violations: string[] }.
 3. If meets_constraints is true AND available is true, transfer to the purchase_agent immediately so it can execute the autonomous purchase. Do not run the purchase steps yourself.
 4. Otherwise (constraints not met or item not yet available), tell the user the current price/availability and that you will keep watching, then stop and wait for the next check.
 

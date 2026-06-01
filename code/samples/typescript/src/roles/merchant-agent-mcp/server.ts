@@ -30,6 +30,7 @@ import {
   loadOrCreateKeyPair,
   loadPublicJwk,
 } from '../../common/sdjwt/index.js';
+import { loadViPublicJwk, verifyCheckoutChain } from '../../common/vi/index.js';
 
 /** Base64url SHA-256 — the checkout JWT hash binds the payment mandate. */
 function sha256Base64Url(input: string): string {
@@ -135,6 +136,15 @@ function saveCart(cartId: string, cart: unknown): void {
 }
 function getCart(cartId: string): unknown {
   return loadCarts()[cartId];
+}
+
+/** Read a raw text file from TEMP_DB (chain artifacts), null if absent. */
+function readTempText(filename: string): string | null {
+  try {
+    return fs.readFileSync(path.join(TEMP_DB, filename), 'utf-8');
+  } catch {
+    return null;
+  }
 }
 
 const server = new McpServer({
@@ -275,14 +285,17 @@ server.registerTool(
   'create_checkout',
   {
     description:
-      'Create a checkout for a previously assembled cart, binding it to an ' +
-      'open checkout mandate and returning a (stubbed) signed checkout JWT and its hash.',
+      'Create a checkout for a previously assembled cart, returning a real ES256-signed ' +
+      'merchant checkout JWT and its hash. The agent commits checkout_jwt_hash into the ' +
+      'Layer 3 fulfillment (it becomes the payment transaction_id and the checkout binding).',
     inputSchema: {
       cart_id: z.string(),
-      open_checkout_mandate_id: z.string(),
+      // Accepted for backwards-compat with older prompts; the VI chain binds via
+      // checkout_jwt_hash, so the open-mandate id is no longer required here.
+      open_checkout_mandate_id: z.string().optional(),
     },
   },
-  async ({ cart_id, open_checkout_mandate_id }) => {
+  async ({ cart_id }) => {
     const cart = getCart(cart_id);
     if (!cart) {
       const error = { error: 'cart_not_found' };
@@ -292,28 +305,15 @@ server.registerTool(
         isError: true,
       };
     }
-    // Hash the referenced open checkout mandate so the checkout JWT commits to
-    // it (downstream binding). The agent persisted it under TEMP_DB.
-    let openCheckoutHash: string | null = null;
-    try {
-      const openMandate = fs.readFileSync(path.join(TEMP_DB, `${open_checkout_mandate_id}.sdjwt`), 'utf-8');
-      openCheckoutHash = sha256Base64Url(openMandate);
-    } catch {
-      const error = { error: 'open_mandate_not_found', message: open_checkout_mandate_id };
-      return { content: [{ type: 'text', text: JSON.stringify(error) }], structuredContent: error, isError: true };
-    }
-    // Sign a real ES256 checkout JWT with the merchant key. A random `jti`
-    // gives the JWT entropy (the AP2 spec warns deterministic signatures over
-    // low-entropy checkout content are rainbow-table-able). The JWT commits to
-    // the open checkout mandate via open_checkout_hash.
+    // Sign a real ES256 checkout JWT with the merchant key. A random `jti` gives
+    // the JWT entropy (the AP2 spec warns deterministic signatures over
+    // low-entropy checkout content are rainbow-table-able for the hash binding).
     const merchant = await loadOrCreateKeyPair(TEMP_DB, 'merchant');
     const checkoutJwt = await signJwtEs256(
       {
         iss: 'merchant-agent',
         iat: Math.floor(Date.now() / 1000),
         jti: randomUUID(),
-        open_checkout_mandate_id,
-        open_checkout_hash: openCheckoutHash,
         cart,
       },
       merchant.privateKey,
@@ -322,8 +322,6 @@ server.registerTool(
     const result = {
       checkout_jwt: checkoutJwt,
       checkout_jwt_hash: checkoutJwtHash,
-      open_checkout_hash: openCheckoutHash,
-      open_checkout_mandate_id,
       cart,
     };
     return {
@@ -337,15 +335,17 @@ server.registerTool(
   'complete_checkout',
   {
     description:
-      'Complete a checkout using a checkout JWT and optional payment credential, ' +
-      'returning a (stubbed) signed checkout receipt.',
+      'Verify the checkout-side Verifiable Intent chain (L1 issuer -> L2 user mandate -> L3b agent ' +
+      'checkout fulfillment) for the given chain id, then settle with the PSP and return a ' +
+      'merchant-signed checkout receipt plus the PSP-signed payment receipt.',
     inputSchema: {
       checkout_jwt: z.string(),
       payment_credential: z.unknown().optional(),
+      checkout_mandate_chain_id: z.string(),
     },
   },
-  async ({ checkout_jwt, payment_credential }) => {
-    // Verify the merchant's own checkout JWT signature before finalizing.
+  async ({ checkout_jwt, payment_credential, checkout_mandate_chain_id }) => {
+    // 1. Verify the merchant's own checkout JWT signature before finalizing.
     const merchantPub = loadPublicJwk(TEMP_DB, 'merchant');
     if (!merchantPub) {
       const error = { error: 'merchant_key_unavailable', message: 'merchant key not found in TEMP_DB' };
@@ -357,6 +357,34 @@ server.registerTool(
       checkoutJwtHash = sha256Base64Url(checkout_jwt);
     } catch (e) {
       const error = { error: 'invalid_checkout_jwt', message: String(e) };
+      return { content: [{ type: 'text', text: JSON.stringify(error) }], structuredContent: error, isError: true };
+    }
+
+    // 2. Verify the checkout-side VI chain the agent produced (L1 -> L2 -> L3b).
+    const l1 = readTempText('l1.sdjwt');
+    const l3Checkout = readTempText(`${checkout_mandate_chain_id}.sdjwt`);
+    const l2Checkout = readTempText(`${checkout_mandate_chain_id}.l2.sdjwt`);
+    const issuerPub = loadViPublicJwk(TEMP_DB, 'issuer');
+    if (!l1 || !l3Checkout || !l2Checkout || !issuerPub) {
+      const error = {
+        error: 'checkout_chain_artifacts_missing',
+        message: `missing L1/L2/L3b for ${checkout_mandate_chain_id}`,
+      };
+      return { content: [{ type: 'text', text: JSON.stringify(error) }], structuredContent: error, isError: true };
+    }
+    try {
+      const chain = await verifyCheckoutChain({
+        l1Serialized: l1,
+        l2CheckoutSerialized: l2Checkout,
+        l3CheckoutSerialized: l3Checkout,
+        issuerPublicJwk: issuerPub,
+      });
+      if (!chain.valid) {
+        const error = { error: 'checkout_chain_invalid', message: chain.errors.join('; ') };
+        return { content: [{ type: 'text', text: JSON.stringify(error) }], structuredContent: error, isError: true };
+      }
+    } catch (e) {
+      const error = { error: 'checkout_chain_verification_failed', message: String(e) };
       return { content: [{ type: 'text', text: JSON.stringify(error) }], structuredContent: error, isError: true };
     }
 

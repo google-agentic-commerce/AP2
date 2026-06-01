@@ -34,8 +34,7 @@ import { fileURLToPath } from 'node:url';
 import {
   assembleAndSignMandatesTool,
   checkConstraintsAgainstMandateTool,
-  createCheckoutPresentationTool,
-  createPaymentPresentationTool,
+  createMandateFulfillmentTool,
   verifyCheckoutReceiptTool,
   resetTempDbTool,
 } from './mandate-tools.js';
@@ -130,8 +129,7 @@ export const purchaseAgent = new LlmAgent({
   outputKey: 'purchase_result',
   tools: [
     checkConstraintsAgainstMandateTool,
-    createCheckoutPresentationTool,
-    createPaymentPresentationTool,
+    createMandateFulfillmentTool,
     verifyCheckoutReceiptTool,
     makeMcpToolset(MERCHANT_SERVER),
     makeMcpToolset(CREDENTIAL_SERVER),

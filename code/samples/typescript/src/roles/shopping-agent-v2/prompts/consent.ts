@@ -30,7 +30,10 @@ B) After the user agrees on a budget (or says "yes" to your price): call assembl
    - constraint_price_cap = active_budget
    - expires_at_iso = an ISO 8601 timestamp ~1 hour from now
    - allowed_merchants = optional list if the user named specific merchants
-   This signs the open-checkout and open-payment mandates (SD-JWTs) and returns their ids and hashes, which persist for the downstream agents.
+   - item_id = the merchant catalog item id, if you already have one from search_inventory / check_product
+   This issues the Layer 1 issuer credential and signs the Layer 2 autonomous user mandate (a real
+   SD-JWT delegation chain) with the amount-range, merchant and acceptable-item constraints, and
+   returns the credential_id / mandate_id and hashes, which persist for the downstream agents.
 C) Once the mandates are signed (or the user says "Check price now" and mandates already exist), transfer to the monitoring_agent so it can watch price and availability. Briefly tell the user you are now monitoring the drop.
 
 Tools:

@@ -161,7 +161,7 @@ The **self-hosted implementation packages are proprietary and will not be open-s
 | `algovoi-federation-validator` | **AlgoVoi Commercial License v1.0 — not open source** |
 | `algovoi-zkp-receipt` | **AlgoVoi Commercial License v1.0 — not open source** |
 
-There is no Apache, MIT, or community-licence path for these packages. Production deployment, revenue-generating use, or managed-service operation requires a written Commercial Licence Agreement. Contact [hello@algovoi.co.uk](mailto:hello@algovoi.co.uk).
+There is no Apache, MIT, or community-licence path for these packages. Production deployment, revenue-generating use, or managed-service operation requires a written Commercial License Agreement. Contact [hello@algovoi.co.uk](mailto:hello@algovoi.co.uk).
 
 All 31 AlgoVoi substrate packages remain Apache 2.0.
 

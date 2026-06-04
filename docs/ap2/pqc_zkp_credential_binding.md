@@ -150,7 +150,7 @@ Use `api.algovoi.co.uk` directly — the full PQC/ZKP/Federation stack is live u
 Run `algovoi-federation-validator` and `algovoi-zkp-receipt` as Docker containers on your own infrastructure under the **AlgoVoi Commercial License v1.0**. Production-grade Docker images are available to licence holders. Evaluation use (non-commercial, non-production) is free.
 
 **3. Enterprise / OEM / acquisition**
-Custom on-premise deployments, white-label integrations, and acquisition enquiries. Contact [hello@algovoi.co.uk](mailto:hello@algovoi.co.uk).
+Custom on-premises deployments, white-label integrations, and acquisition enquiries. Contact [hello@algovoi.co.uk](mailto:hello@algovoi.co.uk).
 
 ---
 

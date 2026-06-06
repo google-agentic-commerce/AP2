@@ -27,7 +27,7 @@ Each vector is structured as:
 {
   "vector_id": "ap2-omh-v0-<name>",
   "mandate_body": { ... },
-  "expected_jcs_bytes_b64": "<base64url of RFC 8785 canonical bytes>",
+  "expected_jcs_bytes_b64": "<base64 of RFC 8785 canonical bytes>",
   "expected_open_mandate_hash": "sha256:<lowercase-hex>",
   "expectation": "reference | same_hash_as:<id> | different_hash_from:<id>"
 }
@@ -35,13 +35,13 @@ Each vector is structured as:
 
 | Vector | Pair invariant | Tests |
 |---|---|---|
-| `baseline-001` | reference | Canonical baseline |
-| `object-key-order-002` | `same_hash_as:baseline-001` | JCS sorts object members |
-| `array-order-003` | `different_hash_from:baseline-001` | Arrays are order-significant |
-| `optional-fields-004` | `different_hash_from:baseline-001` | Presence ≠ absence |
-| `currency-minor-unit-005` | canonical form | Integer minor units only |
-| `unicode-nfc-006a` | `different_hash_from:unicode-nfd-006b` | No Unicode normalization |
-| `unicode-nfd-006b` | `different_hash_from:unicode-nfc-006a` | No Unicode normalization |
+| `ap2-omh-v0-baseline-001` | reference | Canonical baseline |
+| `ap2-omh-v0-object-key-order-002` | `same_hash_as:ap2-omh-v0-baseline-001` | JCS sorts object members |
+| `ap2-omh-v0-array-order-003` | `different_hash_from:ap2-omh-v0-baseline-001` | Arrays are order-significant |
+| `ap2-omh-v0-optional-fields-004` | `different_hash_from:ap2-omh-v0-baseline-001` | Presence ≠ absence |
+| `ap2-omh-v0-currency-minor-unit-005` | canonical form | Integer minor units only |
+| `ap2-omh-v0-unicode-nfc-006a` | `different_hash_from:ap2-omh-v0-unicode-nfd-006b` | No Unicode normalization |
+| `ap2-omh-v0-unicode-nfd-006b` | `different_hash_from:ap2-omh-v0-unicode-nfc-006a` | No Unicode normalization |
 
 The array-order and Unicode pairs catch the divergences most commonly seen
 in practice: implementations that sort arrays or NFC-normalize strings will

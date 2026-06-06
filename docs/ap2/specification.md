@@ -153,8 +153,8 @@ Credential Provider, Network, and Merchant Payment Processor.
 
 The Payment Mandate is bound to a particular Checkout using the cryptographic
 hash of the Checkout JWT. To prevent rainbow-table attacks on `checkout_hash`,
-the Checkout JWT payload MUST contain a high-entropy claim that makes its
-serialized bytes unpredictable per session. This requirement is satisfied by
+the Checkout JWT MUST contain a high-entropy claim that makes its entire
+serialized form unpredictable per session. This requirement is satisfied by
 including a unique unpredictable claim such as a `jti` per RFC 7519 §4.1.7 or
 an application-protocol-defined session identifier of equivalent entropy. This
 requirement applies regardless of the signature algorithm used.

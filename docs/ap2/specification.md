@@ -152,9 +152,12 @@ The Payment Mandate is provided by the Shopping Agent and verified by the
 Credential Provider, Network, and Merchant Payment Processor.
 
 The Payment Mandate is bound to a particular Checkout using the cryptographic
-hash of the Checkout JWT. To prevent rainbow table attacks, the Checkout JWT
-MUST be signed using a digital signature scheme (e.g., ECDSA) and not a
-deterministic signature (e.g., Ed25519).
+hash of the Checkout JWT. To prevent rainbow-table attacks on `checkout_hash`,
+the Checkout JWT payload MUST contain a high-entropy claim that makes its
+serialized bytes unpredictable per session. This requirement is satisfied by
+including a unique unpredictable claim such as a `jti` per RFC 7519 §4.1.7 or
+an application-protocol-defined session identifier of equivalent entropy. This
+requirement applies regardless of the signature algorithm used.
 
 Once the Merchant Payment Processor has accepted or rejected the Payment
 Mandate, a signed Payment Receipt MUST be returned to the Shopping Agent,

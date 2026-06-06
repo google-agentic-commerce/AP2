@@ -27,7 +27,6 @@ import java.util.Base64;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
 import org.webpki.jcs.JsonCanonicalizer;
 
 /** JCS runner for AP2 open_mandate_hash v0 conformance vectors. */
@@ -36,7 +35,7 @@ public final class JcsRunner {
   /** Bit mask for extracting unsigned byte value in hex conversion. */
   private static final int BYTE_MASK = 0xff;
 
-  private JcsRunner() { }
+  private JcsRunner() {}
 
   private static String toHex(final byte[] b) {
     final StringBuilder sb = new StringBuilder();
@@ -102,8 +101,7 @@ public final class JcsRunner {
       return null;
     }
     int i = colon + 1;
-    while (i < vector.length()
-        && Character.isWhitespace(vector.charAt(i))) {
+    while (i < vector.length() && Character.isWhitespace(vector.charAt(i))) {
       i++;
     }
     if (i >= vector.length()) {
@@ -118,8 +116,7 @@ public final class JcsRunner {
     return null;
   }
 
-  private static String extractObject(
-      final String vector, final int start, final char open) {
+  private static String extractObject(final String vector, final int start, final char open) {
     final char close = open == '{' ? '}' : ']';
     int depth = 0;
     boolean inStr = false;
@@ -153,8 +150,7 @@ public final class JcsRunner {
     return null;
   }
 
-  private static String extractString(
-      final String vector, final int start) {
+  private static String extractString(final String vector, final int start) {
     boolean esc = false;
     for (int i = start; i < vector.length(); i++) {
       final char c = vector.charAt(i);
@@ -180,14 +176,12 @@ public final class JcsRunner {
    * @throws IOException on file read error
    * @throws NoSuchAlgorithmException if SHA-256 is unavailable
    */
-  public static void main(final String[] args)
-      throws IOException, NoSuchAlgorithmException {
+  public static void main(final String[] args) throws IOException, NoSuchAlgorithmException {
     if (args.length < 1) {
       System.err.println("usage: JcsRunner vectors-v0.json");
       System.exit(2);
     }
-    final String src = new String(
-        Files.readAllBytes(Paths.get(args[0])), StandardCharsets.UTF_8);
+    final String src = new String(Files.readAllBytes(Paths.get(args[0])), StandardCharsets.UTF_8);
     final List<int[]> ranges = findVectorRanges(src);
     final MessageDigest md = MessageDigest.getInstance("SHA-256");
     final Map<String, String> computed = new LinkedHashMap<>();
@@ -200,8 +194,7 @@ public final class JcsRunner {
       final String vectorId = extractField(vec, "vector_id");
       final String body = extractField(vec, "mandate_body");
       String expectedSha = extractField(vec, "expected_open_mandate_hash");
-      final String expectedB64 =
-          extractField(vec, "expected_jcs_bytes_b64");
+      final String expectedB64 = extractField(vec, "expected_jcs_bytes_b64");
       final String expectation = extractField(vec, "expectation");
 
       if (expectedSha != null && expectedSha.startsWith("sha256:")) {
@@ -216,18 +209,14 @@ public final class JcsRunner {
       final String b64 = Base64.getEncoder().encodeToString(jcsBytes);
       computed.put(vectorId, sha);
 
-      final boolean shaOk =
-          expectedSha == null || expectedSha.equals(sha);
-      final boolean bytesOk =
-          expectedB64 == null || expectedB64.equals(b64);
+      final boolean shaOk = expectedSha == null || expectedSha.equals(sha);
+      final boolean bytesOk = expectedB64 == null || expectedB64.equals(b64);
       final boolean ok = shaOk && bytesOk;
       final String mark = ok ? "OK  " : "FAIL";
-      System.out.printf(
-          "  %s  %-34s  sha256:%s%n", mark, vectorId, sha);
+      System.out.printf("  %s  %-34s  sha256:%s%n", mark, vectorId, sha);
       if (!ok) {
         if (!shaOk) {
-          System.out.printf(
-              "        expected sha256:%s%n", expectedSha);
+          System.out.printf("        expected sha256:%s%n", expectedSha);
         }
         if (!bytesOk) {
           System.out.println("        bytes mismatch");
@@ -240,32 +229,19 @@ public final class JcsRunner {
 
     System.out.println("\n--- pair invariants ---");
     int pairFail = 0;
-    for (final Map.Entry<String, String> entry
-        : expectations.entrySet()) {
+    for (final Map.Entry<String, String> entry : expectations.entrySet()) {
       final String exp = entry.getValue();
       if (exp.startsWith("same_hash_as:")) {
-        final String other =
-            exp.substring("same_hash_as:".length());
-        final boolean ok =
-            computed.get(entry.getKey()).equals(computed.get(other));
-        System.out.printf(
-            "  %s  %s == %s%n",
-            ok ? "OK " : "FAIL",
-            entry.getKey(),
-            other);
+        final String other = exp.substring("same_hash_as:".length());
+        final boolean ok = computed.get(entry.getKey()).equals(computed.get(other));
+        System.out.printf("  %s  %s == %s%n", ok ? "OK " : "FAIL", entry.getKey(), other);
         if (!ok) {
           pairFail++;
         }
       } else if (exp.startsWith("different_hash_from:")) {
-        final String other =
-            exp.substring("different_hash_from:".length());
-        final boolean ok =
-            !computed.get(entry.getKey()).equals(computed.get(other));
-        System.out.printf(
-            "  %s  %s != %s%n",
-            ok ? "OK " : "FAIL",
-            entry.getKey(),
-            other);
+        final String other = exp.substring("different_hash_from:".length());
+        final boolean ok = !computed.get(entry.getKey()).equals(computed.get(other));
+        System.out.printf("  %s  %s != %s%n", ok ? "OK " : "FAIL", entry.getKey(), other);
         if (!ok) {
           pairFail++;
         }
@@ -273,9 +249,7 @@ public final class JcsRunner {
     }
 
     System.out.printf(
-        "%n%d/%d vectors match (cyberphone/json-canonicalization)%n",
-        pass,
-        pass + fail);
+        "%n%d/%d vectors match (cyberphone/json-canonicalization)%n", pass, pass + fail);
     System.out.printf("%d pair-invariant failures%n", pairFail);
     System.exit((fail == 0 && pairFail == 0) ? 0 : 1);
   }

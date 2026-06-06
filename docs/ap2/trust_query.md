@@ -47,7 +47,7 @@ canonicalisation.
   "signature": "<detached signature over JCS canonical bytes>",
   "verdict": "TRUSTED"
 }
-```
+```text
 
 | Field | Type | Description |
 | :---- | :--- | :---------- |
@@ -113,7 +113,7 @@ compliance receipt (ALLOW)       settlement attestation (SETTLED)
                         v
               trust query (TRUSTED / PROVISIONAL /
                           INSUFFICIENT_EVIDENCE / UNTRUSTED)
-```
+```text
 
 The `issuer_references` array records which upstream attestations were
 considered. A relying party MAY retrieve and inspect each upstream

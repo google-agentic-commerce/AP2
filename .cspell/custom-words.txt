@@ -182,12 +182,16 @@ xerrors
 xmocksignature
 xrandomnonce
 XVCJ
+AlgoVoi
+algovoi
 amavashev
 canonicalizer
 cyberphone
 Erdtman
 gowebpki
 Iaap
+JCS
+jcs
 merch
 Mlrw
 Papi

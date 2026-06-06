@@ -1,12 +1,10 @@
-/**
+/*
  * JCS runner for AP2 open_mandate_hash v0 conformance vectors.
  *
- * <p>Uses Anders Rundgren's Java reference implementation
+ * Uses Anders Rundgren's Java reference implementation
  * (cyberphone/json-canonicalization), cited in RFC 8785.
  *
- * <p>Build:
- *
- * <pre>
+ * Build:
  *   git clone --depth 1 \
  *     https://github.com/cyberphone/json-canonicalization.git
  *   javac -d classes \
@@ -16,7 +14,6 @@
  *     JsonCanonicalizer.java \
  *     JcsRunner.java
  *   java -cp classes JcsRunner vectors-v0.json
- * </pre>
  */
 
 import java.io.IOException;
@@ -36,9 +33,10 @@ import org.webpki.jcs.JsonCanonicalizer;
 /** JCS runner for AP2 open_mandate_hash v0 conformance vectors. */
 public final class JcsRunner {
 
+  /** Bit mask for extracting unsigned byte value in hex conversion. */
   private static final int BYTE_MASK = 0xff;
 
-  private JcsRunner() {}
+  private JcsRunner() { }
 
   private static String toHex(final byte[] b) {
     final StringBuilder sb = new StringBuilder();

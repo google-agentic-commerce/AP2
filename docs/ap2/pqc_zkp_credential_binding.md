@@ -20,7 +20,7 @@ X-ZKP-Receipt-Payload: <base64url unsigned ZKP receipt>
 X-Composite-Trust-Verdict: TRUSTED
 
 {"verified": true, "access_token": "...", "settlement_attestation": {"settlement_result": "SETTLED", ...}}
-```
+```text
 
 Additionally: **agent session spend cap is now wired** to `/ap2/confirm` — payments made via session JWT decrement the cap; exceeded cap returns `402 agent_spend_cap_exceeded`.
 
@@ -52,7 +52,7 @@ AP2 is a mandate-based protocol. The ZKP credential binds at the `/ap2/confirm` 
    Body: { "tx_id": "...", "network": "...", "payment_id": "..." }
    ← 200 OK with X-ZKP-Receipt-Payload + X-Composite-Trust-Verdict
       Spend cap decremented by confirmed payment amount
-```
+```text
 
 The session token is valid across the full AP2 lifecycle. Once `spend_cap_usd` is exhausted, further payments return `402 agent_spend_cap_exceeded`.
 
@@ -79,7 +79,7 @@ Content-Type: application/json
     }
   ]
 }
-```
+```text
 
 ```json
 {
@@ -87,7 +87,7 @@ Content-Type: application/json
   "composite_hash": "36042eb288b6557aed801ed9a2fe6e077b31bd7261a4dffbe8107ef078867f10",
   "receipt_count": 2
 }
-```
+```text
 
 Possible verdicts: `TRUSTED` · `PROVISIONAL` (`PENDING_FINALITY`) · `INSUFFICIENT_EVIDENCE` · `UNTRUSTED`.
 Specified in [`draft-hopley-x402-composite-trust-query`](https://datatracker.ietf.org/doc/draft-hopley-x402-composite-trust-query/) — open PR #272.

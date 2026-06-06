@@ -6,7 +6,7 @@ Conformance vectors for the `open_mandate_hash` derivation rule for
 
 ## Derivation rule
 
-```
+```text
 open_mandate_hash = SHA-256(JCS_RFC8785(unsigned_open_checkout_mandate_body))
 ```
 
@@ -34,7 +34,7 @@ Each vector is structured as:
 ```
 
 | Vector | Pair invariant | Tests |
-|---|---|---|
+| --- | --- | --- |
 | `ap2-omh-v0-baseline-001` | reference | Canonical baseline |
 | `ap2-omh-v0-object-key-order-002` | `same_hash_as:ap2-omh-v0-baseline-001` | JCS sorts object members |
 | `ap2-omh-v0-array-order-003` | `different_hash_from:ap2-omh-v0-baseline-001` | Arrays are order-significant |
@@ -50,7 +50,7 @@ fail the corresponding pair invariant immediately.
 ## Cross-implementation validation
 
 | Implementation | Language | Library | Result |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | `rfc8785@0.1.4` | Python | Trail of Bits | 7/7 + 4/4 pair invariants ✓ |
 | `canonicalize@3.0.0` | JavaScript | Erdtman + Rundgren (RFC 8785 author) | 7/7 + 4/4 ✓ |
 | `gowebpki/jcs v1.0.1` | Go | @amavashev (AP2 maintainer) | 7/7 + 4/4 ✓ |

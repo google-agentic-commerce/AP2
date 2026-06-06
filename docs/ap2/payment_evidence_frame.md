@@ -135,7 +135,7 @@ Facilitator                Shopping Agent                Merchant
     |                            |<-- request frame by id ---|
     |<-- request frame by id ----|                           |
     |--- full PEF -------------->|-- full PEF -------------->|
-```
+```text
 
 The `claim_type` field allows a receiving agent to determine the lifecycle
 event class without parsing the inner receipt. A Shopping Agent MAY apply
@@ -167,7 +167,7 @@ representing a `payment_admission` event (compliance screening outcome
   "receipt_format": "compliance-receipt-v1",
   "receipt_hash": "sha256:bc7a68b64925b8a76109d35e89cca4c7ae04073fa686844975a5b5f4410afa27"
 }
-```
+```text
 
 Note that the frame is unsigned (`signature` absent). A signed frame would
 carry an additional `signature` field. The `frame_id` would remain

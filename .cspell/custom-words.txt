@@ -182,6 +182,14 @@ xerrors
 xmocksignature
 xrandomnonce
 XVCJ
+amavashev
+canonicalizer
+cyberphone
+Erdtman
+gowebpki
+Rundgren
+serde
+seritalien
 Yapily
 Zalopay
 Zalora

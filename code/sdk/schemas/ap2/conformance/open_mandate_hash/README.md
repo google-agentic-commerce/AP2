@@ -40,11 +40,11 @@ Each vector is structured as:
 | `array-order-003` | `different_hash_from:baseline-001` | Arrays are order-significant |
 | `optional-fields-004` | `different_hash_from:baseline-001` | Presence ≠ absence |
 | `currency-minor-unit-005` | canonical form | Integer minor units only |
-| `unicode-nfc-006a` | `different_hash_from:unicode-nfd-006b` | No Unicode normalisation |
-| `unicode-nfd-006b` | `different_hash_from:unicode-nfc-006a` | No Unicode normalisation |
+| `unicode-nfc-006a` | `different_hash_from:unicode-nfd-006b` | No Unicode normalization |
+| `unicode-nfd-006b` | `different_hash_from:unicode-nfc-006a` | No Unicode normalization |
 
 The array-order and Unicode pairs catch the divergences most commonly seen
-in practice: implementations that sort arrays or NFC-normalise strings will
+in practice: implementations that sort arrays or NFC-normalize strings will
 fail the corresponding pair invariant immediately.
 
 ## Cross-implementation validation
@@ -70,8 +70,8 @@ Full validation history: [AP2 issue #265](https://github.com/google-agentic-comm
 - **Array sorting** — Do not sort arrays before hashing. JCS preserves
   array element order. Vector 003 catches this.
 
-- **Unicode normalisation** — Do not NFC-normalise strings before hashing.
-  RFC 8785 makes no Unicode normalisation. Vectors 006a/006b catch this.
+- **Unicode normalization** — Do not NFC-normalize strings before hashing.
+  RFC 8785 makes no Unicode normalization. Vectors 006a/006b catch this.
 
 - **Float/decimal prices** — `item.price` and `amount.amount` are integers
   in the currency minor unit. `10.50` MUST be encoded as `1050`. Vector

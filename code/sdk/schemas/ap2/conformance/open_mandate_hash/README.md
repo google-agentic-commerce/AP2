@@ -49,7 +49,7 @@ fail the corresponding pair invariant immediately.
 
 ## Reproduce locally
 
-Four runner scripts are included. Each reads `vectors-v0.json` and verifies
+Three runner scripts are included. Each reads `vectors-v0.json` and verifies
 all 7 vectors and 4 pair invariants independently:
 
 | Runner | Language | Library |
@@ -57,7 +57,6 @@ all 7 vectors and 4 pair invariants independently:
 | `runner_python.py` | Python | `rfc8785@0.1.4` (Trail of Bits) |
 | `runner_node.js` | JavaScript | `canonicalize@3.0.0` (Erdtman + Rundgren) |
 | `runner_go.go` | Go | `gowebpki/jcs v1.0.1` |
-| `JcsRunner.java` | Java | `cyberphone/json-canonicalization` (RFC 8785 reference impl) |
 
 ```bash
 # Python
@@ -71,8 +70,6 @@ node runner_node.js vectors-v0.json
 # Go
 go run runner_go.go vectors-v0.json
 
-# Java
-javac JcsRunner.java && java JcsRunner vectors-v0.json
 ```
 
 ## Cross-implementation validation

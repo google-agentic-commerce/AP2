@@ -28,7 +28,7 @@ admission       settlement       cancellation     refund (if owed)
 compliance  --> settlement   --> cancellation --> refund
 receipt         attestation      receipt          receipt
 (sibling PR)                     (this spec)      (this spec)
-```
+```text
 
 All four formats anchor to the same canonicalisation discipline
 ([`urn:x402:canonicalisation:jcs-rfc8785-v1`](https://datatracker.ietf.org/doc/draft-hopley-x402-canonicalisation-jcs-v1/)).
@@ -51,7 +51,7 @@ canonicalisation.
   "jurisdiction_flags": ["GB", "EU"],
   "mandate_ref": "sha256:0dd5d0b76c9b9281fdeb2509ad38ab132b16a17385ca01d976ff9e6e12563a0f"
 }
-```
+```text
 
 | Field | Type | Description |
 | :---- | :--- | :---------- |
@@ -97,7 +97,7 @@ canonicalisation.
   "refund_result": "FULL",
   "refund_timestamp_ms": 1716494400000
 }
-```
+```text
 
 | Field | Type | Description |
 | :---- | :--- | :---------- |
@@ -159,7 +159,7 @@ SETTLED ──────────────────► CANCELLED     
    ├─► REFUNDED_PARTIAL     (Refund Receipt PARTIAL)
    │
    └─► REFUND_REJECTED      (Refund Receipt REJECTED — denial event recorded)
-```
+```text
 
 A `USER_REQUESTED` cancellation MAY chain forward to a Refund Receipt
 if PSD2 Article 64 refund is owed on a recently-settled debit. The
@@ -181,7 +181,7 @@ chain row N      chain row N+1
 | receipt    |   | receipt    |
 | (ALLOW)    |   | (FULL)     |
 +------------+   +------------+
-```
+```text
 
 ## Authorship and Substrate-Author Position
 

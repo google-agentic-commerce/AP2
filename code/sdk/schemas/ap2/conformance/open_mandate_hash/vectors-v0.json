@@ -15,7 +15,7 @@
     "purpose": "Move open_mandate_hash interop from independent-convergence to spec-anchored. Two implementers agreeing is not an anchor; a deterministic vector set is. Seeded by AlgoVoi; AP2 community to own the canonical set long-term.",
     "verification_recipe": [
       "1. For each vector, take mandate_body verbatim.",
-      "2. Canonicalise with RFC 8785 (rfc8785@0.1.4 or any conformant impl).",
+      "2. Canonicalize with RFC 8785 (rfc8785@0.1.4 or any conformant impl).",
       "3. base64-encode the JCS bytes; it MUST equal expected_jcs_bytes_b64.",
       "4. SHA-256 the JCS bytes, lowercase hex; MUST equal expected_open_mandate_hash.",
       "5. Honour the pair expectations: same_hash_as / different_hash_from MUST hold."
@@ -25,7 +25,7 @@
       "array_order": "MUST differ (JCS preserves array order; do not sort arrays)",
       "optional_fields": "MUST differ (presence != absence; not collapsed to default)",
       "currency_minor_unit": "canonical integer-minor-unit form; no decimal/float",
-      "unicode_normalisation": "MUST differ (RFC 8785 does no Unicode normalisation)"
+      "unicode_normalization": "MUST differ (RFC 8785 does no Unicode normalization)"
     }
   },
   "vectors": [
@@ -183,7 +183,7 @@
       },
       "expected_jcs_bytes_b64": "eyJjbmYiOnsiandrIjp7ImNydiI6IkVkMjU1MTkiLCJrdHkiOiJPS1AiLCJ4IjoiMTFxWUFZS3hDcmZWU183VHlXUUhPZzdoY3ZQYXBpTWxyd0lhYVBjSFVSbyJ9fSwiY29uc3RyYWludHMiOlt7ImFsbG93ZWQiOlt7ImlkIjoibWVyY2hfYWNtZSIsIm5hbWUiOiJBY21lIFRvb2xzIiwid2Vic2l0ZSI6Imh0dHBzOi8vYWNtZS5leGFtcGxlIn1dLCJ0eXBlIjoiY2hlY2tvdXQuYWxsb3dlZF9tZXJjaGFudHMifSx7Iml0ZW1zIjpbeyJhY2NlcHRhYmxlX2l0ZW1zIjpbeyJpZCI6IlNLVS1EUklMTC0xMlYiLCJwcmljZSI6NTk5OSwidGl0bGUiOiIxMlYgQ29yZGxlc3MgRHJpbGwifSx7ImlkIjoiU0tVLURSSUxMLTE4ViIsInByaWNlIjo4OTk5LCJ0aXRsZSI6IjE4ViBDb3JkbGVzcyBEcmlsbCJ9XSwiaWQiOiJyZXFfZHJpbGwiLCJxdWFudGl0eSI6MX1dLCJ0eXBlIjoiY2hlY2tvdXQubGluZV9pdGVtcyJ9XSwidmN0IjoibWFuZGF0ZS5jaGVja291dC5vcGVuLjEifQ==",
       "expected_open_mandate_hash": "sha256:754fc15813c3ca16bf23f09d4ccedb74d727f5d9226947e8a63c1518133c9ed9",
-      "notes": "JSON arrays are order-significant; JCS preserves array element order. An implementer that sorts arrays for 'canonicalisation' WILL diverge. This vector MUST produce a DIFFERENT hash from baseline-001. If yours matches baseline-001, your canonicaliser is incorrectly reordering arrays."
+      "notes": "JSON arrays are order-significant; JCS preserves array element order. An implementer that sorts arrays for 'canonicalization' WILL diverge. This vector MUST produce a DIFFERENT hash from baseline-001. If yours matches baseline-001, your canonicalizer is incorrectly reordering arrays."
     },
     {
       "vector_id": "ap2-omh-v0-optional-fields-004",
@@ -237,7 +237,7 @@
       },
       "expected_jcs_bytes_b64": "eyJjbmYiOnsiandrIjp7ImNydiI6IkVkMjU1MTkiLCJrdHkiOiJPS1AiLCJ4IjoiMTFxWUFZS3hDcmZWU183VHlXUUhPZzdoY3ZQYXBpTWxyd0lhYVBjSFVSbyJ9fSwiY29uc3RyYWludHMiOlt7ImFsbG93ZWQiOlt7ImlkIjoibWVyY2hfYWNtZSIsIm5hbWUiOiJBY21lIFRvb2xzIiwid2Vic2l0ZSI6Imh0dHBzOi8vYWNtZS5leGFtcGxlIn1dLCJ0eXBlIjoiY2hlY2tvdXQuYWxsb3dlZF9tZXJjaGFudHMifSx7Iml0ZW1zIjpbeyJhY2NlcHRhYmxlX2l0ZW1zIjpbeyJpZCI6IlNLVS1EUklMTC0xOFYiLCJwcmljZSI6ODk5OSwidGl0bGUiOiIxOFYgQ29yZGxlc3MgRHJpbGwifSx7ImlkIjoiU0tVLURSSUxMLTEyViIsInByaWNlIjo1OTk5LCJ0aXRsZSI6IjEyViBDb3JkbGVzcyBEcmlsbCJ9XSwiaWQiOiJyZXFfZHJpbGwiLCJxdWFudGl0eSI6MX1dLCJ0eXBlIjoiY2hlY2tvdXQubGluZV9pdGVtcyJ9XSwiZXhwIjoxNzQ3NDAzNjAwLCJpYXQiOjE3NDc0MDAwMDAsInZjdCI6Im1hbmRhdGUuY2hlY2tvdXQub3Blbi4xIn0=",
       "expected_open_mandate_hash": "sha256:6368fcf2c7d7aa63453ba310043b6a284f845cf48eef31eb1660aec36bce8052",
-      "notes": "Optional fields present vs absent are different mandates with different hashes; absence is not normalised to a default. iat/exp MUST be integers (Unix epoch), never strings or floats."
+      "notes": "Optional fields present vs absent are different mandates with different hashes; absence is not normalized to a default. iat/exp MUST be integers (Unix epoch), never strings or floats."
     },
     {
       "vector_id": "ap2-omh-v0-currency-minor-unit-005",
@@ -289,7 +289,7 @@
     {
       "vector_id": "ap2-omh-v0-unicode-nfc-006a",
       "description": "merchant.name in Unicode NFC (composed) form.",
-      "pair_group": "unicode_normalisation",
+      "pair_group": "unicode_normalization",
       "expectation": "different_hash_from:ap2-omh-v0-unicode-nfd-006b",
       "mandate_body": {
         "vct": "mandate.checkout.open.1",
@@ -336,12 +336,12 @@
       },
       "expected_jcs_bytes_b64": "eyJjbmYiOnsiandrIjp7ImNydiI6IkVkMjU1MTkiLCJrdHkiOiJPS1AiLCJ4IjoiMTFxWUFZS3hDcmZWU183VHlXUUhPZzdoY3ZQYXBpTWxyd0lhYVBjSFVSbyJ9fSwiY29uc3RyYWludHMiOlt7ImFsbG93ZWQiOlt7ImlkIjoibWVyY2hfYWNtZSIsIm5hbWUiOiJDYWbDqSBTb2zDqSIsIndlYnNpdGUiOiJodHRwczovL2FjbWUuZXhhbXBsZSJ9XSwidHlwZSI6ImNoZWNrb3V0LmFsbG93ZWRfbWVyY2hhbnRzIn0seyJpdGVtcyI6W3siYWNjZXB0YWJsZV9pdGVtcyI6W3siaWQiOiJTS1UtRFJJTEwtMThWIiwicHJpY2UiOjg5OTksInRpdGxlIjoiMThWIENvcmRsZXNzIERyaWxsIn0seyJpZCI6IlNLVS1EUklMTC0xMlYiLCJwcmljZSI6NTk5OSwidGl0bGUiOiIxMlYgQ29yZGxlc3MgRHJpbGwifV0sImlkIjoicmVxX2RyaWxsIiwicXVhbnRpdHkiOjF9XSwidHlwZSI6ImNoZWNrb3V0LmxpbmVfaXRlbXMifV0sInZjdCI6Im1hbmRhdGUuY2hlY2tvdXQub3Blbi4xIn0=",
       "expected_open_mandate_hash": "sha256:dd0330b1d02b1f83ade5821d64f9f5abf75d1af00575e8fa39d68a8bdeadfb31",
-      "notes": "RFC 8785 performs NO Unicode normalisation. The serialised string is the exact code points supplied. NFC and NFD forms of the same glyph produce DIFFERENT open_mandate_hash. Implementers MUST NOT normalise merchant strings before hashing; the signed bytes are authoritative."
+      "notes": "RFC 8785 performs NO Unicode normalization. The serialised string is the exact code points supplied. NFC and NFD forms of the same glyph produce DIFFERENT open_mandate_hash. Implementers MUST NOT normalize merchant strings before hashing; the signed bytes are authoritative."
     },
     {
       "vector_id": "ap2-omh-v0-unicode-nfd-006b",
       "description": "Same mandate, merchant.name in Unicode NFD (decomposed) form.",
-      "pair_group": "unicode_normalisation",
+      "pair_group": "unicode_normalization",
       "expectation": "different_hash_from:ap2-omh-v0-unicode-nfc-006a",
       "mandate_body": {
         "vct": "mandate.checkout.open.1",

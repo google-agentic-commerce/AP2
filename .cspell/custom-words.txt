@@ -187,6 +187,10 @@ canonicalizer
 cyberphone
 Erdtman
 gowebpki
+Iaap
+merch
+Mlrw
+Papi
 Rundgren
 serde
 seritalien

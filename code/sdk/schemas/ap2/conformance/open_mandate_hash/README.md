@@ -27,7 +27,7 @@ Each vector is structured as:
 {
   "vector_id": "ap2-omh-v0-<name>",
   "mandate_body": { ... },
-  "expected_jcs_bytes_b64": "<base64 of RFC 8785 canonical bytes>",
+  "expected_jcs_bytes_b64": "<standard base64 of RFC 8785 canonical bytes>",
   "expected_open_mandate_hash": "sha256:<lowercase-hex>",
   "expectation": "reference | same_hash_as:<id> | different_hash_from:<id>"
 }

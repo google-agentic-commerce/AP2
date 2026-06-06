@@ -185,10 +185,14 @@ XVCJ
 AlgoVoi
 algovoi
 amavashev
+Anders
+andysalvo
 canonicalizer
 cyberphone
 Erdtman
 gowebpki
+javac
+webpki
 Iaap
 JCS
 jcs

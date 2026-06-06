@@ -47,16 +47,48 @@ The array-order and Unicode pairs catch the divergences most commonly seen
 in practice: implementations that sort arrays or NFC-normalize strings will
 fail the corresponding pair invariant immediately.
 
+## Reproduce locally
+
+Four runner scripts are included. Each reads `vectors-v0.json` and verifies
+all 7 vectors and 4 pair invariants independently:
+
+| Runner | Language | Library |
+| --- | --- | --- |
+| `runner_python.py` | Python | `rfc8785@0.1.4` (Trail of Bits) |
+| `runner_node.js` | JavaScript | `canonicalize@3.0.0` (Erdtman + Rundgren) |
+| `runner_go.go` | Go | `gowebpki/jcs v1.0.1` |
+| `JcsRunner.java` | Java | `cyberphone/json-canonicalization` (RFC 8785 reference impl) |
+
+```bash
+# Python
+pip install rfc8785==0.1.4
+python runner_python.py vectors-v0.json
+
+# Node.js
+npm install canonicalize@3.0.0
+node runner_node.js vectors-v0.json
+
+# Go
+go run runner_go.go vectors-v0.json
+
+# Java
+javac JcsRunner.java && java JcsRunner vectors-v0.json
+```
+
 ## Cross-implementation validation
 
-| Implementation | Language | Library | Result |
-| --- | --- | --- | --- |
-| `rfc8785@0.1.4` | Python | Trail of Bits | 7/7 + 4/4 pair invariants ✓ |
-| `canonicalize@3.0.0` | JavaScript | Erdtman + Rundgren (RFC 8785 author) | 7/7 + 4/4 ✓ |
-| `gowebpki/jcs v1.0.1` | Go | @amavashev (AP2 maintainer) | 7/7 + 4/4 ✓ |
-| `cyberphone/json-canonicalization` | Java | Rundgren (RFC 8785 reference impl) | 7/7 + 4/4 ✓ |
-| `serde_jcs 0.2.0` | Rust | @seritalien / Vauban | 7/7 + 4/4 ✓ |
-| `rfc8785` (fixed) | Python | Crest Systems | 7/7 + 4/4 ✓ |
+All 6 independent implementations produce byte-identical results for all 7 vectors
+and all 4 pair invariants. Five different authors, four author sets, independently
+attested.
+
+| Implementation | Language | Library | Vectors | Pair invariants |
+| --- | --- | --- | --- | --- |
+| `rfc8785@0.1.4` | Python | Trail of Bits | 7/7 ✓ | 4/4 ✓ |
+| `canonicalize@3.0.0` | JavaScript | Erdtman + Rundgren (RFC 8785 author) | 7/7 ✓ | 4/4 ✓ |
+| `gowebpki/jcs v1.0.1` | Go | @amavashev (AP2 maintainer) | 7/7 ✓ | 4/4 ✓ |
+| `cyberphone/json-canonicalization` | Java | Rundgren (RFC 8785 reference impl) | 7/7 ✓ | 4/4 ✓ |
+| `serde_jcs 0.2.0` | Rust | @seritalien / Vauban | 7/7 ✓ | 4/4 ✓ |
+| `rfc8785` (corrected) | Python | Crest Systems (@andysalvo) | 7/7 ✓ | 4/4 ✓ |
 
 Full validation history: [AP2 issue #265](https://github.com/google-agentic-commerce/AP2/issues/265)
 

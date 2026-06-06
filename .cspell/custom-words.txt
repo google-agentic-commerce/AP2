@@ -194,6 +194,7 @@ Papi
 Rundgren
 serde
 seritalien
+Solé
 Yapily
 Zalopay
 Zalora

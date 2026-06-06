@@ -336,7 +336,7 @@
       },
       "expected_jcs_bytes_b64": "eyJjbmYiOnsiandrIjp7ImNydiI6IkVkMjU1MTkiLCJrdHkiOiJPS1AiLCJ4IjoiMTFxWUFZS3hDcmZWU183VHlXUUhPZzdoY3ZQYXBpTWxyd0lhYVBjSFVSbyJ9fSwiY29uc3RyYWludHMiOlt7ImFsbG93ZWQiOlt7ImlkIjoibWVyY2hfYWNtZSIsIm5hbWUiOiJDYWbDqSBTb2zDqSIsIndlYnNpdGUiOiJodHRwczovL2FjbWUuZXhhbXBsZSJ9XSwidHlwZSI6ImNoZWNrb3V0LmFsbG93ZWRfbWVyY2hhbnRzIn0seyJpdGVtcyI6W3siYWNjZXB0YWJsZV9pdGVtcyI6W3siaWQiOiJTS1UtRFJJTEwtMThWIiwicHJpY2UiOjg5OTksInRpdGxlIjoiMThWIENvcmRsZXNzIERyaWxsIn0seyJpZCI6IlNLVS1EUklMTC0xMlYiLCJwcmljZSI6NTk5OSwidGl0bGUiOiIxMlYgQ29yZGxlc3MgRHJpbGwifV0sImlkIjoicmVxX2RyaWxsIiwicXVhbnRpdHkiOjF9XSwidHlwZSI6ImNoZWNrb3V0LmxpbmVfaXRlbXMifV0sInZjdCI6Im1hbmRhdGUuY2hlY2tvdXQub3Blbi4xIn0=",
       "expected_open_mandate_hash": "sha256:dd0330b1d02b1f83ade5821d64f9f5abf75d1af00575e8fa39d68a8bdeadfb31",
-      "notes": "RFC 8785 performs NO Unicode normalization. The serialised string is the exact code points supplied. NFC and NFD forms of the same glyph produce DIFFERENT open_mandate_hash. Implementers MUST NOT normalize merchant strings before hashing; the signed bytes are authoritative."
+      "notes": "RFC 8785 performs NO Unicode normalization. The serialized string is the exact code points supplied. NFC and NFD forms of the same glyph produce DIFFERENT open_mandate_hash. Implementers MUST NOT normalize merchant strings before hashing; the signed bytes are authoritative."
     },
     {
       "vector_id": "ap2-omh-v0-unicode-nfd-006b",
@@ -388,7 +388,7 @@
       },
       "expected_jcs_bytes_b64": "eyJjbmYiOnsiandrIjp7ImNydiI6IkVkMjU1MTkiLCJrdHkiOiJPS1AiLCJ4IjoiMTFxWUFZS3hDcmZWU183VHlXUUhPZzdoY3ZQYXBpTWxyd0lhYVBjSFVSbyJ9fSwiY29uc3RyYWludHMiOlt7ImFsbG93ZWQiOlt7ImlkIjoibWVyY2hfYWNtZSIsIm5hbWUiOiJDYWZlzIEgU29sZcyBIiwid2Vic2l0ZSI6Imh0dHBzOi8vYWNtZS5leGFtcGxlIn1dLCJ0eXBlIjoiY2hlY2tvdXQuYWxsb3dlZF9tZXJjaGFudHMifSx7Iml0ZW1zIjpbeyJhY2NlcHRhYmxlX2l0ZW1zIjpbeyJpZCI6IlNLVS1EUklMTC0xOFYiLCJwcmljZSI6ODk5OSwidGl0bGUiOiIxOFYgQ29yZGxlc3MgRHJpbGwifSx7ImlkIjoiU0tVLURSSUxMLTEyViIsInByaWNlIjo1OTk5LCJ0aXRsZSI6IjEyViBDb3JkbGVzcyBEcmlsbCJ9XSwiaWQiOiJyZXFfZHJpbGwiLCJxdWFudGl0eSI6MX1dLCJ0eXBlIjoiY2hlY2tvdXQubGluZV9pdGVtcyJ9XSwidmN0IjoibWFuZGF0ZS5jaGVja291dC5vcGVuLjEifQ==",
       "expected_open_mandate_hash": "sha256:f8ae25428c8f1eb7ffaf49da13366c5e76db95de76f237e01f98b6ec8e4247e9",
-      "notes": "Pair of 006a. If 006a and 006b produce the same hash, your pipeline is Unicode-normalising and is non-conformant with RFC 8785."
+      "notes": "Pair of 006a. If 006a and 006b produce the same hash, your pipeline is Unicode-normalizing and is non-conformant with RFC 8785."
     }
   ]
 }

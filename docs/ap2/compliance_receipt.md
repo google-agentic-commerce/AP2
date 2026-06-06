@@ -47,7 +47,7 @@ canonicalisation.
   "subject_hash": "sha256:0dd5d0b76c9b9281fdeb2509ad38ab132b16a17385ca01d976ff9e6e12563a0f",
   "verdict": "ALLOW"
 }
-```
+```text
 
 | Field | Type | Description |
 | :---- | :--- | :---------- |
@@ -119,7 +119,7 @@ cancellation receipt (eventual termination, see Payment Lifecycle)
     |
     v   (if refund owed)
 refund receipt (see Payment Lifecycle)
-```
+```text
 
 A verifier walking this chain confirms the full mandate lifecycle under
 one canonicalisation pin, starting from the admission decision.

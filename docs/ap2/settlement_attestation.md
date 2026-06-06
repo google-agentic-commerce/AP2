@@ -42,7 +42,7 @@ canonicalisation.
   "signature": "<detached signature over JCS canonical bytes>",
   "tx_id": "0x3a3777f4e2b6e3e0e0e3f3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3b3"
 }
-```
+```text
 
 | Field | Type | Description |
 | :---- | :--- | :---------- |
@@ -106,7 +106,7 @@ cancellation receipt (see Payment Lifecycle)
     |
     v   (if refund owed)
 refund receipt (see Payment Lifecycle)
-```
+```text
 
 A verifier walking this chain confirms the full mandate lifecycle under
 one canonicalisation pin, starting from the admission decision.

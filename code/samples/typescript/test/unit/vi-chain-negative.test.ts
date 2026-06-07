@@ -25,6 +25,7 @@ import {
   createCheckoutJwt,
   checkoutHashFromJwt,
   createUserMandateAutonomous,
+  createUserMandateImmediate,
   decodeSdJwt,
   findProduct,
   generateEs256Key,
@@ -161,5 +162,57 @@ describe('Verifiable Intent — rejection paths', () => {
         iat: NOW,
       }),
     ).rejects.toThrow();
+  });
+});
+
+describe('Verifiable Intent — immediate (2-layer) rejection paths', () => {
+  it('rejects an immediate L2 verified against a different L1 (sd_hash binding)', async () => {
+    const issuer = await makeKey('issuer');
+    const user = await makeKey('user');
+    const merchant = await makeKey('merchant');
+    // Two issuer credentials for the SAME user key but different content → different serialization.
+    const l1a = await issueIssuerCredential({ userPublicJwk: user.publicKey, issuer, sub: 'alice', iat: NOW });
+    const l1b = await issueIssuerCredential({ userPublicJwk: user.publicKey, issuer, sub: 'bob', iat: NOW });
+    const checkoutJwt = await createCheckoutJwt([{ sku: 'BAB86345' }], merchant);
+    const l2 = await createUserMandateImmediate({
+      l1Serialized: l1a,
+      user,
+      checkoutJwt,
+      paymentInstrument: PAYMENT_INSTRUMENT,
+      payee: MERCHANTS[0],
+      amount: 27999,
+      iat: NOW,
+    });
+    // L2's sd_hash binds it to l1a; verifying it against l1b must fail.
+    const result = await verifyChain(decodeSdJwt(l1b), decodeSdJwt(l2), {
+      issuerPublicJwk: issuer.publicKey,
+      l1Serialized: l1b,
+      currentTime: NOW,
+    });
+    expect(result.valid).toBe(false);
+  });
+
+  it('rejects an immediate chain verified against the wrong issuer key', async () => {
+    const issuer = await makeKey('issuer');
+    const user = await makeKey('user');
+    const merchant = await makeKey('merchant');
+    const wrongIssuer = await makeKey('issuer');
+    const l1 = await issueIssuerCredential({ userPublicJwk: user.publicKey, issuer, sub: 'u', iat: NOW });
+    const checkoutJwt = await createCheckoutJwt([{ sku: 'BAB86345' }], merchant);
+    const l2 = await createUserMandateImmediate({
+      l1Serialized: l1,
+      user,
+      checkoutJwt,
+      paymentInstrument: PAYMENT_INSTRUMENT,
+      payee: MERCHANTS[0],
+      amount: 27999,
+      iat: NOW,
+    });
+    const result = await verifyChain(decodeSdJwt(l1), decodeSdJwt(l2), {
+      issuerPublicJwk: wrongIssuer.publicKey,
+      l1Serialized: l1,
+      currentTime: NOW,
+    });
+    expect(result.valid).toBe(false);
   });
 });

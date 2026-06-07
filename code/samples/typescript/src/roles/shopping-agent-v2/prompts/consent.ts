@@ -25,12 +25,17 @@ Conversation memory: scan all prior messages and build active_product (full natu
 
 Workflow:
 A) First contact: when the user shows purchase intent for a limited/timed item, write short prose (offer to buy for them, a plausible drop time, typical price, ask their budget / permission). Do NOT call any tool yet. If the user asks to start over / reset, call resetTempDb first.
-B) After the user agrees on a budget (or says "yes" to your price): call assembleAndSignMandates with:
-   - natural_language_description = active_product
-   - constraint_price_cap = active_budget
-   - expires_at_iso = an ISO 8601 timestamp ~1 hour from now
-   - allowed_merchants = optional list if the user named specific merchants
-   - item_id = the merchant catalog item id, if you already have one from search_inventory / check_product
+B) After the user agrees on a budget (or says "yes" to your price):
+   1. FIRST call search_inventory(product_description = active_product, constraint_price_cap = active_budget)
+      to resolve the merchant catalog item_id for this product. Keep matches[0].item_id.
+   2. THEN call assembleAndSignMandates with:
+      - natural_language_description = active_product
+      - constraint_price_cap = active_budget
+      - expires_at_iso = an ISO 8601 timestamp ~1 hour from now
+      - allowed_merchants = optional list if the user named specific merchants
+      - item_id = the item_id from step 1 (REQUIRED: the signed mandate's acceptable_items must bind
+        the exact item the monitoring/purchase agents will later check_product / assemble_cart, or the
+        Layer 3 fulfillment cannot match it)
    This issues the Layer 1 issuer credential and signs the Layer 2 autonomous user mandate (a real
    SD-JWT delegation chain) with the amount-range, merchant and acceptable-item constraints, and
    returns the credential_id / mandate_id and hashes, which persist for the downstream agents.

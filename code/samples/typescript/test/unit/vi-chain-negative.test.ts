@@ -18,6 +18,7 @@ import {
   ACCEPTABLE_ITEMS,
   MERCHANT_AUD,
   MERCHANTS,
+  NETWORK_AUD,
   PAYMENT_INSTRUMENT,
   ROLE_KIDS,
   type ViKeyPair,
@@ -162,6 +163,71 @@ describe('Verifiable Intent — rejection paths', () => {
         iat: NOW,
       }),
     ).rejects.toThrow();
+  });
+
+  it('rejects an L3 signed by a non-delegated agent key', async () => {
+    const issuer = await makeKey('issuer');
+    const user = await makeKey('user');
+    const delegated = await makeKey('agent'); // bound into L2 cnf.jwk
+    const impostor = await makeKey('agent'); // same kid, different key
+    const merchant = await makeKey('merchant');
+
+    const l1 = await issueIssuerCredential({ userPublicJwk: user.publicKey, issuer, sub: 'u', iat: NOW });
+    const l2 = await createUserMandateAutonomous({
+      l1Serialized: l1,
+      user,
+      agentPublicJwk: delegated.publicKey,
+      agentKid: delegated.kid,
+      promptSummary: 'racket',
+      iat: NOW,
+      merchants: MERCHANTS,
+      acceptableItems: ACCEPTABLE_ITEMS,
+      paymentInstrument: PAYMENT_INSTRUMENT,
+      amountMin: 0,
+      amountMax: 40000,
+    });
+    const racket = findProduct('BAB86345')!;
+    const checkoutJwt = await createCheckoutJwt([{ sku: racket.sku }], merchant);
+    const checkoutHash = checkoutHashFromJwt(checkoutJwt);
+    // The impostor (not the cnf-bound agent) builds the fulfillment.
+    const f = await createAgentFulfillment({
+      l2Serialized: l2,
+      agent: impostor,
+      checkoutJwt,
+      checkoutHash,
+      payee: MERCHANTS[0],
+      itemId: racket.sku,
+      amount: racket.price,
+      paymentInstrument: PAYMENT_INSTRUMENT,
+      iat: NOW,
+    });
+    const outcome = await verifyPaymentChainAndConstraints({
+      l1Serialized: l1,
+      l2PaymentSerialized: f.l2PaymentSerialized,
+      l3PaymentSerialized: f.l3PaymentSerialized,
+      issuerPublicJwk: issuer.publicKey,
+      currentTime: NOW,
+      expectedL3PaymentAud: NETWORK_AUD,
+    });
+    expect(outcome.result.valid).toBe(false); // L3 not signed by the delegated agent key
+  });
+
+  it('rejects a tampered L2 presentation (mutated signature)', async () => {
+    const { issuer, l1, fulfillment } = await buildChain();
+    // Flip the last char of the L2 base-JWT signature segment of the network view.
+    const parts = fulfillment.l2PaymentSerialized.split('~');
+    const [h, p, sig] = parts[0].split('.');
+    parts[0] = [h, p, sig.slice(0, -1) + (sig.endsWith('A') ? 'B' : 'A')].join('.');
+    const tampered = parts.join('~');
+    const outcome = await verifyPaymentChainAndConstraints({
+      l1Serialized: l1,
+      l2PaymentSerialized: tampered,
+      l3PaymentSerialized: fulfillment.l3PaymentSerialized,
+      issuerPublicJwk: issuer.publicKey,
+      currentTime: NOW,
+      expectedL3PaymentAud: NETWORK_AUD,
+    });
+    expect(outcome.result.valid).toBe(false);
   });
 });
 

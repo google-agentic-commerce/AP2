@@ -9,6 +9,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "test:coverage:unit": "vitest run test/unit --coverage",
     "cli": "npx adk run src/roles/shopping-agent/agent.ts",
     "dev": "concurrently \"npx tsx src/roles/shopping-agent/server.ts\" \"npx tsx src/roles/credentials-provider-agent/server.ts\" \"npx tsx src/roles/merchant-payment-processor-agent/server.ts\" \"npx tsx src/roles/merchant-agent/server.ts\" \"npx adk web src/web-agents --host localhost -p 3001\""
   },
@@ -26,7 +27,6 @@
   },
   "dependencies": {
     "@a2a-js/sdk": "^0.3.13",
-    "@verifiable-intent/core": "file:../../../../verifiable-intent/typescript",
     "@google-cloud/opentelemetry-cloud-monitoring-exporter": "^0.21.0",
     "@google-cloud/opentelemetry-cloud-trace-exporter": "^3.0.0",
     "@google-cloud/storage": "^7.19.0",
@@ -48,6 +48,7 @@
     "@opentelemetry/sdk-trace-node": "^2.1.0",
     "@sd-jwt/core": "^0.19.0",
     "@sd-jwt/crypto-nodejs": "^0.19.0",
+    "@verifiable-intent/core": "file:../../../../verifiable-intent/typescript",
     "dotenv": "^17.4.2",
     "express": "^5.1.0",
     "uuid": "^13.0.0",
@@ -61,6 +62,7 @@
     "@types/uuid": "^10.0.0",
     "@typescript-eslint/eslint-plugin": "^8.53.1",
     "@typescript-eslint/parser": "^8.53.1",
+    "@vitest/coverage-v8": "^4.1.8",
     "concurrently": "^9.1.2",
     "eslint": "^9.39.4",
     "eslint-import-resolver-typescript": "^4.4.4",

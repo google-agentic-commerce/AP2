@@ -23,4 +23,4 @@ independently verifiable (`npx tsc --noEmit` + `npm run lint` +
 - [ ] `verifyPaymentChainAndConstraints`: surface a clear error when the issuer key is missing, and test it.
 
 ## Docs
-- [ ] Add `src/common/vi/README.md` documenting the L1→L2→L3 flow (diagram, field reference, who-stores-what), matching the integration.
+- [x] Add `src/common/vi/README.md` documenting the L1→L2→L3 flow (layer model, role→layer mapping diagram, file contract, public API, and the security properties the tests enforce).

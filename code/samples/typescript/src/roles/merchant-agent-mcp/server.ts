@@ -30,7 +30,7 @@ import {
   loadOrCreateKeyPair,
   loadPublicJwk,
 } from '../../common/sdjwt/index.js';
-import { loadViPublicJwk, verifyCheckoutChain } from '../../common/vi/index.js';
+import { MERCHANT_AUD, loadViPublicJwk, verifyCheckoutChain } from '../../common/vi/index.js';
 
 /** Base64url SHA-256 — the checkout JWT hash binds the payment mandate. */
 function sha256Base64Url(input: string): string {
@@ -378,6 +378,7 @@ server.registerTool(
         l2CheckoutSerialized: l2Checkout,
         l3CheckoutSerialized: l3Checkout,
         issuerPublicJwk: issuerPub,
+        expectedL3CheckoutAud: MERCHANT_AUD,
       });
       if (!chain.valid) {
         const error = { error: 'checkout_chain_invalid', message: chain.errors.join('; ') };

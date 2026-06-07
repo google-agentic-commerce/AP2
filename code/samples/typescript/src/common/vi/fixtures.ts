@@ -76,6 +76,14 @@ export const PAYMENT_INSTRUMENT: Dict = {
   description: 'Mastercard **** 1234',
 };
 
+/**
+ * Stable audiences for the Layer 3 presentations. The agent stamps these as the
+ * `aud` when minting L3a/L3b, and each verifier pins the matching value so a
+ * presentation addressed to a different party is rejected (RFC 7519 `aud`).
+ */
+export const MERCHANT_AUD = 'https://tennis-warehouse.com';
+export const NETWORK_AUD = 'https://www.mastercard.com';
+
 export function getCatalog(): Product[] {
   return PRODUCTS;
 }

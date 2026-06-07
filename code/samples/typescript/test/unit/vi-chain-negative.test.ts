@@ -16,6 +16,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   ACCEPTABLE_ITEMS,
+  MERCHANT_AUD,
   MERCHANTS,
   PAYMENT_INSTRUMENT,
   ROLE_KIDS,
@@ -29,6 +30,7 @@ import {
   generateEs256Key,
   issueIssuerCredential,
   verifyChain,
+  verifyCheckoutChain,
   verifyPaymentChainAndConstraints,
 } from '../../src/common/vi/index.js';
 
@@ -119,6 +121,29 @@ describe('Verifiable Intent — rejection paths', () => {
       currentTime: NOW,
     });
     expect(outcome.valid).toBe(false);
+  });
+
+  it('rejects a checkout presentation addressed to a different audience', async () => {
+    const { issuer, l1, fulfillment } = await buildChain(); // L3b aud defaults to MERCHANT_AUD
+    const good = await verifyCheckoutChain({
+      l1Serialized: l1,
+      l2CheckoutSerialized: fulfillment.l2CheckoutSerialized,
+      l3CheckoutSerialized: fulfillment.l3CheckoutSerialized,
+      issuerPublicJwk: issuer.publicKey,
+      currentTime: NOW,
+      expectedL3CheckoutAud: MERCHANT_AUD,
+    });
+    expect(good.valid).toBe(true);
+
+    const wrong = await verifyCheckoutChain({
+      l1Serialized: l1,
+      l2CheckoutSerialized: fulfillment.l2CheckoutSerialized,
+      l3CheckoutSerialized: fulfillment.l3CheckoutSerialized,
+      issuerPublicJwk: issuer.publicKey,
+      currentTime: NOW,
+      expectedL3CheckoutAud: 'https://evil.example',
+    });
+    expect(wrong.valid).toBe(false);
   });
 
   it('refuses to build a fulfillment for a payee outside the mandate', async () => {

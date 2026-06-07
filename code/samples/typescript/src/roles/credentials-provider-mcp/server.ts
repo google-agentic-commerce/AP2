@@ -27,7 +27,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { z } from 'zod';
 import { verifyJwtEs256, loadPublicJwk } from '../../common/sdjwt/index.js';
-import { loadViPublicJwk, verifyPaymentChainAndConstraints } from '../../common/vi/index.js';
+import { NETWORK_AUD, loadViPublicJwk, verifyPaymentChainAndConstraints } from '../../common/vi/index.js';
 
 const TEMP_DB = process.env.TEMP_DB_DIR ?? '.temp-db';
 
@@ -89,6 +89,7 @@ server.registerTool(
         l2PaymentSerialized: l2Payment,
         l3PaymentSerialized: l3Payment,
         issuerPublicJwk,
+        expectedL3PaymentAud: NETWORK_AUD,
       });
       if (!outcome.valid) {
         const error = { error: 'payment_chain_invalid', message: outcome.errors.join('; ') };

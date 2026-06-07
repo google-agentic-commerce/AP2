@@ -61,6 +61,7 @@ import {
 } from '@verifiable-intent/core';
 
 import { checkoutHashFromJwt } from './checkout-jwt.js';
+import { MERCHANT_AUD, NETWORK_AUD } from './fixtures.js';
 import type { ViKeyPair } from './keys.js';
 
 const nowSeconds = (): number => Math.floor(Date.now() / 1000);
@@ -319,7 +320,7 @@ export async function createAgentFulfillment(params: AgentFulfillmentParams): Pr
   // L3a — payment, for the network.
   const l3aMandate = new PaymentL3Mandate({
     nonce,
-    aud: params.networkAud ?? 'https://www.mastercard.com',
+    aud: params.networkAud ?? NETWORK_AUD,
     iat,
     iss: 'https://agent.example.com',
     exp,
@@ -338,7 +339,7 @@ export async function createAgentFulfillment(params: AgentFulfillmentParams): Pr
   // L3b — checkout, for the merchant.
   const l3bMandate = new CheckoutL3Mandate({
     nonce,
-    aud: params.merchantAud ?? 'https://tennis-warehouse.com',
+    aud: params.merchantAud ?? MERCHANT_AUD,
     iat,
     iss: 'https://agent.example.com',
     exp,

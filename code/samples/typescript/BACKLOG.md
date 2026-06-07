@@ -15,7 +15,8 @@ independently verifiable (`npx tsc --noEmit` + `npm run lint` +
 - [ ] Add a deterministic cross-role integration test: `assembleAndSignMandates` → `create_checkout` → `createMandateFulfillment` → `verifyCheckoutChain` + `verifyPaymentChainAndConstraints`, all via the file contract, asserting a valid end-to-end purchase and an over-budget rejection. No Gemini.
 
 ## Robustness
-- [ ] Pin `expectedL3*Aud` / `expectedL3*Nonce` (and `expectedL2*`) in the role `verifyChain` calls (currently optional) so a presentation for a different audience/transaction is rejected; add tests proving it.
+- [x] Pin `expectedL3*Aud` in the role `verifyChain` calls so a presentation addressed to a different party is rejected — merchant pins `MERCHANT_AUD`, CP pins `NETWORK_AUD`, agent stamps both via shared fixtures constants. Test in `test/unit/vi-chain-negative.test.ts`.
+- [ ] Replay protection: verifiers don't pin nonce/`transaction_id`, and used payment tokens / mandates aren't deduped — the same authorization could be replayed. Track spent nonces/tokens across the role servers (the VI lib leaves replay to the caller) + add a test.
 - [ ] `verifyPaymentChainAndConstraints`: surface a clear error when the issuer key is missing, and test it.
 
 ## Docs

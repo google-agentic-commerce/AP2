@@ -4,6 +4,15 @@
 independently verifiable (`npx tsc --noEmit` + `npm run lint` +
 `npx vitest run test/unit` all green). Check items off (`- [x]`) when done.
 
+> **Status (after 10 improve-loop iterations):** the unit-testable security +
+> coverage + docs backlog is essentially complete — `src/common/vi` ≈96% stmts /
+> 91% funcs, 30 unit tests, all gates green. The remaining open items below are
+> **e2e-only** (need the running MCP/A2A servers + a Gemini key to fix *and*
+> verify): payment-token↔checkout binding, replay/nonce dedup, checkout-side
+> constraint enforcement, the MCP-tool-extraction refactor, and live validation
+> of the item-id consent fix. These should be done in a fresh, bounded session
+> with the servers running — not this unbounded unit-only loop.
+
 ## Test coverage & hardening
 - [x] Enable coverage: `@vitest/coverage-v8` + `test:coverage:unit` script + a coverage block in `vitest.config.ts` (scoped to `src/common/vi`). Baseline: **85.7% stmts / 82.5% branch / 73.9% funcs / 85.6% lines**.
 - [x] **Coverage gap closed:** `keys.ts` now **100%** — round-trip persist/reload, per-role kids + fallback, legacy (no-kid) format, `loadViPublicJwk` missing→null + no private-scalar leak, and a persisted key signing a verifiable credential (`test/unit/vi-keys.test.ts`). Overall `src/common/vi` now **96.2% stmts / 91.3% funcs**. (`fixtures.ts` `getCatalog` still uncovered — minor.)
@@ -20,6 +29,7 @@ independently verifiable (`npx tsc --noEmit` + `npm run lint` +
 - [x] Pin `expectedL3*Aud` in the role `verifyChain` calls so a presentation addressed to a different party is rejected — merchant pins `MERCHANT_AUD`, CP pins `NETWORK_AUD`, agent stamps both via shared fixtures constants. Test in `test/unit/vi-chain-negative.test.ts`.
 - [ ] Replay protection: verifiers don't pin nonce/`transaction_id`, and used payment tokens / mandates aren't deduped — the same authorization could be replayed. Track spent nonces/tokens across the role servers (the VI lib leaves replay to the caller) + add a test.
 - [ ] **Gap (binding):** credentials-provider mints `pay_token_*` after verifying the payment chain, but the token isn't cryptographically bound to `checkout_jwt_hash`, and `complete_checkout` / the PSP don't re-verify the chain — a minted token could be presented for a different settlement. Bind the token to the checkout hash (and/or have the PSP re-verify) + add a test.
+- [ ] **Gap (enforcement asymmetry, found iter 10):** `verifyCheckoutChain` (merchant) only verifies chain structure + aud — it does NOT run `checkConstraints` on the checkout-side constraints (`allowed_merchants`, `line_items`/`acceptable_items`); only `verifyPaymentChainAndConstraints` (network) enforces constraints (amount/payee). So the merchant trusts the agent's self-enforcement in `createAgentFulfillment` that the checked-out item is acceptable. Fix: enforce checkout constraints in the merchant path — decode the L3b `checkout_jwt` cart, resolve `acceptable_items` SD-refs, run `checkConstraints` (line_items max-flow). Needs careful design + e2e validation.
 - [ ] `verifyPaymentChainAndConstraints`: surface a clear error when the issuer key is missing, and test it.
 
 ## Docs

@@ -12,7 +12,7 @@ It contains:
 
 - `sdk/python/ap2/models/` — Pydantic models for carts, mandates, receipts,
   and payment requests.
-- `sdk/python/ap2/schemas/` — canonical JSON Schemas and the generator used
+- `sdk/schemas/` — canonical JSON Schemas and the generator used
   to emit the Python models in `sdk/python/ap2/sdk/generated/`.
 - `sdk/python/ap2/sdk/` — the runtime SDK: mandate wrappers, chain
   verification, SD-JWT helpers, constraints, disclosure metadata.

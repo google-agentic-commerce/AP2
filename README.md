@@ -153,12 +153,12 @@ generally follow this pattern:
 ### Installing the AP2 Types Package
 
 The protocol's core objects are defined under
-[`code/sdk/python/ap2/`](code/sdk/python/ap2/) — Pydantic models in
-[`models/`](code/sdk/python/ap2/models/) and
-[`sdk/generated/`](code/sdk/python/ap2/sdk/generated/), canonical JSON schemas
-in [`schemas/`](code/sdk/python/ap2/schemas/). A PyPI package will be published
-at a later time. Until then, you can install the package directly using this
-command:
+[`code/sdk/`](code/sdk/) — canonical JSON schemas in
+[`schemas/`](code/sdk/schemas/), Pydantic models in
+[`python/ap2/models/`](code/sdk/python/ap2/models/), and generated Python models
+in [`python/ap2/sdk/generated/`](code/sdk/python/ap2/sdk/generated/). A PyPI
+package will be published at a later time. Until then, you can install the
+package directly using this command:
 
 ```sh
 uv pip install git+https://github.com/google-agentic-commerce/AP2.git@main

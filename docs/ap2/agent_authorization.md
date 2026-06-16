@@ -22,11 +22,11 @@ The authorization process is broken into two steps:
 
 <div style="display: flex; justify-content: space-around;">
   <figure>
-    <img src="../../assets/mandate_delegation_overview.svg" style="width:100%" alt="Diagram illustrating the Mandate Delegation process">
+    <img src="../assets/mandate_delegation_overview.svg" style="width:100%" alt="Diagram illustrating the Mandate Delegation process">
     <figcaption align="center">Mandate Delegation</figcaption>
   </figure>
   <figure>
-    <img src="../../assets/action_authorization_overview.svg" style="width:100%" alt="Diagram illustrating the Action Authorization process">
+    <img src="../assets/action_authorization_overview.svg" style="width:100%" alt="Diagram illustrating the Action Authorization process">
     <figcaption align="center">Action Authorization</figcaption>
   </figure>
 </div>
@@ -79,7 +79,7 @@ to ensure that the Trusted Surface constructs Mandates only after obtaining
 appropriate user consent and authorization.
 
 <figure>
-  <img src="../../assets/mandate_delegation_user_credential.svg" style="width:100%" alt="Mandate Delegation: User Credential">
+  <img src="../assets/mandate_delegation_user_credential.svg" style="width:100%" alt="Mandate Delegation: User Credential">
   <figcaption align="center">Mandate Delegation: User Credential</figcaption>
 </figure>
 
@@ -294,7 +294,7 @@ authorization. This model does not require a pre-issued credential. The
 following steps occur:
 
 <figure>
-  <img src="../../assets/mandate_delegation_trusted_agent_provider.svg" style="width:100%" alt="Mandate Delegation: Trusted Agent Provider">
+  <img src="../assets/mandate_delegation_trusted_agent_provider.svg" style="width:100%" alt="Mandate Delegation: Trusted Agent Provider">
   <figcaption align="center">Mandate Delegation: Trusted Agent Provider</figcaption>
 </figure>
 
@@ -402,7 +402,7 @@ Open Mandates are necessary to allow the Agent to perform autonomous actions on
 the User’s behalf, while still appropriately constraining their behavior.
 
 <figure>
-  <img src="../../assets/mandate_chain_example.svg" style="width:800px" alt="Examples of open and closed Mandate Chains">
+  <img src="../assets/mandate_chain_example.svg" style="width:800px" alt="Examples of open and closed Mandate Chains">
   <figcaption align="center">Example: Mandate Chains</figcaption>
 </figure>
 

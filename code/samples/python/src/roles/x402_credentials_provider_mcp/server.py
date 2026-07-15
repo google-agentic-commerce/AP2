@@ -98,6 +98,18 @@ def _load_persisted_mandate(filename: str) -> str | None:
     return None
 
 
+def _verified_amount_cents(chain: PaymentMandateChain) -> int:
+  """Return the signed amount (minor units) from the verified closed mandate.
+
+  The amount is always taken from the REQUIRED, signed payment_amount of the
+  verified mandate. There is deliberately no hardcoded fallback: authorizing a
+  fabricated amount would sign an EIP-3009 authorization the user never
+  mandated. Raises AttributeError if the verified mandate carries no payment
+  amount, which the caller must treat as a verification failure (fail closed).
+  """
+  return chain.closed_mandate.payment_amount.amount
+
+
 @mcp.tool()
 def issue_payment_credential(
     payment_mandate_chain_id: str,
@@ -145,19 +157,27 @@ def issue_payment_credential(
   if violations:
     return {"error": "verification_failed", "message": "; ".join(violations)}
 
-  # Extract 'to' address and value from the verified mandate chain
+  # Amount is a REQUIRED, signed field of the verified mandate. Authorize
+  # exactly that amount and fail closed if it is somehow absent. Never fall back
+  # to a hardcoded amount: doing so would sign an EIP-3009 authorization for a
+  # value the user never mandated (previously any missing field silently
+  # defaulted the transfer to 1250 cents).
   try:
-    payee_address = chain.closed_mandate.payment_instrument.payee_address
-    amount_cents = chain.closed_mandate.payment_amount.amount
-    if not payee_address:
-      payee_address = (
-          os.environ.get("MERCHANT_WALLET_ADDRESS") or DEFAULT_MERCHANT_ADDRESS
-      )
+    amount_cents = _verified_amount_cents(chain)
   except AttributeError:
-    payee_address = (
-        os.environ.get("MERCHANT_WALLET_ADDRESS") or DEFAULT_MERCHANT_ADDRESS
-    )
-    amount_cents = 1250
+    _logger.error("verified mandate is missing a payment amount")
+    return {
+        "error": "verification_failed",
+        "message": "verified mandate is missing a payment amount",
+    }
+
+  # Destination for the transfer. The verified payment instrument does not yet
+  # carry a payee address (type-specific instrument fields are dropped before
+  # signing, see issue #299), so use the credential provider's configured payout
+  # address.
+  payee_address = (
+      os.environ.get("MERCHANT_WALLET_ADDRESS") or DEFAULT_MERCHANT_ADDRESS
+  )
 
   # x402 Binding Check: Hash mandate to create exactly 32-byte EIP-3009 Nonce
   nonce = Web3.keccak(text=mandate_chain)

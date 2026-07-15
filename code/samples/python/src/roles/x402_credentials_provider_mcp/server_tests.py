@@ -59,6 +59,15 @@ def test_amount_missing_fails_closed():
     server._verified_amount_cents(_NoAmount())
 
 
+def test_amount_null_fails_closed():
+  # payment_amount is present but its amount is null. The null slips past
+  # attribute access, so without an explicit guard the function would return
+  # None and later crash on None * 10000 instead of failing closed. It must
+  # raise AttributeError so the caller returns verification_failed.
+  with pytest.raises(AttributeError):
+    server._verified_amount_cents(_Chain(None))
+
+
 def test_handler_does_not_fabricate_amount():
   # Guard against reintroducing the hardcoded amount fallback in the handler.
   source = Path(server.__file__).read_text(encoding="utf-8")

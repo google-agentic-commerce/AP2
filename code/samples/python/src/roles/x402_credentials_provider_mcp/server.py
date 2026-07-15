@@ -104,10 +104,14 @@ def _verified_amount_cents(chain: PaymentMandateChain) -> int:
   The amount is always taken from the REQUIRED, signed payment_amount of the
   verified mandate. There is deliberately no hardcoded fallback: authorizing a
   fabricated amount would sign an EIP-3009 authorization the user never
-  mandated. Raises AttributeError if the verified mandate carries no payment
-  amount, which the caller must treat as a verification failure (fail closed).
+  mandated. Raises AttributeError if the verified mandate carries no usable
+  payment amount -- whether the field is absent or present but null -- which the
+  caller must treat as a verification failure (fail closed).
   """
-  return chain.closed_mandate.payment_amount.amount
+  amount = chain.closed_mandate.payment_amount.amount
+  if amount is None:
+    raise AttributeError("verified mandate payment_amount.amount is null")
+  return amount
 
 
 @mcp.tool()

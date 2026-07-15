@@ -47,6 +47,7 @@ emvco
 endlocal
 envoyproxy
 esac
+fastmcp
 felixge
 Fiuu
 fontawesome
@@ -83,6 +84,7 @@ jetbrains
 Jetpack
 jvmargs
 Kaia
+keccak
 keepattributes
 keepclassmembers
 Klarna
@@ -93,6 +95,7 @@ ktor
 Ktor
 KXMYBJWNQ
 Lazada
+levelname
 libpeerconnection
 Lightspark
 linenums
@@ -149,6 +152,8 @@ ropeproject
 RPCURL
 Rulebook
 screenreaders
+sdjwt
+sepolia
 setlocal
 sharedpref
 Shopcider
@@ -169,6 +174,7 @@ Truelayer
 Trulioo
 udpa
 unmarshal
+usdc
 viewmodel
 vulnz
 Wallex

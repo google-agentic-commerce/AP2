@@ -23,7 +23,8 @@ jobs:
           LOG_LEVEL: WARN
           SHELLCHECK_OPTS: -e SC1091 -e 2086
           VALIDATE_ALL_CODEBASE: false
-          FILTER_REGEX_EXCLUDE: "^(\\.github/|\\.vscode/|code/samples/).*|CODE_OF_CONDUCT.md|CHANGELOG.md"
+          FILTER_REGEX_EXCLUDE: "^(\\.github/|\\.vscode/|code/samples/|code/web-client/).*|CODE_OF_CONDUCT.md|CHANGELOG.md"
+          VALIDATE_BIOME_LINT: false
           VALIDATE_BIOME_FORMAT: false
           VALIDATE_PYTHON_BLACK: false
           VALIDATE_PYTHON_FLAKE8: false

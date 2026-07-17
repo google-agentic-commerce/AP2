@@ -412,6 +412,50 @@ def test_payment_allowed_payment_instrument_mismatch():
     assert any('not in allowed list' in v for v in violations)
 
 
+def test_payment_allowed_payment_instrument_same_id_different_type_rejected():
+    """A closed instrument with an allowed id but a different type is rejected.
+
+    id uniqueness is not defined across instrument types, so matching on id
+    alone would let {id: 'pi-1', type: 'bank'} satisfy an allowed
+    {id: 'pi-1', type: 'card'}. Matching requires (type, id).
+    """
+    violations = check_payment_constraints(
+        _open_payment(
+            constraints=[
+                AllowedPaymentInstruments(
+                    allowed=[
+                        PaymentInstrument(id='pi-1', type='card')
+                    ],
+                ),
+            ]
+        ),
+        _closed_payment(
+            payment_instrument=PaymentInstrument(id='pi-1', type='bank')
+        ),
+    )
+    assert any('not in allowed list' in v for v in violations)
+
+
+def test_payment_allowed_payment_instrument_type_and_id_match():
+    """A closed instrument matching an allowed (type, id) passes."""
+    violations = check_payment_constraints(
+        _open_payment(
+            constraints=[
+                AllowedPaymentInstruments(
+                    allowed=[
+                        PaymentInstrument(id='pi-1', type='card'),
+                        PaymentInstrument(id='pi-1', type='bank'),
+                    ],
+                ),
+            ]
+        ),
+        _closed_payment(
+            payment_instrument=PaymentInstrument(id='pi-1', type='bank')
+        ),
+    )
+    assert violations == []
+
+
 # ── check_payment_constraints – budget ───────────────────────────────────
 
 

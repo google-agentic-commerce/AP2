@@ -243,12 +243,20 @@ class AllowedPaymentInstrumentEvaluator(PaymentConstraintEvaluator):
         instrument = closed_mandate.payment_instrument
         if not instrument:
             return ['Missing payment instrument in closed mandate']
+        # Match on both type and id. Matching on id alone lets a closed
+        # instrument of a different type (e.g. {id: 'x', type: 'bank'}) satisfy
+        # an allowed {id: 'x', type: 'card'}, since id uniqueness is not defined
+        # across types. Requiring (type, id) prevents that instrument-type
+        # confusion.
         if any(
-            allowed.id == instrument.id
+            allowed.type == instrument.type and allowed.id == instrument.id
             for allowed in self.constraint.allowed
         ):
             return []
-        return [f'Payment instrument {instrument.id} not in allowed list']
+        return [
+            f'Payment instrument (type={instrument.type}, id={instrument.id}) '
+            'not in allowed list'
+        ]
 
 
 class AllowedPispEvaluator(PaymentConstraintEvaluator):

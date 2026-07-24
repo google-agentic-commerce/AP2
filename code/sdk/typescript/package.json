@@ -1,0 +1,56 @@
+{
+  "name": "@ap2-protocol/sdk",
+  "version": "0.1.0",
+  "description": "TypeScript types and Zod validation for Agent Payments Protocol (AP2) mandates, generated from the canonical AP2 JSON Schemas.",
+  "type": "module",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/google-agentic-commerce/AP2/tree/main/code/sdk/typescript",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/google-agentic-commerce/AP2.git",
+    "directory": "code/sdk/typescript"
+  },
+  "keywords": [
+    "ap2",
+    "agent-payments-protocol",
+    "agentic-commerce",
+    "mandate",
+    "zod"
+  ],
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "generate": "tsx scripts/generate.ts",
+    "build": "tsup src/index.ts --format esm,cjs --dts --clean",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@apidevtools/json-schema-ref-parser": "^15.5.0",
+    "@eslint/js": "^9.39.5",
+    "@types/node": "^26.1.1",
+    "eslint": "^9.39.5",
+    "json-schema-to-zod": "^2.8.1",
+    "prettier": "^3.9.6",
+    "tsup": "^8.5.1",
+    "tsx": "^4.23.1",
+    "typescript": "^5.5.3",
+    "typescript-eslint": "^8.65.0",
+    "vitest": "^4.1.10"
+  }
+}

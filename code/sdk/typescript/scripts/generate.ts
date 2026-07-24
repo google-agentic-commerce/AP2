@@ -3,19 +3,26 @@
 // code/sdk/schemas/generate.py on the Python side, so the TS SDK can't drift
 // from the protocol's source of truth. Run via `npm run generate`.
 
-import { mkdir, mkdtemp, readdir, readFile, rm, writeFile } from 'node:fs/promises';
-import os from 'node:os';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import $RefParser from '@apidevtools/json-schema-ref-parser';
-import { jsonSchemaToZod } from 'json-schema-to-zod';
-import prettier from 'prettier';
+import {
+  mkdir,
+  mkdtemp,
+  readdir,
+  readFile,
+  rm,
+  writeFile,
+} from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import $RefParser from "@apidevtools/json-schema-ref-parser";
+import { jsonSchemaToZod } from "json-schema-to-zod";
+import prettier from "prettier";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const SCHEMAS_DIR = path.resolve(__dirname, '../../schemas/ap2');
-const TYPES_DIR = path.join(SCHEMAS_DIR, 'types');
-const OUT_TYPES_DIR = path.resolve(__dirname, '../src/generated/types');
-const OUT_MANDATES_DIR = path.resolve(__dirname, '../src/generated/mandates');
+const SCHEMAS_DIR = path.resolve(__dirname, "../../schemas/ap2");
+const TYPES_DIR = path.join(SCHEMAS_DIR, "types");
+const OUT_TYPES_DIR = path.resolve(__dirname, "../src/generated/types");
+const OUT_MANDATES_DIR = path.resolve(__dirname, "../src/generated/mandates");
 
 // Each schema declares an absolute $id (e.g. https://ap2-protocol.org/schemas/...),
 // which JSON Schema treats as the base URI for resolving its own relative $refs.
@@ -23,24 +30,31 @@ const OUT_MANDATES_DIR = path.resolve(__dirname, '../src/generated/mandates');
 // file on disk. We mirror the schema tree into a temp dir with $id stripped so
 // $RefParser falls back to resolving $refs relative to the file on disk.
 async function stripIdsIntoTempDir(): Promise<string> {
-  const tempDir = await mkdtemp(path.join(os.tmpdir(), 'ap2-schemas-'));
-  await mkdir(path.join(tempDir, 'types'), { recursive: true });
+  const tempDir = await mkdtemp(path.join(os.tmpdir(), "ap2-schemas-"));
+  await mkdir(path.join(tempDir, "types"), { recursive: true });
 
-  const topFiles = (await readdir(SCHEMAS_DIR)).filter((f) => f.endsWith('.json'));
+  const topFiles = (await readdir(SCHEMAS_DIR)).filter((f) =>
+    f.endsWith(".json")
+  );
   for (const file of topFiles) {
     await copyWithoutId(path.join(SCHEMAS_DIR, file), path.join(tempDir, file));
   }
-  const typeFiles = (await readdir(TYPES_DIR)).filter((f) => f.endsWith('.json'));
+  const typeFiles = (await readdir(TYPES_DIR)).filter((f) =>
+    f.endsWith(".json")
+  );
   for (const file of typeFiles) {
-    await copyWithoutId(path.join(TYPES_DIR, file), path.join(tempDir, 'types', file));
+    await copyWithoutId(
+      path.join(TYPES_DIR, file),
+      path.join(tempDir, "types", file)
+    );
   }
   return tempDir;
 }
 
 async function copyWithoutId(src: string, dest: string): Promise<void> {
-  const schema = JSON.parse(await readFile(src, 'utf8'));
+  const schema = JSON.parse(await readFile(src, "utf8"));
   delete schema.$id;
-  await writeFile(dest, JSON.stringify(schema), 'utf8');
+  await writeFile(dest, JSON.stringify(schema), "utf8");
 }
 
 const HEADER = `// Code generated from code/sdk/schemas/ap2 by scripts/generate.ts. DO NOT EDIT.\n\nimport { z } from 'zod';\n\n`;
@@ -56,10 +70,10 @@ const HEADER = `// Code generated from code/sdk/schemas/ap2 by scripts/generate.
 
 function toPascalCase(fileName: string): string {
   return fileName
-    .replace(/\.json$/, '')
+    .replace(/\.json$/, "")
     .split(/[_-]/)
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join('');
+    .join("");
 }
 
 // json-schema-to-zod only reads each `oneOf` branch's `properties` const
@@ -77,22 +91,27 @@ function materializeSiblingOneOf(node: unknown): void {
     for (const item of node) materializeSiblingOneOf(item);
     return;
   }
-  if (node === null || typeof node !== 'object') return;
+  if (node === null || typeof node !== "object") return;
 
   const schema = node as Record<string, unknown>;
   if (
     Array.isArray(schema.oneOf) &&
     schema.properties &&
-    typeof schema.properties === 'object'
+    typeof schema.properties === "object"
   ) {
     const outerProperties = schema.properties as Record<string, unknown>;
     const outerRequired = Array.isArray(schema.required) ? schema.required : [];
     schema.oneOf = (schema.oneOf as Record<string, unknown>[]).map((branch) => {
-      const branchProperties = (branch.properties ?? {}) as Record<string, unknown>;
-      const branchRequired = Array.isArray(branch.required) ? branch.required : [];
+      const branchProperties = (branch.properties ?? {}) as Record<
+        string,
+        unknown
+      >;
+      const branchRequired = Array.isArray(branch.required)
+        ? branch.required
+        : [];
       return {
         ...branch,
-        type: 'object',
+        type: "object",
         properties: { ...outerProperties, ...branchProperties },
         required: [...new Set([...outerRequired, ...branchRequired])],
       };
@@ -107,46 +126,73 @@ function materializeSiblingOneOf(node: unknown): void {
 async function generateFile(
   schemaPath: string,
   outDir: string,
-  exportName: string,
+  exportName: string
 ): Promise<void> {
   // Dereference resolves both relative file $refs (e.g. "types/merchant.json")
   // and internal "#/$defs/..." refs into a single self-contained schema, so
   // each generated file has no cross-file runtime dependency.
-  const schema = (await $RefParser.dereference(schemaPath)) as Record<string, unknown>;
+  const schema = (await $RefParser.dereference(schemaPath)) as Record<
+    string,
+    unknown
+  >;
   // $id/$schema survive dereferencing but aren't meaningful to json-schema-to-zod.
   delete schema.$id;
   delete schema.$schema;
   materializeSiblingOneOf(schema);
 
-  const zodSource = jsonSchemaToZod(schema, { name: `${exportName}Schema`, module: 'esm' });
-  const body = zodSource.replace(/^import\s*\{\s*z\s*\}\s*from\s*['"]zod['"];?\n*/m, '');
+  const zodSource = jsonSchemaToZod(schema, {
+    name: `${exportName}Schema`,
+    module: "esm",
+  });
+  const body = zodSource.replace(
+    /^import\s*\{\s*z\s*\}\s*from\s*['"]zod['"];?\n*/m,
+    ""
+  );
 
   const contents = `${HEADER}${body}\nexport type ${exportName} = z.infer<typeof ${exportName}Schema>;\n`;
-  const formatted = await prettier.format(contents, { parser: 'typescript', singleQuote: true });
+  const prettierConfig = await prettier.resolveConfig(outDir);
+  const formatted = await prettier.format(contents, {
+    ...prettierConfig,
+    parser: "typescript",
+  });
   await mkdir(outDir, { recursive: true });
-  await writeFile(path.join(outDir, `${toKebabCase(exportName)}.ts`), formatted, 'utf8');
+  await writeFile(
+    path.join(outDir, `${toKebabCase(exportName)}.ts`),
+    formatted,
+    "utf8"
+  );
 }
 
 function toKebabCase(pascalCase: string): string {
-  return pascalCase.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+  return pascalCase.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
 }
 
 async function main(): Promise<void> {
   const tempDir = await stripIdsIntoTempDir();
   try {
-    const typeFiles = (await readdir(path.join(tempDir, 'types'))).filter((f) =>
-      f.endsWith('.json'),
+    const typeFiles = (await readdir(path.join(tempDir, "types"))).filter((f) =>
+      f.endsWith(".json")
     );
     for (const file of typeFiles) {
       const exportName = toPascalCase(file);
-      await generateFile(path.join(tempDir, 'types', file), OUT_TYPES_DIR, exportName);
+      await generateFile(
+        path.join(tempDir, "types", file),
+        OUT_TYPES_DIR,
+        exportName
+      );
       console.log(`generated types/${toKebabCase(exportName)}.ts`);
     }
 
-    const mandateFiles = (await readdir(tempDir)).filter((f) => f.endsWith('.json'));
+    const mandateFiles = (await readdir(tempDir)).filter((f) =>
+      f.endsWith(".json")
+    );
     for (const file of mandateFiles) {
       const exportName = toPascalCase(file);
-      await generateFile(path.join(tempDir, file), OUT_MANDATES_DIR, exportName);
+      await generateFile(
+        path.join(tempDir, file),
+        OUT_MANDATES_DIR,
+        exportName
+      );
       console.log(`generated mandates/${toKebabCase(exportName)}.ts`);
     }
   } finally {

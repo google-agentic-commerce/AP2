@@ -1,0 +1,287 @@
+{
+  "version": {
+    "vector_set": "ap2-delegate-sd-jwt/v1",
+    "delegate_sd_jwt_draft": "draft-gco-oauth-delegate-sd-jwt-00",
+    "ap2_reference_commit": "e1ea56db72a6385bce3e5c1112b3a56ce60acb43",
+    "frozen_standards": {
+      "sd_jwt": "RFC 9901",
+      "jcs": "RFC 8785",
+      "jws": "RFC 7515"
+    }
+  },
+  "keys": {
+    "note": "Pinned P-256 signing keys. Private \"d\" is included so the vectors are fully reproducible; verification only needs the public coordinates.",
+    "pinned": {
+      "user-root": {
+        "crv": "P-256",
+        "d": "OteyNUjAnN-JavrYb12_Wo_X4Mnuh6EX9m12PuNsFf0",
+        "kty": "EC",
+        "x": "toGTbmS_yILsQsNraZfhLjTy1yoGHd-NmHJ1FrV5OWs",
+        "y": "PiXfjVFtax7OIBhrFwgFV4esW8PAwQBnZhS_h-ZfwCk",
+        "kid": "user-root"
+      },
+      "agent-sa": {
+        "crv": "P-256",
+        "d": "iZi7Sme-wIEM2LjSiPGBrYcISGHyylc9yE7ZRPBiCI8",
+        "kty": "EC",
+        "x": "bYSLLVmu229lugkS6vzsT7rVGMJLlGA7r5qaO41dZxo",
+        "y": "GTWguqlzoLwGyvfdqVXLakN3ZYQo63ICAxu0oYRyckU",
+        "kid": "agent-sa"
+      },
+      "provider-cp": {
+        "crv": "P-256",
+        "d": "ZSpgdC8OZ8kaEXcx9cYoUNEBK9zsJ1tglT6ZlTnruug",
+        "kty": "EC",
+        "x": "MGtE_mNvXCJB2ZuZKVkmgr2yMdX3FbTRIUVO4cYapXU",
+        "y": "iksDJe7QVCFs-01YfrRe2kduda8AQzvPvXtBTE4x27U",
+        "kid": "provider-cp"
+      },
+      "merchant-key": {
+        "crv": "P-256",
+        "d": "7hIxjcsFCw9wlbamhiH6nF2np8P60P3IgSptnvRS3ec",
+        "kty": "EC",
+        "x": "kfremiWl_Rn5FZuyCJxDn18WhLcBdbPS-79QyN5dZ6s",
+        "y": "2LG18c1C30Mx7orscJ8VjOSq9t5AX4Cu0BhtEyZEPnw",
+        "kid": "merchant-key"
+      },
+      "checkout-user": {
+        "crv": "P-256",
+        "d": "-2SnOhB3fPW7_swxgpBqyH-RkRQYMbsAvkw7yKQzRho",
+        "kty": "EC",
+        "x": "WuFQr15dAj6o8N35JFh5L9_6BvilsmrPd6ugwrsJbds",
+        "y": "2yJAKCmRNaQZQM5Xczh3CN66Oul6qVkRmrqS221AWu4",
+        "kid": "checkout-user"
+      },
+      "checkout-agent": {
+        "crv": "P-256",
+        "d": "sE_r97_araaDITX8wt1I_tk0Oa8j4kYTozBKy0Jd2qY",
+        "kty": "EC",
+        "x": "Vxo2xJC2JDhNRCP0QGyDWXfyzWxw3_kb2zJTRmuxkL0",
+        "y": "X0CYROGy3VZFa2ALfUjiX9u_MFSEn0Xd4vczHZQM_9E",
+        "kid": "checkout-agent"
+      }
+    }
+  },
+  "reproducibility": {
+    "deterministic": [
+      "keys",
+      "claims",
+      "aud",
+      "nonce",
+      "wire_shape"
+    ],
+    "nondeterministic": [
+      "disclosure salts (RFC 9901 4.1 requires fresh randomness)",
+      "ES256 signatures (randomized ECDSA k; not RFC 6979)"
+    ],
+    "model": "The committed JSON is the frozen golden artifact. The consumer test verifies these exact bytes against the SDK; regeneration yields semantically identical, byte-different vectors."
+  },
+  "vectors": [
+    {
+      "id": "root-single-sd-jwt",
+      "description": "A single issuer-signed root SD-JWT with no delegation hop. RFC 9901: ends with exactly one ~ and carries zero ~~ joins.",
+      "root_public_jwk": {
+        "crv": "P-256",
+        "kid": "user-root",
+        "kty": "EC",
+        "x": "toGTbmS_yILsQsNraZfhLjTy1yoGHd-NmHJ1FrV5OWs",
+        "y": "PiXfjVFtax7OIBhrFwgFV4esW8PAwQBnZhS_h-ZfwCk"
+      },
+      "signer_kid": "user-root",
+      "holder_binding_kid": "agent-sa",
+      "verification": {
+        "expected_aud": null,
+        "expected_nonce": null
+      },
+      "expected": {
+        "hop_count": 1,
+        "double_tilde_joins": 0,
+        "ends_with_tilde": true,
+        "payload_assertions": [
+          {
+            "path": [
+              0,
+              "vct"
+            ],
+            "equals": "mandate.payment.open.1"
+          },
+          {
+            "path": [
+              0,
+              "payment_amount",
+              "amount"
+            ],
+            "equals": 2500
+          },
+          {
+            "path": [
+              0,
+              "payee",
+              "name"
+            ],
+            "equals": "Acme Store"
+          }
+        ]
+      },
+      "compact_serialization": "eyJhbGciOiAiRVMyNTYiLCAidHlwIjogImV4YW1wbGUrc2Qtand0IiwgImtpZCI6ICJ1c2VyLXJvb3QifQ.eyJkZWxlZ2F0ZV9wYXlsb2FkIjogW3siLi4uIjogIjFuUE9pNlRhRk9PYTRfUk9PcHA0ZkdNSVNWOG1aeG9OMjhJdjNRbmdmVk0ifV0sICJfc2RfYWxnIjogInNoYS0yNTYifQ.LlsU97YChdk5GssMe6XN3d3XGeosw3AnL0v_inArAcIwpP7nNtf3n9LCt0Qx2rcho6hgtGpXEzzDPEBG5j5H7A~WyIyZUZiOHEtU3RTZnc4NWF4N0pNTGFnIiwgInBheWVlIiwgeyJpZCI6ICJtLTEiLCAibmFtZSI6ICJBY21lIFN0b3JlIn1d~WyJLYWRod3ZKNDZOakdmODNzZXRCZEZ3IiwgInBheW1lbnRfYW1vdW50IiwgeyJhbW91bnQiOiAyNTAwLCAiY3VycmVuY3kiOiAiVVNEIn1d~WyJaZjNVUVBJMzdPMl9UQk40M3VCbDlBIiwgeyJfc2QiOiBbIkNsVm9yYmNzWk55LXpqQzVmcUpMYVZzV2xBaTJGekFJQ2d2d0xGT21OejQiLCAicnBYVzhVeVJteTFMV2xaRjk2d1Rxb0JVamcyMTZtc0liOFhzTjktbjJvbyJdLCAidmN0IjogIm1hbmRhdGUucGF5bWVudC5vcGVuLjEiLCAiY29uc3RyYWludHMiOiBbXSwgImNuZiI6IHsiandrIjogeyJjcnYiOiAiUC0yNTYiLCAia2lkIjogImFnZW50LXNhIiwgImt0eSI6ICJFQyIsICJ4IjogImJZU0xMVm11MjI5bHVna1M2dnpzVDdyVkdNSkxsR0E3cjVxYU80MWRaeG8iLCAieSI6ICJHVFdndXFsem9Md0d5dmZkcVZYTGFrTjNaWVFvNjNJQ0F4dTBvWVJ5Y2tVIn19fV0~"
+    },
+    {
+      "id": "single-hop-payment-chain",
+      "description": "One delegation hop appended with MandateClient.present(): open payment mandate -> closed payment mandate. Exactly one ~~ join; the open hop discloses only payment_amount (payee redacted).",
+      "root_public_jwk": {
+        "crv": "P-256",
+        "kid": "user-root",
+        "kty": "EC",
+        "x": "toGTbmS_yILsQsNraZfhLjTy1yoGHd-NmHJ1FrV5OWs",
+        "y": "PiXfjVFtax7OIBhrFwgFV4esW8PAwQBnZhS_h-ZfwCk"
+      },
+      "signer_kid": "user-root",
+      "holder_binding_kid": "agent-sa",
+      "verification": {
+        "expected_aud": "merchant",
+        "expected_nonce": "merchant-nonce-single"
+      },
+      "expected": {
+        "hop_count": 2,
+        "double_tilde_joins": 1,
+        "ends_with_tilde": true,
+        "payload_assertions": [
+          {
+            "path": [
+              0,
+              "vct"
+            ],
+            "equals": "mandate.payment.open.1"
+          },
+          {
+            "path": [
+              0,
+              "payment_amount",
+              "amount"
+            ],
+            "equals": 2500
+          },
+          {
+            "path": [
+              0,
+              "payee"
+            ],
+            "absent": true
+          },
+          {
+            "path": [
+              1,
+              "transaction_id"
+            ],
+            "equals": "tx_single_hop"
+          }
+        ]
+      },
+      "compact_serialization": "eyJhbGciOiAiRVMyNTYiLCAidHlwIjogImV4YW1wbGUrc2Qtand0IiwgImtpZCI6ICJ1c2VyLXJvb3QifQ.eyJkZWxlZ2F0ZV9wYXlsb2FkIjogW3siLi4uIjogIm5UUWN2dzBFTklGS3JhdUFUT2ROQTUxdktLVEtjRndnc21UWG5EbDZQNncifV0sICJfc2RfYWxnIjogInNoYS0yNTYifQ.cHaOnaymkftP9OlOGEDlxC56PCYIu7CrVxSiRxQnh24R3fjYiQKBntC3_1cxMyBR2VR8IIsXNtfTo96yAcP7Dg~WyJCN09hQ1QtSUpXa3dEdlpUMHVQOVNnIiwgInBheW1lbnRfYW1vdW50IiwgeyJhbW91bnQiOiAyNTAwLCAiY3VycmVuY3kiOiAiVVNEIn1d~WyJNclNuTVJzY3JZcDl0REVXRVc1OThnIiwgeyJfc2QiOiBbIktHTFlKU3AtWHZPUVNUUXVBWTFzaXNqejNNYTAtTm5kTXY4aHpMT1duTkEiLCAiT0I5a0ZadURVWGx2c09HMTViSGdmOV9WUVpOdVJZR2pQWTk4aG12LXVqbyJdLCAidmN0IjogIm1hbmRhdGUucGF5bWVudC5vcGVuLjEiLCAiY29uc3RyYWludHMiOiBbXSwgImNuZiI6IHsiandrIjogeyJjcnYiOiAiUC0yNTYiLCAia2lkIjogImFnZW50LXNhIiwgImt0eSI6ICJFQyIsICJ4IjogImJZU0xMVm11MjI5bHVna1M2dnpzVDdyVkdNSkxsR0E3cjVxYU80MWRaeG8iLCAieSI6ICJHVFdndXFsem9Md0d5dmZkcVZYTGFrTjNaWVFvNjNJQ0F4dTBvWVJ5Y2tVIn19fV0~~eyJhbGciOiAiRVMyNTYiLCAidHlwIjogImtiK3NkLWp3dCIsICJraWQiOiAiYWdlbnQtc2EifQ.eyJkZWxlZ2F0ZV9wYXlsb2FkIjogW3siLi4uIjogIjR6X3dqWWIxcVFMLWdBYXhsamJia1oxbThHZWhOQlp0TDZVa2RRNVdaQ0kifV0sICJpYXQiOiAxNzg1MjY4NjAyLCAiYXVkIjogIm1lcmNoYW50IiwgIm5vbmNlIjogIm1lcmNoYW50LW5vbmNlLXNpbmdsZSIsICJzZF9oYXNoIjogIkp5dVBvRnNtQkpGS244UXVyTTRWMEVTNVZRbDZUNkVfcmVzdnhLR3NSM3MiLCAiX3NkX2FsZyI6ICJzaGEtMjU2In0.40aQWQKjx6I_OL1qLDwS2j1HVDCUGclAW9nyWA5NyOSde9sWXchMb4t5RR8RHAk6vAzzXR4dv03ZCZFrnaj6Gw~WyJla01UOHhUYWd1OUN3MS1MSTM0SXpRIiwgeyJ2Y3QiOiAibWFuZGF0ZS5wYXltZW50LjEiLCAidHJhbnNhY3Rpb25faWQiOiAidHhfc2luZ2xlX2hvcCIsICJwYXllZSI6IHsiaWQiOiAibS0xIiwgIm5hbWUiOiAiQWNtZSBTdG9yZSJ9LCAicGF5bWVudF9hbW91bnQiOiB7ImFtb3VudCI6IDI1MDAsICJjdXJyZW5jeSI6ICJVU0QifSwgInBheW1lbnRfaW5zdHJ1bWVudCI6IHsiaWQiOiAicGktMSIsICJ0eXBlIjogImNyZWRpdCJ9fV0~"
+    },
+    {
+      "id": "multi-hop-payment-chain",
+      "description": "Canonical Bank -> Shopping Agent -> Credentials Provider -> Merchant delegation chain. Three segments joined on the ~~ wire (two joins), three resolved payloads. Each hop binds to the preceding hop via cnf + sd_hash; aud/nonce enforced on the final CP -> Merchant hop.",
+      "root_public_jwk": {
+        "crv": "P-256",
+        "kid": "user-root",
+        "kty": "EC",
+        "x": "toGTbmS_yILsQsNraZfhLjTy1yoGHd-NmHJ1FrV5OWs",
+        "y": "PiXfjVFtax7OIBhrFwgFV4esW8PAwQBnZhS_h-ZfwCk"
+      },
+      "signer_kid": "user-root",
+      "delegation_kids": [
+        "user-root",
+        "agent-sa",
+        "provider-cp"
+      ],
+      "verification": {
+        "expected_aud": "merchant",
+        "expected_nonce": "merchant-nonce-456"
+      },
+      "expected": {
+        "hop_count": 3,
+        "double_tilde_joins": 2,
+        "ends_with_tilde": true,
+        "payload_assertions": [
+          {
+            "path": [
+              0,
+              "vct"
+            ],
+            "equals": "mandate.payment.open.1"
+          },
+          {
+            "path": [
+              1,
+              "cnf"
+            ],
+            "present": true
+          },
+          {
+            "path": [
+              2,
+              "transaction_id"
+            ],
+            "equals": "tx_multi_hop"
+          },
+          {
+            "path": [
+              2,
+              "payment_amount",
+              "amount"
+            ],
+            "equals": 2500
+          }
+        ]
+      },
+      "compact_serialization": "eyJhbGciOiAiRVMyNTYiLCAidHlwIjogImV4YW1wbGUrc2Qtand0IiwgImtpZCI6ICJ1c2VyLXJvb3QifQ.eyJkZWxlZ2F0ZV9wYXlsb2FkIjogW3siLi4uIjogInE0WE1yWFpoVzhhMHVrQ0JSZUxBWGRQZjF3TWZxRjU1T2JHVGpDMlJKeDQifV0sICJfc2RfYWxnIjogInNoYS0yNTYifQ.PGWZmDDTBRtROr2VGEOD_hk-ZZQ8Cb5_4XepwlRb-4Ty6_ZaXaP2r4zVQZDNS-eqxFM85o664WzrlEw-g-ZlWA~WyJSUGZTVlhrUVc1QWZNOG02aHJiX1hBIiwgInBheWVlIiwgeyJpZCI6ICJtLTEiLCAibmFtZSI6ICJBY21lIFN0b3JlIn1d~WyJJaHJZdGVhaU5fU0h5NFUxR2N5WUdRIiwgInBheW1lbnRfYW1vdW50IiwgeyJhbW91bnQiOiAyNTAwLCAiY3VycmVuY3kiOiAiVVNEIn1d~WyJlaXd2WS1EYU9HVDRvTXVrVHhQYVVnIiwgeyJfc2QiOiBbIkMyV0ZaR1hRdDJ2X01jR1ZsczUwRnVxQXZJcGs0UE5KbUFVb3dEOGdNekEiLCAiVGVaSTB6WVZ5OXJUak1iWmNtMXMwR1RhdDE0bUhRdWUzV0pjWDFGb3k2ayJdLCAidmN0IjogIm1hbmRhdGUucGF5bWVudC5vcGVuLjEiLCAiY29uc3RyYWludHMiOiBbXSwgImNuZiI6IHsiandrIjogeyJjcnYiOiAiUC0yNTYiLCAia2lkIjogImFnZW50LXNhIiwgImt0eSI6ICJFQyIsICJ4IjogImJZU0xMVm11MjI5bHVna1M2dnpzVDdyVkdNSkxsR0E3cjVxYU80MWRaeG8iLCAieSI6ICJHVFdndXFsem9Md0d5dmZkcVZYTGFrTjNaWVFvNjNJQ0F4dTBvWVJ5Y2tVIn19fV0~~eyJhbGciOiAiRVMyNTYiLCAidHlwIjogImtiK3NkLWp3dCtrYiIsICJraWQiOiAiYWdlbnQtc2EifQ.eyJkZWxlZ2F0ZV9wYXlsb2FkIjogW3siLi4uIjogIjA5Wkg3ZWt6LU82ZkY1VVQwVktxbTc5NzB1SjRUMmNLa0ZjS1ZXNENPVFEifV0sICJpYXQiOiAxNzg1MjY4NjAyLCAiYXVkIjogImNwLWFnZW50IiwgIm5vbmNlIjogImNwLW5vbmNlLTEyMyIsICJzZF9oYXNoIjogInhiLUYyUVdqdklEbW0talBsZVRPSFg1enFkQmRqTEotSjV2aWQ1UUxZRVEiLCAiX3NkX2FsZyI6ICJzaGEtMjU2In0.S23I-59CJTNgyjUTTdObaGAW8_q6DnVIV2fvTnVB0dTL7q17fhOnxVg4f89vqKed3YtzCoLAoo_8y1vTCvHxeQ~WyJsUnh3bkdqY1lDWXV6NF8xRThyRXpBIiwgeyJ2Y3QiOiAibWFuZGF0ZS5wYXltZW50Lm9wZW4uMSIsICJjb25zdHJhaW50cyI6IFtdLCAiY25mIjogeyJqd2siOiB7ImNydiI6ICJQLTI1NiIsICJraWQiOiAicHJvdmlkZXItY3AiLCAia3R5IjogIkVDIiwgIngiOiAiTUd0RV9tTnZYQ0pCMlp1WktWa21ncjJ5TWRYM0ZiVFJJVVZPNGNZYXBYVSIsICJ5IjogImlrc0RKZTdRVkNGcy0wMVlmclJlMmtkdWRhOEFRenZQdlh0QlRFNHgyN1UifX19XQ~~eyJhbGciOiAiRVMyNTYiLCAidHlwIjogImtiK3NkLWp3dCIsICJraWQiOiAicHJvdmlkZXItY3AifQ.eyJkZWxlZ2F0ZV9wYXlsb2FkIjogW3siLi4uIjogIk5fWHhtQkpBbnE4cW1VZXdDaTZ6OGZNSjN3Rlp2UUhzb3M0cGdTZmw5c1EifV0sICJpYXQiOiAxNzg1MjY4NjAyLCAiYXVkIjogIm1lcmNoYW50IiwgIm5vbmNlIjogIm1lcmNoYW50LW5vbmNlLTQ1NiIsICJzZF9oYXNoIjogImtBNEViWVR0dXJjaGFQaWhpOGU1d0VpSTFtc2x0SVBTQk5ySTBUOW5DTUUiLCAiX3NkX2FsZyI6ICJzaGEtMjU2In0.29KAuHkDRvQnh2v_6BZTs9EQP6g7-eY8XiThXWjff0_3Mul3OdRGGLnG3l4KmnbN_JlvaCxHU5M1PV5N9qPQRw~WyJNckg5NHA3OUluVkthNzNfRDVFMHF3IiwgeyJ2Y3QiOiAibWFuZGF0ZS5wYXltZW50LjEiLCAidHJhbnNhY3Rpb25faWQiOiAidHhfbXVsdGlfaG9wIiwgInBheWVlIjogeyJpZCI6ICJtLTEiLCAibmFtZSI6ICJBY21lIFN0b3JlIn0sICJwYXltZW50X2Ftb3VudCI6IHsiYW1vdW50IjogMjUwMCwgImN1cnJlbmN5IjogIlVTRCJ9LCAicGF5bWVudF9pbnN0cnVtZW50IjogeyJpZCI6ICJwaS0xIiwgInR5cGUiOiAiY3JlZGl0In19XQ~"
+    },
+    {
+      "id": "single-hop-checkout-chain",
+      "description": "One delegation hop for the checkout mandate family: open checkout mandate (constrained to an allowed merchant) -> closed checkout mandate. Exactly one ~~ join.",
+      "root_public_jwk": {
+        "crv": "P-256",
+        "kid": "checkout-user",
+        "kty": "EC",
+        "x": "WuFQr15dAj6o8N35JFh5L9_6BvilsmrPd6ugwrsJbds",
+        "y": "2yJAKCmRNaQZQM5Xczh3CN66Oul6qVkRmrqS221AWu4"
+      },
+      "signer_kid": "checkout-user",
+      "holder_binding_kid": "checkout-agent",
+      "verification": {
+        "expected_aud": "merchant",
+        "expected_nonce": "merchant-nonce-checkout"
+      },
+      "expected": {
+        "hop_count": 2,
+        "double_tilde_joins": 1,
+        "ends_with_tilde": true,
+        "payload_assertions": [
+          {
+            "path": [
+              0,
+              "vct"
+            ],
+            "equals": "mandate.checkout.open.1"
+          },
+          {
+            "path": [
+              1,
+              "vct"
+            ],
+            "equals": "mandate.checkout.1"
+          },
+          {
+            "path": [
+              1,
+              "checkout_hash"
+            ],
+            "equals": "Zm9vYmFyX2NoZWNrb3V0X2hhc2hfcGxhY2Vob2xkZXI"
+          }
+        ]
+      },
+      "compact_serialization": "eyJhbGciOiAiRVMyNTYiLCAidHlwIjogImV4YW1wbGUrc2Qtand0IiwgImtpZCI6ICJjaGVja291dC11c2VyIn0.eyJkZWxlZ2F0ZV9wYXlsb2FkIjogW3siLi4uIjogImJBaHhuZEdPQVJHYnBRWWswOEthZ09hNFNJY0xpejZyVFhsWXd1aXlxTTgifV0sICJfc2RfYWxnIjogInNoYS0yNTYifQ.KRgYGUPhV6HuN2QcqRragVe8nslvr1998BxEE2fBI7bFEeY1cnKe7rrbcIqD2L463sahwU9oakpbWJ2uK4-tXA~WyJnRUt5NnVkdEhmSXA3LVhXWjhvWWdnIiwgeyJpZCI6ICJtLTEiLCAibmFtZSI6ICJBY21lIFN0b3JlIn1d~WyJCZFZZbl9qbmVHbWs3Ti03TTA5MUZnIiwgeyJ2Y3QiOiAibWFuZGF0ZS5jaGVja291dC5vcGVuLjEiLCAiY29uc3RyYWludHMiOiBbeyJ0eXBlIjogImNoZWNrb3V0LmFsbG93ZWRfbWVyY2hhbnRzIiwgImFsbG93ZWQiOiBbeyIuLi4iOiAidk5oQ2N3bnczV1RNNk5Lc1pPYy1pU0R5QUFOeDFfTllaclpRUllQQWVpMCJ9XX1dLCAiY25mIjogeyJqd2siOiB7ImNydiI6ICJQLTI1NiIsICJraWQiOiAiY2hlY2tvdXQtYWdlbnQiLCAia3R5IjogIkVDIiwgIngiOiAiVnhvMnhKQzJKRGhOUkNQMFFHeURXWGZ5eld4dzNfa2IyekpUUm11eGtMMCIsICJ5IjogIlgwQ1lST0d5M1ZaRmEyQUxmVWppWDl1X01GU0VuMFhkNHZjekhaUU1fOUUifX19XQ~~eyJhbGciOiAiRVMyNTYiLCAidHlwIjogImtiK3NkLWp3dCIsICJraWQiOiAiY2hlY2tvdXQtYWdlbnQifQ.eyJkZWxlZ2F0ZV9wYXlsb2FkIjogW3siLi4uIjogInhnazRWTXk1RWVrZS1CZWxMSkdSSklKMDZvekdqSGQzN3VuUU9zeHBDM0UifV0sICJpYXQiOiAxNzg1MjY4NjAyLCAiYXVkIjogIm1lcmNoYW50IiwgIm5vbmNlIjogIm1lcmNoYW50LW5vbmNlLWNoZWNrb3V0IiwgInNkX2hhc2giOiAiVjJTSkoybi1UU25YcFhXSU5WVmFxZzRYcjV2YUlnUTNza3dCMHRXMVpvTSIsICJfc2RfYWxnIjogInNoYS0yNTYifQ.ZGeFqXp6yaNZeYXQlgRS6kRla2a3PejnFiIdYOgPammIFnckbRmpN_RsMbarNJkbPUHVUSJcvnqBz-cj8vmcXA~WyJKYmhCem5GUXRDbUxBZ1pfb0dfbDFRIiwgeyJfc2QiOiBbIlN3LU5CY2d1UlJYalhrY2FkZF9iUTVjM0VzVjl3aW9Ta2hva0k2dTQ1aTAiXSwgInZjdCI6ICJtYW5kYXRlLmNoZWNrb3V0LjEiLCAiY2hlY2tvdXRfaGFzaCI6ICJabTl2WW1GeVgyTm9aV05yYjNWMFgyaGhjMmhmY0d4aFkyVm9iMnhrWlhJIn1d~WyJrY01IR3MyUWVHd05IV1hGdzZFeXFRIiwgImNoZWNrb3V0X2p3dCIsICJoZHIuZXlKcFpDSTZJbU5vYTE5MFpYTjBJbjAuc2lnIl0~"
+    }
+  ]
+}

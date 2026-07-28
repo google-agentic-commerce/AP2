@@ -9,7 +9,8 @@
     ".gemini/**",
     ".vscode/**",
     ".cspell.json",
-    "**/go.sum"
+    "**/go.sum",
+    "**/delegate_sd_jwt_vectors/*.json"
   ],
   "dictionaryDefinitions": [
     {

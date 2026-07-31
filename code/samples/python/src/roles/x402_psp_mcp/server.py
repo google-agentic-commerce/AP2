@@ -114,35 +114,37 @@ def settle_payment(
           AGENT_PROVIDER_PUB_PATH.read_text(encoding="utf-8")
       )
     except (OSError, ValueError, json.JSONDecodeError):
-      _logger.warning(
-          "Agent-provider public key not found — skipping SD-JWT verification"
-      )
-  else:
-    _logger.warning(
-        "Agent-provider public key not found — skipping SD-JWT verification"
-    )
+      _logger.exception("Failed to load agent-provider public key")
 
-  if agent_provider_pub:
-    try:
-      payloads = MandateClient().verify(
-          token=mandate_chain_str,
-          key_or_provider=lambda _token: agent_provider_pub,
-          expected_aud="credential-provider",
-          expected_nonce=payment_nonce,
-      )
-      parsed_chain = PaymentMandateChain.parse(payloads)
-      violations = parsed_chain.verify(
-          expected_open_checkout_hash=open_checkout_hash
-      )
-      if violations:
-        return {
-            "error": "mandate_verification_failed",
-            "message": "; ".join(violations),
-        }
-      _logger.info("SD-JWT mandate chain verified successfully")
-    except Exception as e:
-      _logger.exception("SD-JWT mandate verification failed")
-      return {"error": "mandate_verification_failed", "message": str(e)}
+  if not agent_provider_pub:
+    return {
+        "error": "agent_provider_key_missing",
+        "message": (
+            "Agent-provider public key not found; cannot verify payment"
+            " mandate"
+        ),
+    }
+
+  try:
+    payloads = MandateClient().verify(
+        token=mandate_chain_str,
+        key_or_provider=lambda _token: agent_provider_pub,
+        expected_aud="credential-provider",
+        expected_nonce=payment_nonce,
+    )
+    parsed_chain = PaymentMandateChain.parse(payloads)
+    violations = parsed_chain.verify(
+        expected_open_checkout_hash=open_checkout_hash
+    )
+    if violations:
+      return {
+          "error": "mandate_verification_failed",
+          "message": "; ".join(violations),
+      }
+    _logger.info("SD-JWT mandate chain verified successfully")
+  except Exception as e:
+    _logger.exception("SD-JWT mandate verification failed")
+    return {"error": "mandate_verification_failed", "message": str(e)}
 
   # 1. Verify Binding: Hash(Mandate) == Nonce
   _logger.info("Step 1: Verifying Binding")

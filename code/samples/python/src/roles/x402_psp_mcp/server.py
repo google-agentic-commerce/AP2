@@ -113,7 +113,12 @@ def settle_payment(
       agent_provider_pub = JWK.from_json(
           AGENT_PROVIDER_PUB_PATH.read_text(encoding="utf-8")
       )
-    except (OSError, ValueError, json.JSONDecodeError):
+    except Exception:  # noqa: BLE001
+      # Any failure to load or validate the key (missing, unreadable,
+      # malformed JSON, wrong JSON type, or an invalid JWK) must fail
+      # closed via the guard below, so catch broadly rather than
+      # enumerate library exception types (jwcrypto raises JWException,
+      # and a non-object JWK raises TypeError, neither a ValueError).
       _logger.exception("Failed to load agent-provider public key")
 
   if not agent_provider_pub:

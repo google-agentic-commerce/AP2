@@ -17,7 +17,6 @@ function ItemRow({
   onClick?: () => void;
 }) {
   return (
-    // biome-ignore lint/a11y/useSemanticElements: kept as a div with an explicit button role and full keyboard handling (tabIndex + Enter/Space) to avoid the styling regression a native <button> would introduce here.
     <div
       className={`item-card ${onClick ? 'clickable' : ''} ${selected ? 'selected' : ''}`}
       role="button"
@@ -27,7 +26,7 @@ function ItemRow({
       <div className="row-content">
         {selected && (
           <div className="selected-icon">
-            <svg width="8" height="8" viewBox="0 0 8 8" aria-hidden="true">
+            <svg width="8" height="8" viewBox="0 0 8 8">
               <path
                 d="M1.5 4l2 2 3-3"
                 stroke="white"
@@ -66,7 +65,7 @@ export function InventoryOptionsCard({inventory, onSelect}: Props) {
     <div className="msg-agent inventory-options-container">
       <div className="header-wrapper">
         <div className="icon-wrapper">
-          <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
+          <svg width="10" height="10" viewBox="0 0 10 10">
             <path
               d="M2 5l2 2 4-4"
               stroke="#34d399"
@@ -115,7 +114,6 @@ export function InventoryOptionsCard({inventory, onSelect}: Props) {
       </div>
       {canConfirm && (
         <button
-          type="button"
           onClick={() => {
             setHasConfirmed(true);
             onSelect?.(selected);

@@ -4,6 +4,11 @@ on:
   pull_request:
     branches: [main]
 
+# Super Linter reads the tree and posts commit statuses; nothing else.
+permissions:
+  contents: read
+  statuses: write
+
 jobs:
   build:
     name: Lint Code Base
@@ -11,12 +16,12 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
           fetch-depth: 0
 
       - name: Lint Code Base
-        uses: super-linter/super-linter/slim@v8
+        uses: super-linter/super-linter/slim@4ce20838b8ab83717e78138c5b3a1407148e0918 # v8.7.0
         env:
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -35,6 +40,14 @@ jobs:
           MARKDOWN_CONFIG_FILE: ".markdownlint.json"
           VALIDATE_MARKDOWN_PRETTIER: false
           VALIDATE_JAVASCRIPT_PRETTIER: false
+          VALIDATE_CSS_PRETTIER: false
+          VALIDATE_TYPESCRIPT_PRETTIER: false
+          # The bundled ESLint default config expects the legacy React in scope
+          # JSX transform and cannot resolve extensionless TypeScript imports,
+          # so it flags every line of the Vite based web client. Biome and tsc
+          # via the vite build cover these files.
+          VALIDATE_TSX: false
+          VALIDATE_TYPESCRIPT_ES: false
           VALIDATE_JSON_PRETTIER: false
           VALIDATE_YAML_PRETTIER: false
           VALIDATE_GIT_COMMITLINT: false

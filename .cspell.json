@@ -9,7 +9,8 @@
     ".gemini/**",
     ".vscode/**",
     ".cspell.json",
-    "**/go.sum"
+    "**/go.sum",
+    "docs/assets/*.svg"
   ],
   "dictionaryDefinitions": [
     {

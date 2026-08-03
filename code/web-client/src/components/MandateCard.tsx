@@ -203,6 +203,7 @@ function CopyButton({ text }: { text: string }) {
   const [copied, setCopied] = useState(false);
   return (
     <button
+      type="button"
       className="copy-button"
       onClick={() => {
         navigator.clipboard.writeText(text);
@@ -268,6 +269,7 @@ export function MandateCard({ entry }: Props) {
   return (
     <div className="mandate-viewer-card">
       <button
+        type="button"
         className="card-header"
         onClick={() => setExpanded((v) => !v)}
         aria-expanded={expanded}>
@@ -357,8 +359,8 @@ export function MandateCard({ entry }: Props) {
                       <span>Key</span>
                       <span>Value</span>
                     </div>
-                    {sd.disclosures.map((d, i) => (
-                      <div key={i} className="disclosure-row">
+                    {sd.disclosures.map((d) => (
+                      <div key={d.salt} className="disclosure-row">
                         <span className="mono small">
                           {truncate(d.salt, 18)}
                         </span>

@@ -8,11 +8,9 @@
  *   - `purchase_complete` — may carry `closed_payment_mandate` (SD-JWT string)
  *     and `closed_payment_mandate_content` (JSON object), sometimes also
  *     `checkout_jwt` / `closed_checkout_mandate`.
- *   - Tool calls (`tool_call` artifacts) for `create_checkout_presentation`,
- *     `create_payment_presentation`, and `present_mandate_chain` — these
- *     don't return the raw SD-JWT to the client, but the tool arguments let
- *     us document that the operation happened (embedded checkout JWT, target
- *     audience for a presentation, etc.).
+ * Tool calls (`tool_call` artifacts) don't return raw SD-JWTs to the client,
+ * so they contribute no entries here; the dedicated Tool Calls UI renders
+ * them instead.
  *
  * We scan the message list once, deduplicate identical tokens, and return a
  * chronologically ordered list suitable for the Mandates tab.
@@ -24,7 +22,6 @@ import type {
   MandateEntry,
   MandatesSigned,
   PurchaseComplete,
-  ToolCallArtifact,
 } from "../types";
 
 type Draft = Omit<MandateEntry, "id">;
@@ -99,11 +96,6 @@ function purchaseEntries(msg: ChatMessage, pc: PurchaseComplete): Draft[] {
   return out;
 }
 
-function toolCallEntries(_msg: ChatMessage, _tc: ToolCallArtifact): Draft[] {
-  const out: Draft[] = [];
-  return out;
-}
-
 /** Scan the message list and produce a deduplicated, chronological list. */
 export function deriveMandateEntries(messages: ChatMessage[]): MandateEntry[] {
   const drafts: Draft[] = [];
@@ -135,11 +127,6 @@ export function deriveMandateEntries(messages: ChatMessage[]): MandateEntry[] {
       case "purchase_complete":
         drafts.push(
           ...purchaseEntries(msg, data as unknown as PurchaseComplete)
-        );
-        break;
-      case "tool_call":
-        drafts.push(
-          ...toolCallEntries(msg, data as unknown as ToolCallArtifact)
         );
         break;
       case "mandate_chains_fetched": {

@@ -6,15 +6,15 @@ payment transactions. It makes use of the
 
 This specification describes the following:
 
--   The different roles of entities within AP2.
--   The verification responsibilities of these roles.
--   A [Checkout Mandate](checkout_mandate.md) and
+- The different roles of entities within AP2.
+- The verification responsibilities of these roles.
+- A [Checkout Mandate](checkout_mandate.md) and
     [Receipt](checkout_mandate.md#checkout-receipt) for securing *what* is being
     purchased.
--   A linked [Payment Mandate](payment_mandate.md) and
+- A linked [Payment Mandate](payment_mandate.md) and
     [Receipt](payment_mandate.md#payment-receipt) for the *payment* of the
     Checkout.
--   How the Checkout and Payment Mandates can be used as evidence at the time of
+- How the Checkout and Payment Mandates can be used as evidence at the time of
     dispute.
 
 AP2 operates as a security feature within a Commerce Protocol. The exact details
@@ -32,21 +32,21 @@ Illustrative examples are provided for
 AP2 considers five roles, who have different responsibilities from a processing
 and verification perspective. These are as follows:
 
--   **Shopping Agent (SA):** The Shopping Agent is the primary agent performing
+- **Shopping Agent (SA):** The Shopping Agent is the primary agent performing
     product discovery, building the checkout, and executing the purchase.
--   **Credential Provider (CP):** The Credential Provider is the source of
+- **Credential Provider (CP):** The Credential Provider is the source of
     Payment Credentials for the purchase. They are responsible for verifying
     that this Agent is authorized to access this Payment Credential, and scoping
     the Payment Credential appropriately.
--   **Merchant (M):** The Merchant role is responsible for providing and
+- **Merchant (M):** The Merchant role is responsible for providing and
     completing the Checkout. They verify that the Shopping Agent is approved to
     purchase these particular items and are responsible for the integrity of the
     inventory, pricing, and any merchant discounts.
--   **Merchant Payment Processor (MPP):** The Merchant Payment Processor role is
+- **Merchant Payment Processor (MPP):** The Merchant Payment Processor role is
     responsible for processing payments for purchases. They are responsible for
     verifying that the Payment Credential shared by the Credential Provider has
     been authorized to pay for this Checkout instance.
--   **Trusted Surface (TS):** The Trusted Surface role is a UI surface that is
+- **Trusted Surface (TS):** The Trusted Surface role is a UI surface that is
     trusted to get informed user consent for an Intent before creating a
     user-signed Mandate.
 
@@ -61,27 +61,27 @@ Roles MAY always delegate their responsibilities to another party.
 Many of these roles can be considered Agentic or Non-Agentic. A role is Agentic
 when:
 
--   Communication to or from the Role is handled by a non-deterministic LLM.
+- Communication to or from the Role is handled by a non-deterministic LLM.
 
 A role is considered Non-Agentic if:
 
--   Communication to and from the Role is handled using deterministic code that
+- Communication to and from the Role is handled using deterministic code that
     verifies the authenticity and correctness.
--   And if no processing done by the role is delegated to an LLM.
+- And if no processing done by the role is delegated to an LLM.
 
 The following roles MAY be agentic or non-agentic:
 
--   Merchant
--   Merchant Payment Processor
--   Credential Provider
+- Merchant
+- Merchant Payment Processor
+- Credential Provider
 
 The following role MUST be non-agentic:
 
--   Trusted Surface
+- Trusted Surface
 
 The following role is expected to be agentic:
 
--   Shopping Agent
+- Shopping Agent
 
 When communication happens between two non-agentic Roles, standard web security
 is sufficient to ensure integrity. However, when either role is agentic, then
@@ -100,7 +100,7 @@ not.
 ## Mandates
 
 Mandates are the core means that AP2 uses to authorize agents. See
-[Agent Authorization Framework][agent_authorization.md] for a description of
+[Agent Authorization Framework](agent_authorization.md) for a description of
 how this works in the general case.
 
 AP2 defines two
@@ -152,9 +152,12 @@ The Payment Mandate is provided by the Shopping Agent and verified by the
 Credential Provider, Network, and Merchant Payment Processor.
 
 The Payment Mandate is bound to a particular Checkout using the cryptographic
-hash of the Checkout JWT. To prevent rainbow table attacks, the Checkout JWT
-MUST be signed using a digital signature scheme (e.g., ECDSA) and not a
-deterministic signature (e.g., Ed25519).
+hash of the Checkout JWT. To prevent rainbow-table attacks on `checkout_hash`,
+the Checkout JWT MUST contain a high-entropy claim that makes its entire
+serialized form unpredictable per session. This requirement is satisfied by
+including a unique unpredictable claim such as a `jti` per RFC 7519 §4.1.7 or
+an application-protocol-defined session identifier of equivalent entropy. This
+requirement applies regardless of the signature algorithm used.
 
 Once the Merchant Payment Processor has accepted or rejected the Payment
 Mandate, a signed Payment Receipt MUST be returned to the Shopping Agent,
@@ -167,10 +170,10 @@ For the full details of the Payment Mandate and Receipt structures, see
 
 There are two `modes` that AP2 can consider to operate in.
 
--   Human Present (Direct): The User directly sees the closed Checkout and
+- Human Present (Direct): The User directly sees the closed Checkout and
     approves it and its payment explicitly.
 
--   Human Not Present (Autonomous): The User sees and approves a set of
+- Human Not Present (Autonomous): The User sees and approves a set of
     constraints over what closed Checkout and Payment would meet their intent.
     The Shopping Agent then assembles and approves a closed Checkout and Payment
     Mandate on their behalf using these open Mandates.
@@ -270,16 +273,16 @@ specification.
 The Checkout Mandate and Receipt MAY be able to be provided by the following
 roles:
 
--   Shopping Agent
--   Merchant
+- Shopping Agent
+- Merchant
 
 The Payment Mandate and Receipt MAY be able to be provided by the following
 roles:
 
--   Shopping Agent
--   Credential Provider
--   Network
--   Merchant Payment Processor
+- Shopping Agent
+- Credential Provider
+- Network
+- Merchant Payment Processor
 
 See [Verification: Dispute](#dispute) for the verification rules.
 
@@ -306,11 +309,11 @@ before completing the Checkout.
 
 They MUST verify the Checkout Mandate as follows:
 
--   Process and verify the Checkout Mandate according to
+- Process and verify the Checkout Mandate according to
     [Verification and Processing Rules](agent_authorization.md#verification-and-processing-rules).
--   Verify that the hash of the Checkout JWT sent for approval matches the value
+- Verify that the hash of the Checkout JWT sent for approval matches the value
     included for the `checkout_hash` claim.
--   If open Checkout Mandates are included, verify that the closed Checkout
+- If open Checkout Mandates are included, verify that the closed Checkout
     conforms to all of the Constraints by evaluating each Constraint.
 
 If any step fails, the Merchant MUST return a Checkout Receipt JWT containing
@@ -324,9 +327,9 @@ credential.
 
 They MUST verify the Payment Mandate as follows:
 
--   Process and verify the Payment Mandate according to
+- Process and verify the Payment Mandate according to
     [Verification and Processing Rules](agent_authorization.md#verification-and-processing-rules).
--   If open Payment Mandates are included, verify that the closed Payment
+- If open Payment Mandates are included, verify that the closed Payment
     Mandate matches all the Constraints.
 
 If any step fails, they MUST return a Payment Receipt JWT containing the
@@ -347,16 +350,16 @@ When performing verification at the time of dispute, the following steps MUST be
 followed to ensure the integrity of the Payment and Checkout Mandate and
 Receipts.
 
--   The Checkout Mandate MUST be verified according to the Merchant Verification
+- The Checkout Mandate MUST be verified according to the Merchant Verification
     rules.
--   The hash of the `checkout_jwt` MUST be independently computed from the
+- The hash of the `checkout_jwt` MUST be independently computed from the
     included `checkout_jwt`.
--   The Checkout Receipt `reference` MUST match the hash of the closed Checkout
+- The Checkout Receipt `reference` MUST match the hash of the closed Checkout
     Mandate. This is calculated in the same manner as the `sd_hash` would be.
--   The Payment Mandate MUST be verified according to the
+- The Payment Mandate MUST be verified according to the
     [Merchant Payment Processor](#merchant-payment-processor) section using the
     `checkout_hash` from the Checkout Mandate.
--   The Payment Receipt reference MUST match the hash of the closed Payment
+- The Payment Receipt reference MUST match the hash of the closed Payment
     Mandate. This is calculated in the same manner as the `sd_hash` would be.
 
 After all these steps have been performed successfully, then the information
@@ -374,9 +377,9 @@ This extension point is designed to support constraining Agent behavior, while
 supporting more complex autonomous use cases. To define a new constraint, the
 following MUST be specified:
 
--   A uniquely defined `type`.
--   A Schema, including which fields are selectively disclosable.
--   The evaluation algorithm.
+- A uniquely defined `type`.
+- A Schema, including which fields are selectively disclosable.
+- The evaluation algorithm.
 
 ### Checkout Object
 

@@ -118,6 +118,7 @@ okhttp
 opentelemetry
 otelgrpc
 otelhttp
+otherpisp
 Otherville
 OURCYGPATTERN
 Palo
@@ -127,6 +128,10 @@ Payoneer
 paypal
 Payplug
 pids
+PISP
+Pisp
+pisp
+Pisps
 pmezard
 proguard
 Proguard
@@ -149,6 +154,7 @@ ropeproject
 RPCURL
 Rulebook
 screenreaders
+SECP
 setlocal
 sharedpref
 Shopcider

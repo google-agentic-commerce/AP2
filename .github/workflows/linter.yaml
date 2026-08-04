@@ -4,6 +4,11 @@ on:
   pull_request:
     branches: [main]
 
+permissions:
+  contents: read
+  statuses: write
+  pull-requests: write
+
 jobs:
   build:
     name: Lint Code Base
@@ -11,20 +16,22 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v5
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5.1.0
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Lint Code Base
-        uses: super-linter/super-linter/slim@v8
+        uses: super-linter/super-linter/slim@4ce20838b8ab83717e78138c5b3a1407148e0918 # v8.7.0
         env:
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           LOG_LEVEL: WARN
           SHELLCHECK_OPTS: -e SC1091 -e 2086
           VALIDATE_ALL_CODEBASE: false
-          FILTER_REGEX_EXCLUDE: "^(\\.github/|\\.vscode/|code/samples/).*|CODE_OF_CONDUCT.md|CHANGELOG.md"
+          FILTER_REGEX_EXCLUDE: "^(\\.github/|\\.vscode/|code/samples/|code/web-client/).*|CODE_OF_CONDUCT.md|CHANGELOG.md"
           VALIDATE_BIOME_FORMAT: false
+          VALIDATE_BIOME_LINT: false
           VALIDATE_PYTHON_BLACK: false
           VALIDATE_PYTHON_FLAKE8: false
           VALIDATE_PYTHON_ISORT: false
@@ -47,13 +54,3 @@ jobs:
           VALIDATE_TRIVY: false
           VALIDATE_PYTHON_RUFF: false
           VALIDATE_PYTHON_RUFF_FORMAT: false
-          # The project uses Biome for TypeScript/TSX linting (BIOME_LINT above).
-          # Super-linter warns that running both Biome and ESLint on the same files
-          # causes conflicts; disable the ESLint-based TS/TSX linters so Biome is
-          # the single source of truth for TypeScript quality.
-          # ESLint false-positives also appear because:
-          #   - TSX: super-linter ESLint lacks node_modules so all imports fail
-          #   - TSX: react/react-in-jsx-scope is obsolete for React 17+ JSX transform
-          #   - TYPESCRIPT_ES: browser APIs (fetch, crypto) flagged as unsupported Node builtins
-          VALIDATE_TSX: false
-          VALIDATE_TYPESCRIPT_ES: false

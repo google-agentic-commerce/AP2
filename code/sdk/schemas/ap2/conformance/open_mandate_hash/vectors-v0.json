@@ -25,7 +25,11 @@
       "array_order": "MUST differ (JCS preserves array order; do not sort arrays)",
       "optional_fields": "MUST differ (presence != absence; not collapsed to default)",
       "currency_minor_unit": "canonical integer-minor-unit form; no decimal/float",
-      "unicode_normalization": "MUST differ (RFC 8785 does no Unicode normalization)"
+      "unicode_normalization": "MUST differ (RFC 8785 does no Unicode normalization)",
+      "jws_envelope": "MUST be hash-identical (hash input is the parsed claims object; re-encoding the JWS envelope does not affect it)",
+      "control_characters": "canonical two-character and lowercase \\u00xx escapes per RFC 8785 sec 3.2.2.2",
+      "non_bmp": "code points above U+FFFF are literal UTF-8 bytes, never surrogate-pair escapes",
+      "integer_boundary": "integers are exact through 2^53 - 1; larger values MUST NOT be used"
     }
   },
   "vectors": [
@@ -389,6 +393,265 @@
       "expected_jcs_bytes_b64": "eyJjbmYiOnsiandrIjp7ImNydiI6IkVkMjU1MTkiLCJrdHkiOiJPS1AiLCJ4IjoiMTFxWUFZS3hDcmZWU183VHlXUUhPZzdoY3ZQYXBpTWxyd0lhYVBjSFVSbyJ9fSwiY29uc3RyYWludHMiOlt7ImFsbG93ZWQiOlt7ImlkIjoibWVyY2hfYWNtZSIsIm5hbWUiOiJDYWZlzIEgU29sZcyBIiwid2Vic2l0ZSI6Imh0dHBzOi8vYWNtZS5leGFtcGxlIn1dLCJ0eXBlIjoiY2hlY2tvdXQuYWxsb3dlZF9tZXJjaGFudHMifSx7Iml0ZW1zIjpbeyJhY2NlcHRhYmxlX2l0ZW1zIjpbeyJpZCI6IlNLVS1EUklMTC0xOFYiLCJwcmljZSI6ODk5OSwidGl0bGUiOiIxOFYgQ29yZGxlc3MgRHJpbGwifSx7ImlkIjoiU0tVLURSSUxMLTEyViIsInByaWNlIjo1OTk5LCJ0aXRsZSI6IjEyViBDb3JkbGVzcyBEcmlsbCJ9XSwiaWQiOiJyZXFfZHJpbGwiLCJxdWFudGl0eSI6MX1dLCJ0eXBlIjoiY2hlY2tvdXQubGluZV9pdGVtcyJ9XSwidmN0IjoibWFuZGF0ZS5jaGVja291dC5vcGVuLjEifQ==",
       "expected_open_mandate_hash": "sha256:f8ae25428c8f1eb7ffaf49da13366c5e76db95de76f237e01f98b6ec8e4247e9",
       "notes": "Pair of 006a. If 006a and 006b produce the same hash, your pipeline is Unicode-normalizing and is non-conformant with RFC 8785."
+    },
+    {
+      "vector_id": "ap2-omh-v0-jws-envelope-canonical-007a",
+      "description": "Baseline claims carried in a JWS whose payload is the JCS-canonical encoding.",
+      "pair_group": "jws_envelope",
+      "expectation": "same_hash_as:ap2-omh-v0-jws-envelope-reencoded-007b",
+      "mandate_body": {
+        "vct": "mandate.checkout.open.1",
+        "constraints": [
+          {
+            "type": "checkout.allowed_merchants",
+            "allowed": [
+              {
+                "id": "merch_acme",
+                "name": "Acme Tools",
+                "website": "https://acme.example"
+              }
+            ]
+          },
+          {
+            "type": "checkout.line_items",
+            "items": [
+              {
+                "id": "req_drill",
+                "acceptable_items": [
+                  {
+                    "id": "SKU-DRILL-18V",
+                    "title": "18V Cordless Drill",
+                    "price": 8999
+                  },
+                  {
+                    "id": "SKU-DRILL-12V",
+                    "title": "12V Cordless Drill",
+                    "price": 5999
+                  }
+                ],
+                "quantity": 1
+              }
+            ]
+          }
+        ],
+        "cnf": {
+          "jwk": {
+            "kty": "OKP",
+            "crv": "Ed25519",
+            "x": "11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo"
+          }
+        }
+      },
+      "jws_compact": "eyJhbGciOiJFZERTQSJ9.eyJjbmYiOnsiandrIjp7ImNydiI6IkVkMjU1MTkiLCJrdHkiOiJPS1AiLCJ4IjoiMTFxWUFZS3hDcmZWU183VHlXUUhPZzdoY3ZQYXBpTWxyd0lhYVBjSFVSbyJ9fSwiY29uc3RyYWludHMiOlt7ImFsbG93ZWQiOlt7ImlkIjoibWVyY2hfYWNtZSIsIm5hbWUiOiJBY21lIFRvb2xzIiwid2Vic2l0ZSI6Imh0dHBzOi8vYWNtZS5leGFtcGxlIn1dLCJ0eXBlIjoiY2hlY2tvdXQuYWxsb3dlZF9tZXJjaGFudHMifSx7Iml0ZW1zIjpbeyJhY2NlcHRhYmxlX2l0ZW1zIjpbeyJpZCI6IlNLVS1EUklMTC0xOFYiLCJwcmljZSI6ODk5OSwidGl0bGUiOiIxOFYgQ29yZGxlc3MgRHJpbGwifSx7ImlkIjoiU0tVLURSSUxMLTEyViIsInByaWNlIjo1OTk5LCJ0aXRsZSI6IjEyViBDb3JkbGVzcyBEcmlsbCJ9XSwiaWQiOiJyZXFfZHJpbGwiLCJxdWFudGl0eSI6MX1dLCJ0eXBlIjoiY2hlY2tvdXQubGluZV9pdGVtcyJ9XSwidmN0IjoibWFuZGF0ZS5jaGVja291dC5vcGVuLjEifQ.kcamtvq9PmsCN4yRt51Id04GZFjESeXONieOUWL-W6s8_rFDf4nkIQudIgz0yMHc2MtAj45mjdkelHTmec26Ag",
+      "expected_jcs_bytes_b64": "eyJjbmYiOnsiandrIjp7ImNydiI6IkVkMjU1MTkiLCJrdHkiOiJPS1AiLCJ4IjoiMTFxWUFZS3hDcmZWU183VHlXUUhPZzdoY3ZQYXBpTWxyd0lhYVBjSFVSbyJ9fSwiY29uc3RyYWludHMiOlt7ImFsbG93ZWQiOlt7ImlkIjoibWVyY2hfYWNtZSIsIm5hbWUiOiJBY21lIFRvb2xzIiwid2Vic2l0ZSI6Imh0dHBzOi8vYWNtZS5leGFtcGxlIn1dLCJ0eXBlIjoiY2hlY2tvdXQuYWxsb3dlZF9tZXJjaGFudHMifSx7Iml0ZW1zIjpbeyJhY2NlcHRhYmxlX2l0ZW1zIjpbeyJpZCI6IlNLVS1EUklMTC0xOFYiLCJwcmljZSI6ODk5OSwidGl0bGUiOiIxOFYgQ29yZGxlc3MgRHJpbGwifSx7ImlkIjoiU0tVLURSSUxMLTEyViIsInByaWNlIjo1OTk5LCJ0aXRsZSI6IjEyViBDb3JkbGVzcyBEcmlsbCJ9XSwiaWQiOiJyZXFfZHJpbGwiLCJxdWFudGl0eSI6MX1dLCJ0eXBlIjoiY2hlY2tvdXQubGluZV9pdGVtcyJ9XSwidmN0IjoibWFuZGF0ZS5jaGVja291dC5vcGVuLjEifQ==",
+      "expected_open_mandate_hash": "sha256:4a407c36ab0619a9086756abb3f5c6cae8f80dff721dd3746cc0fa9256616683",
+      "notes": "Exercises the headline rule directly: the hash input is the claims object, NOT the JWS compact form. The JWS payload here happens to be JCS-canonical. Runners MUST base64url-decode the payload, parse it, re-canonicalize, and obtain the same open_mandate_hash as from mandate_body. The signature is a real Ed25519 signature under the RFC 8037 appendix A.1 test key (the same public key as cnf.jwk); runners do not verify it."
+    },
+    {
+      "vector_id": "ap2-omh-v0-jws-envelope-reencoded-007b",
+      "description": "Identical claims re-enveloped: different protected header (extra members, different order) and a non-canonical payload encoding (source key order, whitespace).",
+      "pair_group": "jws_envelope",
+      "expectation": "same_hash_as:ap2-omh-v0-baseline-001",
+      "mandate_body": {
+        "vct": "mandate.checkout.open.1",
+        "constraints": [
+          {
+            "type": "checkout.allowed_merchants",
+            "allowed": [
+              {
+                "id": "merch_acme",
+                "name": "Acme Tools",
+                "website": "https://acme.example"
+              }
+            ]
+          },
+          {
+            "type": "checkout.line_items",
+            "items": [
+              {
+                "id": "req_drill",
+                "acceptable_items": [
+                  {
+                    "id": "SKU-DRILL-18V",
+                    "title": "18V Cordless Drill",
+                    "price": 8999
+                  },
+                  {
+                    "id": "SKU-DRILL-12V",
+                    "title": "12V Cordless Drill",
+                    "price": 5999
+                  }
+                ],
+                "quantity": 1
+              }
+            ]
+          }
+        ],
+        "cnf": {
+          "jwk": {
+            "kty": "OKP",
+            "crv": "Ed25519",
+            "x": "11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo"
+          }
+        }
+      },
+      "jws_compact": "eyJ0eXAiOiJKV1QiLCJhbGciOiJFZERTQSIsImtpZCI6InJmYzgwMzctYTEtdGVzdC1rZXkifQ.eyJ2Y3QiOiAibWFuZGF0ZS5jaGVja291dC5vcGVuLjEiLCAiY29uc3RyYWludHMiOiBbeyJ0eXBlIjogImNoZWNrb3V0LmFsbG93ZWRfbWVyY2hhbnRzIiwgImFsbG93ZWQiOiBbeyJpZCI6ICJtZXJjaF9hY21lIiwgIm5hbWUiOiAiQWNtZSBUb29scyIsICJ3ZWJzaXRlIjogImh0dHBzOi8vYWNtZS5leGFtcGxlIn1dfSwgeyJ0eXBlIjogImNoZWNrb3V0LmxpbmVfaXRlbXMiLCAiaXRlbXMiOiBbeyJpZCI6ICJyZXFfZHJpbGwiLCAiYWNjZXB0YWJsZV9pdGVtcyI6IFt7ImlkIjogIlNLVS1EUklMTC0xOFYiLCAidGl0bGUiOiAiMThWIENvcmRsZXNzIERyaWxsIiwgInByaWNlIjogODk5OX0sIHsiaWQiOiAiU0tVLURSSUxMLTEyViIsICJ0aXRsZSI6ICIxMlYgQ29yZGxlc3MgRHJpbGwiLCAicHJpY2UiOiA1OTk5fV0sICJxdWFudGl0eSI6IDF9XX1dLCAiY25mIjogeyJqd2siOiB7Imt0eSI6ICJPS1AiLCAiY3J2IjogIkVkMjU1MTkiLCAieCI6ICIxMXFZQVlLeENyZlZTXzdUeVdRSE9nN2hjdlBhcGlNbHJ3SWFhUGNIVVJvIn19fQ.CCobMwfjCanVUvqmYWGuCualPeufbT-FFTveiYpEyl352dXnn-Gj2w4_IMC2AvzpDE95Wa3VhUSwcvDzazHpCA",
+      "expected_jcs_bytes_b64": "eyJjbmYiOnsiandrIjp7ImNydiI6IkVkMjU1MTkiLCJrdHkiOiJPS1AiLCJ4IjoiMTFxWUFZS3hDcmZWU183VHlXUUhPZzdoY3ZQYXBpTWxyd0lhYVBjSFVSbyJ9fSwiY29uc3RyYWludHMiOlt7ImFsbG93ZWQiOlt7ImlkIjoibWVyY2hfYWNtZSIsIm5hbWUiOiJBY21lIFRvb2xzIiwid2Vic2l0ZSI6Imh0dHBzOi8vYWNtZS5leGFtcGxlIn1dLCJ0eXBlIjoiY2hlY2tvdXQuYWxsb3dlZF9tZXJjaGFudHMifSx7Iml0ZW1zIjpbeyJhY2NlcHRhYmxlX2l0ZW1zIjpbeyJpZCI6IlNLVS1EUklMTC0xOFYiLCJwcmljZSI6ODk5OSwidGl0bGUiOiIxOFYgQ29yZGxlc3MgRHJpbGwifSx7ImlkIjoiU0tVLURSSUxMLTEyViIsInByaWNlIjo1OTk5LCJ0aXRsZSI6IjEyViBDb3JkbGVzcyBEcmlsbCJ9XSwiaWQiOiJyZXFfZHJpbGwiLCJxdWFudGl0eSI6MX1dLCJ0eXBlIjoiY2hlY2tvdXQubGluZV9pdGVtcyJ9XSwidmN0IjoibWFuZGF0ZS5jaGVja291dC5vcGVuLjEifQ==",
+      "expected_open_mandate_hash": "sha256:4a407c36ab0619a9086756abb3f5c6cae8f80dff721dd3746cc0fa9256616683",
+      "notes": "Pair of 007a. Every byte of the envelope differs from 007a (header, payload encoding, signature), yet open_mandate_hash is unchanged because the parsed claims object is identical. Re-encoding the JWS envelope MUST NOT change open_mandate_hash. An implementation that hashes the JWS compact string, or the raw payload bytes, instead of the canonicalized claims object will fail this pair."
+    },
+    {
+      "vector_id": "ap2-omh-v0-control-chars-008",
+      "description": "Item title containing every JCS escape class: quote, backslash, \\b \\f \\n \\r \\t, and unnamed control characters U+0000 and U+001F.",
+      "pair_group": "control_characters",
+      "expectation": "canonical_form",
+      "mandate_body": {
+        "vct": "mandate.checkout.open.1",
+        "constraints": [
+          {
+            "type": "checkout.allowed_merchants",
+            "allowed": [
+              {
+                "id": "merch_acme",
+                "name": "Acme Tools",
+                "website": "https://acme.example"
+              }
+            ]
+          },
+          {
+            "type": "checkout.line_items",
+            "items": [
+              {
+                "id": "req_drill",
+                "acceptable_items": [
+                  {
+                    "id": "SKU-CTRL",
+                    "title": "Drill \"XR\"\\PRO\tkit\r\nspec\b\f\u0000\u001fend",
+                    "price": 8999
+                  }
+                ],
+                "quantity": 1
+              }
+            ]
+          }
+        ],
+        "cnf": {
+          "jwk": {
+            "kty": "OKP",
+            "crv": "Ed25519",
+            "x": "11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo"
+          }
+        }
+      },
+      "expected_jcs_bytes_b64": "eyJjbmYiOnsiandrIjp7ImNydiI6IkVkMjU1MTkiLCJrdHkiOiJPS1AiLCJ4IjoiMTFxWUFZS3hDcmZWU183VHlXUUhPZzdoY3ZQYXBpTWxyd0lhYVBjSFVSbyJ9fSwiY29uc3RyYWludHMiOlt7ImFsbG93ZWQiOlt7ImlkIjoibWVyY2hfYWNtZSIsIm5hbWUiOiJBY21lIFRvb2xzIiwid2Vic2l0ZSI6Imh0dHBzOi8vYWNtZS5leGFtcGxlIn1dLCJ0eXBlIjoiY2hlY2tvdXQuYWxsb3dlZF9tZXJjaGFudHMifSx7Iml0ZW1zIjpbeyJhY2NlcHRhYmxlX2l0ZW1zIjpbeyJpZCI6IlNLVS1DVFJMIiwicHJpY2UiOjg5OTksInRpdGxlIjoiRHJpbGwgXCJYUlwiXFxQUk9cdGtpdFxyXG5zcGVjXGJcZlx1MDAwMFx1MDAxZmVuZCJ9XSwiaWQiOiJyZXFfZHJpbGwiLCJxdWFudGl0eSI6MX1dLCJ0eXBlIjoiY2hlY2tvdXQubGluZV9pdGVtcyJ9XSwidmN0IjoibWFuZGF0ZS5jaGVja291dC5vcGVuLjEifQ==",
+      "expected_open_mandate_hash": "sha256:91834c50763e8aa6260b990bb050d8de4660df5f2490dd7bef989ecf91b79be4",
+      "notes": "RFC 8785 sec 3.2.2.2: quote and backslash escape as \\\" and \\\\; backspace, form feed, line feed, carriage return and tab use their two-character escapes; all other control characters below U+0020 use lowercase \\u00xx (here \\u0000 and \\u001f). A serializer that emits \\u000A for line feed, uppercase hex, or a solidus escape will not match these bytes."
+    },
+    {
+      "vector_id": "ap2-omh-v0-non-bmp-009",
+      "description": "Item titles containing non-BMP code points: U+1F527 (emoji) and U+1D541 U+1D554 U+1D564 (mathematical alphanumerics).",
+      "pair_group": "non_bmp",
+      "expectation": "canonical_form",
+      "mandate_body": {
+        "vct": "mandate.checkout.open.1",
+        "constraints": [
+          {
+            "type": "checkout.allowed_merchants",
+            "allowed": [
+              {
+                "id": "merch_acme",
+                "name": "Acme Tools",
+                "website": "https://acme.example"
+              }
+            ]
+          },
+          {
+            "type": "checkout.line_items",
+            "items": [
+              {
+                "id": "req_drill",
+                "acceptable_items": [
+                  {
+                    "id": "SKU-IMPACT",
+                    "title": "Impact Driver 🔧",
+                    "price": 12999
+                  },
+                  {
+                    "id": "SKU-BITS",
+                    "title": "𝕁𝕔𝕤 Bit Set",
+                    "price": 2499
+                  }
+                ],
+                "quantity": 1
+              }
+            ]
+          }
+        ],
+        "cnf": {
+          "jwk": {
+            "kty": "OKP",
+            "crv": "Ed25519",
+            "x": "11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo"
+          }
+        }
+      },
+      "expected_jcs_bytes_b64": "eyJjbmYiOnsiandrIjp7ImNydiI6IkVkMjU1MTkiLCJrdHkiOiJPS1AiLCJ4IjoiMTFxWUFZS3hDcmZWU183VHlXUUhPZzdoY3ZQYXBpTWxyd0lhYVBjSFVSbyJ9fSwiY29uc3RyYWludHMiOlt7ImFsbG93ZWQiOlt7ImlkIjoibWVyY2hfYWNtZSIsIm5hbWUiOiJBY21lIFRvb2xzIiwid2Vic2l0ZSI6Imh0dHBzOi8vYWNtZS5leGFtcGxlIn1dLCJ0eXBlIjoiY2hlY2tvdXQuYWxsb3dlZF9tZXJjaGFudHMifSx7Iml0ZW1zIjpbeyJhY2NlcHRhYmxlX2l0ZW1zIjpbeyJpZCI6IlNLVS1JTVBBQ1QiLCJwcmljZSI6MTI5OTksInRpdGxlIjoiSW1wYWN0IERyaXZlciDwn5SnIn0seyJpZCI6IlNLVS1CSVRTIiwicHJpY2UiOjI0OTksInRpdGxlIjoi8J2VgfCdlZTwnZWkIEJpdCBTZXQifV0sImlkIjoicmVxX2RyaWxsIiwicXVhbnRpdHkiOjF9XSwidHlwZSI6ImNoZWNrb3V0LmxpbmVfaXRlbXMifV0sInZjdCI6Im1hbmRhdGUuY2hlY2tvdXQub3Blbi4xIn0=",
+      "expected_open_mandate_hash": "sha256:d0f73248b4668813ee61280a3bd101102148158b013eb7046088b2151cf0f156",
+      "notes": "Complements the 006 NFC/NFD pair. Code points above U+FFFF are serialized as literal UTF-8 (4 bytes each), never as \\uXXXX surrogate-pair escapes. An implementation whose serializer escapes non-ASCII output (for example Python json.dumps defaults) fails here even if it passed the Latin-1 vectors."
+    },
+    {
+      "vector_id": "ap2-omh-v0-integer-boundary-010",
+      "description": "Baseline plus iat: 1 and exp: 9007199254740991 (2^53 - 1, the largest integer exact under RFC 8785 number serialization).",
+      "pair_group": "integer_boundary",
+      "expectation": "canonical_form",
+      "mandate_body": {
+        "vct": "mandate.checkout.open.1",
+        "constraints": [
+          {
+            "type": "checkout.allowed_merchants",
+            "allowed": [
+              {
+                "id": "merch_acme",
+                "name": "Acme Tools",
+                "website": "https://acme.example"
+              }
+            ]
+          },
+          {
+            "type": "checkout.line_items",
+            "items": [
+              {
+                "id": "req_drill",
+                "acceptable_items": [
+                  {
+                    "id": "SKU-DRILL-18V",
+                    "title": "18V Cordless Drill",
+                    "price": 8999
+                  },
+                  {
+                    "id": "SKU-DRILL-12V",
+                    "title": "12V Cordless Drill",
+                    "price": 5999
+                  }
+                ],
+                "quantity": 1
+              }
+            ]
+          }
+        ],
+        "cnf": {
+          "jwk": {
+            "kty": "OKP",
+            "crv": "Ed25519",
+            "x": "11qYAYKxCrfVS_7TyWQHOg7hcvPapiMlrwIaaPcHURo"
+          }
+        },
+        "iat": 1,
+        "exp": 9007199254740991
+      },
+      "expected_jcs_bytes_b64": "eyJjbmYiOnsiandrIjp7ImNydiI6IkVkMjU1MTkiLCJrdHkiOiJPS1AiLCJ4IjoiMTFxWUFZS3hDcmZWU183VHlXUUhPZzdoY3ZQYXBpTWxyd0lhYVBjSFVSbyJ9fSwiY29uc3RyYWludHMiOlt7ImFsbG93ZWQiOlt7ImlkIjoibWVyY2hfYWNtZSIsIm5hbWUiOiJBY21lIFRvb2xzIiwid2Vic2l0ZSI6Imh0dHBzOi8vYWNtZS5leGFtcGxlIn1dLCJ0eXBlIjoiY2hlY2tvdXQuYWxsb3dlZF9tZXJjaGFudHMifSx7Iml0ZW1zIjpbeyJhY2NlcHRhYmxlX2l0ZW1zIjpbeyJpZCI6IlNLVS1EUklMTC0xOFYiLCJwcmljZSI6ODk5OSwidGl0bGUiOiIxOFYgQ29yZGxlc3MgRHJpbGwifSx7ImlkIjoiU0tVLURSSUxMLTEyViIsInByaWNlIjo1OTk5LCJ0aXRsZSI6IjEyViBDb3JkbGVzcyBEcmlsbCJ9XSwiaWQiOiJyZXFfZHJpbGwiLCJxdWFudGl0eSI6MX1dLCJ0eXBlIjoiY2hlY2tvdXQubGluZV9pdGVtcyJ9XSwiZXhwIjo5MDA3MTk5MjU0NzQwOTkxLCJpYXQiOjEsInZjdCI6Im1hbmRhdGUuY2hlY2tvdXQub3Blbi4xIn0=",
+      "expected_open_mandate_hash": "sha256:043ff0e58003badbc052c427b9d0c1a5776aef7368dbc50bd1282c256e2e01a0",
+      "notes": "RFC 8785 serializes numbers with the ES6 algorithm: integers are exact only through 2^53 - 1 and print in plain decimal below 10^21. AP2 integer claims (iat, exp, price, amount) MUST stay within 2^53 - 1; larger values are not interoperable across JSON parsers and MUST NOT be used."
     }
   ]
 }

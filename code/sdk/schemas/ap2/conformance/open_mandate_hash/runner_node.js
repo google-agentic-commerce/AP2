@@ -2,12 +2,15 @@
 /**
  * runner_node.js — canonicalize@3.0.0 (Erdtman) runner for AP2 open_mandate_hash v0.
  *
- * Reads ap2-omh-v0.json, recomputes JCS + SHA-256 for each vector, and verifies
+ * Reads vectors-v0.json, recomputes JCS + SHA-256 for each vector, and verifies
  * recomputed hashes match `expected_open_mandate_hash` and pair expectations.
+ * For vectors carrying `jws_compact`, also verifies the decoded JWS payload
+ * re-canonicalizes to the same hash (envelope invariance; signatures are not
+ * verified).
  *
  * Usage:
  *   npm install canonicalize@3.0.0
- *   node --input-type=module runner_node.js ap2-omh-v0.json
+ *   node --input-type=module runner_node.js vectors-v0.json
  *
  * Or save next to a package.json with `{ "type": "module" }`.
  */
@@ -24,9 +27,17 @@ function hashVector(body) {
   };
 }
 
+function jwsPayloadHash(jwsCompact) {
+  // sha256 hex of the canonicalized claims parsed from the JWS payload.
+  // Envelope invariance check only; signatures are not verified.
+  const payload = Buffer.from(jwsCompact.split('.')[1], 'base64url');
+  const claims = JSON.parse(payload.toString('utf8'));
+  return hashVector(claims).sha256;
+}
+
 function main() {
   if (process.argv.length < 3) {
-    console.error('usage: node runner_node.js ap2-omh-v0.json');
+    console.error('usage: node runner_node.js vectors-v0.json');
     process.exit(2);
   }
   const data = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
@@ -40,12 +51,14 @@ function main() {
     const expectedSha = v.expected_open_mandate_hash.replace(/^sha256:/, '');
     const bytesOk = bytes_b64 === v.expected_jcs_bytes_b64;
     const shaOk = sha256 === expectedSha;
-    const ok = bytesOk && shaOk;
+    const jwsOk = v.jws_compact ? jwsPayloadHash(v.jws_compact) === sha256 : true;
+    const ok = bytesOk && shaOk && jwsOk;
     const mark = ok ? 'OK ' : 'FAIL';
     console.log(`  ${mark}  ${v.vector_id.padEnd(34)}  sha256:${sha256}`);
     if (!ok) {
       if (!bytesOk) console.log(`        bytes mismatch`);
       if (!shaOk) console.log(`        expected sha256:${expectedSha}`);
+      if (!jwsOk) console.log(`        jws payload hash mismatch (envelope invariance broken)`);
     }
     if (ok) pass++; else fail++;
   }

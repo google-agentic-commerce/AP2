@@ -1,0 +1,15 @@
+# Gitleaks configuration for the AP2 super-linter run.
+#
+# Keeps all of gitleaks' default rules, and allowlists only the conformance
+# test-vector JSON under code/sdk/schemas/ap2/conformance/. The `jws_compact`
+# fields there are deterministic JWS fixtures signed with the published RFC 8037
+# Appendix A.1 Ed25519 test key (public half is embedded as the vectors' own
+# cnf.jwk), so they are test fixtures, not secrets.
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "AP2 conformance test vectors (RFC 8037 A.1 test key, not secrets)"
+paths = [
+  '''code/sdk/schemas/ap2/conformance/.*\.json''',
+]

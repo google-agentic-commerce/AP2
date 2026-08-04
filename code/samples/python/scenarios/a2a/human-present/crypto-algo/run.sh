@@ -1,7 +1,14 @@
 #!/bin/bash
+# cspell:words ALGOVOI algod ASA
 
-# A script to automate the execution of the crypto-algo (on-chain USDC) AP2 example.
-# It starts all necessary servers and agents in the background.
+# A script to automate the execution of the crypto-algo (on-chain USDC on
+# Algorand) AP2 example. It starts all necessary servers and agents in the
+# background.
+#
+# This scenario uses an Algorand note-field binding (av:<token>) to link the
+# settling transaction to the signed AP2 PaymentMandate. See README.md for the
+# full flow and note that on-chain verification requires an external,
+# Algorand-aware AP2 facilitator.
 
 set -e
 
@@ -16,10 +23,15 @@ if [ ! -d "$AGENTS_DIR" ]; then
   exit 1
 fi
 
+# Source .env for defaults, but do not override variables already present in
+# the calling environment. That lets the caller's shell settings (for example
+# PAYMENT_METHOD exported above) take precedence over local configuration files.
 if [ -f .env ]; then
-  set -a
-  source .env
-  set +a
+  while IFS='=' read -r key remainder || [[ -n "$key" ]]; do
+    case "$key" in ''|\#*) continue ;; esac  # skip blank lines and comments
+    [[ -v "$key" ]] && continue              # already exported, do not override
+    export "$key=$remainder"
+  done < .env
 fi
 
 USE_VERTEXAI=$(printf "%s" "${GOOGLE_GENAI_USE_VERTEXAI}" | tr '[:upper:]' '[:lower:]')
@@ -29,9 +41,15 @@ if [ -z "${GOOGLE_API_KEY}" ] && [ "${USE_VERTEXAI}" != "true" ]; then
   exit 1
 fi
 
+# On-chain settlement in this scenario is performed by an external,
+# Algorand-aware AP2 facilitator (see README.md). AlgoVoi Cloud is one example;
+# any facilitator that verifies the av: note binding works. Configuring one is
+# optional here: without it the agents still start, but on-chain verification
+# is a no-op until a facilitator is wired in.
 if [ -z "${ALGOVOI_API_KEY}" ]; then
-  echo "Please set your ALGOVOI_API_KEY environment variable before running."
-  exit 1
+  echo "Note: no facilitator credential set (ALGOVOI_API_KEY is empty)."
+  echo "The agents will start, but on-chain settlement verification is a no-op"
+  echo "until an Algorand-aware AP2 facilitator is configured. See README.md."
 fi
 
 echo "Setting up the Python virtual environment..."
@@ -51,6 +69,10 @@ esac
 echo "Virtual environment activated."
 
 mkdir -p "$LOG_DIR"
+
+# Initialise pids before the trap so cleanup() is always safe to call, even if
+# the script exits before any background processes are started.
+pids=()
 
 cleanup() {
   echo ""
@@ -76,8 +98,6 @@ echo "Clearing the logs directory..."
 if [ -d "$LOG_DIR" ]; then
   find "$LOG_DIR" -mindepth 1 -delete
 fi
-
-pids=()
 
 echo ""
 echo "Starting remote servers and agents as background processes..."

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Any
 
 from ap2.sdk.constraints import MandateContext, check_payment_constraints
@@ -40,6 +41,7 @@ class PaymentMandateChain:
         expected_transaction_id: str | None = None,
         expected_open_checkout_hash: str | None = None,
         mandate_context: MandateContext | None = None,
+        current_time: datetime | None = None,
     ) -> list[str]:
         """Verifies the constraints of the payment mandate chain.
 
@@ -49,6 +51,7 @@ class PaymentMandateChain:
           expected_open_checkout_hash: Optional checkout hash to check against
             the open mandate's checkout_reference.
           mandate_context: Aggregated usage context for the mandate.
+          current_time: Trusted current time used for immediate payments.
 
         Returns:
           A list of strings describing any violations found.
@@ -71,6 +74,7 @@ class PaymentMandateChain:
             self.closed_mandate,
             open_checkout_hash=expected_open_checkout_hash,
             mandate_context=mandate_context,
+            current_time=current_time,
         )
         if (
             expected_transaction_id is not None

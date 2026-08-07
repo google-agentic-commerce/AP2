@@ -1,6 +1,7 @@
 """Tests for centralized constraint checking (ap2.sdk.constraints)."""
 
 import time
+from datetime import UTC, datetime
 
 import pytest
 
@@ -534,8 +535,8 @@ def test_payment_execution_date_after_window():
     assert any('after allowed window' in v for v in violations)
 
 
-def test_payment_execution_date_missing_passes():
-    """Missing execution date (immediate) passes."""
+def test_payment_execution_date_missing_uses_current_time_within_window():
+    """Immediate execution within the authorized window passes."""
     violations = check_payment_constraints(
         _open_payment(
             constraints=[
@@ -543,6 +544,52 @@ def test_payment_execution_date_missing_passes():
             ]
         ),
         _closed_payment(execution_date=None),
+        current_time=datetime(2025, 6, 1, tzinfo=UTC),
+    )
+    assert violations == []
+
+
+def test_payment_execution_date_missing_before_window():
+    """Immediate execution before the authorized window is a violation."""
+    violations = check_payment_constraints(
+        _open_payment(
+            constraints=[
+                ExecutionDate(not_before='2025-01-01', not_after='2025-12-31'),
+            ]
+        ),
+        _closed_payment(execution_date=None),
+        current_time=datetime(2024, 12, 31, tzinfo=UTC),
+    )
+    assert any('before allowed window' in v for v in violations)
+
+
+def test_payment_execution_date_missing_after_window():
+    """Immediate execution after the authorized window is a violation."""
+    violations = check_payment_constraints(
+        _open_payment(
+            constraints=[
+                ExecutionDate(not_before='2025-01-01', not_after='2025-12-31'),
+            ]
+        ),
+        _closed_payment(execution_date=None),
+        current_time=datetime(2026, 1, 1, tzinfo=UTC),
+    )
+    assert any('after allowed window' in v for v in violations)
+
+
+def test_payment_execution_date_missing_at_exact_boundary():
+    """Immediate execution at an ISO 8601 boundary passes."""
+    violations = check_payment_constraints(
+        _open_payment(
+            constraints=[
+                ExecutionDate(
+                    not_before='2025-06-01T00:00:00Z',
+                    not_after='2025-06-01T00:00:00Z',
+                ),
+            ]
+        ),
+        _closed_payment(execution_date=None),
+        current_time=datetime(2025, 6, 1, tzinfo=UTC),
     )
     assert violations == []
 

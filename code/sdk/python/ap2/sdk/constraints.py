@@ -8,7 +8,7 @@ by implementing a new evaluator and registering it in the factory function.
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 
 from ap2.sdk.generated.open_checkout_mandate import (
     AllowedMerchants,
@@ -316,8 +316,13 @@ class BudgetEvaluator(PaymentConstraintEvaluator):
 class ExecutionDateEvaluator(PaymentConstraintEvaluator):
     """Evaluates if the execution date is within the allowed window."""
 
-    def __init__(self, constraint: ExecutionDate):
+    def __init__(
+        self,
+        constraint: ExecutionDate,
+        current_time: datetime | None = None,
+    ):
         self.constraint = constraint
+        self.current_time = current_time
 
     def evaluate(
         self,
@@ -326,7 +331,12 @@ class ExecutionDateEvaluator(PaymentConstraintEvaluator):
     ) -> list[str]:
         exec_date = closed_mandate.execution_date
         if not exec_date:
-            return []
+            effective_time = self.current_time or datetime.now(UTC)
+            if effective_time.tzinfo is None:
+                effective_time = effective_time.replace(tzinfo=UTC)
+            exec_date = effective_time.astimezone(UTC).isoformat().replace(
+                '+00:00', 'Z'
+            )
 
         violations = []
         if (
@@ -357,6 +367,7 @@ def create_payment_evaluator(  # noqa: PLR0911
         | PaymentReference
     ),
     mandate_context: MandateContext | None = None,
+    current_time: datetime | None = None,
 ) -> PaymentConstraintEvaluator:
     """Factory: create the appropriate evaluator for a payment constraint."""
     if isinstance(constraint, AmountRange):
@@ -374,7 +385,7 @@ def create_payment_evaluator(  # noqa: PLR0911
     if isinstance(constraint, Budget):
         return BudgetEvaluator(constraint, mandate_context)
     if isinstance(constraint, ExecutionDate):
-        return ExecutionDateEvaluator(constraint)
+        return ExecutionDateEvaluator(constraint, current_time)
     raise ValueError(f'Unknown payment constraint type: {type(constraint)}')
 
 
@@ -491,6 +502,7 @@ def check_payment_constraints(
     closed_payment: PaymentMandate,
     open_checkout_hash: str | None = None,
     mandate_context: MandateContext | None = None,
+    current_time: datetime | None = None,
 ) -> list[str]:
     """Verify the closed payment satisfies open mandate constraints.
 
@@ -503,6 +515,7 @@ def check_payment_constraints(
       open_checkout_hash: The hash of the open checkout mandate, required for
         `PaymentReference` constraints.
       mandate_context: Aggregated usage context for the mandate.
+      current_time: Trusted current time used for immediate payments.
 
     Returns:
       A list of strings, where each string describes a violation of the
@@ -533,7 +546,11 @@ def check_payment_constraints(
             )
 
     for constraint in open_mandate.constraints:
-        evaluator = create_payment_evaluator(constraint, mandate_context)
+        evaluator = create_payment_evaluator(
+            constraint,
+            mandate_context,
+            current_time,
+        )
         violations.extend(
             evaluator.evaluate(closed_payment, open_checkout_hash)
         )

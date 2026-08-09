@@ -118,6 +118,7 @@ okhttp
 opentelemetry
 otelgrpc
 otelhttp
+otherpisp
 Otherville
 OURCYGPATTERN
 Palo
@@ -154,6 +155,7 @@ ropeproject
 RPCURL
 Rulebook
 screenreaders
+SECP
 setlocal
 sharedpref
 Shopcider
@@ -163,6 +165,7 @@ Signifyd
 skus
 solana
 Splitit
+spoofable
 Spyder
 spyderproject
 spyproject

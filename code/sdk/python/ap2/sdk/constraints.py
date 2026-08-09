@@ -43,27 +43,18 @@ class MandateContext(BaseModel):
 
 
 def merchant_matches(candidate: Merchant, target: Merchant) -> bool:
-    """Match merchants by ``id`` (preferred) or by ``name`` + ``website``."""
+    """Match merchants by a stable, non-empty ``id``.
+
+    Merchant/payee identity must be established by ``id``.  The display
+    fields (``name`` and ``website``) are attacker-controllable and are
+    never sufficient to prove that two merchant/payee objects are the same
+    actor, so an empty or missing ``id`` on either side never matches (see
+    issue #315).
+    """
     candidate_id = candidate.id
+    target_id = target.id if isinstance(target, Merchant) else target.get('id')
 
-    if isinstance(target, Merchant):
-        target_id = target.id
-        target_name = target.name
-        target_website = target.website
-    else:
-        target_id = target.get('id')
-        target_name = target.get('name')
-        target_website = target.get('website')
-
-    if candidate_id and target_id:
-        return candidate_id == target_id
-
-    return (
-        candidate.name == target_name
-        and bool(candidate.name)
-        and candidate.website == target_website
-        and bool(candidate.website)
-    )
+    return bool(candidate_id) and candidate_id == target_id
 
 
 class PaymentConstraintEvaluator(ABC):

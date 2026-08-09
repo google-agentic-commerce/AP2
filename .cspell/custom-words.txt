@@ -127,6 +127,11 @@ Payoneer
 paypal
 Payplug
 pids
+PISP
+Pisp
+Pisps
+pisp
+pisps
 pmezard
 proguard
 Proguard

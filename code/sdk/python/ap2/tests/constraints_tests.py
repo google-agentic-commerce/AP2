@@ -96,29 +96,17 @@ def _checkout(merchant=None, line_items=None, **kw):
         pytest.param(
             Merchant(id='m-1', name='A', website='https://a.com'),
             Merchant(id='m-1', name='B', website='https://b.com'),
-            id='by_id',
-        ),
-        pytest.param(
-            Merchant(id='', name='Shop', website='https://shop.com'),
-            Merchant(id='', name='Shop', website='https://shop.com'),
-            id='by_name_and_website',
+            id='by_id_ignores_display_fields',
         ),
         pytest.param(
             Merchant(id='m-1', name='A'),
             Merchant(id='m-1', name='B').model_dump(mode='json'),
             id='dict_target_by_id',
         ),
-        pytest.param(
-            Merchant(id='', name='Shop', website='https://shop.com'),
-            Merchant(id='', name='Shop', website='https://shop.com').model_dump(
-                mode='json'
-            ),
-            id='dict_target_by_name_and_website',
-        ),
     ],
 )
 def test_merchant_matches(candidate, target):
-    """Merchants that should match do match."""
+    """Merchants with equal, non-empty ids match regardless of display."""
     assert merchant_matches(candidate, target)
 
 
@@ -131,14 +119,35 @@ def test_merchant_matches(candidate, target):
             id='different_id',
         ),
         pytest.param(
-            Merchant(id='', name='Shop'),
-            Merchant(id='', name='Shop'),
-            id='name_only_without_website',
-        ),
-        pytest.param(
             Merchant(id='m-1', name='A'),
             Merchant(id='m-2', name='A').model_dump(mode='json'),
             id='dict_target_different_id',
+        ),
+        # Regression for issue #315: display fields (name + website) are
+        # spoofable and must never establish identity when an id is empty.
+        pytest.param(
+            Merchant(id='', name='Shop', website='https://shop.com'),
+            Merchant(id='', name='Shop', website='https://shop.com'),
+            id='spoofed_name_website_empty_id',
+        ),
+        pytest.param(
+            Merchant(id='', name='Shop', website='https://shop.com'),
+            Merchant(id='', name='Shop', website='https://shop.com').model_dump(
+                mode='json'
+            ),
+            id='spoofed_name_website_empty_id_dict',
+        ),
+        # An authorized merchant with a real id must not be matched by an
+        # attacker who supplies an empty id but copies name + website.
+        pytest.param(
+            Merchant(id='m-1', name='Shop', website='https://shop.com'),
+            Merchant(id='', name='Shop', website='https://shop.com'),
+            id='real_id_vs_empty_id_same_display',
+        ),
+        pytest.param(
+            Merchant(id='', name='Shop'),
+            Merchant(id='', name='Shop'),
+            id='name_only_without_website',
         ),
         pytest.param(
             Merchant(id='', name='Shop', website=''),

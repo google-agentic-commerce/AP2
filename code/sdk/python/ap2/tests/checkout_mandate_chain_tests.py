@@ -110,6 +110,8 @@ def test_full_checkout_end_to_end(
     payloads = holder.verify(
         token=tok_chain,
         key_or_provider=lambda _token: user_public_key,
+        expected_aud='merchant',
+        expected_nonce='merchant-nonce',
     )
     chain = CheckoutMandateChain.parse(payloads)
     violations = chain.verify(checkout_jwt=checkout_jwt)

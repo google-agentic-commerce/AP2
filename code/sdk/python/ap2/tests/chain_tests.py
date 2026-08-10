@@ -222,6 +222,8 @@ def test_delegation_chain_cnf_binding(
     payloads = holder.verify(
         token=tok_chain,
         key_or_provider=lambda _token: user_public_key,
+        expected_aud='merchant',
+        expected_nonce='merchant-nonce',
     )
     assert len(payloads) == 2
     assert payloads[0]['vct'] == 'mandate.payment.open.1'
@@ -374,6 +376,8 @@ def test_delegation_chain_selective_disclosure(
     payloads = client.verify(
         token=presentation_token,
         key_or_provider=lambda _token: user_public_key,
+        expected_aud='merchant',
+        expected_nonce='merchant-nonce',
     )
 
     assert len(payloads) == 2

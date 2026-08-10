@@ -135,6 +135,21 @@ def verify(
         expected_nonce=expected_nonce,
         token_label='KB-SD-JWT',
     )
+    if typ in TYP_TERMINAL:
+        # Per RFC 9901 §7.3 a verifier MUST confirm a key-binding token's aud
+        # identifies itself, and the AP2 profile always issues terminal hops
+        # with aud/nonce. Accepting such a token without binding it turns
+        # every captured presentation into a replayable bearer credential.
+        if 'aud' in payload and expected_aud is None:
+            raise ValueError(
+                "Terminal KB-SD-JWT carries 'aud'; the verifier must pass "
+                'expected_aud'
+            )
+        if 'nonce' in payload and expected_nonce is None:
+            raise ValueError(
+                "Terminal KB-SD-JWT carries 'nonce'; the verifier must pass "
+                'expected_nonce'
+            )
     has_cnf = _delegate_payload_has_cnf(payload)
     if typ in TYP_TERMINAL and has_cnf:
         raise ValueError("Terminal KB-SD-JWT MUST NOT carry a 'cnf' claim")

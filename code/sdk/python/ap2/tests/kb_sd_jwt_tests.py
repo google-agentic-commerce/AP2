@@ -137,6 +137,36 @@ def test_verify_accepts_valid_hop(issuer_key):
     )
 
 
+def test_verify_rejects_terminal_aud_left_unbound(issuer_key):
+    """A terminal hop carrying aud MUST NOT verify without expected_aud."""
+    holder = JWK.generate(kty='EC', crv='P-256')
+    prev = _root_open(issuer_key, holder)
+    result = _create(
+        prev_token=prev,
+        holder_key=holder,
+        payload=sample_payment_mandate(),
+        aud='a',
+        nonce='n',
+    )
+    with pytest.raises(ValueError, match="carries 'aud'"):
+        _verify(result.sd_jwt_issuance, prev, issuer_key, expected_nonce='n')
+
+
+def test_verify_rejects_terminal_nonce_left_unbound(issuer_key):
+    """A terminal hop carrying nonce MUST NOT verify without expected_nonce."""
+    holder = JWK.generate(kty='EC', crv='P-256')
+    prev = _root_open(issuer_key, holder)
+    result = _create(
+        prev_token=prev,
+        holder_key=holder,
+        payload=sample_payment_mandate(),
+        aud='a',
+        nonce='n',
+    )
+    with pytest.raises(ValueError, match="carries 'nonce'"):
+        _verify(result.sd_jwt_issuance, prev, issuer_key, expected_aud='a')
+
+
 def test_verify_accepts_issuer_jwt_hash_mode(issuer_key):
     holder = JWK.generate(kty='EC', crv='P-256')
     prev = _root_open(issuer_key, holder)
@@ -148,7 +178,7 @@ def test_verify_accepts_issuer_jwt_hash_mode(issuer_key):
         nonce='n',
         hash_mode='issuer_jwt_hash',
     )
-    _verify(result.sd_jwt_issuance, prev, issuer_key)
+    _verify(result.sd_jwt_issuance, prev, issuer_key, expected_aud='a', expected_nonce='n')
 
 
 # ── Negative cases ───────────────────────────────────────────────────────

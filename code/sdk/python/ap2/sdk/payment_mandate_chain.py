@@ -41,13 +41,37 @@ class PaymentMandateChain:
         expected_open_checkout_hash: str | None = None,
         mandate_context: MandateContext | None = None,
     ) -> list[str]:
-        """Verifies the constraints of the payment mandate chain.
+        """Verifies the constraints and checkout binding of a payment chain.
+
+        A closed Payment Mandate binds itself to the Checkout it authorizes via
+        its ``transaction_id`` (the base64url hash of the Checkout JWT); the
+        Security & Privacy model requires a verifier to confirm that binding
+        against the checkout it is actually processing (see ``docs/ap2/
+        security_and_privacy_considerations.md`` "Manipulated Checkout":
+        "The Payment Mandate MUST contain a reference to its associated
+        Checkout ... via ``transaction_id`` for closed Payment Mandates").
+
+        This method therefore **fails closed**: a settlement verifier must pass
+        ``expected_transaction_id``, and if it is absent or blank the closed
+        binding cannot be confirmed and a violation is reported rather than the
+        check being silently skipped. ``expected_transaction_id`` MUST be
+        computed from the Checkout JWT the verifier is fulfilling; it MUST NOT
+        be read back out of the chain (doing so makes the comparison a
+        tautology and binds nothing).
+
+        A caller that deliberately performs a **constraints-only** check that is
+        not a settlement decision (for example offline policy analysis of an
+        archived chain, where no checkout is being processed) has a bounded,
+        honest exit: call :func:`ap2.sdk.constraints.check_payment_constraints`
+        directly. That is a distinct, self-describing entry point, so it can
+        never be mistaken for a full ``verify()`` in a call graph.
 
         Args:
-          expected_transaction_id: Optional transaction ID to check against the
-            closed mandate's transaction_id.
+          expected_transaction_id: The Checkout JWT hash the verifier is
+            processing, checked against the closed mandate's ``transaction_id``.
+            Required (non-empty) to confirm the closed checkout binding.
           expected_open_checkout_hash: Optional checkout hash to check against
-            the open mandate's checkout_reference.
+            the open mandate's ``payment.reference`` constraint.
           mandate_context: Aggregated usage context for the mandate.
 
         Returns:
@@ -57,8 +81,9 @@ class PaymentMandateChain:
             'payment_mandate_chain.verify',
             'before',
             {
-                'has_expected_transaction_id': expected_transaction_id
-                is not None,
+                'has_expected_transaction_id': bool(
+                    expected_transaction_id and expected_transaction_id.strip()
+                ),
                 'has_expected_open_checkout_hash': (
                     expected_open_checkout_hash is not None
                 ),
@@ -72,14 +97,23 @@ class PaymentMandateChain:
             open_checkout_hash=expected_open_checkout_hash,
             mandate_context=mandate_context,
         )
-        if (
-            expected_transaction_id is not None
-            and expected_transaction_id != self.closed_mandate.transaction_id
-        ):
+        # Fail closed: an absent OR blank expected value binds nothing. Mirror
+        # the falsy check the open-side PaymentReference evaluator already uses.
+        if expected_transaction_id and expected_transaction_id.strip():
+            if expected_transaction_id != self.closed_mandate.transaction_id:
+                violations.append(
+                    'Payment transaction_id mismatch: expected'
+                    f' {expected_transaction_id}, got'
+                    f' {self.closed_mandate.transaction_id}'
+                )
+        else:
             violations.append(
-                'Payment transaction_id mismatch: expected'
-                f' {expected_transaction_id}, got'
-                f' {self.closed_mandate.transaction_id}'
+                'Closed Payment Mandate checkout binding not verified: a '
+                'non-empty expected_transaction_id (the hash of the Checkout '
+                'JWT being processed) is required to bind the closed mandate '
+                'to its checkout. For a constraints-only check that is not a '
+                'settlement decision, call check_payment_constraints() '
+                'directly.'
             )
 
         _log_event(

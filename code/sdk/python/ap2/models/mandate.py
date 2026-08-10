@@ -162,6 +162,27 @@ class PaymentMandateContents(BaseModel):
         ),
         default_factory=lambda: datetime.now(UTC).isoformat(),
     )
+    cart_mandate_id: str | None = Field(
+        None,
+        description=(
+            'The unique identifier of the CartMandate bound to this payment. '
+            'SHOULD be populated on every new PaymentMandate.'
+        ),
+    )
+    cart_mandate_hash: str | None = Field(
+        None,
+        description=(
+            'hex(sha256(JCS(CartMandate))), where JCS is the RFC 8785 '
+            'canonical form of the CartMandate JSON object exactly as '
+            'transmitted. Verifiers MUST recompute this hash over the raw '
+            'received CartMandate JSON object, before any schema-based '
+            'parsing, and MUST reject the mandate if the value does not '
+            'match. Verifiers MUST reject a mandate that omits this field '
+            'unless an explicit legacy allowance is configured. See the '
+            'Cart-to-Payment Mandate Binding section of the AP2 '
+            'specification.'
+        ),
+    )
 
 
 class PaymentMandate(BaseModel):

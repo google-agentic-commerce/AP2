@@ -132,7 +132,8 @@ def settle_payment(
       )
       parsed_chain = PaymentMandateChain.parse(payloads)
       violations = parsed_chain.verify(
-          expected_open_checkout_hash=open_checkout_hash
+          expected_transaction_id=checkout_jwt_hash,
+          expected_open_checkout_hash=open_checkout_hash,
       )
       if violations:
         return {

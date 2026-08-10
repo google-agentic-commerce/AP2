@@ -47,6 +47,7 @@ emvco
 endlocal
 envoyproxy
 esac
+fastmcp
 felixge
 Fiuu
 fontawesome
@@ -66,6 +67,7 @@ gradlew
 Gravitee
 groupcache
 gson
+gwei
 Hashkey
 honnef
 hprof
@@ -83,6 +85,7 @@ jetbrains
 Jetpack
 jvmargs
 Kaia
+keccak
 keepattributes
 keepclassmembers
 Klarna
@@ -93,6 +96,7 @@ ktor
 Ktor
 KXMYBJWNQ
 Lazada
+levelname
 libpeerconnection
 Lightspark
 linenums
@@ -149,6 +153,7 @@ ropeproject
 RPCURL
 Rulebook
 screenreaders
+sdjwt
 setlocal
 sharedpref
 Shopcider
@@ -165,10 +170,12 @@ stablecoins
 stdr
 stretchr
 superfences
+Toggleable
 Truelayer
 Trulioo
 udpa
 unmarshal
+usdc
 viewmodel
 vulnz
 Wallex

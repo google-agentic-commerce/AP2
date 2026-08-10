@@ -22,7 +22,8 @@ dependencies = [
     "python-dotenv==1.2.2",
     "fastmcp==3.1.0",
     "cryptography==46.0.5",
-    "web3==7.15.0"
+    "web3==7.15.0",
+    "rfc8785>=0.1.2",
 ]
 keywords = ["payments", "a2a", "ap2"]
 readme = "README.md"

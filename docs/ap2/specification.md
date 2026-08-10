@@ -100,7 +100,7 @@ not.
 ## Mandates
 
 Mandates are the core means that AP2 uses to authorize agents. See
-[Agent Authorization Framework][agent_authorization.md] for a description of
+[Agent Authorization Framework](agent_authorization.md) for a description of
 how this works in the general case.
 
 AP2 defines two
@@ -162,6 +162,38 @@ Credential Provider, and possibly Networks.
 
 For the full details of the Payment Mandate and Receipt structures, see
 [Payment Mandate](payment_mandate.md).
+
+#### Cart-to-Payment Mandate Binding
+
+The `checkout_hash` binding above links the Payment Mandate to the Checkout
+JWT and remains the primary Checkout binding. Deployments that additionally
+exchange the cart as a JSON `CartMandate` object, as the reference SDK and
+samples do, MUST also bind the `PaymentMandate` to that exact object, so that
+a malicious or misconfigured agent cannot substitute a different cart after
+the user has expressed intent.
+
+1. `PaymentMandateContents` MUST include a `cart_mandate_id` field
+   referencing the bound `CartMandate`, and a `cart_mandate_hash` field
+   containing `hex(sha256(JCS(CartMandate)))`, where JCS is the JSON
+   Canonicalization Scheme defined in RFC 8785, applied to the `CartMandate`
+   JSON object exactly as transmitted.
+
+2. Verifiers MUST compute the hash over the raw received `CartMandate` JSON
+   object, before any schema-based parsing. Hashing a re-serialized data
+   model is not sufficient: parsers drop unknown or extension fields and may
+   collapse an explicit `null` with an absent field, so tampering outside
+   the model schema would escape a model-derived hash. JCS canonicalization
+   removes whitespace, key-order, and number-formatting variation, so the
+   hash of the raw object is stable across language implementations.
+   Producers SHOULD omit optional fields that carry no value rather than
+   emitting `null`.
+
+3. Before releasing credentials or initiating payment, the Credential
+   Provider, Merchant, and Merchant Payment Processor each MUST recompute
+   the hash and compare it to `cart_mandate_hash`. A mismatch MUST cause the
+   transaction to be rejected. A `PaymentMandate` that omits
+   `cart_mandate_hash` MUST be rejected by default; a verifier MAY accept
+   one only through an explicit legacy configuration during rollout.
 
 ## Modes
 

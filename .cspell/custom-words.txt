@@ -22,6 +22,7 @@ CMSPI
 cmwallet
 cncf
 Cobo
+codegen
 Connor
 contentnegotiation
 credman
@@ -29,6 +30,7 @@ Crossmint
 cryptographical
 CYGPATTERN
 Dafiti
+datamodel
 disclosable
 Disclosable
 davecgh
@@ -149,6 +151,8 @@ ropeproject
 RPCURL
 Rulebook
 screenreaders
+sdjwt
+SECP
 setlocal
 sharedpref
 Shopcider

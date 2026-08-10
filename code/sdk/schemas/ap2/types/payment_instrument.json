@@ -21,5 +21,6 @@
   "required": [
     "id",
     "type"
-  ]
+  ],
+  "additionalProperties": true
 }

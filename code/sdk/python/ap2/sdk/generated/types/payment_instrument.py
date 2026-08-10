@@ -4,7 +4,7 @@
 
 from __future__ import annotations
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class PaymentInstrument(BaseModel):
@@ -12,6 +12,9 @@ class PaymentInstrument(BaseModel):
     Instrument used for payment.
     """
 
+    model_config = ConfigDict(
+        extra='allow',
+    )
     id: str = Field(..., description='unique identifier for this instrument')
     type: str = Field(
         ..., description='unique string identifying this category of instrument'

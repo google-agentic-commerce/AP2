@@ -37,6 +37,16 @@ export const A2A_DATA_KEYS = {
   SHOPPING_AGENT_ID: "shopping_agent_id",
 } as const;
 
+export const HUMAN_PRESENTATION_INSTRUCTIONS = `
+    When talking to the user, speak like a friendly shopping assistant. Never
+    introduce yourself by your internal agent name, and never mention tool
+    names, subagent names, or internal object names (IntentMandate,
+    CartMandate, PaymentMandate) to the user. Never display raw tool outputs,
+    JSON responses, or SD-JWT strings; only show human-readable summaries.
+    The only exception is when the user has explicitly asked for debug or
+    verbose mode.
+`;
+
 export const DEBUG_MODE_INSTRUCTIONS = `
     This is really important! If the agent or user asks you to be verbose or if debug_mode is True, do the following:
       1. If this is the the start of a new task, explain who you are, what you are going to do, what tools you use, and what agents you delegate to.
@@ -45,4 +55,7 @@ export const DEBUG_MODE_INSTRUCTIONS = `
       4. If at any point in the task you send or receive data, show the data in a clear, formatted way. Do not summarize it in english. Simple format the JSON objects.
       5. Step 4 is so important that I'm going to repeat it:
         a. If at any point in the task you create, send or receive data, show the data in a clear, formatted way. Do not summarize it in english. Simple format the JSON objects.
+    If neither the user nor the delegating agent explicitly asked for debug or
+    verbose mode, do NONE of the above: do not introduce yourself, do not
+    describe your tools, and do not show raw data.
 `;

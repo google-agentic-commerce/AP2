@@ -32,6 +32,12 @@ import type { PaymentMandate } from "../../common/types/payment-mandate.js";
 import type { PaymentReceipt } from "../../common/types/payment-receipt.js";
 import { paymentMandateSchema } from "../../common/schemas/payment-mandate.js";
 import { DATA_KEYS } from "../../common/constants/index.js";
+import {
+  loadViPublicJwk,
+  verifyImmediateUserAuthorization,
+} from "../../common/vi/index.js";
+
+const TEMP_DB = process.env.TEMP_DB_DIR ?? ".temp-db";
 
 const PAYMENT_MANDATE_DATA_KEY = DATA_KEYS.PAYMENT_MANDATE;
 const PAYMENT_RECEIPT_DATA_KEY = DATA_KEYS.PAYMENT_RECEIPT;
@@ -342,21 +348,59 @@ export const initiatePayment = new FunctionTool({
     const debugMode =
       (findDataPart("debug_mode", dataParts) as boolean | null) || false;
 
-    // Initial request - raise challenge
-    if (!currentTask) {
-      await raiseChallenge(eventBus, taskId, contextId);
-      return { status: "input-required", message: "Challenge raised" };
-    }
-
-    // Handle challenge response
-    if (currentTask.status.state === "input-required") {
-      if (!challengeResponse) {
+    // Verify the human-present Verifiable Intent chain (L1 issuer credential ->
+    // L2 immediate user mandate) carried in userAuthorization BEFORE the OTP
+    // challenge / payment execution. x402 payments carry their own signed
+    // payload instead of a VI chain, so they bypass this check.
+    //
+    // Branch on the PRESENTED mandate's own payment method, never on the
+    // processor's PAYMENT_METHOD env config: a processor left running with
+    // PAYMENT_METHOD=x402 must not disable VI verification for a CARD mandate
+    // that carries a fabricated userAuthorization.
+    const methodName =
+      paymentMandate.paymentMandateContents?.paymentResponse?.methodName;
+    if (methodName !== "x402") {
+      if (!paymentMandate.userAuthorization) {
         return {
           error:
-            "Challenge response is required but was not provided. Report this error to the caller.",
+            "PaymentMandate carries no userAuthorization Verifiable Intent chain. Report this error to the caller.",
         };
       }
+      const issuerPublicJwk = loadViPublicJwk(TEMP_DB, "issuer");
+      if (!issuerPublicJwk) {
+        return {
+          error:
+            "Issuer key unavailable in TEMP_DB; cannot verify the user authorization. Report this error to the caller.",
+        };
+      }
+      const contents = paymentMandate.paymentMandateContents;
+      const viOutcome = await verifyImmediateUserAuthorization({
+        userAuthorization: paymentMandate.userAuthorization,
+        issuerPublicJwk,
+        expectedAmountMajor: contents.paymentDetailsTotal.amount.value,
+        expectedCurrency: contents.paymentDetailsTotal.amount.currency,
+        expectedPayeeName: contents.merchantAgent,
+      });
+      if (!viOutcome.valid) {
+        return {
+          error: `Verifiable Intent chain verification failed: ${viOutcome.errors.join("; ")}. Report this error to the caller.`,
+        };
+      }
+      console.log(
+        `Verifiable Intent chain verified (L1 issuer -> L2 immediate user mandate): ` +
+          `amount=${contents.paymentDetailsTotal.amount.value} ${contents.paymentDetailsTotal.amount.currency}, ` +
+          `payee=${contents.merchantAgent}, aud-pinned`
+      );
+    }
 
+    // Branch on whether the caller supplied a challenge response, NOT on the
+    // task state. The base executor fabricates a fresh "working" task when it
+    // cannot resolve the task id (e.g. after a merchant restart wipes the
+    // in-memory task map), so keying off task state would misread a correct OTP
+    // retry as a first attempt and re-raise the challenge, discarding the
+    // user's valid code. It also removes the terminal-state fall-through that
+    // was published as a completed task.
+    if (challengeResponse) {
       if (!challengeResponseIsValid(challengeResponse)) {
         const statusUpdate: TaskStatusUpdateEvent = {
           kind: "status-update",
@@ -380,7 +424,7 @@ export const initiatePayment = new FunctionTool({
         return { status: "input-required", message: "Invalid challenge" };
       }
 
-      // Valid challenge response - complete payment
+      // Valid challenge response - complete payment.
       await completePayment(
         paymentMandate,
         eventBus,
@@ -391,6 +435,9 @@ export const initiatePayment = new FunctionTool({
       return { status: "completed", message: "Payment completed" };
     }
 
-    return { status: "unknown", message: "Unexpected task state" };
+    // No challenge response: this is a first attempt (or a fresh dispatch after
+    // a restart). Raise the OTP challenge.
+    await raiseChallenge(eventBus, taskId, contextId);
+    return { status: "input-required", message: "Challenge raised" };
   },
 });

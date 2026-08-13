@@ -28,8 +28,36 @@ import type {
 import type { CartMandate } from "../../../../common/types/cart-mandate.js";
 import { AGENT_URLS } from "../../../index.js";
 import { A2A_DATA_KEYS } from "../../../../common/constants/index.js";
+import { buildOrderSummary } from "../../tools.js";
 
 const PAYMENT_METHOD_DATA_DATA_KEY = A2A_DATA_KEYS.PAYMENT_METHOD_DATA;
+
+/**
+ * Tool 0: Get Cart Summary
+ *
+ * Exposes the current cart's exact amounts from session state, so the agent
+ * presents real data instead of reconstructing it from conversation memory.
+ */
+export const getCartSummary = new FunctionTool({
+  name: "get_cart_summary",
+  description:
+    "Returns the current cart's exact line items (item, shipping, tax), total, expiry, refund period, and the shipping address on file.",
+  parameters: z.object({
+    _trigger: z.boolean().optional().describe("Tool trigger"),
+  }),
+  execute: async (input, context) => {
+    if (!context) throw new Error("Missing execution context");
+    const cartMandate = context.state.get("cartMandate") as CartMandate | undefined;
+    if (!cartMandate) {
+      return { error: "No cart mandate found in session state." };
+    }
+    return {
+      merchantName: cartMandate.contents.merchantName,
+      orderSummary: buildOrderSummary(cartMandate),
+      shippingAddress: context.state.get("shippingAddress") ?? null,
+    };
+  },
+});
 
 // Helper function
 function getFirstDataPart(

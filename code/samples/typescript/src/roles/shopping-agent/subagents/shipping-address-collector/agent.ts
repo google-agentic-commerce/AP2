@@ -15,7 +15,7 @@
  */
 
 import { LlmAgent } from '@google/adk';
-import { DEBUG_MODE_INSTRUCTIONS } from '../../../../common/constants/index.js';
+import { DEBUG_MODE_INSTRUCTIONS, HUMAN_PRESENTATION_INSTRUCTIONS } from '../../../../common/constants/index.js';
 import { getShippingAddress, saveManualShippingAddress } from './tools.js';
 
 /**
@@ -26,7 +26,7 @@ import { getShippingAddress, saveManualShippingAddress } from './tools.js';
  */
 export const shippingCollectorAgent = new LlmAgent({
   name: 'shipping_address_collector_agent',
-  model: 'gemini-2.5-flash',
+  model: 'gemini-3.1-flash-lite',
   description: 'A subagent that collects shipping address information from users.',
   instruction: `You are an agent responsible for obtaining the user's shipping address.
 
@@ -67,6 +67,8 @@ Instructions:
 2. Once you have all the address details, call the 'save_manual_shipping_address'
     tool to save the address.
 3. Transfer back to the root_agent with the shipping address.
+
+${HUMAN_PRESENTATION_INSTRUCTIONS}
 
 ${DEBUG_MODE_INSTRUCTIONS}`,
   tools: [getShippingAddress, saveManualShippingAddress],

@@ -25,16 +25,20 @@ import { initiatePayment } from "./tools.js";
  */
 export const paymentProcessorAgent = new LlmAgent({
   name: "payment_processor_agent",
-  model: "gemini-2.5-flash",
+  model: "gemini-3.1-flash-lite",
   description: "An agent that processes card payments on behalf of a merchant.",
   instruction: `You are a payment processor agent that handles card payments.
 
-When you receive a payment mandate, call the initiatePayment tool to process it.
-The tool will handle the OTP challenge flow automatically.
+EVERY incoming request requires exactly one initiatePayment tool call — always
+call it, even if you already called it for an earlier request in this
+conversation. The tool itself works out whether this is a first attempt (it
+raises an OTP challenge) or a challenge-response retry (it validates the
+response and completes the payment). In particular, when a request carries a
+challenge_response, you MUST call initiatePayment again so the response
+reaches the payment network.
 
-Call the initiatePayment tool exactly once per request. After the tool returns
-a result, respond with a brief summary of the outcome. Do not call the tool
-again after it has already returned.
+Within a single request, call the tool only once; after it returns, respond
+with a brief summary of the outcome.
 
 ${DEBUG_MODE_INSTRUCTIONS}`,
   tools: [initiatePayment],

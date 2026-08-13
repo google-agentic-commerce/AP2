@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
+import { v4 as uuidv4 } from 'uuid';
 import { Runner } from '@google/adk';
-import type { AgentCard } from '@a2a-js/sdk';
+import type { AgentCard, TaskStatusUpdateEvent } from '@a2a-js/sdk';
 
 import { paymentProcessorAgent } from './agent.js';
 import { sessionService } from '../../common/config/session.js';
@@ -34,7 +35,33 @@ const agentExecutor = new BaseAgentExecutor({
   runner,
   maxLlmCalls: 3,
   workingMessage: 'Processing payment...',
-  postprocessResult({ lastToolResult, responseText: _responseText, toolWasCalled: _toolWasCalled }) {
+  postprocessResult({ lastToolResult, taskId, contextId }) {
+    // A tool that returned a structured error must FAIL the task with that
+    // message. Falling through to the base class's default "completed" would
+    // publish a terminal success with no receipt and hide the real cause (e.g.
+    // "Verifiable Intent chain verification failed: ..."), and the terminal
+    // task id would then wedge retries.
+    if (typeof lastToolResult?.error === 'string') {
+      return {
+        kind: 'status-update',
+        taskId,
+        contextId,
+        status: {
+          state: 'failed',
+          message: {
+            kind: 'message',
+            role: 'agent',
+            messageId: uuidv4(),
+            parts: [{ kind: 'text', text: lastToolResult.error }],
+            taskId,
+            contextId,
+          },
+          timestamp: new Date().toISOString(),
+        },
+        final: true,
+      } satisfies TaskStatusUpdateEvent;
+    }
+
     // If tool returned input-required or completed, it already published
     // the status update directly via eventBus -- suppress default handling
     if (lastToolResult?.status === 'input-required' || lastToolResult?.status === 'completed') {

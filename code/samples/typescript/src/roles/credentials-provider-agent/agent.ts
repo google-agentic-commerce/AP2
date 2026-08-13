@@ -32,7 +32,7 @@ import {
  */
 export const credentialsProviderAgent = new LlmAgent({
   name: 'credentials_provider_agent',
-  model: 'gemini-2.5-flash',
+  model: 'gemini-3.1-flash-lite',
   description: 'An agent that holds a user\'s payment credentials.',
   instruction: `You are a credentials provider agent acting as a secure digital wallet.
 Your job is to manage a user's payment methods and shipping addresses.

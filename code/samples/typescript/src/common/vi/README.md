@@ -60,13 +60,21 @@ The agent persists serialized SD-JWTs; the MCP servers read them back by id:
 - `createAgentFulfillment(params) → { l3PaymentSerialized, l3CheckoutSerialized, l2PaymentSerialized, l2CheckoutSerialized }`
 - `verifyCheckoutChain(params) → ChainVerificationResult`  *(merchant; pin `expectedL3CheckoutAud`)*
 - `verifyPaymentChainAndConstraints(params) → { valid, errors, result, constraints }`  *(network; pin `expectedL3PaymentAud`)*
+- `createImmediateUserAuthorization(params) → userAuthorization`  *(v1 shopping agent; AP2 major units → VI minor, envelope `{ l1, l2 }`, L2 aud = `NETWORK_AUD`)*
+- `verifyImmediateUserAuthorization(params) → { valid, errors, result }`  *(v1 merchant payment processor; pins L2 aud, cross-checks amount/currency/payee vs the AP2 PaymentMandate)*
+
+The v1 (human-present) flow has no L3: `signMandatesOnUserDevice` signs an
+immediate chain (L1 from the shared `issuer` key, L2 from the `user` key, bound
+to `cartMandate.merchantAuthorization` via the checkout hash) into
+`paymentMandate.userAuthorization`; `merchant-payment-processor-agent` verifies
+it before the OTP challenge / payment execution.
 
 Plus `fixtures.ts` (scenario data + `MERCHANT_AUD`/`NETWORK_AUD`), `keys.ts`
 (file-backed JWK key store), `checkout-jwt.ts` (merchant checkout JWS).
 
 ## Security properties (enforced + tested)
 
-Verified in `test/unit/vi-*.test.ts` (28 of 30 unit tests cover this module;
+Verified in `test/unit/vi-*.test.ts` (37 of 39 unit tests cover this module;
 `src/common/vi` ≈96% stmts / 91% funcs):
 
 - **Issuer trust** — chain fails closed without the issuer key; wrong key rejected.

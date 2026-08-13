@@ -45,6 +45,12 @@ const agentExecutor = new BaseAgentExecutor({
     const hasPaymentMandate = dataParts.some(
       (dp) => DATA_KEYS.PAYMENT_MANDATE in dp
     );
+    const hasChallengeResponse = dataParts.some(
+      (dp) => 'challenge_response' in dp
+    );
+    if (hasPaymentMandate && hasChallengeResponse) {
+      return 'A PaymentMandate and a challenge_response are present in the data. This is a retry of the pending payment: call the initiatePayment tool again immediately so the challenge response reaches the payment processor.';
+    }
     if (hasPaymentMandate) {
       return 'A PaymentMandate is present in the data. Call the initiatePayment tool immediately.';
     }

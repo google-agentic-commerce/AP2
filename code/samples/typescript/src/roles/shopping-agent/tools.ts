@@ -27,7 +27,43 @@ import type {
 import type { CartMandate } from '../../common/types/cart-mandate.js';
 import type { PaymentMandate } from '../../common/types/payment-mandate.js';
 import { DATA_KEYS } from '../../common/constants/index.js';
+import {
+  MERCHANTS,
+  PAYMENT_INSTRUMENT,
+  createImmediateUserAuthorization,
+  loadOrCreateViKey,
+} from '../../common/vi/index.js';
 import { AGENT_URLS } from '../index.js';
+
+const TEMP_DB = process.env.TEMP_DB_DIR ?? '.temp-db';
+
+/**
+ * Resolve the payee Dict the VI mandate carries. The closed payment mandate
+ * requires name + website; look the merchant up in the shared fixture and
+ * synthesize a website for unknown names (same fallback as shopping-agent-v2).
+ */
+function resolvePayee(merchantName: string) {
+  const known = MERCHANTS.find((m) => String(m.name).toLowerCase() === merchantName.toLowerCase());
+  return known ?? { name: merchantName, website: `https://${merchantName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.example` };
+}
+
+/**
+ * Exact order amounts from the cart mandate, so agents present the real
+ * line items instead of reconstructing (and misattributing) them.
+ */
+export function buildOrderSummary(cartMandate: CartMandate | undefined) {
+  if (!cartMandate) return undefined;
+  const details = cartMandate.contents.paymentRequest.details;
+  return {
+    lineItems: (details.displayItems ?? []).map((item) => ({
+      label: item.label,
+      amount: item.amount,
+    })),
+    total: details.total.amount,
+    cartExpiry: cartMandate.contents.cartExpiry,
+    refundPeriodDays: details.total.refundPeriod,
+  };
+}
 
 /** Wrap a promise with a timeout to prevent hanging on unresponsive agents. */
 function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
@@ -136,6 +172,11 @@ export const createPaymentMandate = new FunctionTool({
     if (!context) throw new Error('Missing execution context');
     const cartMandate = context.state.get('cartMandate') as CartMandate | undefined;
     const paymentCredentialToken = context.state.get('paymentCredentialToken') as string | undefined;
+    // The token object carries the credentials provider URL, which the payment
+    // processor needs to request the actual payment credential.
+    const paymentCredentialTokenObject = context.state.get('paymentCredentialTokenObject') as
+      | { value: string; url: string }
+      | undefined;
 
     if (!cartMandate) {
       throw new Error('No cart mandate found');
@@ -157,7 +198,7 @@ export const createPaymentMandate = new FunctionTool({
         paymentResponse: {
           requestId: paymentRequest.details.id,
           methodName: paymentRequest.methodData[0].supportedMethods,
-          details: { token: paymentCredentialToken },
+          details: { token: paymentCredentialTokenObject ?? paymentCredentialToken },
           shippingAddress: shippingAddress || undefined,
           payerEmail: userEmail || undefined,
         },
@@ -168,14 +209,18 @@ export const createPaymentMandate = new FunctionTool({
 
     context.state.set('paymentMandate', paymentMandate);
 
-    return { status: 'success', paymentMandate };
+    return { status: 'success', paymentMandate, orderSummary: buildOrderSummary(cartMandate) };
   },
 });
 
 /**
  * Tool 3: Sign Mandates on User Device
  *
- * Simulates cryptographic signing on a trusted user device.
+ * Signs the payment mandate as a real Verifiable Intent immediate (2-layer)
+ * chain — the human-present flow: L1 issuer credential (credentials-provider
+ * key, binding the user key) + L2 immediate user mandate (user key, final
+ * amount/payee, bound to the merchant-signed cart via the checkout hash).
+ * The serialized chain travels in `userAuthorization`.
  */
 export const signMandatesOnUserDevice = new FunctionTool({
   name: 'signMandatesOnUserDevice',
@@ -186,17 +231,50 @@ export const signMandatesOnUserDevice = new FunctionTool({
   execute: async (input, context) => {
     if (!context) throw new Error('Missing execution context');
     const paymentMandate = context.state.get('paymentMandate') as PaymentMandate | undefined;
+    const cartMandate = context.state.get('cartMandate') as CartMandate | undefined;
 
     if (!paymentMandate) {
       throw new Error('No payment mandate found to sign');
     }
+    if (!cartMandate) {
+      throw new Error('No cart mandate found to bind the signature to');
+    }
 
-    // Simulate signing with hash-based user authorization (matching Python)
-    const cartMandateHash = `cart_hash_${Date.now()}`;
-    const paymentMandateHash = `payment_hash_${Date.now()}`;
+    // L1 issuance stands in for the credentials provider via the shared
+    // file-backed key store (same convention as shopping-agent-v2); the L2 is
+    // signed by the user key. The merchant's cart commitment
+    // (merchantAuthorization) is bound via the checkout hash.
+    const issuer = await loadOrCreateViKey(TEMP_DB, 'issuer');
+    const user = await loadOrCreateViKey(TEMP_DB, 'user');
+
+    // A missing merchantAuthorization is a hard error, not a fallback: without
+    // the merchant's signed checkout there is nothing to bind the user
+    // authorization to, so the "bound to the cart the user saw" property would
+    // be silently lost. (The old JSON.stringify(contents) fallback also crashed
+    // hashAscii on any non-ASCII cart content, e.g. "Cafe" with an accent.)
+    if (!cartMandate.merchantAuthorization) {
+      throw new Error(
+        'Cart mandate has no merchantAuthorization (merchant checkout signature); ' +
+          'cannot bind the user authorization to the cart the user saw.',
+      );
+    }
+
+    const contents = paymentMandate.paymentMandateContents;
+    const userAuthorization = await createImmediateUserAuthorization({
+      issuer,
+      user,
+      sub: 'shopping-agent-user',
+      checkoutJwt: cartMandate.merchantAuthorization,
+      paymentInstrument: PAYMENT_INSTRUMENT,
+      payee: resolvePayee(contents.merchantAgent),
+      amountMajor: contents.paymentDetailsTotal.amount.value,
+      currency: contents.paymentDetailsTotal.amount.currency,
+      promptSummary: `Purchase: ${contents.paymentDetailsTotal.label}`,
+    });
+
     const signedPaymentMandate: PaymentMandate = {
       ...paymentMandate,
-      userAuthorization: `${cartMandateHash}_${paymentMandateHash}`,
+      userAuthorization,
     };
 
     context.state.set('signedPaymentMandate', signedPaymentMandate);
@@ -375,14 +453,29 @@ export const initiatePayment = new FunctionTool({
             const data = (part as DataPart).data as Record<string, unknown>;
             if (data[DATA_KEYS.PAYMENT_RECEIPT]) {
               context.state.set('paymentReceipt', data[DATA_KEYS.PAYMENT_RECEIPT]);
-              return { status: 'success', receipt: data[DATA_KEYS.PAYMENT_RECEIPT] };
+              // Terminal success: clear the resumed task id so a second purchase
+              // in this context starts a fresh merchant task instead of
+              // resuming this now-terminal one.
+              context.state.set('initiatePaymentTaskId', undefined);
+              return {
+                status: 'success',
+                receipt: data[DATA_KEYS.PAYMENT_RECEIPT],
+                orderSummary: buildOrderSummary(context.state.get('cartMandate') as CartMandate | undefined),
+              };
             }
           }
         }
       }
-      return { status: 'success', message: 'Payment completed' };
+      // A completed task with no PaymentReceipt artifact means the payment
+      // did not actually go through downstream — never report it as success.
+      context.state.set('initiatePaymentTaskId', undefined);
+      throw new Error('Merchant completed the task without a payment receipt; treating the payment as failed');
     }
 
+    // Any other terminal state is a failure; clear the task id so the next
+    // attempt does not resume this terminal task. The id is retained ONLY for
+    // the input-required OTP round-trip handled above.
+    context.state.set('initiatePaymentTaskId', undefined);
     throw new Error(`Payment failed: ${finalTask.status.state}`);
   },
 });
@@ -474,14 +567,29 @@ export const initiatePaymentWithOtp = new FunctionTool({
             const data = (part as DataPart).data as Record<string, unknown>;
             if (data[DATA_KEYS.PAYMENT_RECEIPT]) {
               context.state.set('paymentReceipt', data[DATA_KEYS.PAYMENT_RECEIPT]);
-              return { status: 'success', receipt: data[DATA_KEYS.PAYMENT_RECEIPT] };
+              // Terminal success: clear the resumed task id so a second purchase
+              // in this context starts a fresh merchant task instead of
+              // resuming this now-terminal one.
+              context.state.set('initiatePaymentTaskId', undefined);
+              return {
+                status: 'success',
+                receipt: data[DATA_KEYS.PAYMENT_RECEIPT],
+                orderSummary: buildOrderSummary(context.state.get('cartMandate') as CartMandate | undefined),
+              };
             }
           }
         }
       }
-      return { status: 'success', message: 'Payment completed' };
+      // A completed task with no PaymentReceipt artifact means the payment
+      // did not actually go through downstream — never report it as success.
+      context.state.set('initiatePaymentTaskId', undefined);
+      throw new Error('Merchant completed the task without a payment receipt; treating the payment as failed');
     }
 
+    // Any other terminal state is a failure; clear the task id so the next
+    // attempt does not resume this terminal task. The id is retained ONLY for
+    // the input-required OTP round-trip handled above.
+    context.state.set('initiatePaymentTaskId', undefined);
     throw new Error(`Payment failed: ${finalTask.status.state}`);
   },
 });

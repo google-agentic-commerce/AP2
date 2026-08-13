@@ -273,7 +273,7 @@ export const createToken = async (
 
   // Build the selective disclosures for the sensitive fields, and the always-
   // visible payload for everything else (plus the cnf holder-binding key).
-  const disclosures = disclosable.map((field) => createDisclosure(field, claims[field]));
+  const disclosures = await Promise.all(disclosable.map((field) => createDisclosure(field, claims[field])));
   const payload: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(claims)) {
     if (!disclosable.includes(k)) {
@@ -283,7 +283,7 @@ export const createToken = async (
   // cnf is never selectively disclosed (RFC 7800). For these demo credentials
   // the issuer's own public key is bound as the holder key.
   payload.cnf = { jwk: key.publicKey };
-  payload._sd = createSdArray(disclosures);
+  payload._sd = await createSdArray(disclosures);
   payload._sd_alg = 'sha-256';
 
   // Issue + serialize the SD-JWT payment credential signed by the issuer key.
@@ -351,7 +351,7 @@ export const verifyToken = async (
   if (!signatureValid) {
     throw new Error('Invalid token: SD-JWT signature verification failed');
   }
-  const payload = resolveDisclosures(sdJwt);
+  const payload = await resolveDisclosures(sdJwt);
 
   // Reconstruct the PaymentMethod from the verified claims. Strip the
   // credential metadata (sub, payment_method_alias, type, iat), the SD-JWT

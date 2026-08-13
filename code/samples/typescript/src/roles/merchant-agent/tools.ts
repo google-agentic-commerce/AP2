@@ -61,19 +61,12 @@ function getGenAI() {
 }
 
 // Helper functions
-function getPaymentProcessorTaskId(task: Task | undefined): string | null {
-  if (!task || !task.history) {
-    return null;
-  }
 
-  for (const message of task.history) {
-    if (message.taskId && message.taskId !== task.id) {
-      return message.taskId;
-    }
-  }
-
-  return null;
-}
+// Payment processor task ids per shopping context, so OTP retries resume the
+// processor task from the first attempt. Scanning the merchant task's history
+// for foreign taskIds is unreliable: it can surface ids the processor never
+// issued, which the processor then rejects with "Task not found".
+const paymentProcessorTaskIdsByContext = new Map<string, string>();
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -139,7 +132,7 @@ Return a JSON array where each object has: label (string), amount (object with c
     for (let attempt = 0; attempt < maxRetries; attempt++) {
       try {
         const result = await genAI.models.generateContent({
-          model: 'gemini-2.5-flash',
+          model: 'gemini-3.1-flash-lite',
           contents: prompt,
           config: {
             responseMimeType: 'application/json',
@@ -188,7 +181,9 @@ Return a JSON array where each object has: label (string), amount (object with c
               modifiers: [],
               total: {
                 label: 'Total',
-                amount: item.amount,
+                // Copy the amount: updateCart recomputes total.amount.value in
+                // place, and sharing the object would corrupt the item's price.
+                amount: { ...item.amount },
                 pending: false,
                 refundPeriod: item.refundPeriod,
               },
@@ -396,6 +391,9 @@ export const initiatePayment = new FunctionTool({
 
     const client = await A2AClient.fromCardUrl(processorUrl);
 
+    const challengeResponse = findDataPart('challenge_response', dataParts) as
+      | string
+      | null;
     const message: MessageSendParams = {
       message: {
         messageId: uuidv4(),
@@ -404,7 +402,9 @@ export const initiatePayment = new FunctionTool({
         parts: [
           {
             kind: 'text',
-            text: 'Call the initiatePayment tool to process this payment. The payment mandate and risk data are provided in the data parts of this message.',
+            text: challengeResponse
+              ? 'This is a challenge-response retry of the pending payment: call the initiatePayment tool again to validate the challenge response and complete the payment. The payment mandate, risk data, and challenge response are provided in the data parts of this message.'
+              : 'Call the initiatePayment tool to process this payment. The payment mandate and risk data are provided in the data parts of this message.',
           },
           {
             kind: 'data',
@@ -423,9 +423,6 @@ export const initiatePayment = new FunctionTool({
       },
     };
 
-    const challengeResponse = findDataPart('challenge_response', dataParts) as
-      | string
-      | null;
     if (challengeResponse) {
       message.message.parts.push({
         kind: 'data',
@@ -433,7 +430,9 @@ export const initiatePayment = new FunctionTool({
       });
     }
 
-    const paymentProcessorTaskId = getPaymentProcessorTaskId(currentTask);
+    const paymentProcessorTaskId = paymentProcessorTaskIdsByContext.get(
+      currentTask.contextId
+    );
     if (paymentProcessorTaskId) {
       message.message.taskId = paymentProcessorTaskId;
     }
@@ -447,6 +446,7 @@ export const initiatePayment = new FunctionTool({
     const result = (response as SendMessageSuccessResponse).result;
     if (result.kind === 'task') {
       const task = result as Task;
+      paymentProcessorTaskIdsByContext.set(currentTask.contextId, task.id);
 
       // Forward PaymentReceipt artifacts from payment processor to shopping agent
       for (const artifact of task.artifacts ?? []) {
@@ -484,6 +484,11 @@ export const initiatePayment = new FunctionTool({
       const terminalStates = ['completed', 'failed', 'canceled', 'rejected'];
       if (terminalStates.includes(task.status.state)) {
         statusUpdate.final = true;
+        // Evict the stored payment-processor task id once it reaches a terminal
+        // state. A later purchase in the same context would otherwise attach
+        // this stale id and the a2a-js SDK rejects it ("task is in a terminal
+        // state"), wedging every subsequent payment until the merchant restarts.
+        paymentProcessorTaskIdsByContext.delete(currentTask.contextId);
       }
 
       eventBus.publish(statusUpdate);

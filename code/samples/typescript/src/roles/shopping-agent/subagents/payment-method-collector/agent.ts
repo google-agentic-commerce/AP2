@@ -15,8 +15,8 @@
  */
 
 import { LlmAgent } from "@google/adk";
-import { DEBUG_MODE_INSTRUCTIONS } from "../../../../common/constants/index.js";
-import { getPaymentMethods, getPaymentCredentialToken } from "./tools.js";
+import { DEBUG_MODE_INSTRUCTIONS, HUMAN_PRESENTATION_INSTRUCTIONS } from "../../../../common/constants/index.js";
+import { getCartSummary, getPaymentMethods, getPaymentCredentialToken } from "./tools.js";
 
 /**
  * Payment Method Collector Agent (ADK)
@@ -25,30 +25,29 @@ import { getPaymentMethods, getPaymentCredentialToken } from "./tools.js";
  */
 export const paymentCollectorAgent = new LlmAgent({
   name: "payment_method_collector_agent",
-  model: "gemini-2.5-flash",
+  model: "gemini-3.1-flash-lite",
   description:
     "A subagent that collects payment method information from users.",
   instruction: `You are an agent responsible for obtaining the user's payment method for a purchase.
 
 When asked to complete a task, follow these instructions:
-1. Ensure a CartMandate object was provided to you.
-2. Present a clear and organized summary of the cart to the user. The
+1. Call the get_cart_summary tool to get the current cart's exact amounts
+    and the shipping address on file.
+2. Present a clear and organized summary of the cart to the user, using
+    EXACTLY the amounts returned by get_cart_summary — never estimate,
+    recompute, or reuse amounts from earlier in the conversation. The
     summary should be divided into two main sections:
     a. Order Summary:
-        Merchant: The name of the merchant.
-        Item: Display the item_name clearly.
-        Price Breakdown:
-        Shipping: The shipping cost from the shippingOptions.
-        Tax: The tax amount, if available.
-        Total: The final total price from the total field in the
-            payment_request.
+        Merchant: The merchantName from the tool result.
+        Price Breakdown: One line per entry in orderSummary.lineItems
+        (item, shipping, tax), then the orderSummary.total.
         Format all amounts with commas and the currency symbol.
-        Expires: Convert the cart_expiry into a human-readable format
+        Expires: Convert the cartExpiry into a human-readable format
         (e.g., "in 2 hours," "by tomorrow at 5 PM"). Convert the time to the
         user's timezone.
-        Refund Period: Convert the refund_period into a human-readable format
-        (e.g., "30 days," "14 days").
-    b. Show the full shipping address collected earlier in a well-formatted
+        Refund Period: Convert the refundPeriodDays into a human-readable
+        format (e.g., "30 days," "14 days").
+    b. Show the shipping address from the tool result in a well-formatted
         manner.
     Ensure the entire presentation is well-formatted and easy to read.
 3. Call the get_payment_methods tool to get eligible
@@ -59,8 +58,13 @@ When asked to complete a task, follow these instructions:
     like to use for the payment. Remember that payment_method_alias.
 5. Call the get_payment_credential_token tool to get the payment
     credential token with the user_email and payment_method_alias.
-6. Once you have the token, respond to the user confirming their selected payment method alias. Do NOT call any transfer tool. Just state the chosen payment method alias clearly.
+6. Once you have the token, immediately transfer back to the root_agent
+    with the payment_method_alias so checkout continues — do not stop to
+    wait for further user input. Never say the payment was processed or
+    completed — no payment has happened yet.
+
+${HUMAN_PRESENTATION_INSTRUCTIONS}
 
 ${DEBUG_MODE_INSTRUCTIONS}`,
-  tools: [getPaymentMethods, getPaymentCredentialToken],
+  tools: [getCartSummary, getPaymentMethods, getPaymentCredentialToken],
 });

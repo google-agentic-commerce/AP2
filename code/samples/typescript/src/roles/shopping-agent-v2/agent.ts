@@ -83,7 +83,7 @@ function makeMcpToolset(
   );
 }
 
-const MODEL = process.env.AGENT_MODEL ?? 'gemini-2.5-flash';
+const MODEL = process.env.AGENT_MODEL ?? 'gemini-3.1-flash-lite';
 
 /**
  * Reformat any MCP/mandate tool error into a structured artifact and escalate

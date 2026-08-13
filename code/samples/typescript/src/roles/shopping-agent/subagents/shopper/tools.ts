@@ -118,7 +118,7 @@ export const findProducts = new FunctionTool({
       .boolean()
       .optional()
       .default(false)
-      .describe('If the agent is in debug mode.'),
+      .describe('Set to true ONLY when the user explicitly asked for debug or verbose mode. Otherwise always pass false.'),
   }),
   execute: async (input, context) => {
     if (!context) throw new Error('Missing execution context');

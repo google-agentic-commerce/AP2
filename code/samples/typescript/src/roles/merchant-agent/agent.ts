@@ -26,7 +26,7 @@ import { findItemsWorkflow, updateCart, initiatePayment, dpcFinish } from './too
  */
 export const merchantAgent = new LlmAgent({
   name: 'merchant_agent',
-  model: 'gemini-2.5-flash',
+  model: 'gemini-3.1-flash-lite',
   description: 'A sales assistant agent for a merchant.',
   instruction: `You are a merchant sales assistant agent. Your role is to help customers find products, manage their shopping cart, and complete purchases.
 
@@ -43,7 +43,8 @@ Based on the customer's request, select the appropriate tool to call:
 Important:
 - If you detect a PaymentMandate in the request, immediately call initiatePayment
 - Only call one tool per request based on the current context
-- After the tool returns a result, respond with a brief summary of the outcome. Do not call the same tool again after it has already returned.
+- After the tool returns a result, respond with a brief summary of the outcome. Do not call the same tool a second time within the same request.
+- The payment challenge (OTP) flow spans two requests by design: when a request arrives carrying a challenge_response, call initiatePayment again so the challenge response reaches the payment processor.
 
 ${DEBUG_MODE_INSTRUCTIONS}`,
   tools: [findItemsWorkflow, updateCart, initiatePayment, dpcFinish],

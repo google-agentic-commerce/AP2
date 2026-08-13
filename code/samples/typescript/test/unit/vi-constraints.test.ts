@@ -62,7 +62,7 @@ async function settle(opts: { amountMax: number; amount: number; currency?: stri
   });
   const racket = findProduct('BAB86345')!;
   const checkoutJwt = await createCheckoutJwt([{ sku: racket.sku }], merchant);
-  const checkoutHash = checkoutHashFromJwt(checkoutJwt);
+  const checkoutHash = await checkoutHashFromJwt(checkoutJwt);
   const f = await createAgentFulfillment({
     l2Serialized: l2,
     agent,

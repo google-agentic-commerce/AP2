@@ -15,7 +15,7 @@
  */
 
 import { LlmAgent } from '@google/adk';
-import { DEBUG_MODE_INSTRUCTIONS } from '../../../../common/constants/index.js';
+import { DEBUG_MODE_INSTRUCTIONS, HUMAN_PRESENTATION_INSTRUCTIONS } from '../../../../common/constants/index.js';
 import { createIntentMandate, findProducts, updateChosenCartMandate } from './tools.js';
 
 /**
@@ -26,7 +26,7 @@ import { createIntentMandate, findProducts, updateChosenCartMandate } from './to
  */
 export const shopperAgent = new LlmAgent({
   name: 'shopper_agent',
-  model: 'gemini-2.5-flash',
+  model: 'gemini-3.1-flash-lite',
   description: 'An agent responsible for helping the user shop for products.',
   instruction: `You are an agent responsible for helping the user shop for products.
 
@@ -90,6 +90,8 @@ When asked to complete a task, follow these instructions:
 9. Monitor the tool's output. If the cart ID is not found, you must inform
     the user and prompt them to try again. If the selection is successful,
     signal a successful update and hand off the process to the root_agent.
+
+${HUMAN_PRESENTATION_INSTRUCTIONS}
 
 ${DEBUG_MODE_INSTRUCTIONS}`,
   tools: [createIntentMandate, findProducts, updateChosenCartMandate],

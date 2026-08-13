@@ -62,6 +62,6 @@ export async function createCheckoutJwt(items: CartLineItem[], merchant: ViKeyPa
 }
 
 /** SHA-256(base64url) of a checkout JWT string — the checkout hash / transaction id. */
-export function checkoutHashFromJwt(checkoutJwt: string): string {
+export async function checkoutHashFromJwt(checkoutJwt: string): Promise<string> {
   return hashBytes(utf8(checkoutJwt));
 }

@@ -81,7 +81,7 @@ describe('Verifiable Intent — autonomous (3-layer) flow', () => {
     // Merchant produces a checkout JWT for the agent-selected racket.
     const racket = findProduct('BAB86345')!;
     const checkoutJwt = await createCheckoutJwt([{ sku: racket.sku, quantity: 1 }], merchant);
-    const checkoutHash = checkoutHashFromJwt(checkoutJwt);
+    const checkoutHash = await checkoutHashFromJwt(checkoutJwt);
 
     // L3 — Agent builds split fulfillment + per-recipient L2 presentations.
     const fulfillment = await createAgentFulfillment({
@@ -146,7 +146,7 @@ describe('Verifiable Intent — autonomous (3-layer) flow', () => {
     });
     const racket = findProduct('BAB86345')!;
     const checkoutJwt = await createCheckoutJwt([{ sku: racket.sku }], merchant);
-    const checkoutHash = checkoutHashFromJwt(checkoutJwt);
+    const checkoutHash = await checkoutHashFromJwt(checkoutJwt);
     const fulfillment = await createAgentFulfillment({
       l2Serialized: l2,
       agent,
@@ -192,7 +192,7 @@ describe('Verifiable Intent — autonomous (3-layer) flow', () => {
     });
     const racket = findProduct('BAB86345')!;
     const checkoutJwt = await createCheckoutJwt([{ sku: racket.sku }], merchant);
-    const checkoutHash = checkoutHashFromJwt(checkoutJwt);
+    const checkoutHash = await checkoutHashFromJwt(checkoutJwt);
     const fulfillment = await createAgentFulfillment({
       l2Serialized: l2,
       agent,

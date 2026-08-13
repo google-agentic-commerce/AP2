@@ -166,8 +166,8 @@ export const assembleAndSignMandatesTool = new FunctionTool({
     return {
       credential_id: 'l1',
       mandate_id: 'l2',
-      l1_hash: hashAscii(l1),
-      l2_hash: hashAscii(l2),
+      l1_hash: await hashAscii(l1),
+      l2_hash: await hashAscii(l2),
       amount_cap_cents: amountMaxCents,
       currency: 'USD',
     };
@@ -200,7 +200,7 @@ export const checkConstraintsAgainstMandateTool = new FunctionTool({
     } catch (e) {
       return { error: 'mandate_decode_failed', message: String(e) };
     }
-    const claims = resolveDisclosures(l2);
+    const claims = await resolveDisclosures(l2);
     const delegates = (claims.delegate_payload as Dict[] | undefined) ?? [];
     let paymentConstraints: Dict[] = [];
     for (const d of delegates) {
@@ -216,7 +216,7 @@ export const checkConstraintsAgainstMandateTool = new FunctionTool({
     };
     const discByHash = new Map<string, unknown[]>();
     for (let i = 0; i < l2.disclosures.length; i++) {
-      discByHash.set(hashDisclosure(l2.disclosures[i]), l2.disclosureValues[i]);
+      discByHash.set(await hashDisclosure(l2.disclosures[i]), l2.disclosureValues[i]);
     }
     for (const c of paymentConstraints) {
       if (c.type === 'mandate.payment.allowed_payees') {

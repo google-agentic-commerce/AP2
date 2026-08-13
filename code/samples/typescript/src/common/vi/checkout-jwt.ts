@@ -13,7 +13,7 @@
  * and the Layer 3 fulfillment to the merchant cart.
  */
 
-import { hashBytes, jwtEncode, makeSigner, utf8 } from '@verifiable-intent/core';
+import { hashBytes, jwtEncode, makeSigner, utf8 } from 'verifiable-intent-js';
 import { findProduct } from './fixtures.js';
 import type { ViKeyPair } from './keys.js';
 

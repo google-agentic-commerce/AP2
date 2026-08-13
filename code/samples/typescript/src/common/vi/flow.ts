@@ -7,7 +7,7 @@
  *
  *     https://www.apache.org/licenses/LICENSE-2.0
  *
- * Verifiable Intent flow — per-role facade over `@verifiable-intent/core`.
+ * Verifiable Intent flow — per-role facade over `verifiable-intent-js`.
  *
  * This is the TypeScript replication of the official Python integration
  * (verifiable_intent: python/examples/autonomous_flow.py + immediate_flow.py),
@@ -58,7 +58,7 @@ import {
   checkConstraints,
   UserMandate,
   verifyChain,
-} from '@verifiable-intent/core';
+} from 'verifiable-intent-js';
 
 import { checkoutHashFromJwt } from './checkout-jwt.js';
 import { MERCHANT_AUD, NETWORK_AUD } from './fixtures.js';

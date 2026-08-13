@@ -48,7 +48,7 @@
     "@opentelemetry/sdk-trace-node": "^2.1.0",
     "@sd-jwt/core": "^0.19.0",
     "@sd-jwt/crypto-nodejs": "^0.19.0",
-    "@verifiable-intent/core": "file:../../../../verifiable-intent/typescript",
+    "verifiable-intent-js": "^0.1.0",
     "dotenv": "^17.4.2",
     "express": "^5.1.0",
     "uuid": "^13.0.0",

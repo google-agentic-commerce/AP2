@@ -14,7 +14,7 @@
  * instrument used by the autonomous (3-layer) and immediate (2-layer) flows.
  */
 
-import type { Dict } from '@verifiable-intent/core';
+import type { Dict } from 'verifiable-intent-js';
 
 /** Merchant allowlist — carried into the open mandate constraints + disclosures. */
 export const MERCHANTS: Dict[] = [

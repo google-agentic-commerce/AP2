@@ -17,7 +17,7 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { generateEs256Key, type Es256Jwk } from '@verifiable-intent/core';
+import { generateEs256Key, type Es256Jwk } from 'verifiable-intent-js';
 
 export interface ViKeyPair {
   publicKey: Es256Jwk;

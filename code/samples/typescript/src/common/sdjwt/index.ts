@@ -10,7 +10,7 @@
  * Barrel for shared ES256 primitives: keypair generation, a file-backed JWK
  * key store, and plain compact JWS (used for the merchant checkout JWT and the
  * PSP / merchant receipts). The Verifiable Intent SD-JWT delegation chain lives
- * in `src/common/vi` (backed by @verifiable-intent/core).
+ * in `src/common/vi` (backed by verifiable-intent-js).
  */
 
 export * from './crypto.js';

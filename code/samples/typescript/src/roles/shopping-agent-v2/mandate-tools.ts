@@ -8,7 +8,7 @@
  *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Mandate helper tools for shopping-agent-v2, backed by the Verifiable Intent
- * library (src/common/vi -> @verifiable-intent/core). This replicates the
+ * library (src/common/vi -> verifiable-intent-js). This replicates the
  * official Python reference flow (verifiable_intent/python/examples) sliced
  * along the AP2 roles this agent owns: the User (Layer 2) and the Agent
  * (Layer 3 split fulfillment).

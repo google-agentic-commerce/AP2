@@ -7,12 +7,12 @@
  *
  *     https://www.apache.org/licenses/LICENSE-2.0
  *
- * Verifiable Intent integration barrel. Re-exports the `@verifiable-intent/core`
+ * Verifiable Intent integration barrel. Re-exports the `verifiable-intent-js`
  * primitives plus the AP2-sample glue (fixtures, key store, checkout JWT, and
  * the per-role flow facade) that replicate the Python reference integration.
  */
 
-export * from '@verifiable-intent/core';
+export * from 'verifiable-intent-js';
 export * from './fixtures.js';
 export * from './keys.js';
 export * from './checkout-jwt.js';

@@ -23,7 +23,7 @@
  * Token creation issues SD-JWT payment credentials signed with the
  * credentials-provider's ES256 key (AP2 v0.2). Sensitive payment method
  * fields are made selectively disclosable. Built directly on the Verifiable
- * Intent SD-JWT primitives (@verifiable-intent/core): the issuer signs a
+ * Intent SD-JWT primitives (verifiable-intent-js): the issuer signs a
  * selective-disclosure SD-JWT with a `cnf.jwk` holder-binding key (RFC 7800),
  * and verification checks the issuer signature and resolves the disclosures.
  */

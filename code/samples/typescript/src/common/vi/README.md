@@ -7,7 +7,7 @@
 
 TypeScript replication of the official Python reference flow
 (`verifiable_intent/python/examples`), wired into the AP2 sample. It is a thin,
-per-role facade over the [`@verifiable-intent/core`](https://www.npmjs.com/package/@verifiable-intent/core)
+per-role facade over the [`verifiable-intent-js`](https://www.npmjs.com/package/verifiable-intent-js)
 library that produces a cryptographic, layered SD-JWT delegation chain so a
 merchant and a payment network can independently prove an autonomous agent
 purchased **exactly what the human authorized**.

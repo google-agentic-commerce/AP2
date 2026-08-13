@@ -13,7 +13,7 @@
  *     -> L3a/L3b agent fulfillment -> merchant + network verification + constraints
  *   - immediate_flow.py: L1 issuer -> L2 user (final values, no L3) -> verification
  *
- * Runs entirely in-process (no servers / no Gemini), using @verifiable-intent/core
+ * Runs entirely in-process (no servers / no Gemini), using verifiable-intent-js
  * via src/common/vi. A fixed `currentTime` keeps verification deterministic.
  */
 

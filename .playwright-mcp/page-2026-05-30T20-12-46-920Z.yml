@@ -1,0 +1,270 @@
+- generic [active] [ref=e1]:
+  - link "Skip to main content" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - generic [ref=e5]:
+    - link "Mastercard brand symbol - a global technology company in the payments industry" [ref=e7] [cursor=pointer]:
+      - /url: /global/en.html
+      - img "Mastercard brand symbol - a global technology company in the payments industry" [ref=e8]
+    - generic "Open Menu" [ref=e11]:
+      - menubar [ref=e12]:
+        - listitem [ref=e13]:
+          - menuitem "For you" [ref=e14] [cursor=pointer]
+        - listitem [ref=e15]:
+          - menuitem "For business" [ref=e16] [cursor=pointer]
+        - listitem [ref=e17]:
+          - menuitem "For the world" [ref=e18] [cursor=pointer]
+        - listitem [ref=e19]:
+          - menuitem "For innovators" [ref=e20] [cursor=pointer]
+        - listitem [ref=e21]:
+          - menuitem "News and trends" [ref=e22] [cursor=pointer]
+    - button "Open search" [ref=e24] [cursor=pointer]:
+      - generic [ref=e25]: 
+      - generic [ref=e26]: 
+  - generic [ref=e35]:
+    - generic [ref=e38]:
+      - generic [ref=e41]:
+        - heading " AI" [level=2] [ref=e46]
+        - generic [ref=e48]:
+          - generic [ref=e50]:
+            - paragraph [ref=e51]: March 5, 2026
+            - paragraph [ref=e52]
+          - heading "When AI starts buying for you, trust becomes the product" [level=1] [ref=e55]
+          - heading "Mastercard introduces Verifiable Intent – a new, standards-based trust paradigm for agentic commerce, co-developed with Google." [level=3] [ref=e58]
+      - img "google logo" [ref=e62]
+    - generic [ref=e65]:
+      - generic [ref=e75]:
+        - img "Pablo Fourez profile photo" [ref=e77]
+        - generic [ref=e78]:
+          - paragraph [ref=e79]: Pablo Fourez
+          - paragraph [ref=e81]: Chief Digital Officer, Mastercard
+      - generic [ref=e83]:
+        - generic [ref=e87]:
+          - generic [ref=e89]:
+            - paragraph [ref=e90]: As AI agents begin to buy on our behalf, commerce is entering a new era.
+            - paragraph [ref=e91]: "Search, shopping and purchasing are converging as AI systems move from assisting consumers to acting for them — planning purchases, making decisions and executing transactions autonomously. As this shift accelerates, a critical question comes into focus: How do we know an agent is doing exactly what we asked — and nothing more?"
+            - paragraph [ref=e92]: This is a new payments paradigm. And in this paradigm, trust becomes the product.
+            - paragraph [ref=e93]: When AI agents act with real money, consumers aren’t just looking for speed or convenience. They expect clarity about what was authorized, confidence that instructions were followed, and protection if something goes wrong. As autonomy increases, trust cannot be implied. It must be proven.
+            - paragraph [ref=e94]: For decades, commerce relied on a simple, visible sign of intent. You tapped your card or clicked “buy,” and every party understood what you chose to purchase. That shared understanding is what makes digital commerce work today.
+            - paragraph [ref=e95]:
+              - link "Agentic commerce changes that equation" [ref=e96] [cursor=pointer]:
+                - /url: https://www.mastercard.com/mt/en/news-and-trends/stories/2025/agentic-commerce-explainer.html
+              - text: . Instead of acting directly, consumers delegate. They might ask an agent to reorder their groceries, book travel within a budget, or buy a specific item in the right size. The agent interprets those instructions, monitors conditions, and may act independently to make the purchase. As a result, intent becomes less visible at the moment of transaction, even as it becomes more important to verify.
+            - paragraph [ref=e97]: Consumers need confidence and verifiable evidence that agents will follow instructions while maintaining privacy. Merchants need assurance that an agent is authorized to transact. Issuers must distinguish legitimate activity from fraud. And if something goes wrong, everyone needs facts — not guesswork.
+            - paragraph [ref=e98]: Meeting these needs requires a new model of trust, designed specifically for agentic commerce, and built with privacy at the center.
+            - paragraph [ref=e99]:
+              - text: To meet this moment, we’re collaborating with Google to introduce
+              - link "Verifiable Intent" [ref=e100] [cursor=pointer]:
+                - /url: https://verifiableintent.dev/
+              - text: ", a new open, standards-based trust layer for agentic commerce."
+            - paragraph [ref=e101]: Aligned with Google’s Agent Payments Protocol (AP2) and Universal Commerce Protocol (UCP) and designed to be protocol agnostic, Verifiable Intent creates a tamper-resistant record of what a user authorized when an AI agent acts on their behalf, establishing a shared source of truth across the ecosystem. It provides cryptographic proof of authorization that consumers, merchants, and issuers can rely on.
+            - paragraph [ref=e102]: In the coming months, Verifiable Intent will be integrated directly into Mastercard Agent Pay’s intent APIs to drive real-world adoption with partners and support responsible, scalable agent deployments across platforms. In parallel, Mastercard will continue working with industry bodies to define complementary standards for conversational AI in commerce.
+            - paragraph [ref=e103]: This is not simply about enabling new payment experiences. It is about ensuring that as commerce becomes more autonomous, consumer protection keeps pace.
+            - paragraph [ref=e104]
+          - heading "How do we rethink trust in an AI-driven world of autonomous agents?" [level=4] [ref=e107]
+          - generic [ref=e109]:
+            - paragraph [ref=e110]: In an agentic world where actions are delegated, intent must be explicit and verifiable. Mastercard’s role in this new payments paradigm is to ensure that trust travels with every transaction, regardless of how it is initiated.
+            - paragraph [ref=e111]: At its core, Verifiable Intent links identity, intent, and action into a single, privacy-preserving record. It confirms the cardholder authorizing the AI agent, captures the consumer’s specific instructions and records the interaction between the agent and merchant resulting in a purchase. If a dispute occurs, all parties can rely on a clear audit trail to resolve it quickly and fairly.
+            - paragraph [ref=e112]: For merchants, this clarity brings confidence to this new horizon of agentic transactions. For consumers, it provides peace of mind that delegation does not mean loss of control.
+            - paragraph [ref=e113]: In agent-assisted, human-in-the-loop purchases, Verifiable Intent confirms the consumer was present, approved the shopping cart, and authorized the transaction. Merchants can fulfill these orders confidently without adding friction. In more autonomous scenarios, Verifiable Intent provides transparency and agency that allows merchants to assess whether additional confirmation is needed before completing an agentic transaction.
+            - paragraph [ref=e114]: These challenges extend well beyond traditional consumer transactions. In machine-to-machine commerce and programmable money implementations, a consumer or business is always delegating spending authority to a system. Whether an AI agent is paying for critical resources or managing procurement and executing a cross-border payment on behalf of an organization, the stakes are the same. These systems must make decisions at speed and scale while remaining faithful to the intent of the user.
+            - paragraph [ref=e115]
+          - heading "How does Verifiable Intent preserve privacy and data control?" [level=4] [ref=e118]
+          - generic [ref=e120]:
+            - paragraph [ref=e121]:
+              - text: Trust and privacy are not tradeoffs. Verifiable Intent uses
+              - link "Selective Disclosure, a privacy control technique" [ref=e122] [cursor=pointer]:
+                - /url: https://datatracker.ietf.org/doc/rfc9901/
+              - text: ", to ensure that only the minimum necessary information about the transaction is required to be shared across parties, and only when needed. Transaction details can be verified for fraud mitigation or dispute resolution without exposing sensitive information beyond that process."
+            - paragraph [ref=e123]: This approach aligns with Mastercard’s data and technology principles, preserving control for consumers and merchants alike.
+            - paragraph [ref=e124]
+          - heading "What does a future-proof trust layer for agentic systems look like?" [level=4] [ref=e127]
+          - generic [ref=e129]:
+            - paragraph [ref=e130]: Verifiable Intent is built on widely adopted specifications from the FIDO Alliance, EMVCo, the Internet Engineering Task Force, and the World Wide Web Consortium. It is designed to work across agentic protocols, devices, wallets, platforms, and even other payments networks today and as the ecosystem evolves.
+            - paragraph [ref=e131]:
+              - text: Over time, it will be strengthened through integration with
+              - link "Verifiable Credentials" [ref=e132] [cursor=pointer]:
+                - /url: https://www.mastercard.com/us/en/news-and-trends/press/2025/september/mastercard-unveils-new-tools-and-collaborations-to-power-smarter,-safer-agentic-commerce.html
+              - text: ", making consumer authorization and delegation even more explicit, portable and cryptographically verifiable."
+            - paragraph [ref=e133]:
+              - text: Today, Mastercard is open-sourcing the Verifiable Intent specification and an initial reference implementation on
+              - link "GitHub" [ref=e134] [cursor=pointer]:
+                - /url: https://github.com/agent-intent/verifiable-intent/
+              - text: and at
+              - link "verifiableintent.dev" [ref=e135] [cursor=pointer]:
+                - /url: https://verifiableintent.dev/
+              - text: . Agent platforms, payment and checkout enablers, merchants, and developers are invited to review, contribute, and build. API specifications and developer tools for using Verifiable Intent with Mastercard Agent Pay will be available soon on
+              - link "Mastercard Developers" [ref=e136] [cursor=pointer]:
+                - /url: https://developer.mastercard.com/
+              - text: .
+            - paragraph [ref=e137]: As AI agents take on more responsibility, payments become a reflection of trust. In this new payments paradigm, consumers want more than efficiency. They want confidence, accountability, and reassurance that someone has their back when AI acts on their behalf.
+            - paragraph [ref=e138]: Verifiable Intent is built to deliver on that promise. When integrated into Mastercard Agent Pay, it serves as the heart of a system providing clear proof of authorization, accountability, and recourse. As commerce becomes more autonomous, trust won’t take a backseat. It will matter even more.
+            - paragraph [ref=e139]
+          - heading "What they're saying" [level=4] [ref=e142]
+          - generic [ref=e144]:
+            - paragraph [ref=e145]: “As AI agents begin to act more independently, it’s essential that user intent remains clear, provable, and protected,” said Stavan Parikh, vice president and general manager, Payments, at Google. “Strong, interoperable trust infrastructure like Verifiable Intent that is compatible with Agent Payments Protocol is a natural accelerator for scaling agentic commerce, and we’re proud to have collaborated with Mastercard on this initiative.”
+            - paragraph [ref=e146]: “Merchants have built their businesses on the trust of their customers,” said Tom Adams, chief technology officer at Adyen. “As consumers increasingly transact through AI agents, having a verifiable, privacy-preserving way to confirm customer intent becomes foundational. Approaches like Verifiable Intent can help merchants anchor agent-initiated transactions in explicit authorization, while retaining control over identity, data, and the customer experience.”
+            - paragraph [ref=e147]: “Over the last couple of months we’ve seen adoption of AI agents skyrocket,” said James Armstead, chief technology officer at Basis Theory. “As these agents start participating directly in commerce — making purchases and completing transactions on behalf of consumers and businesses — the most important question becomes trust. How do you know the intent behind a transaction is real? Mastercard’s Verifiable Intent API is an important step toward solving that. By combining Mastercard’s network with Basis Theory’s tokenization and secure data infrastructure, we can help enable a new model of commerce where agents can initiate and complete payments safely and transparently.”
+            - paragraph [ref=e148]: “As Al agents begin making purchases on behalf of consumers, trust and clear proof of intent will be essential. Mastercard's Verifiable Intent is an important step toward making sure those transactions are authorised and secure,” said Meron Colbeci, chief product officer at Checkout.com. “Checkout.com supports open standards that help enterprise merchants adopt agentic commerce with confidence across schemes, platforms and protocols.”
+            - paragraph [ref=e149]: “As merchants increasingly navigating new forms of digital delegation, our role at Getnet is to ensure we’re delivering the consistency to move forward with confidence,” said Juan Franco, CEO at Getnet. “Initiatives such as Verifiable Intent contribute to that alignment, supporting responsible innovation while reinforcing the safeguards merchants and consumers rely on every day.”
+            - paragraph [ref=e150]: “Verifiable Intent marks a meaningful step forward in how intent, authentication, and accountability are established in agentic commerce,” said Sanjay Saraf, chief product officer, Merchant Solutions, Fiserv. “By integrating with Mastercard Agent Pay, Fiserv is delivering a new trust layer that helps merchants secure agent‑initiated transactions. As agents take on greater responsibility, Verifiable Intent enables merchants to proactively reduce fraud, strengthen dispute outcomes, and maintain customer trust.”
+            - paragraph [ref=e151]: “As agent-driven payments mature, we're focused on making them ready for the real world—with strong orchestration, clear policies, and built-in transparency. Verifiable Intent makes user authorization simple and secure, so agents can act safely across platforms,” said Kirstin Kirtley Silva, managing director, IBM. “For merchants, that means every transaction is traceable, and disputes are easier to resolve. We're thrilled to align this with IBM’s orchestration layer to help partners move from early prototypes to large-scale adoption.”
+            - paragraph [ref=e152]: “Our merchants see enormous opportunity in agentic commerce, with trust and identity emerging as essential enablers,” said Reshmi Suresh, head of agentic commerce at Worldpay, now Global Payments. “Having an open standard that allows them to verify intent, while also giving them the choice to preserve their privacy, is key to increasing adoption. We’re excited to partner with Mastercard to evolve this framework of Verifiable Intent, on behalf of our merchants and their consumers."
+            - paragraph [ref=e153]
+        - separator [ref=e156]
+    - generic [ref=e159]:
+      - heading "Related stories" [level=2] [ref=e162]
+      - generic [ref=e165]:
+        - link "The new rules of the road for agentic commerce By Pablo Fourez and Sherri Haymond A man and a woman look at a tablet in a kitchen." [ref=e168] [cursor=pointer]:
+          - /url: /global/en/news-and-trends/stories/2026/agentic-commerce-rules-of-the-road.html
+          - generic [ref=e169]:
+            - heading "The new rules of the road for agentic commerce" [level=3] [ref=e170]
+            - paragraph [ref=e172]: By Pablo Fourez and Sherri Haymond
+          - img "A man and a woman look at a tablet in a kitchen." [ref=e176]
+        - link "What is agentic commerce? Your guide to AI-assisted retail By Ben Fox Rubin orange gradient circles" [ref=e179] [cursor=pointer]:
+          - /url: /global/en/news-and-trends/stories/2025/agentic-commerce-explainer.html
+          - generic [ref=e180]:
+            - heading "What is agentic commerce? Your guide to AI-assisted retail" [level=3] [ref=e181]
+            - paragraph [ref=e183]: By Ben Fox Rubin
+          - img "orange gradient circles" [ref=e187]
+  - contentinfo [ref=e188]:
+    - generic [ref=e190]:
+      - navigation "Breadcrumb" [ref=e192]:
+        - list [ref=e193]:
+          - listitem [ref=e194]:
+            - link "Home" [ref=e195] [cursor=pointer]:
+              - /url: /global/en.html
+            - text: 
+          - listitem [ref=e196]:
+            - link "News and trends" [ref=e197] [cursor=pointer]:
+              - /url: /global/en/news-and-trends.html
+            - text: 
+          - listitem [ref=e198]:
+            - link "Stories" [ref=e199] [cursor=pointer]:
+              - /url: /global/en/news-and-trends/stories.html
+            - text: 
+          - listitem [ref=e200]:
+            - link "2026" [ref=e201] [cursor=pointer]:
+              - /url: /global/en/news-and-trends/stories/2026.html
+      - paragraph [ref=e204]: We're always here when you need us
+      - generic [ref=e206]:
+        - generic [ref=e208]:
+          - heading "Need help?" [level=6] [ref=e211]
+          - list [ref=e214]:
+            - listitem [ref=e215]:
+              - link " Get support" [ref=e216] [cursor=pointer]:
+                - /url: /global/en/personal/get-support.html
+            - listitem [ref=e217]:
+              - link " Report a lost or stolen card" [ref=e218] [cursor=pointer]:
+                - /url: /global/en/personal/get-support.html
+            - listitem [ref=e219]:
+              - link " Find ATM" [ref=e220] [cursor=pointer]:
+                - /url: /global/en/personal/get-support/atm-near-me.html
+            - listitem [ref=e221]:
+              - link " FAQs" [ref=e222] [cursor=pointer]:
+                - /url: /global/en/personal/get-support/frequently-asked-questions.html
+        - generic [ref=e224]:
+          - heading "COMPANY" [level=6] [ref=e227]:
+            - button "COMPANY" [expanded]
+          - list "COMPANY" [ref=e230]:
+            - listitem [ref=e231]:
+              - link "About" [ref=e232] [cursor=pointer]:
+                - /url: /global/en/for-the-world/about-us.html
+            - listitem [ref=e233]:
+              - link "Careers opens in a new tab " [ref=e234] [cursor=pointer]:
+                - /url: https://careers.mastercard.com/us/en
+                - text: Careers
+                - generic [ref=e235]: opens in a new tab
+                - text: 
+            - listitem [ref=e236]:
+              - link "Newsroom" [ref=e237] [cursor=pointer]:
+                - /url: /global/en/news-and-trends/stories.html
+            - listitem [ref=e238]:
+              - link "Investor Relations opens in a new tab " [ref=e239] [cursor=pointer]:
+                - /url: https://investor.mastercard.com/overview/default.aspx
+                - text: Investor Relations
+                - generic [ref=e240]: opens in a new tab
+                - text: 
+            - listitem [ref=e241]:
+              - link "Global Locations" [ref=e242] [cursor=pointer]:
+                - /url: /global/en/for-the-world/about-us/global-locations.html
+        - generic [ref=e244]:
+          - heading "LEGAL & PRIVACY" [level=6] [ref=e247]:
+            - button "LEGAL & PRIVACY" [expanded]
+          - list "LEGAL & PRIVACY" [ref=e250]:
+            - listitem [ref=e251]:
+              - link "Privacy & Data Responsibility" [ref=e252] [cursor=pointer]:
+                - /url: /global/en/for-the-world/about-us/mastercard-privacy-and-data-responsibility.html
+            - listitem [ref=e253]:
+              - link "Binding Corporate Rules (BCRs)" [ref=e254] [cursor=pointer]:
+                - /url: /content/dam/mccom/shared/footer/mastercard-bcrs.pdf
+        - generic [ref=e256]:
+          - heading "MASTERCARD SITES" [level=6] [ref=e259]:
+            - button "MASTERCARD SITES" [expanded]
+          - list "MASTERCARD SITES" [ref=e262]:
+            - listitem [ref=e263]:
+              - link "Visit priceless.com website" [ref=e264] [cursor=pointer]:
+                - /url: https://www.priceless.com/
+                - text: Priceless.com
+                - generic [ref=e265]: opens in a new tab
+                - text: 
+            - listitem [ref=e266]:
+              - link "Visit Mastercard business intelligence for more insights from mastercard" [ref=e267] [cursor=pointer]:
+                - /url: https://mbi.mastercardservices.com/mastercard-economics-institute
+                - text: Mastercard Business Intelligence
+                - generic [ref=e268]: opens in a new tab
+                - text: 
+            - listitem [ref=e269]:
+              - link "Mastercard Developers opens in a new tab " [ref=e270] [cursor=pointer]:
+                - /url: https://developer.mastercard.com
+                - text: Mastercard Developers
+                - generic [ref=e271]: opens in a new tab
+                - text: 
+            - listitem [ref=e272]:
+              - link "Mastercard Marketing Center opens in a new tab " [ref=e273] [cursor=pointer]:
+                - /url: https://www.mastercard.com/marketingcenter
+                - text: Mastercard Marketing Center
+                - generic [ref=e274]: opens in a new tab
+                - text: 
+            - listitem [ref=e275]:
+              - link "Center for Inclusive Growth opens in a new tab " [ref=e276] [cursor=pointer]:
+                - /url: https://www.mastercardcenter.org/
+                - text: Center for Inclusive Growth
+                - generic [ref=e277]: opens in a new tab
+                - text: 
+      - separator [ref=e280]
+      - generic [ref=e282]:
+        - generic [ref=e284]:
+          - paragraph [ref=e287]: © 1994-2026 Mastercard.
+          - list [ref=e291]:
+            - listitem [ref=e292]:
+              - link "Privacy" [ref=e293] [cursor=pointer]:
+                - /url: /global/en/privacy-notice.html
+              - text: 
+            - listitem [ref=e294]:
+              - link "Terms" [ref=e295] [cursor=pointer]:
+                - /url: /global/en/terms-of-use.html
+              - text: 
+            - listitem [ref=e296]:
+              - link "Manage cookies" [ref=e297] [cursor=pointer]:
+                - /url: "#"
+        - generic [ref=e299]:
+          - generic [ref=e303]:
+            - generic [ref=e304]: Select a country
+            - generic [ref=e306]:
+              - combobox [ref=e307] [cursor=pointer]: Global (English)
+              - generic [ref=e308] [cursor=pointer]:
+                - img
+            - alert
+          - list [ref=e313]:
+            - listitem [ref=e314]:
+              - link " Linkedin" [ref=e315] [cursor=pointer]:
+                - /url: http://www.linkedin.com/company/mastercard
+            - listitem [ref=e316]:
+              - link " Facebook" [ref=e317] [cursor=pointer]:
+                - /url: https://www.facebook.com/MasterCardUS?brand_redir=1
+            - listitem [ref=e318]:
+              - link " Twitter/X" [ref=e319] [cursor=pointer]:
+                - /url: https://x.com/mastercardnews
+            - listitem [ref=e320]:
+              - link " Youtube" [ref=e321] [cursor=pointer]:
+                - /url: https://www.youtube.com/user/MasterCard

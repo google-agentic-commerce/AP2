@@ -188,3 +188,12 @@ XVCJ
 Yapily
 Zalopay
 Zalora
+Babolat
+dedup
+keypair
+misattributing
+modelcontextprotocol
+otlp
+sdjwt
+worktree
+womens

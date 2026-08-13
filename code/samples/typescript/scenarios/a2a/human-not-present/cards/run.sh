@@ -9,6 +9,10 @@
 
 set -eu
 
+# All `cd` uses below are the `$(cd ... && pwd)` / `(cd ... && ...)` idiom; with
+# `set -e` a failing cd already aborts, so SC2164's `|| exit` is redundant here.
+# shellcheck disable=SC2164
+
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly TS_SAMPLES_ROOT="$(cd "$SCRIPT_DIR/../../../../" && pwd)"
 readonly REPO_ROOT="$(cd "$TS_SAMPLES_ROOT/../../../" && pwd)"

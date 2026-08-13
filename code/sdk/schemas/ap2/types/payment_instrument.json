@@ -4,6 +4,7 @@
   "title": "Payment Instrument",
   "description": "Instrument used for payment.",
   "type": "object",
+  "additionalProperties": true,
   "properties": {
     "id": {
       "type": "string",

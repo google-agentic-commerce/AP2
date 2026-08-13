@@ -19,6 +19,7 @@ celerybeat
 classpath
 CLASSPATH
 CMSPI
+codegen
 cmwallet
 cncf
 Cobo
@@ -35,6 +36,7 @@ davecgh
 dcql
 Dcql
 DCQL
+datamodel
 deviceauth
 Dfile
 dmypy
@@ -149,6 +151,7 @@ ropeproject
 RPCURL
 Rulebook
 screenreaders
+sepolia
 setlocal
 sharedpref
 Shopcider
@@ -169,6 +172,7 @@ Truelayer
 Trulioo
 udpa
 unmarshal
+usdc
 viewmodel
 vulnz
 Wallex

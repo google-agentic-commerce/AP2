@@ -32,7 +32,19 @@
         }
       },
       "rules": {
-        "@typescript-eslint/no-explicit-any": "off"
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/no-unused-vars": [
+          "error",
+          {
+            "argsIgnorePattern": "^_",
+            "varsIgnorePattern": "^_",
+            "caughtErrorsIgnorePattern": "^_"
+          }
+        ],
+        "n/no-unpublished-import": "off",
+        "n/no-missing-import": "off",
+        "n/no-extraneous-import": "off",
+        "n/no-unsupported-features/node-builtins": "off"
       }
     }
   ]

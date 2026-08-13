@@ -34,7 +34,10 @@ jobs:
           DEFAULT_BRANCH: main
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           LOG_LEVEL: WARN
-          SHELLCHECK_OPTS: -e SC1091 -e 2086
+          # SC2164/SC2155: the sample scripts use the `$(cd ... && pwd)` /
+          # `readonly X="$(...)"` idioms under `set -e`, where a failing cd or
+          # command substitution already aborts, so these warnings do not apply.
+          SHELLCHECK_OPTS: -e SC1091 -e SC2086 -e SC2164 -e SC2155
           VALIDATE_ALL_CODEBASE: false
           FILTER_REGEX_EXCLUDE: "^(\\.github/|\\.vscode/|code/samples/(python|go|android|certs)/).*|CODE_OF_CONDUCT.md|CHANGELOG.md"
           VALIDATE_BIOME_FORMAT: false
@@ -52,6 +55,7 @@ jobs:
           MARKDOWN_CONFIG_FILE: ".markdownlint.json"
           VALIDATE_MARKDOWN_PRETTIER: false
           VALIDATE_JAVASCRIPT_PRETTIER: false
+          VALIDATE_TYPESCRIPT_PRETTIER: false
           VALIDATE_JSON_PRETTIER: false
           VALIDATE_YAML_PRETTIER: false
           VALIDATE_GIT_COMMITLINT: false

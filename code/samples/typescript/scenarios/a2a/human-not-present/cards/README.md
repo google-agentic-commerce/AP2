@@ -88,7 +88,7 @@ Ports:
            "kind": "message",
            "messageId": "msg-1",
            "role": "user",
-           "parts": [{"kind": "text", "text": "When does the SuperShoe drop? Size 9 womens, max $200."}]
+           "parts": [{"kind": "text", "text": "When does the SuperShoe drop? Size 9 women's, max $200."}]
          }
        }
      }'

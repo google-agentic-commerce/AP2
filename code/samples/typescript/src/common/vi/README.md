@@ -18,7 +18,7 @@ A chain of signed credentials, each one binding the **next** signer's key
 (`cnf.jwk`, RFC 7800) and the **previous** document's hash (`sd_hash`):
 
 | Layer | Signed by | Says | VI call |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | **L1** issuer credential | Credentials Provider | "this card belongs to the user" + binds the **user** key | `issueIssuerCredential` → `createLayer1` |
 | **L2** user mandate | User | "I authorize **this agent** within these limits" + constraints | `createUserMandate{Autonomous,Immediate}` |
 | **L3a** payment (→ network) | Agent | "pay $X to merchant M for txn T" | `createLayer3Payment` |
@@ -30,7 +30,7 @@ values, no L3). Amounts are always **minor units (cents)**.
 
 ## AP2 role → layer mapping
 
-```
+```text
  Credentials Provider     User / shopping-agent-v2        Shopping Agent
    = Issuer (L1)            = User mandate (L2)            = Agent (L3 split)
         │                          │                             │
@@ -46,7 +46,7 @@ values, no L3). Amounts are always **minor units (cents)**.
 The agent persists serialized SD-JWTs; the MCP servers read them back by id:
 
 | File | Written by | Read by |
-|---|---|---|
+| --- | --- | --- |
 | `l1.sdjwt`, `l2.sdjwt` | `assembleAndSignMandates` | merchant, CP |
 | `<chk>.sdjwt`, `<chk>.l2.sdjwt` | `createMandateFulfillment` (merchant view) | merchant `complete_checkout` |
 | `<pay>.sdjwt`, `<pay>.l2.sdjwt` | `createMandateFulfillment` (network view) | CP `issue_payment_credential` |

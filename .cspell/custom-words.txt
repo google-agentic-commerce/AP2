@@ -185,3 +185,14 @@ XVCJ
 Yapily
 Zalopay
 Zalora
+apidevtools
+subschema
+pisp
+pisps
+Pisp
+PISP
+Mechant
+IDAS
+QWAC
+PKIX
+Genkit

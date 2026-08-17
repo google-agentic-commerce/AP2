@@ -45,6 +45,8 @@ class ReceiptClient:
         self,
         payment_mandate_content: PaymentMandate,
         reference: str,
+        psp_confirmation_id: str | None = None,
+        network_confirmation_id: str | None = None,
     ) -> PaymentReceipt:
         """Creates a PaymentReceipt model instance.
 
@@ -52,6 +54,18 @@ class ReceiptClient:
           payment_mandate_content: The closed payment mandate whose PISP this
             receipt inherits as its issuer (when present).
           reference: The payment mandate reference this receipt binds to.
+          psp_confirmation_id: The PSP's own confirmation identifier for this
+            payment, obtained by actually checking the payment rail (e.g. the
+            PSP's settlement/charge API response). If omitted, a locally
+            generated placeholder is used instead and the receipt's
+            `rail_confirmation_verified` field is left unset -- callers MUST
+            NOT treat the resulting receipt as proof that payment-rail
+            settlement occurred unless they supply a real, rail-checked value
+            here (see https://github.com/google-agentic-commerce/AP2/issues/327).
+          network_confirmation_id: The network's own confirmation identifier
+            for this payment. Same caveat as `psp_confirmation_id`: omitting
+            it means the receipt's confirmation IDs are self-declared, not
+            independently verified.
 
         Returns:
           A PaymentReceipt model instance.
@@ -67,11 +81,16 @@ class ReceiptClient:
             issuer=issuer,
             reference=reference,
         )
+        rail_confirmation_verified = (
+            psp_confirmation_id is not None
+            and network_confirmation_id is not None
+        )
         return PaymentReceipt(
             **base,
             payment_id=payment_id,
-            psp_confirmation_id=payment_id,
-            network_confirmation_id=payment_id,
+            psp_confirmation_id=psp_confirmation_id or payment_id,
+            network_confirmation_id=network_confirmation_id or payment_id,
+            rail_confirmation_verified=rail_confirmation_verified,
         )
 
     def create_checkout_receipt(

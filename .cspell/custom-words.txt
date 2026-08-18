@@ -185,3 +185,9 @@ XVCJ
 Yapily
 Zalopay
 Zalora
+codegen
+datamodel
+pisp
+PISP
+pyca
+SECP

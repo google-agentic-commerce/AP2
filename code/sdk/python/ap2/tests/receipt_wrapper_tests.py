@@ -59,6 +59,46 @@ def test_create_payment_receipt_no_pisp(issuer_key):
     assert receipt.root.iss == ''
 
 
+def test_create_payment_receipt_defaults_to_unverified(issuer_key):
+    """Without real rail confirmation IDs, the receipt is honestly unverified.
+
+    Regression test for
+    https://github.com/google-agentic-commerce/AP2/issues/327: a Success
+    receipt must not silently imply payment-rail evidence it does not have.
+    """
+    client = ReceiptClient()
+    reference = 'test_reference'
+    payment_mandate_content = _payment_mandate(pisp=None)
+
+    receipt = client.create_payment_receipt(payment_mandate_content, reference)
+
+    assert receipt.root.status == 'Success'
+    # Placeholder confirmation IDs are still populated (unchanged behavior for
+    # existing callers) ...
+    assert receipt.root.psp_confirmation_id == receipt.root.payment_id
+    assert receipt.root.network_confirmation_id == receipt.root.payment_id
+    # ... but the receipt now says so honestly instead of staying silent.
+    assert receipt.root.rail_confirmation_verified is False
+
+
+def test_create_payment_receipt_with_real_rail_confirmation(issuer_key):
+    """Real, caller-supplied confirmation IDs mark the receipt as verified."""
+    client = ReceiptClient()
+    reference = 'test_reference'
+    payment_mandate_content = _payment_mandate(pisp=None)
+
+    receipt = client.create_payment_receipt(
+        payment_mandate_content,
+        reference,
+        psp_confirmation_id='psp-real-123',
+        network_confirmation_id='network-real-456',
+    )
+
+    assert receipt.root.psp_confirmation_id == 'psp-real-123'
+    assert receipt.root.network_confirmation_id == 'network-real-456'
+    assert receipt.root.rail_confirmation_verified is True
+
+
 def test_create_checkout_receipt():
     """Test creation of a CheckoutReceipt."""
     client = ReceiptClient()

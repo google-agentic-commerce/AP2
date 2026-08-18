@@ -50,6 +50,10 @@ class PaymentReceiptSuccess(BaseModel):
         ...,
         description='A unique identifier for the transaction confirmation at the network. Present only if status is Success.',
     )
+    rail_confirmation_verified: bool | None = Field(
+        default=None,
+        description='Meaningful only if status is Success. True only if the issuer independently confirmed psp_confirmation_id and network_confirmation_id against the actual payment rail (PSP/network) before issuing this receipt, rather than merely generating them. Absent or false means these confirmation IDs are self-declared by the issuer and MUST NOT be treated as evidence that payment-rail settlement occurred: presence of a confirmation ID proves the issuer asserted a claim, not that the claim was checked.',
+    )
 
 
 class PaymentReceiptError(BaseModel):
@@ -81,6 +85,10 @@ class PaymentReceiptError(BaseModel):
     network_confirmation_id: str | None = Field(
         default=None,
         description='A unique identifier for the transaction confirmation at the network. Present only if status is Success.',
+    )
+    rail_confirmation_verified: bool | None = Field(
+        default=None,
+        description='Meaningful only if status is Success. True only if the issuer independently confirmed psp_confirmation_id and network_confirmation_id against the actual payment rail (PSP/network) before issuing this receipt, rather than merely generating them. Absent or false means these confirmation IDs are self-declared by the issuer and MUST NOT be treated as evidence that payment-rail settlement occurred: presence of a confirmation ID proves the issuer asserted a claim, not that the claim was checked.',
     )
 
 

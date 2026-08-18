@@ -47,6 +47,8 @@ def test_payment_chain_constraint_violation(
     payloads = holder.verify(
         token=tok_chain,
         key_or_provider=lambda _token: user_public_key,
+        expected_aud='merchant',
+        expected_nonce='merchant-nonce',
     )
     chain = PaymentMandateChain.parse(payloads)
     violations = chain.verify()
@@ -80,6 +82,8 @@ def test_payment_chain_transaction_id_mismatch(
     payloads = holder.verify(
         token=tok_chain,
         key_or_provider=lambda _token: user_public_key,
+        expected_aud='merchant',
+        expected_nonce='merchant-nonce',
     )
     chain = PaymentMandateChain.parse(payloads)
 
@@ -115,6 +119,8 @@ def test_full_payment_end_to_end(
     payloads = holder.verify(
         token=tok_chain,
         key_or_provider=lambda _token: user_public_key,
+        expected_aud='merchant',
+        expected_nonce='merchant-nonce',
     )
     chain = PaymentMandateChain.parse(payloads)
     violations = chain.verify()

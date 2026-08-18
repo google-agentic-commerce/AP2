@@ -185,3 +185,10 @@ XVCJ
 Yapily
 Zalopay
 Zalora
+sdjwt
+SDJWT
+SECP
+keypair
+normalises
+pyca
+replayable

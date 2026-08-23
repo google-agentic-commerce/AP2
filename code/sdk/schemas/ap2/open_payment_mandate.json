@@ -259,7 +259,7 @@
         },
         "max": {
           "type": "number",
-          "description": "Maximum amount for the budget."
+          "description": "Maximum amount for the budget, expressed in the MAJOR unit of the currency (e.g. 50.00 means 50 units of currency, not 50 cents). Note this differs from payment.amount_range.max, which is expressed in the minor unit."
         },
         "currency": {
           "type": "string",

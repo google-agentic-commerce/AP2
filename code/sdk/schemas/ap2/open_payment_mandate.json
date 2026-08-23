@@ -259,7 +259,7 @@
         },
         "max": {
           "type": "number",
-          "description": "Maximum amount for the budget."
+          "description": "Maximum amount for the budget, in the MAJOR unit of the currency (e.g. 5000.0 means 5000 rupees, not 5000 paise). Note this differs from payment.amount_range.max, which is expressed in the minor unit."
         },
         "currency": {
           "type": "string",

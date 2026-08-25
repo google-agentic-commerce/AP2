@@ -8,11 +8,14 @@ from __future__ import annotations
 
 import base64
 import json
+import time
 
 import pytest
 
+from ap2.sdk.disclosure_metadata import DisclosureMetadata
 from ap2.sdk.generated.open_payment_mandate import OpenPaymentMandate
 from ap2.sdk.sdjwt import (
+    common,
     compute_issuer_jwt_hash,
     compute_sd_hash,
     kb_sd_jwt,
@@ -62,11 +65,38 @@ def _root_open(issuer_key, holder_jwk) -> str:
     ).sd_jwt_issuance
 
 
+def _terminal_with_claims(
+    prev_token,
+    holder_key,
+    *,
+    typ='kb+sd-jwt',
+    **extra_claims,
+) -> str:
+    """Sign an otherwise-valid terminal hop with selected binding claims."""
+    payload = sample_payment_mandate()
+    claims = common.selectively_disclosable_claims(
+        common.delegate_claims_from_model(payload),
+        DisclosureMetadata.from_model(payload),
+        {
+            'iat': int(time.time()),
+            'sd_hash': compute_sd_hash(parse_token(prev_token)),
+            **extra_claims,
+        },
+    )
+    return common.issue_sd_jwt(
+        claims=claims,
+        issuer_key=holder_key,
+        header_params=common.header_parameters(holder_key, typ),
+        add_decoy_claims=False,
+        serialization_format='compact',
+    ).sd_jwt_issuance
+
+
 # ── Happy paths ──────────────────────────────────────────────────────────
 
 
 def test_create_sets_typ_and_binding(issuer_key):
-    """Header typ=kb+sd-jwt; payload has iat + sd_hash (aud/nonce optional)."""
+    """Header typ=kb+sd-jwt; payload has required transaction bindings."""
     holder = JWK.generate(kty='EC', crv='P-256')
     prev = _root_open(issuer_key, holder)
 
@@ -248,3 +278,37 @@ def test_verify_rejects_nonce_mismatch(issuer_key):
             expected_aud='a',
             expected_nonce='wrong',
         )
+
+
+@pytest.mark.parametrize('typ', kb_sd_jwt.TYP_TERMINAL)
+def test_verify_rejects_missing_aud_without_expected_value(issuer_key, typ):
+    holder = JWK.generate(kty='EC', crv='P-256')
+    prev = _root_open(issuer_key, holder)
+    token = _terminal_with_claims(prev, holder, typ=typ, nonce='n')
+
+    with pytest.raises(ValueError, match="missing required non-empty 'aud'"):
+        _verify(token, prev, issuer_key)
+
+
+@pytest.mark.parametrize('typ', kb_sd_jwt.TYP_TERMINAL)
+def test_verify_rejects_missing_nonce_without_expected_value(issuer_key, typ):
+    holder = JWK.generate(kty='EC', crv='P-256')
+    prev = _root_open(issuer_key, holder)
+    token = _terminal_with_claims(prev, holder, typ=typ, aud='a')
+
+    with pytest.raises(ValueError, match="missing required non-empty 'nonce'"):
+        _verify(token, prev, issuer_key)
+
+
+@pytest.mark.parametrize('claim', ['aud', 'nonce'])
+def test_verify_rejects_empty_required_claim(issuer_key, claim):
+    holder = JWK.generate(kty='EC', crv='P-256')
+    prev = _root_open(issuer_key, holder)
+    claims = {'aud': 'a', 'nonce': 'n'}
+    claims[claim] = ''
+    token = _terminal_with_claims(prev, holder, **claims)
+
+    with pytest.raises(
+        ValueError, match=rf"missing required non-empty '{claim}'"
+    ):
+        _verify(token, prev, issuer_key)

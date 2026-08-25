@@ -133,7 +133,7 @@ Selective-disclosure annotations on the models:
 
 A dSD-JWT chain has arbitrary depth. Hops are joined by `~~`:
 
-```
+```text
 <root_SD-JWT>~<disc…>~~<KB-SD-JWT+KB_1>~<disc…>~~…~~<closed_KB-SD-JWT>~<disc…>~
 ```
 
@@ -146,7 +146,7 @@ A dSD-JWT chain has arbitrary depth. Hops are joined by `~~`:
 - **Closed mandate (leaf)** (`typ=kb+sd-jwt`) — final KB-SD-JWT with a
   `PaymentMandate` or `CheckoutMandate` payload and no outgoing `cnf`.
   Binds to the preceding hop via `sd_hash` or `issuer_jwt_hash`, and
-  carries `iat` plus (optionally) `aud`/`nonce`.
+  carries `iat`, `aud`, and `nonce`.
 
 A KB-SD-JWT *is* a KB-JWT (draft §5.1.4), so the binding/transaction
 claims live in its payload — AP2 does not emit the dSD-JWT+KB variant
@@ -157,7 +157,7 @@ further delegation possible), `kb+sd-jwt` otherwise (closed, terminal).
 
 ## Trust chain
 
-```
+```text
 Root issuer
     │ signs
     ▼

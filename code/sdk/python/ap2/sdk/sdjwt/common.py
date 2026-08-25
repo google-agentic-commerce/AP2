@@ -299,6 +299,12 @@ def verify_expected_claims(
     """Validate common KB-SD-JWT claims after signature verification."""
     if 'iat' not in payload:
         raise ValueError(f"{token_label} missing required 'iat' claim")
+    for claim in ('aud', 'nonce'):
+        value = payload.get(claim)
+        if not isinstance(value, str) or not value:
+            raise ValueError(
+                f"{token_label} missing required non-empty '{claim}' claim"
+            )
     if expected_aud is not None and payload.get('aud') != expected_aud:
         raise ValueError(
             f"{token_label} aud mismatch: expected '{expected_aud}',"

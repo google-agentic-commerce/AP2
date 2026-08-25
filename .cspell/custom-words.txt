@@ -185,3 +185,8 @@ XVCJ
 Yapily
 Zalopay
 Zalora
+autonumber
+pyca
+sdjwt
+SDJWT
+SECP

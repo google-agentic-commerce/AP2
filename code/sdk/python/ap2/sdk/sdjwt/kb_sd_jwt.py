@@ -121,17 +121,16 @@ def verify(
     payload = sd_jwt_verify(token.canonical, prev_key)
     # Resolve SD-JWT digests in delegate_payload against token disclosures.
     # CMWallet places mandate commitment digests directly in delegate_payload
-    # rather than via a standard top-level _sd array; this step normalises
+    # rather than via a standard top-level _sd array; this step normalizes
     # them into inline dicts so the cnf check below works correctly.
     _resolve_delegate_payload(payload, token)
     common.verify_binding(payload, prev_token)
-    if typ in TYP_TERMINAL:
-        common.verify_expected_claims(
-            payload,
-            expected_aud=expected_aud,
-            expected_nonce=expected_nonce,
-            token_label='KB-SD-JWT',
-        )
+    common.verify_expected_claims(
+        payload,
+        expected_aud=expected_aud,
+        expected_nonce=expected_nonce,
+        token_label='KB-SD-JWT',
+    )
     has_cnf = _delegate_payload_has_cnf(payload)
     if typ in TYP_TERMINAL and has_cnf:
         raise ValueError("Terminal KB-SD-JWT MUST NOT carry a 'cnf' claim")

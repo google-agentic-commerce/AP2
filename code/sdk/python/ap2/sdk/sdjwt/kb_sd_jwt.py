@@ -121,7 +121,7 @@ def verify(
     payload = sd_jwt_verify(token.canonical, prev_key)
     # Resolve SD-JWT digests in delegate_payload against token disclosures.
     # CMWallet places mandate commitment digests directly in delegate_payload
-    # rather than via a standard top-level _sd array; this step normalises
+    # rather than via a standard top-level _sd array; this step normalizes
     # them into inline dicts so the cnf check below works correctly.
     _resolve_delegate_payload(payload, token)
     common.verify_binding(payload, prev_token)

@@ -110,8 +110,12 @@ attackers and are explicitly included in the threat model.
   multiple, overlapping closed Mandates for the same open Mandate without
   receiving Receipts rejecting the previously released Mandates.
   - These Receipts MUST be integrity protected from the Shopping Agent's LLM.
-- Credential Provider, Networks or MPPs MAY reject multiple overlapping
- Mandates, or invalidate previously issued payment tokens.
+- Credential Providers, Networks and MPPs MUST reject a closed Mandate they
+  have already accepted (see the Verification rules), and MAY additionally
+  reject multiple overlapping Mandates or invalidate previously issued payment
+  tokens. The Shopping Agent is a potential attacker under this document's own
+  threat model, so a control placed on the Shopping Agent alone does not
+  prevent double spend.
 
 ## Privacy Considerations
 

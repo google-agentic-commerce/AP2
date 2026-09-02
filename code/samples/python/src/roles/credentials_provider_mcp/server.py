@@ -214,10 +214,22 @@ def issue_payment_credential(
           "message": "; ".join(violations),
       }
 
-    token = "tok_" + str(uuid.uuid4()).replace("-", "")
     reference = compute_sha256_b64url(
         MandateClient().get_closed_mandate_jwt(payment_mandate_chain)
     )
+    # Consume-once: a closed Payment Mandate that this Credential Provider has
+    # already accepted MUST NOT be accepted again. The hash of the closed
+    # mandate (the same value used as the receipt `reference`) is the
+    # presenter-invariant key; a fresh token per presentation is not.
+    if reference in _load_token_store():
+      return {
+          "error": "mandate_already_used",
+          "message": (
+              "this closed Payment Mandate was already accepted by this"
+              " Credential Provider; present a new mandate for a new payment"
+          ),
+      }
+    token = "tok_" + str(uuid.uuid4()).replace("-", "")
     expires_at = int(time.time()) + _TOKEN_EXPIRY_SECONDS
     token_data = {
         "token": token,

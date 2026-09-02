@@ -61,6 +61,8 @@ def test_type_specific_fields_survive_signed_payment_mandate_roundtrip(
     verified_payloads = holder.verify(
         token=signed_chain,
         key_or_provider=lambda _token: user_public_key,
+        expected_aud='merchant',
+        expected_nonce='merchant-nonce',
     )
     parsed_chain = PaymentMandateChain.parse(verified_payloads)
 

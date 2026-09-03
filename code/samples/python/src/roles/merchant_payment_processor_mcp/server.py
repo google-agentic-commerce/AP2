@@ -9,6 +9,8 @@ instead of ad-hoc ECDSA + canonical-JSON checking.
 Checkout JWTs are properly ES256-signed instead of using stubs.
 """
 
+# cspell:ignore fastmcp levelname pyca SECP
+
 import json
 import logging
 import os

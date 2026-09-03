@@ -9,6 +9,8 @@ Mandate verification (SD-JWT signature + chain checks) happens internally
 inside ``issue_payment_credential`` before a payment token is issued.
 """
 
+# cspell:ignore fastmcp levelname sdjwt
+
 import json
 import logging
 import os

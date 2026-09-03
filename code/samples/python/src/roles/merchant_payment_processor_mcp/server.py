@@ -9,6 +9,8 @@ instead of ad-hoc ECDSA + canonical-JSON checking.
 Checkout JWTs are properly ES256-signed instead of using stubs.
 """
 
+# cspell:ignore fastmcp levelname pyca SECP
+
 import json
 import logging
 import os
@@ -29,6 +31,10 @@ from common.constants import (
   MERCHANT_PAYMENT_PROCESSOR_KEY_PATH,
   MERCHANT_PAYMENT_PROCESSOR_PUB_PATH,
   TEMP_DB,
+)
+from common.durable_reservation_store import (
+  ReservationStoreError,
+  reserve_once,
 )
 from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives.asymmetric import ec
@@ -110,6 +116,14 @@ def _get_merchant_payment_processor_signing_key(
 
 
 # ── Store helpers ───────────────────────────────────────────────────────
+
+
+_CONSUMED_TRANSACTIONS_PATH = Path(
+    os.environ.get(
+        "AP2_CONSUMED_TRANSACTIONS_PATH",
+        str(TEMP_DB / "ap2_consumed_transactions.sqlite3"),
+    )
+)
 
 
 def _load_token_store() -> dict[str, Any]:
@@ -274,6 +288,29 @@ async def initiate_payment(
         "message": "; ".join(violations),
     }
 
+  # Consume-once at the processor sample: one closed Payment Mandate / Checkout
+  # reaches receipt creation once. The consumed key is the transaction_id
+  # (hash of the checkout JWT), which the presenter cannot vary; it is recorded
+  # before receipt creation so a concurrent or later replay is refused.
+  try:
+    reserved = reserve_once(_CONSUMED_TRANSACTIONS_PATH, checkout_jwt_hash)
+  except ReservationStoreError:
+    _logger.exception("transaction replay state is unavailable")
+    return {
+        "error": "replay_state_unavailable",
+        "message": (
+            "transaction consumption state could not be verified; refusing"
+            " to initiate payment"
+        ),
+    }
+  if not reserved:
+    return {
+        "error": "mandate_already_used",
+        "message": (
+            "a payment for this checkout was already processed under this"
+            " Payment Mandate"
+        ),
+    }
   _logger.info(
       "Creating payment receipt with order_id=%s",
       order_id,

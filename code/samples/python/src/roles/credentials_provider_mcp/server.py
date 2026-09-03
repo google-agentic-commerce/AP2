@@ -28,6 +28,10 @@ from common.constants import (
   MERCHANT_PAYMENT_PROCESSOR_PUB_PATH,
   TEMP_DB,
 )
+from common.durable_reservation_store import (
+  ReservationStoreError,
+  reserve_once,
+)
 from fastmcp import FastMCP
 from fastmcp.server.middleware.logging import LoggingMiddleware
 from jwcrypto.jwk import JWK
@@ -63,6 +67,13 @@ _TOKEN_STORE_PATH = Path(
     )
 )
 
+_CONSUMED_MANDATES_PATH = Path(
+    os.environ.get(
+        "AP2_CONSUMED_MANDATES_PATH",
+        str(TEMP_DB / "ap2_consumed_mandates.sqlite3"),
+    )
+)
+
 _TOKEN_EXPIRY_SECONDS = 300
 
 
@@ -77,13 +88,26 @@ def _load_token_store() -> dict[str, Any]:
   return {}
 
 
-def _save_token_store(store: dict[str, Any]) -> None:
+def _load_token_store_for_update() -> dict[str, Any]:
+  """Load credential state without treating unreadable state as empty."""
+  try:
+    with open(_TOKEN_STORE_PATH) as store_file:
+      return json.load(store_file)
+  except FileNotFoundError:
+    return {}
+  except (json.JSONDecodeError, OSError) as exc:
+    raise RuntimeError("credential store is unavailable") from exc
+
+
+def _save_token_store(store: dict[str, Any]) -> bool:
   try:
     _TOKEN_STORE_PATH.parent.mkdir(parents=True, exist_ok=True)
     with open(_TOKEN_STORE_PATH, "w") as f:
       json.dump(store, f, indent=2)
+    return True
   except OSError:
     _logger.exception("token_store save failed")
+    return False
 
 
 def _get_agent_provider_public_key() -> JWK | None:
@@ -217,11 +241,41 @@ def issue_payment_credential(
     reference = compute_sha256_b64url(
         MandateClient().get_closed_mandate_jwt(payment_mandate_chain)
     )
-    # Consume-once: a closed Payment Mandate that this Credential Provider has
-    # already accepted MUST NOT be accepted again. The hash of the closed
+    try:
+      store = _load_token_store_for_update()
+    except RuntimeError:
+      _logger.exception("credential state is unavailable")
+      return {
+          "error": "credential_state_unavailable",
+          "message": (
+              "payment credential state could not be read; refusing to issue"
+              " a payment credential"
+          ),
+      }
+    if reference in store:
+      return {
+          "error": "mandate_already_used",
+          "message": (
+              "this closed Payment Mandate was already accepted by this"
+              " Credential Provider; present a new mandate for a new payment"
+          ),
+      }
+    # Consume-once for this sample: a closed Payment Mandate already accepted
+    # by this Credential Provider is not accepted again. The hash of the closed
     # mandate (the same value used as the receipt `reference`) is the
     # presenter-invariant key; a fresh token per presentation is not.
-    if reference in _load_token_store():
+    try:
+      reserved = reserve_once(_CONSUMED_MANDATES_PATH, reference)
+    except ReservationStoreError:
+      _logger.exception("closed-mandate replay state is unavailable")
+      return {
+          "error": "replay_state_unavailable",
+          "message": (
+              "closed Payment Mandate consumption state could not be"
+              " verified; refusing to issue a payment credential"
+          ),
+      }
+    if not reserved:
       return {
           "error": "mandate_already_used",
           "message": (
@@ -241,7 +295,6 @@ def issue_payment_credential(
     }
 
     # Store the token data with both the token and the reference as keys.
-    store = _load_token_store()
     store.update(
         dict.fromkeys(
             [
@@ -251,7 +304,14 @@ def issue_payment_credential(
             token_data,
         )
     )
-    _save_token_store(store)
+    if not _save_token_store(store):
+      return {
+          "error": "credential_state_unavailable",
+          "message": (
+              "payment credential state could not be saved; the mandate"
+              " remains consumed"
+          ),
+      }
 
     _logger.info("issue_payment_credential result: token=%s...", token[:16])
     return {
@@ -277,7 +337,8 @@ def revoke_payment_credential(payment_token: str) -> Mapping[str, Any]:
   store = _load_token_store()
   if payment_token in store:
     del store[payment_token]
-    _save_token_store(store)
+    if not _save_token_store(store):
+      return {"revoked": False, "error": "credential_state_unavailable"}
     _logger.info("revoke_payment_credential result: revoked=True")
     return {"revoked": True}
   _logger.warning("revoke_payment_credential result: token_not_found")

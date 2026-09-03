@@ -47,6 +47,7 @@ emvco
 endlocal
 envoyproxy
 esac
+fastmcp
 felixge
 Fiuu
 fontawesome
@@ -93,6 +94,7 @@ ktor
 Ktor
 KXMYBJWNQ
 Lazada
+levelname
 libpeerconnection
 Lightspark
 linenums
@@ -132,6 +134,7 @@ proguard
 Proguard
 prometheus
 protoc
+pyca
 pyflow
 pymdownx
 pypa
@@ -149,6 +152,8 @@ ropeproject
 RPCURL
 Rulebook
 screenreaders
+sdjwt
+SECP
 setlocal
 sharedpref
 Shopcider

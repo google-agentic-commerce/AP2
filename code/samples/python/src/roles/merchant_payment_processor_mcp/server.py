@@ -10,7 +10,6 @@ Checkout JWTs are properly ES256-signed instead of using stubs.
 """
 
 import json
-import time
 import logging
 import os
 
@@ -30,6 +29,10 @@ from common.constants import (
   MERCHANT_PAYMENT_PROCESSOR_KEY_PATH,
   MERCHANT_PAYMENT_PROCESSOR_PUB_PATH,
   TEMP_DB,
+)
+from common.durable_reservation_store import (
+  ReservationStoreError,
+  reserve_once,
 )
 from cryptography.exceptions import InvalidSignature
 from cryptography.hazmat.primitives.asymmetric import ec
@@ -116,24 +119,9 @@ def _get_merchant_payment_processor_signing_key(
 _CONSUMED_TRANSACTIONS_PATH = Path(
     os.environ.get(
         "AP2_CONSUMED_TRANSACTIONS_PATH",
-        str(TEMP_DB / "ap2_consumed_transactions.json"),
+        str(TEMP_DB / "ap2_consumed_transactions.sqlite3"),
     )
 )
-
-
-def _load_consumed_transactions() -> dict[str, Any]:
-  """Transactions (checkout_jwt_hash) this processor has already paid."""
-  try:
-    if _CONSUMED_TRANSACTIONS_PATH.exists():
-      return json.loads(_CONSUMED_TRANSACTIONS_PATH.read_text(encoding="utf-8"))
-  except (json.JSONDecodeError, OSError):
-    _logger.exception("could not load consumed transactions")
-  return {}
-
-
-def _save_consumed_transactions(store: dict[str, Any]) -> None:
-  _CONSUMED_TRANSACTIONS_PATH.parent.mkdir(parents=True, exist_ok=True)
-  _CONSUMED_TRANSACTIONS_PATH.write_text(json.dumps(store, indent=2), encoding="utf-8")
 
 
 def _load_token_store() -> dict[str, Any]:
@@ -298,12 +286,22 @@ async def initiate_payment(
         "message": "; ".join(violations),
     }
 
-  # Consume-once at the processor: one closed Payment Mandate / Checkout pays
-  # once. The consumed key is the transaction_id (hash of the checkout JWT),
-  # which the presenter cannot vary; it is recorded before the receipt is
-  # minted so a concurrent or later replay is refused, not paid.
-  consumed = _load_consumed_transactions()
-  if checkout_jwt_hash in consumed:
+  # Consume-once at the processor sample: one closed Payment Mandate / Checkout
+  # reaches receipt creation once. The consumed key is the transaction_id
+  # (hash of the checkout JWT), which the presenter cannot vary; it is recorded
+  # before receipt creation so a concurrent or later replay is refused.
+  try:
+    reserved = reserve_once(_CONSUMED_TRANSACTIONS_PATH, checkout_jwt_hash)
+  except ReservationStoreError:
+    _logger.exception("transaction replay state is unavailable")
+    return {
+        "error": "replay_state_unavailable",
+        "message": (
+            "transaction consumption state could not be verified; refusing"
+            " to initiate payment"
+        ),
+    }
+  if not reserved:
     return {
         "error": "mandate_already_used",
         "message": (
@@ -311,12 +309,6 @@ async def initiate_payment(
             " Payment Mandate"
         ),
     }
-  consumed[checkout_jwt_hash] = {
-      "payment_token": payment_token,
-      "consumed_at": int(time.time()),
-  }
-  _save_consumed_transactions(consumed)
-
   _logger.info(
       "Creating payment receipt with order_id=%s",
       order_id,

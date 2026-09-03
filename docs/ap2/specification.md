@@ -328,13 +328,6 @@ They MUST verify the Payment Mandate as follows:
     [Verification and Processing Rules](agent_authorization.md#verification-and-processing-rules).
 -   If open Payment Mandates are included, verify that the closed Payment
     Mandate matches all the Constraints.
--   Record, in durable state with atomic single-writer semantics, the hash of
-    the closed Payment Mandate (the same value used as the receipt
-    `reference`), and reject a closed Payment Mandate whose hash is already
-    recorded with the `mandate_already_used` error. Verification of the
-    signature and constraints establishes that the user authorized this
-    payment; only this record establishes that it has not already been
-    credentialed.
 
 If any step fails, they MUST return a Payment Receipt JWT containing the
 appropriate error to the Shopping Agent.
@@ -347,13 +340,6 @@ from the Merchant before processing the transaction.
 Merchant Payment Processor MUST verify the Payment Credential is appropriately
 scoped to the Checkout. One way this can be done is by providing the Closed
 Payment Mandate inside the Payment Credential.
-
-The Merchant Payment Processor MUST record, in durable state with atomic
-single-writer semantics, the `transaction_id` of each Checkout it processes a
-payment for, and MUST reject a Payment Credential or Payment Mandate whose
-`transaction_id` is already recorded with the `mandate_already_used` error. The
-record MUST be written before the payment is initiated so that a concurrent
-presentation is refused rather than paid.
 
 ### Dispute
 

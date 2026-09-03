@@ -530,9 +530,6 @@ The following errors are defined for all action authorizations:
     flows.
   - `invalid_mandate`: Returned when the provided Mandate fails to approve the
     requested action. This represents a terminal error.
-  - `mandate_already_used`: Returned when the closed Mandate, or the Checkout
-    it is bound to, was previously accepted by this Verifier. This represents
-    a terminal error; a new payment requires a new Mandate.
   - `mandates_not_supported`: Indicates that the Verifier does not support
     mandates for approving this action. This MAY be used as a signal to fallback
     to non-agentic flows.

@@ -152,7 +152,7 @@ class OpenPaymentMandate(BaseModel):
 
     vct: Literal['mandate.payment.open.1'] = Field(
         default='mandate.payment.open.1',
-        description="Verifiable Credential Type claim as defined in SD-JWT. MUST be 'mandate.payment.open'.",
+        description="Verifiable Credential Type claim as defined in SD-JWT. MUST be 'mandate.payment.open.1'.",
     )
     constraints: list[
         AgentRecurrence

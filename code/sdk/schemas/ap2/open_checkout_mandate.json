@@ -12,7 +12,7 @@
   "properties": {
     "vct": {
       "type": "string",
-      "description": "Verifiable Credential Type claim as defined in SD-JWT. MUST be 'mandate.checkout.open'.",
+      "description": "Verifiable Credential Type claim as defined in SD-JWT. MUST be 'mandate.checkout.open.1'.",
       "const": "mandate.checkout.open.1",
       "default": "mandate.checkout.open.1"
     },

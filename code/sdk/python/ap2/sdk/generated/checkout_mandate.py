@@ -16,7 +16,7 @@ class CheckoutMandate(BaseModel):
 
     vct: Literal['mandate.checkout.1'] = Field(
         default='mandate.checkout.1',
-        description="Verifiable Credential Type claim as defined in SD-JWT. MUST be 'mandate.checkout'.",
+        description="Verifiable Credential Type claim as defined in SD-JWT. MUST be 'mandate.checkout.1'.",
     )
     checkout_jwt: str = Field(
         ...,

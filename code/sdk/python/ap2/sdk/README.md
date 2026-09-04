@@ -1,3 +1,5 @@
+<!-- markdownlint-disable MD013 -->
+
 # AP2 Python SDK
 
 Runtime for the Agent Payments Protocol: mandate issuance, presentation,
@@ -112,10 +114,10 @@ reference = compute_sha256_b64url(
 
 | Model | `vct` | Role |
 | --- | --- | --- |
-| `OpenPaymentMandate` | `mandate.payment.open` | Open payment mandate + constraints |
-| `OpenCheckoutMandate` | `mandate.checkout.open` | Open checkout mandate + line-item rules |
-| `PaymentMandate` | `mandate.payment` | Closed payment mandate |
-| `CheckoutMandate` | `mandate.checkout` | Closed checkout mandate |
+| `OpenPaymentMandate` | `mandate.payment.open.1` | Open payment mandate + constraints |
+| `OpenCheckoutMandate` | `mandate.checkout.open.1` | Open checkout mandate + line-item rules |
+| `PaymentMandate` | `mandate.payment.1` | Closed payment mandate |
+| `CheckoutMandate` | `mandate.checkout.1` | Closed checkout mandate |
 | `PaymentReceipt` / `CheckoutReceipt` | — | Receipt payloads (discriminated success/error) |
 | `Amount`, `Merchant`, `PaymentInstrument`, … | — | Shared types in `ap2.sdk.generated.types` |
 
@@ -133,7 +135,7 @@ Selective-disclosure annotations on the models:
 
 A dSD-JWT chain has arbitrary depth. Hops are joined by `~~`:
 
-```
+```text
 <root_SD-JWT>~<disc…>~~<KB-SD-JWT+KB_1>~<disc…>~~…~~<closed_KB-SD-JWT>~<disc…>~
 ```
 
@@ -157,7 +159,7 @@ further delegation possible), `kb+sd-jwt` otherwise (closed, terminal).
 
 ## Trust chain
 
-```
+```text
 Root issuer
     │ signs
     ▼
@@ -176,7 +178,7 @@ Root issuer
                                      delegate    │ typ=kb+sd-jwt               │
                                      signs ────▶ │ sd_hash, aud, nonce, iat    │
                                                  │ delegate_payload = {        │
-                                                 │   vct: mandate.payment, …   │
+                                                 │   vct: mandate.payment.1, … │
                                                  │ }                           │
                                                  └─────────────────────────────┘
 ```

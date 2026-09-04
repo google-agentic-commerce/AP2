@@ -73,7 +73,7 @@ class OpenCheckoutMandate(BaseModel):
 
     vct: Literal['mandate.checkout.open.1'] = Field(
         default='mandate.checkout.open.1',
-        description="Verifiable Credential Type claim as defined in SD-JWT. MUST be 'mandate.checkout.open'.",
+        description="Verifiable Credential Type claim as defined in SD-JWT. MUST be 'mandate.checkout.open.1'.",
     )
     constraints: list[AllowedMerchants | LineItems] = Field(
         ...,

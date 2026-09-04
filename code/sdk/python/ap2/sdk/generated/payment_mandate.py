@@ -20,7 +20,7 @@ class PaymentMandate(BaseModel):
 
     vct: Literal['mandate.payment.1'] = Field(
         default='mandate.payment.1',
-        description="Verifiable Credential Type claim as defined in SD-JWT. MUST be 'mandate.payment'.",
+        description="Verifiable Credential Type claim as defined in SD-JWT. MUST be 'mandate.payment.1'.",
     )
     transaction_id: str = Field(
         ...,

@@ -11,6 +11,7 @@ androidx
 Applebot
 appname
 ASGI
+autonumber
 bazel
 Blackhawk
 Boku
@@ -19,6 +20,7 @@ celerybeat
 classpath
 CLASSPATH
 CMSPI
+codegen
 cmwallet
 cncf
 Cobo
@@ -35,6 +37,7 @@ davecgh
 dcql
 Dcql
 DCQL
+datamodel
 deviceauth
 Dfile
 dmypy
@@ -127,11 +130,14 @@ Payoneer
 paypal
 Payplug
 pids
+pisp
+pisps
 pmezard
 proguard
 Proguard
 prometheus
 protoc
+pyca
 pyflow
 pymdownx
 pypa
@@ -149,6 +155,8 @@ ropeproject
 RPCURL
 Rulebook
 screenreaders
+sdjwt
+SECP
 setlocal
 sharedpref
 Shopcider

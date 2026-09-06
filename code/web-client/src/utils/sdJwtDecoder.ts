@@ -4,6 +4,10 @@
  * Decodes SD-JWT tokens (IETF SD-JWT spec) into their component parts:
  *   <issuer_jwt>~<disclosure_1>~<disclosure_2>~...~<kb_jwt>
  *
+ * Also decodes `~~`-joined dSD-JWT delegation chains
+ * (draft-gco-oauth-delegate-sd-jwt-00 §6), where each hop is itself a full
+ * SD-JWT of the form above: `<hop_0>~~<hop_1>~~...~~<hop_n>`.
+ *
  * Ported from ap2/internal_skills/format_mandate_logs/scripts/format_logs.py.
  * Pure client-side, no network calls.
  */
@@ -30,6 +34,13 @@ export interface DecodedSdJwt {
   issuerJwt: DecodedJwtWithDiagnostics;
   disclosures: DecodedDisclosure[];
   kbJwt?: DecodedJwtWithDiagnostics;
+  /**
+   * Present when the decoded token was a `~~`-joined dSD-JWT delegation
+   * chain: one entry per hop, in order. `issuerJwt`/`disclosures`/`kbJwt`
+   * above always describe hop 0, so existing single-hop callers keep
+   * working unchanged for both single tokens and chains.
+   */
+  hops?: DecodedSdJwt[];
 }
 
 /** Decode base64url (with or without padding) to a UTF-8 string. */
@@ -118,60 +129,46 @@ export function decodeJwt(token: string): DecodedJwtWithDiagnostics {
   };
 }
 
-/**
- * Decode an SD-JWT token into its parts.
- *
- * Format variants:
- *   - Issuance: `<jwt>~<disc1>~<disc2>~` (trailing tilde, no KB-JWT)
- *   - Presentation: `<jwt>~<disc1>~...~<kb_jwt>` (last segment is JWT w/ 3 parts)
- */
-export async function decodeSdJwt(token: string): Promise<DecodedSdJwt> {
-  const segments = token.split('~');
-  if (segments.length < 1) {
-    throw new Error('Malformed SD-JWT: empty token');
-  }
-
-  const issuerJwt = decodeJwt(segments[0]);
-
-  // Remaining segments: optional disclosures + optional KB-JWT
+/** Splits off trailing disclosures / optional KB-JWT common to both decoders. */
+function splitHopSegments(segments: string[]): {rest: string[]; kbJwtSegment?: string} {
   const rest = segments.slice(1);
   // Trailing empty string indicates the trailing `~` at end of issuance form.
   if (rest.length > 0 && rest[rest.length - 1] === '') rest.pop();
 
-  let kbJwt: DecodedJwt | undefined;
   // Last segment is a KB-JWT if it looks like `header.payload.sig` (three parts).
   if (rest.length > 0) {
     const last = rest[rest.length - 1];
     if (last.includes('.') && last.split('.').length === 3) {
-      try {
-        kbJwt = decodeJwt(last);
-        rest.pop();
-      } catch {
-        // Not a JWT after all; leave as a disclosure.
-      }
+      rest.pop();
+      return {rest, kbJwtSegment: last};
     }
   }
+  return {rest};
+}
 
+function decodeDisclosures(
+  raws: string[],
+  digestFor: (raw: string) => string,
+): DecodedDisclosure[] {
   const disclosures: DecodedDisclosure[] = [];
-  for (const raw of rest) {
+  for (const raw of raws) {
     if (!raw) continue;
     try {
       const decoded = JSON.parse(b64urlToString(raw)) as unknown;
-      const digest = await sha256Base64Url(raw);
       if (Array.isArray(decoded)) {
         if (decoded.length === 3) {
           disclosures.push({
             salt: String(decoded[0]),
             key: String(decoded[1]),
             value: decoded[2],
-            digest,
+            digest: digestFor(raw),
             raw,
           });
         } else if (decoded.length === 2) {
           disclosures.push({
             salt: String(decoded[0]),
             value: decoded[1],
-            digest,
+            digest: digestFor(raw),
             raw,
           });
         }
@@ -180,8 +177,60 @@ export async function decodeSdJwt(token: string): Promise<DecodedSdJwt> {
       // Skip malformed disclosure.
     }
   }
+  return disclosures;
+}
+
+/** Decodes a single SD-JWT hop: `<jwt>~<disc1>~...~<optional kb_jwt>`. */
+async function decodeSingleHop(token: string): Promise<DecodedSdJwt> {
+  const segments = token.split('~');
+  if (segments.length < 1) {
+    throw new Error('Malformed SD-JWT: empty token');
+  }
+  const issuerJwt = decodeJwt(segments[0]);
+  const {rest, kbJwtSegment} = splitHopSegments(segments);
+  const kbJwt = kbJwtSegment ? tryDecodeJwt(kbJwtSegment) : undefined;
+
+  const digests = new Map<string, string>();
+  for (const raw of rest) {
+    if (!raw) continue;
+    digests.set(raw, await sha256Base64Url(raw));
+  }
+  const disclosures = decodeDisclosures(rest, (raw) => digests.get(raw) ?? '');
 
   return {issuerJwt, disclosures, kbJwt};
+}
+
+function decodeSingleHopSync(token: string): DecodedSdJwt {
+  const segments = token.split('~');
+  if (segments.length < 1) {
+    throw new Error('Malformed SD-JWT: empty token');
+  }
+  const issuerJwt = decodeJwt(segments[0]);
+  const {rest, kbJwtSegment} = splitHopSegments(segments);
+  const kbJwt = kbJwtSegment ? tryDecodeJwt(kbJwtSegment) : undefined;
+  const disclosures = decodeDisclosures(rest, () => '');
+
+  return {issuerJwt, disclosures, kbJwt};
+}
+
+function tryDecodeJwt(segment: string): DecodedJwtWithDiagnostics | undefined {
+  try {
+    return decodeJwt(segment);
+  } catch {
+    // Not a JWT after all; caller already popped it, so it's simply dropped.
+    return undefined;
+  }
+}
+
+/**
+ * Decode an SD-JWT token, or a `~~`-joined dSD-JWT delegation chain, into
+ * its parts. For a chain, `hops` holds every hop fully decoded and the
+ * top-level `issuerJwt`/`disclosures`/`kbJwt` describe hop 0.
+ */
+export async function decodeSdJwt(token: string): Promise<DecodedSdJwt> {
+  const hopTokens = token.split('~~');
+  const hops = await Promise.all(hopTokens.map(decodeSingleHop));
+  return hops.length > 1 ? {...hops[0], hops} : hops[0];
 }
 
 /**
@@ -191,54 +240,7 @@ export async function decodeSdJwt(token: string): Promise<DecodedSdJwt> {
  * Useful when the caller doesn't need digests and wants to render synchronously.
  */
 export function decodeSdJwtSync(token: string): DecodedSdJwt {
-  const segments = token.split('~');
-  if (segments.length < 1) {
-    throw new Error('Malformed SD-JWT: empty token');
-  }
-  const issuerJwt = decodeJwt(segments[0]);
-  const rest = segments.slice(1);
-  if (rest.length > 0 && rest[rest.length - 1] === '') rest.pop();
-
-  let kbJwt: DecodedJwt | undefined;
-  if (rest.length > 0) {
-    const last = rest[rest.length - 1];
-    if (last.includes('.') && last.split('.').length === 3) {
-      try {
-        kbJwt = decodeJwt(last);
-        rest.pop();
-      } catch {
-        // ignore
-      }
-    }
-  }
-
-  const disclosures: DecodedDisclosure[] = [];
-  for (const raw of rest) {
-    if (!raw) continue;
-    try {
-      const decoded = JSON.parse(b64urlToString(raw)) as unknown;
-      if (Array.isArray(decoded)) {
-        if (decoded.length === 3) {
-          disclosures.push({
-            salt: String(decoded[0]),
-            key: String(decoded[1]),
-            value: decoded[2],
-            digest: '',
-            raw,
-          });
-        } else if (decoded.length === 2) {
-          disclosures.push({
-            salt: String(decoded[0]),
-            value: decoded[1],
-            digest: '',
-            raw,
-          });
-        }
-      }
-    } catch {
-      // skip
-    }
-  }
-
-  return {issuerJwt, disclosures, kbJwt};
+  const hopTokens = token.split('~~');
+  const hops = hopTokens.map(decodeSingleHopSync);
+  return hops.length > 1 ? {...hops[0], hops} : hops[0];
 }

@@ -33,24 +33,30 @@ This sample consists of:
 
 ## Key Features
 
-**1. Autonomous Purchase on Trigger**
+### 1. Autonomous Purchase on Trigger
 
 - The flow is initiated by an external trigger (a mock price drop or item drop)
   rather than a direct user command at the moment of purchase.
 - The agent evaluates the condition and proceeds with the purchase if it matches
   the user's intent.
 
-**2. Pre-authorized Mandate Usage**
+### 2. Pre-authorized Mandate Usage
 
 - The agent leverages a pre-authorized mandate to interact with the credentials
   provider and payment processor.
 
-**3. Card purchase with DPAN**
+### 3. Card purchase with DPAN
 
 - The preferred payment method is a tokenized (DPAN) card, managed by the
   Credentials Provider.
 
 ## Executing the Example
+
+### Prerequisites
+
+- **Python 3.11+** and [`uv`](https://docs.astral.sh/uv/) (to run the agent and MCP servers)
+- **Node.js (v18+)** and **npm** (to install dependencies and run the web client)
+- A Google API key from [Google AI Studio](https://aistudio.google.com/apikey) or Vertex AI ADC
 
 ### Setup
 

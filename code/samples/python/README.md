@@ -23,6 +23,7 @@ in [`../certs/`](../certs).
 
 - Python 3.11+
 - [`uv`](https://docs.astral.sh/uv/)
+- Node.js (v18+) and `npm` (required for scenarios using the web client)
 - A Google API key from [Google AI Studio](https://aistudio.google.com/apikey),
   or Vertex AI ADC (`GOOGLE_GENAI_USE_VERTEXAI=true`).
 
@@ -30,7 +31,7 @@ in [`../certs/`](../certs).
 
 Create a `.env` file at the repository root with at least your API key:
 
-```
+```sh
 GOOGLE_API_KEY=<your_api_key>
 ```
 
@@ -38,7 +39,7 @@ Some scenarios (e.g. `shopping_agent_v2`) read additional variables from a
 local `.env` inside their role directory — see the scenario's own README
 when applicable. For example:
 
-```
+```sh
 GOOGLE_API_KEY=<your_api_key>
 AGENT_MODEL=gemini-3.1-flash-lite-preview
 ```

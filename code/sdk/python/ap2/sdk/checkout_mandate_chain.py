@@ -13,7 +13,7 @@ from ap2.sdk.generated.checkout_mandate import CheckoutMandate
 from ap2.sdk.generated.open_checkout_mandate import OpenCheckoutMandate
 from ap2.sdk.generated.types.checkout import Checkout
 from ap2.sdk.mandate import _log_event
-from ap2.sdk.utils import b64url_decode
+from ap2.sdk.utils import b64url_decode, compute_sha256_b64url
 from pydantic import ValidationError
 
 
@@ -48,11 +48,20 @@ class CheckoutMandateChain:
     ) -> list[str]:
         """Verifies the constraints of the checkout mandate chain.
 
+        The closed Checkout Mandate is bound to one specific Checkout JWT
+        through its ``checkout_hash`` claim. This method derives the hash from
+        the ``checkout_jwt`` it is asked to verify and compares it with that
+        claim, so the binding is always checked and cannot be skipped by
+        omitting an argument.
+
         Args:
-          expected_checkout_hash: An optional hash to check against the closed
-            mandate's checkout_hash.
-          checkout_jwt: The JWT containing the checkout details, required for
-            verifying open mandate constraints.
+          expected_checkout_hash: An optional hash the caller already expects
+            the closed mandate to be bound to. It is an additional consistency
+            assertion only; it never substitutes for the hash derived from
+            ``checkout_jwt``.
+          checkout_jwt: The serialized JWT containing the checkout details.
+            Required, both to bind the closed mandate and to verify open
+            mandate constraints.
 
         Returns:
           A list of strings describing any violations found.
@@ -82,6 +91,18 @@ class CheckoutMandateChain:
             violations.append(str(e))
             return violations
 
+        # The closed mandate is bound to the exact serialized Checkout JWT
+        # whose hash is recorded in checkout_hash. Derive that hash from the
+        # checkout actually presented for verification rather than trusting a
+        # value supplied by the caller.
+        presented_checkout_hash = compute_sha256_b64url(checkout_jwt)
+        if presented_checkout_hash != self.closed_mandate.checkout_hash:
+            violations.append(
+                'Checkout checkout_hash mismatch: computed'
+                f' {presented_checkout_hash}, got'
+                f' {self.closed_mandate.checkout_hash}'
+            )
+
         violations.extend(
             check_checkout_constraints(
                 self.open_mandate,
@@ -89,6 +110,8 @@ class CheckoutMandateChain:
             )
         )
 
+        # Secondary, caller-driven consistency assertion. Retained for
+        # backwards compatibility; the binding above does not depend on it.
         if (
             expected_checkout_hash is not None
             and expected_checkout_hash != self.closed_mandate.checkout_hash

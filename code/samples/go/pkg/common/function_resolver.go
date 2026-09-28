@@ -97,7 +97,7 @@ func (fr *FunctionResolver) DetermineToolToUse(prompt string) (string, error) {
 	ctx := context.Background()
 	resp, err := fr.model.GenerateContent(ctx, genai.Text(prompt))
 	if err != nil {
-		log.Printf("LLM error, falling back to simple matching: %v", err)
+		log.Printf("LLM error, falling back to simple matching: %T", err)
 		return fr.fallbackToolSelection(prompt), nil
 	}
 
@@ -121,7 +121,7 @@ func (fr *FunctionResolver) DetermineToolToUse(prompt string) (string, error) {
 }
 
 func (fr *FunctionResolver) fallbackToolSelection(prompt string) string {
-	log.Printf("Using fallback tool selection for prompt: %s", prompt)
+	log.Printf("Using fallback tool selection")
 
 	for _, tool := range fr.tools {
 		if containsIgnoreCase(prompt, tool.Name) {

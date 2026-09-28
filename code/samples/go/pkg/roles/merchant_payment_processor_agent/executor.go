@@ -67,7 +67,7 @@ func InitiatePayment(dataParts []map[string]interface{}, updater *common.TaskUpd
 	}
 
 	log.Printf("Processing payment for mandate: %s", paymentMandate.PaymentMandateContents.PaymentMandateID)
-	log.Printf("Risk data: %v", riskData)
+	log.Printf("Risk data present: %t", riskData != nil)
 
 	updater.AddArtifact([]common.Part{
 		{

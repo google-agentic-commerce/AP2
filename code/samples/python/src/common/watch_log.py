@@ -14,10 +14,9 @@
 
 """Utility methods related to creating the watch.log file.
 
-The watch.log file is a log file meant to be watched in parallel with running a
-scenario.  It will contain all the requests and responses to/from the agent
-that are sent to/from the client, so engineers can see what is happening
-between the servers in real time.
+The watch.log file records request structure for tracing a scenario. A2A
+text and data values can carry payment credentials, mandates, or risk data,
+so only part and field counts are logged.
 """
 
 import logging
@@ -25,19 +24,7 @@ import logging
 from typing import Any
 
 from a2a.server.agent_execution.context import RequestContext
-from ap2.models.mandate import CART_MANDATE_DATA_KEY
 
-from common.constants import (
-  CHECKOUT_MANDATE_SD_JWT_KEY,
-  PAYMENT_MANDATE_SD_JWT_KEY,
-)
-
-
-_MANDATE_KEYS = {
-    CART_MANDATE_DATA_KEY,
-    PAYMENT_MANDATE_SD_JWT_KEY,
-    CHECKOUT_MANDATE_SD_JWT_KEY,
-}
 
 _logger = logging.getLogger(__name__)
 
@@ -57,12 +44,17 @@ def create_file_handler() -> logging.FileHandler:
 def log_a2a_message_parts(
     text_parts: list[str], data_parts: list[dict[str, Any]]
 ):
+  """Log structural A2A diagnostics without any part values."""
   _load_logger()
-
-  """Logs the A2A message parts to the watch.log file."""
-  _log_request_instructions(text_parts)
-  _log_mandates(data_parts)
-  _log_extra_data(data_parts)
+  _logger.info(
+      "[A2A Request] text_parts=%d data_parts=%d",
+      len(text_parts),
+      len(data_parts),
+  )
+  for index, data_part in enumerate(data_parts):
+    # Keys from the wire are untrusted too: a malicious key can itself be a
+    # secret. Only their count is safe to log for unknown data shapes.
+    _logger.info("[Data Part %d] fields=%d", index, len(data_part))
 
 
 def log_a2a_request_extensions(context: RequestContext) -> None:
@@ -73,47 +65,12 @@ def log_a2a_request_extensions(context: RequestContext) -> None:
   _logger.info("\n")
   _logger.info("[A2A Extensions Activated in the Request]")
 
-  for extension in context.call_context.requested_extensions:
-    _logger.info(extension)
+  _logger.info(
+      "Requested extensions: %d",
+      len(context.call_context.requested_extensions),
+  )
 
 
 def _load_logger():
   if not _logger.handlers:
     _logger.addHandler(create_file_handler())
-
-
-def _log_request_instructions(text_parts: list[str]) -> None:
-  """Logs the request instructions from the text parts."""
-  _logger.info("\n")
-  _logger.info("[Request Instructions]")
-  _logger.info(text_parts)
-
-
-def _log_mandates(data_parts: list[dict[str, Any]]) -> None:
-  """Extracts and logs mandates from the data parts."""
-  for data_part in data_parts:
-    for key, value in data_part.items():
-      if key == CART_MANDATE_DATA_KEY:
-        _logger.info("\n")
-        _logger.info("[A Cart was in the request Data]")
-        _logger.info(value)
-      elif key == PAYMENT_MANDATE_SD_JWT_KEY:
-        _logger.info("\n")
-        _logger.info("[A PaymentMandate SD-JWT was in the request Data]")
-        _logger.info("%s...", str(value)[:80])
-      elif key == CHECKOUT_MANDATE_SD_JWT_KEY:
-        _logger.info("\n")
-        _logger.info("[A CheckoutMandate SD-JWT was in the request Data]")
-        _logger.info("%s...", str(value)[:80])
-
-
-def _log_extra_data(data_parts: list[dict[str, Any]]) -> None:
-  """Extracts and logs extra data from the data parts."""
-  for data_part in data_parts:
-    for key, value in data_part.items():
-      if key in _MANDATE_KEYS:
-        continue
-
-      _logger.info("\n")
-      _logger.info("[Data Part: %s] ", key)
-      _logger.info(value)

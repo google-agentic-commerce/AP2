@@ -50,8 +50,8 @@ _logger.addHandler(_handler)
 mcp.add_middleware(
     LoggingMiddleware(
         logger=_logger,
-        include_payloads=True,
-        include_payload_length=True,
+        include_payloads=False,
+        include_payload_length=False,
         max_payload_length=8000,
     )
 )
@@ -241,7 +241,7 @@ def issue_payment_credential(
     )
     _save_token_store(store)
 
-    _logger.info("issue_payment_credential result: token=%s...", token[:16])
+    _logger.info("issue_payment_credential result: token_issued=%s", bool(token))
     return {
         "payment_token": token,
         "expires_at": expires_at,
@@ -257,8 +257,8 @@ def issue_payment_credential(
 def revoke_payment_credential(payment_token: str) -> Mapping[str, Any]:
   """Revoke a previously issued payment token."""
   _logger.info(
-      "revoke_payment_credential called: payment_token=%s...",
-      payment_token[:12] if payment_token else "None",
+      "revoke_payment_credential called: has_payment_token=%s",
+      bool(payment_token),
   )
   if not payment_token:
     return {"revoked": False, "error": "missing_payment_token"}

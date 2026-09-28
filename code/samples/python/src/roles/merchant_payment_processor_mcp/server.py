@@ -55,8 +55,8 @@ _logger.addHandler(_handler)
 mcp.add_middleware(
     LoggingMiddleware(
         logger=_logger,
-        include_payloads=True,
-        include_payload_length=True,
+        include_payloads=False,
+        include_payload_length=False,
         max_payload_length=8000,
     )
 )
@@ -165,9 +165,12 @@ async def _send_payment_receipt_to_credentials_provider(
       response.raise_for_status()
       _logger.info("Successfully sent payment receipt to credentials provider.")
     except httpx.HTTPStatusError as exc:
-      _logger.warning("Failed to send payment receipt: %s", exc.response.text)
+      _logger.warning(
+          "Failed to send payment receipt: status=%s",
+          exc.response.status_code,
+      )
     except Exception as e:
-      _logger.warning("Error sending payment receipt: %s", e)
+      _logger.warning("Error sending payment receipt: %s", type(e).__name__)
 
 
 @mcp.tool()
@@ -192,8 +195,8 @@ async def initiate_payment(
     open_checkout_hash: The hash of the open checkout mandate.
   """
   _logger.info(
-      "initiate_payment called: payment_token=%s...",
-      payment_token[:12] if payment_token else "None",
+      "initiate_payment called: has_payment_token=%s",
+      bool(payment_token),
   )
   if not payment_token or not checkout_jwt_hash or not open_checkout_hash:
     return {

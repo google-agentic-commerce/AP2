@@ -75,8 +75,8 @@ _logger.addHandler(_handler)
 mcp.add_middleware(
     LoggingMiddleware(
         logger=_logger,
-        include_payloads=True,
-        include_payload_length=True,
+        include_payloads=False,
+        include_payload_length=False,
         max_payload_length=8000,
     )
 )
@@ -416,8 +416,8 @@ async def _initiate_payment_with_payment_processor(
 ) -> dict[str, Any]:
     """Initiates a payment with the merchant payment processor."""
     _logger.info(
-        'initiate_payment_with_payment_processor called: payment_token=%s...',
-        payment_token,
+        'initiate_payment_with_payment_processor called: has_payment_token=%s',
+        bool(payment_token),
     )
 
     headers = {
@@ -433,9 +433,10 @@ async def _initiate_payment_with_payment_processor(
     try:
         async with httpx.AsyncClient(timeout=60.0) as client:
             _logger.info(
-                'Sending POST to %s with payload: %s',
-                MERCHANT_PAYMENT_PROCESSOR_INITIATE_PAYMENT_URL,
-                json.dumps(payload),
+                'Sending payment initiation POST: token=%s checkout_hash=%s open_hash=%s',
+                bool(payment_token),
+                bool(checkout_jwt_hash),
+                bool(open_checkout_hash),
             )
             response = await client.post(
                 MERCHANT_PAYMENT_PROCESSOR_INITIATE_PAYMENT_URL,
@@ -444,28 +445,26 @@ async def _initiate_payment_with_payment_processor(
             )
             response.raise_for_status()
             _logger.info(
-                'Response from merchant payment processor: %s', response.text
+                'Payment processor response: status=%s', response.status_code
             )
             return response.json()
 
     except httpx.RequestError as exc:
         _logger.warning(
-            'An error occurred while requesting %r: %s', exc.request.url, exc
+            'Payment processor request failed: %s', type(exc).__name__
         )
         return {'error': 'Failed to connect to the merchant payment processor'}
     except httpx.HTTPStatusError as exc:
         _logger.warning(
-            'Error response %s while requesting %r: %s',
+            'Payment processor returned status %s',
             exc.response.status_code,
-            exc.request.url,
-            exc.response.text,
         )
         return {
             'error': (
                 'Merchant payment processor returned status'
                 f' {exc.response.status_code}'
             ),
-            'details': exc.response.text,
+            'details': f'HTTP {exc.response.status_code}',
         }
     except json.JSONDecodeError as e:
         _logger.warning('Failed to decode JSON response: %s', e)
@@ -818,8 +817,8 @@ async def complete_checkout(
       payment_receipt: Payment receipt if successful, None otherwise
     """
     _logger.info(
-        'complete_checkout called: payment_token=%s...',
-        payment_token[:12] if payment_token else 'None',
+        'complete_checkout called: has_payment_token=%s',
+        bool(payment_token),
     )
     if not checkout_nonce:
         return {
@@ -934,7 +933,7 @@ async def complete_checkout(
         open_segment += '~'
     open_checkout_hash = compute_sd_hash(parse_token(open_segment))
     _logger.info(
-        'DEBUG: complete_checkout checkout_mandate=%s', checkout_mandate
+        'DEBUG: checkout mandate present: %s', bool(checkout_mandate)
     )
     _logger.info(
         'DEBUG: complete_checkout open_checkout_hash=%s', open_checkout_hash
@@ -992,12 +991,14 @@ async def complete_checkout(
                 )
                 response.raise_for_status()
                 psp_result = response.json()
-                _logger.info('Response from x402 PSP: %s', psp_result)
+                _logger.info(
+                    'Response from x402 PSP: status=%s', response.status_code
+                )
                 result['payment_receipt'] = psp_result.get('receipt')
                 result['tx_hash'] = psp_result.get('tx_hash')
         except Exception as e:
-            _logger.warning('Failed to call x402 PSP: %s', e)
-            return {'error': 'PSP_call_failed', 'message': str(e)}
+            _logger.warning('Failed to call x402 PSP: %s', type(e).__name__)
+            return {'error': 'PSP_call_failed', 'message': type(e).__name__}
 
         _logger.info(
             'complete_checkout (x402) result: order_id=%s, total_cents=%s',
@@ -1019,9 +1020,8 @@ async def complete_checkout(
         'complete_checkout: initiate_payment_with_payment_processor returned'
     )
     if 'error' in result:
-        error_msg = result.get('message') or result.get('details') or ''
         raise ValueError(
-            f'Payment initiation failed: {result["error"]}. Details: {error_msg}'
+            f'Payment initiation failed: {result["error"]}'
         )
 
     reference = compute_sha256_b64url(

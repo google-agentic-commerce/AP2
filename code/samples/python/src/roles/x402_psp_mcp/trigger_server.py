@@ -20,7 +20,7 @@ class TriggerHandler(BaseHTTPRequestHandler):
   """Handles HTTP requests for payment settlement."""
 
   def log_message(self, format, *args):
-    print(f"[trigger] {args[0]}")
+    print("[trigger] HTTP request")
 
   def do_POST(self):
     parsed = urlparse(self.path)
@@ -49,7 +49,7 @@ class TriggerHandler(BaseHTTPRequestHandler):
         )
         return
 
-      print(f"[trigger] Received payment token: {payment_token[:20]}...")
+      print("[trigger] Received payment token")
 
       result = mcp_server.settle_payment(
           payment_token, checkout_jwt_hash, open_checkout_hash

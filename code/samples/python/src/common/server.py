@@ -96,10 +96,7 @@ def run_agent_blocking(
 def _create_watch_log_handler() -> logging.FileHandler:
   """Create a file handler for watch.log logger.
 
-  watch.log is a log file meant to be watched in parallel with running a
-  scenario.  It will contain all the requests and responses to/from the agent
-  that are sent to/from the client, so engineers can see what is happening
-  between the servers in real time.
+  watch.log records request and response status without payment payloads.
 
   Returns:
       A logging.FileHandler instance configured for 'watch.log'.
@@ -111,7 +108,7 @@ def _create_watch_log_handler() -> logging.FileHandler:
 
 
 class _LoggingMiddleware(BaseHTTPMiddleware):
-  """Intercepts and logs incoming request and response details."""
+  """Log request method, path and response status without body values."""
 
   def __init__(self, *args, logger: logging.Logger, **kwargs):
     self._logger = logger
@@ -121,57 +118,25 @@ class _LoggingMiddleware(BaseHTTPMiddleware):
     self._logger.info("\n\n\n")
     self._logger.info("---------- New Agent Request Received---------")
 
-    # Log the request method and URL.
-    self._logger.info("%s %s", request.method, request.url)
+    # Query strings may contain tokens; log only the path.
+    self._logger.info("%s %s", request.method, request.url.path)
 
-    # Log the request body if it's present.
-    content_length = request.headers.get("content-length")
-    if content_length and int(content_length) > 0:
-      request_body = await request.json()
-    else:
-      request_body = "<empty>"
-
-    self._logger.info("\n")
-    self._logger.info("[Request Body]")
-    self._logger.info("%s", request_body)
+    # Body values can include bearer payment tokens and mandates. The request
+    # remains untouched for the next handler; log only presence.
+    self._logger.info(
+        "Request body present: %s",
+        request.headers.get("content-length", "0") != "0",
+    )
 
     # If the extension header is present, log a notice.
-    extension_header = request.headers.get(A2A_EXTENSIONS_HEADER)
-    if extension_header:
-      self._logger.info(
-          "\n[Extension Header]\n%s: %s", A2A_EXTENSIONS_HEADER, extension_header
-      )
+    if request.headers.get(A2A_EXTENSIONS_HEADER):
+      self._logger.info("Extension header present")
 
     response = await call_next(request)
 
-    # Ensure the response has a body to read.
-    if response.body_iterator:
-      body = b""
-
-      # Read the entire response body.
-      # All responses are UTF-8 encoded JSON, so this should always succeed.
-      async for chunk in response.body_iterator:
-        body += chunk
-
-      try:
-        response_body_json = body.decode("utf-8")
-      except UnicodeDecodeError:
-        self._logger.warning("Failed to decode response body as UTF-8.")
-        response_body_json = body
-
-      self._logger.info("\n")
-      self._logger.info("[Response Body]")
-      self._logger.info("%s", response_body_json)
-
-      return Response(
-          content=body,
-          status_code=response.status_code,
-          media_type=response.media_type,
-          headers=response.headers,
-      )
-    self._logger.info("\n")
-    self._logger.info("[Response Body]")
-    self._logger.info("<empty>")
+    self._logger.info("Response status: %s", response.status_code)
+    # Do not consume/reconstruct the response just for logging. The framework
+    # sends the original stream unchanged, including any sensitive artifacts.
     return response
 
 

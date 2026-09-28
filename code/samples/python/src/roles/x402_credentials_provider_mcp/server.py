@@ -45,8 +45,8 @@ _logger.addHandler(_handler)
 mcp.add_middleware(
     LoggingMiddleware(
         logger=_logger,
-        include_payloads=True,
-        include_payload_length=True,
+        include_payloads=False,
+        include_payload_length=False,
         max_payload_length=8000,
     )
 )

@@ -317,8 +317,15 @@ class MandateClient:
         if not payloads:
             raise ValueError('payloads list cannot be empty.')
 
+        # A chain uses ``~~`` between hops. Only the last hop is the token
+        # signed over by the new delegation; keep all earlier hops on the wire.
+        prior_hops, separator, last_hop = mandate_token.rpartition('~~')
+        if not separator:
+            last_hop = mandate_token
+        last_hop = _canonical_chain_segment(last_hop, 0, 1)
+
         if claims_to_disclose is not None:
-            holder_open = SDJWTHolder(mandate_token)
+            holder_open = SDJWTHolder(last_hop)
             selected_disclosures = []
             # ``_input_disclosures`` is the canonical list of disclosures
             # SDJWTHolder parsed from the input token. The sd_jwt library does
@@ -334,7 +341,7 @@ class MandateClient:
                     key = decoded[1]
                     if key == 'cnf' or key in claims_to_disclose:
                         selected_disclosures.append(d)
-            jwt_part = mandate_token.split('~', maxsplit=1)[0]
+            jwt_part = last_hop.split('~', maxsplit=1)[0]
             redacted_open_tok = (
                 jwt_part + '~' + '~'.join(selected_disclosures) + '~'
             )
@@ -349,9 +356,7 @@ class MandateClient:
         # we must compute ``sd_hash`` over that form — not over the original
         # full-disclosure token.
         prev_token_for_binding = (
-            redacted_open_tok
-            if redacted_open_tok is not None
-            else mandate_token
+            redacted_open_tok if redacted_open_tok is not None else last_hop
         )
         prev_token_parsed = common.parse_token(prev_token_for_binding)
 
@@ -387,17 +392,13 @@ class MandateClient:
             },
         )
 
-        if redacted_open_tok is not None:
-            open_tok_to_join = (
-                redacted_open_tok[:-1]
-                if redacted_open_tok.endswith('~')
-                else redacted_open_tok
-            )
-            return f'{open_tok_to_join}~~{pres_jwt}'
-        mandate_tok_to_join = (
-            mandate_token[:-1] if mandate_token.endswith('~') else mandate_token
+        previous_hop_to_join = (
+            redacted_open_tok if redacted_open_tok is not None else last_hop
         )
-        return f'{mandate_tok_to_join}~~{pres_jwt}'
+        previous_hop_to_join = previous_hop_to_join.removesuffix('~')
+        if separator:
+            return f'{prior_hops}~~{previous_hop_to_join}~~{pres_jwt}'
+        return f'{previous_hop_to_join}~~{pres_jwt}'
 
     def get_closed_mandate_jwt(self, presentation_token: str) -> str:
         """Return the closed-mandate JWT (leaf) of a dSD-JWT chain.

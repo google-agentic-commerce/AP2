@@ -2,6 +2,8 @@
 
 from unittest import mock
 
+import pytest
+
 from ap2.sdk.generated.checkout_receipt import CheckoutReceipt
 from ap2.sdk.generated.payment_mandate import PaymentMandate
 from ap2.sdk.generated.payment_receipt import PaymentReceipt
@@ -24,6 +26,16 @@ def _payment_mandate(pisp: PISP | None = None) -> PaymentMandate:
         payment_instrument=PaymentInstrument(id='pi-1', type='credit'),
         pisp=pisp,
     )
+
+
+@pytest.fixture(params=['ec', 'jwk'])
+def receipt_key_pair(request):
+    """Signing key and the same public key in either supported form."""
+    private_key = ec.generate_private_key(ec.SECP256R1())
+    public_key = private_key.public_key()
+    if request.param == 'jwk':
+        public_key = JWK.from_pyca(public_key)
+    return JWK.from_pyca(private_key), public_key
 
 
 def test_create_payment_receipt(issuer_key):
@@ -75,8 +87,9 @@ def test_create_checkout_receipt():
     assert receipt.root.status == 'Success'
 
 
-def test_verify_payment_receipt_success(issuer_key, issuer_public_key):
+def test_verify_payment_receipt_success(receipt_key_pair):
     """Test successful verification of a payment receipt."""
+    issuer_key, issuer_public_key = receipt_key_pair
     client = ReceiptClient()
     reference = 'ref_123'
     # Create a real PaymentReceipt
@@ -107,8 +120,9 @@ def test_verify_payment_receipt_success(issuer_key, issuer_public_key):
     has_ref_cb.assert_called_once_with(reference)
 
 
-def test_verify_checkout_receipt_success(issuer_key, issuer_public_key):
+def test_verify_checkout_receipt_success(receipt_key_pair):
     """Test successful verification of a checkout receipt."""
+    issuer_key, issuer_public_key = receipt_key_pair
     client = ReceiptClient()
     reference = 'ref_456'
     # Create a real CheckoutReceipt
@@ -133,41 +147,55 @@ def test_verify_checkout_receipt_success(issuer_key, issuer_public_key):
     has_ref_cb.assert_called_once_with(reference)
 
 
-def test_verify_receipt_invalid_signature(issuer_public_key):
+@pytest.mark.parametrize(
+    'is_payment_receipt', [True, False], ids=['payment', 'checkout']
+)
+def test_verify_receipt_invalid_signature(receipt_key_pair, is_payment_receipt):
     """Test verification failure with an invalid signature."""
+    _, issuer_public_key = receipt_key_pair
     client = ReceiptClient()
+    if is_payment_receipt:
+        receipt = client.create_payment_receipt(_payment_mandate(), 'ref_123')
+    else:
+        receipt = client.create_checkout_receipt(
+            'merchant.com', 'ref_123', 'order_123'
+        )
     # Sign with a different key
     other_key_raw = ec.generate_private_key(ec.SECP256R1())
     other_key = JWK.from_pyca(other_key_raw)
-    receipt_jwt = create_jwt({'alg': 'ES256'}, {'status': 'Success'}, other_key)
+    receipt_jwt = create_jwt({'alg': 'ES256'}, receipt.model_dump(), other_key)
+    has_ref_cb = mock.Mock(return_value=True)
 
     result = client.verify_receipt(
         receipt_jwt=receipt_jwt,
         receipt_issuer_public_key=issuer_public_key,
-        has_reference_in_store_cb=mock.Mock(),
+        has_reference_in_store_cb=has_ref_cb,
+        is_payment_receipt=is_payment_receipt,
     )
 
     assert 'error' in result
     assert result['error'] == 'verification_failed'
     assert 'JWT verification failed' in result['message']
+    has_ref_cb.assert_not_called()
 
 
-def test_verify_receipt_not_found_in_store(issuer_key, issuer_public_key):
+@pytest.mark.parametrize(
+    'is_payment_receipt', [True, False], ids=['payment', 'checkout']
+)
+def test_verify_receipt_not_found_in_store(
+    receipt_key_pair, is_payment_receipt
+):
     """Test failure when receipt reference is not found in store."""
+    issuer_key, issuer_public_key = receipt_key_pair
     client = ReceiptClient()
     reference = 'unknown_ref'
-    base_receipt = client._create_base_receipt(
-        'Success', 'issuer.com', reference
-    )
-    payment_receipt = PaymentReceipt(
-        **base_receipt,
-        payment_id='pid_123',
-        psp_confirmation_id='pid_123',
-        network_confirmation_id='pid_123',
-    )
-    receipt_jwt = create_jwt(
-        {'alg': 'ES256'}, payment_receipt.model_dump(), issuer_key
-    )
+    if is_payment_receipt:
+        receipt = client.create_payment_receipt(_payment_mandate(), reference)
+    else:
+        receipt = client.create_checkout_receipt(
+            'merchant.com', reference, 'order_123'
+        )
+    receipt_jwt = create_jwt({'alg': 'ES256'}, receipt.model_dump(), issuer_key)
     # Callback returns False
     has_ref_cb = mock.Mock(return_value=False)
 
@@ -175,21 +203,24 @@ def test_verify_receipt_not_found_in_store(issuer_key, issuer_public_key):
         receipt_jwt=receipt_jwt,
         receipt_issuer_public_key=issuer_public_key,
         has_reference_in_store_cb=has_ref_cb,
-        is_payment_receipt=True,
+        is_payment_receipt=is_payment_receipt,
     )
 
     assert result['error'] == 'receipt_reference_not_found_in_store'
     has_ref_cb.assert_called_once_with(reference)
 
 
-def test_verify_receipt_malformed_jwt(issuer_public_key):
+def test_verify_receipt_malformed_jwt(receipt_key_pair):
     """Test failure with a malformed JWT."""
+    _, issuer_public_key = receipt_key_pair
     client = ReceiptClient()
+    has_ref_cb = mock.Mock()
 
     result = client.verify_receipt(
         receipt_jwt='not.a.jwt',
         receipt_issuer_public_key=issuer_public_key,
-        has_reference_in_store_cb=mock.Mock(),
+        has_reference_in_store_cb=has_ref_cb,
     )
 
     assert result['error'] == 'verification_failed'
+    has_ref_cb.assert_not_called()

@@ -127,11 +127,14 @@ Payoneer
 paypal
 Payplug
 pids
+pisp
+PISP
 pmezard
 proguard
 Proguard
 prometheus
 protoc
+pyca
 pyflow
 pymdownx
 pypa
@@ -149,6 +152,7 @@ ropeproject
 RPCURL
 Rulebook
 screenreaders
+SECP
 setlocal
 sharedpref
 Shopcider

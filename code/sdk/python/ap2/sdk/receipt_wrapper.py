@@ -10,6 +10,7 @@ from ap2.sdk.generated.payment_mandate import PaymentMandate
 from ap2.sdk.generated.payment_receipt import PaymentReceipt
 from ap2.sdk.jwt_helper import verify_jwt
 from cryptography.hazmat.primitives.asymmetric import ec
+from jwcrypto.jwk import JWK
 
 
 _logger = logging.getLogger(__name__)
@@ -100,7 +101,7 @@ class ReceiptClient:
     def verify_receipt(
         self,
         receipt_jwt: str,
-        receipt_issuer_public_key: ec.EllipticCurvePublicKey,
+        receipt_issuer_public_key: ec.EllipticCurvePublicKey | JWK,
         has_reference_in_store_cb: Callable[[str], bool] | None = None,
         is_payment_receipt: bool = True,
     ) -> Mapping[str, Any]:
@@ -114,7 +115,8 @@ class ReceiptClient:
 
         Args:
           receipt_jwt: The receipt JWT string to verify.
-          receipt_issuer_public_key: The public key to verify the JWT signature.
+          receipt_issuer_public_key: The public key to verify the JWT signature,
+            as a cryptography EC public key or a JWK.
           has_reference_in_store_cb: Optional callback to check if the receipt
             reference exists in the store.
           is_payment_receipt: Whether this is a payment or checkout receipt.
@@ -129,6 +131,10 @@ class ReceiptClient:
 
         # 1. Verify signature
         try:
+            if isinstance(receipt_issuer_public_key, ec.EllipticCurvePublicKey):
+                receipt_issuer_public_key = JWK.from_pyca(
+                    receipt_issuer_public_key
+                )
             payload = verify_jwt(receipt_jwt, receipt_issuer_public_key)
             if is_payment_receipt:
                 receipt = PaymentReceipt.model_validate(payload)

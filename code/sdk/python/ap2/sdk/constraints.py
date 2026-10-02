@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
+from decimal import ROUND_FLOOR, Decimal
 
 from ap2.sdk.generated.open_checkout_mandate import (
     AllowedMerchants,
@@ -32,6 +33,56 @@ from ap2.sdk.generated.types.checkout import Checkout
 from ap2.sdk.generated.types.merchant import Merchant
 from ap2.sdk.max_flow_helper import evaluate_line_items_max_flow
 from pydantic import BaseModel
+
+
+# ISO 4217 minor-unit exponents for currencies that do not use 2 decimal
+# places (ISO 4217 List One, published 2026-09-17). Any other currency code
+# uses _DEFAULT_MINOR_UNIT_EXPONENT.
+_MINOR_UNIT_EXPONENTS = {
+    # 0 decimal places
+    'BIF': 0,
+    'CLP': 0,
+    'DJF': 0,
+    'GNF': 0,
+    'ISK': 0,
+    'JPY': 0,
+    'KMF': 0,
+    'KRW': 0,
+    'PYG': 0,
+    'RWF': 0,
+    'UGX': 0,
+    'UYI': 0,
+    'VND': 0,
+    'VUV': 0,
+    'XAF': 0,
+    'XOF': 0,
+    'XPF': 0,
+    # 3 decimal places
+    'BHD': 3,
+    'IQD': 3,
+    'JOD': 3,
+    'KWD': 3,
+    'LYD': 3,
+    'OMR': 3,
+    'TND': 3,
+    # 4 decimal places
+    'CLF': 4,
+    'UYW': 4,
+}
+_DEFAULT_MINOR_UNIT_EXPONENT = 2
+
+
+def _to_minor_units(amount: float, currency: str) -> int:
+    """Convert a major-unit amount to integer minor units of ``currency``.
+
+    Uses the currency's ISO 4217 exponent rather than assuming cents, and
+    converts through the float's decimal representation so that 0.29 becomes
+    29, not 28. Any fraction of a minor unit is rounded down, so a limit is
+    never looser than the value it was given.
+    """
+    exponent = _MINOR_UNIT_EXPONENTS.get(currency, _DEFAULT_MINOR_UNIT_EXPONENT)
+    scaled = Decimal(str(amount)) * 10**exponent
+    return int(scaled.to_integral_value(rounding=ROUND_FLOOR))
 
 
 class MandateContext(BaseModel):
@@ -304,11 +355,13 @@ class BudgetEvaluator(PaymentConstraintEvaluator):
         past_spend = self.mandate_context.total_amount
         total_spend = past_spend + closed_mandate.payment_amount.amount
 
-        budget_max_cents = int(self.constraint.max * 100)
-        if total_spend > budget_max_cents:
+        budget_max_minor = _to_minor_units(
+            self.constraint.max, self.constraint.currency
+        )
+        if total_spend > budget_max_minor:
             return [
                 f'Cumulative spend {total_spend} exceeds '
-                f'budget limit {budget_max_cents} (past spend: {past_spend})'
+                f'budget limit {budget_max_minor} (past spend: {past_spend})'
             ]
         return []
 

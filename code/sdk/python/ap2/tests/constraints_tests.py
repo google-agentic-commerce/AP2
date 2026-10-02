@@ -492,6 +492,44 @@ def test_payment_budget_missing_context():
     )
 
 
+def _budget_violations(budget_max, currency, amount):
+    return check_payment_constraints(
+        _open_payment(constraints=[Budget(max=budget_max, currency=currency)]),
+        _closed_payment(
+            payment_amount=Amount(amount=amount, currency=currency)
+        ),
+        mandate_context=MandateContext(total_amount=0, total_uses=0),
+    )
+
+
+@pytest.mark.parametrize(
+    ('budget_max', 'currency', 'limit_minor'),
+    [
+        # 0.29 * 100 is 28.999... in binary floating point.
+        (0.29, 'USD', 29),
+        (1.15, 'USD', 115),
+        (19.99, 'USD', 1999),
+        # JPY has no minor unit: 1000 yen is 1000, not 100000.
+        (1000.0, 'JPY', 1000),
+        # KWD has 3 decimal places: 10 KWD is 10000 minor units.
+        (10.0, 'KWD', 10000),
+        (1.0, 'CLF', 10000),
+        # A fraction of a minor unit is rounded down, never up.
+        (0.295, 'USD', 29),
+        (1000.5, 'JPY', 1000),
+    ],
+)
+def test_payment_budget_limit_in_currency_minor_units(
+    budget_max, currency, limit_minor
+):
+    """Budget max converts to minor units using the currency's exponent."""
+    assert _budget_violations(budget_max, currency, limit_minor) == []
+    assert any(
+        f'budget limit {limit_minor} ' in v
+        for v in _budget_violations(budget_max, currency, limit_minor + 1)
+    )
+
+
 # ── check_payment_constraints – execution_date ───────────────────────────
 
 

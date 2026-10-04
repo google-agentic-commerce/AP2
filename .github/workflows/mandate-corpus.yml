@@ -23,10 +23,16 @@ on:
       - 'contrib/mandate-corpus/**'
   workflow_dispatch:
 
+# Least privilege: the workflow only reads the checkout and runs local code.
+permissions:
+  contents: read
+
 jobs:
   vectors:
     name: signed mandate fixtures
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -48,6 +54,8 @@ jobs:
   cross-language:
     name: python and go must agree
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

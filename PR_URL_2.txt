@@ -1,0 +1,1 @@
+https://github.com/google-agentic-commerce/AP2/compare/main...mrpkk:contrib/ap2-mandate-corpus-cross-language?expand=1&title=test%28ap2%29%3A+add+mandate+conformance+corpus+and+a+second-language+verifier

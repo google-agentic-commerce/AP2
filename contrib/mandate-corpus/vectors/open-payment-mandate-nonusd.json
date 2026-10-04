@@ -1,0 +1,57 @@
+{
+  "id": "open-payment-mandate-nonusd",
+  "description": "Не-USD валюта — ловит реализации, молча приводящие всё к доллару.",
+  "expected": "Валюта в подписи и в payload совпадают посимвольно.",
+  "issuance": {
+    "issuer_jwk": {
+      "crv": "P-256",
+      "kid": "fixture-issuer-3",
+      "kty": "EC",
+      "x": "ICOUcq_AX2MI-tg6iU6kzk6c7oQncraLavcluUT97TE",
+      "y": "wXWGR0ey0yAvfkl_wPVWkdsb_qvDrTQ2V9uJLfLYSG8"
+    },
+    "agent_jwk": {
+      "crv": "P-256",
+      "kid": "fixture-agent-3",
+      "kty": "EC",
+      "x": "DaaPW7bU2I3Hp-3MIdzPtSddL1bEKF8OESxeAN5PBDU",
+      "y": "BqZD2tacemKWpK8Y5q9o0szxb_bnWFJjAGvm6VB2uW8"
+    },
+    "aud": "https://merchant.example/br/ap2",
+    "nonce": "fixture-nonce-0003"
+  },
+  "root_sd_jwt": "eyJhbGciOiAiRVMyNTYiLCAidHlwIjogImV4YW1wbGUrc2Qtand0IiwgImtpZCI6ICJmaXh0dXJlLWlzc3Vlci0zIn0.eyJkZWxlZ2F0ZV9wYXlsb2FkIjogW3siLi4uIjogInhaRWNnSVI3clNuMDd2SFpKYVp5dmRIcUFvdkNqbGNMVFpLa01GNjdTb3MifV0sICJfc2RfYWxnIjogInNoYS0yNTYifQ.JAyzK16LcdkRcQQFx-GC7I7dhZNnIaSFT7OfojIm8P7ZUTKGlreXP6ezwPtbPXo4F1tPuYPQxlYGIVFaW7eauQ~WyJBYUE0V0VvRFN4SlgzeVUyWXRPbGZRIiwgeyJ2Y3QiOiAibWFuZGF0ZS5wYXltZW50Lm9wZW4uMSIsICJjb25zdHJhaW50cyI6IFtdLCAiY25mIjogeyJqd2siOiB7ImNydiI6ICJQLTI1NiIsICJraWQiOiAiZml4dHVyZS1hZ2VudC0zIiwgImt0eSI6ICJFQyIsICJ4IjogIkRhYVBXN2JVMkkzSHAtM01JZHpQdFNkZEwxYkVLRjhPRVN4ZUFONVBCRFUiLCAieSI6ICJCcVpEMnRhY2VtS1dwSzhZNXE5bzBzenhiX2JuV0ZKakFHdm02VkIydVc4In19LCAicGF5ZWUiOiB7ImlkIjogInNob3AtYnJhc2lsIiwgIm5hbWUiOiAiTG9qYSBCcmFzaWwifSwgInBheW1lbnRfYW1vdW50IjogeyJhbW91bnQiOiAyNTAwMCwgImN1cnJlbmN5IjogIkJSTCJ9LCAicGF5bWVudF9pbnN0cnVtZW50IjogeyJpZCI6ICJwaS1icmwtMSIsICJ0eXBlIjogImNyZWRpdCJ9LCAiZXhlY3V0aW9uX2RhdGUiOiAiMjAyNy0wMy0zMVQwMDowMDowMFoifV0~",
+  "kb_sd_jwt": "eyJhbGciOiAiRVMyNTYiLCAidHlwIjogImtiK3NkLWp3dCtrYiIsICJraWQiOiAiZml4dHVyZS1hZ2VudC0zIn0.eyJkZWxlZ2F0ZV9wYXlsb2FkIjogW3siLi4uIjogIm1GbTN2LVpDZzRJNXFiSGJWY1RXS1h3OTdTejNQMGNIb0hMaUo2T2g0QTgifV0sICJpYXQiOiAxNzkxMDY5NTA2LCAiYXVkIjogImh0dHBzOi8vbWVyY2hhbnQuZXhhbXBsZS9ici9hcDIiLCAibm9uY2UiOiAiZml4dHVyZS1ub25jZS0wMDAzIiwgInNkX2hhc2giOiAiZFNoa3ZhSmVJZnhwOHZFU3ZScEJZS0pOYVNfTF9DZlZiWnBXV3BzMF9RVSIsICJfc2RfYWxnIjogInNoYS0yNTYifQ.Z_GqKZ4sTuaAqMm7uxrrUEJj56j5519LOB-DIX7To_0ad58IqJDs2FjCunzDwDZWUL3QTw5iUiipFQ_BJ0IbHQ~WyJFVHZNZ3NZYXBCZXd6WHR2bjR5TG53IiwgeyJ2Y3QiOiAibWFuZGF0ZS5wYXltZW50Lm9wZW4uMSIsICJjb25zdHJhaW50cyI6IFtdLCAiY25mIjogeyJqd2siOiB7ImNydiI6ICJQLTI1NiIsICJraWQiOiAiZml4dHVyZS1hZ2VudC0zIiwgImt0eSI6ICJFQyIsICJ4IjogIkRhYVBXN2JVMkkzSHAtM01JZHpQdFNkZEwxYkVLRjhPRVN4ZUFONVBCRFUiLCAieSI6ICJCcVpEMnRhY2VtS1dwSzhZNXE5bzBzenhiX2JuV0ZKakFHdm02VkIydVc4In19LCAicGF5ZWUiOiB7ImlkIjogInNob3AtYnJhc2lsIiwgIm5hbWUiOiAiTG9qYSBCcmFzaWwifSwgInBheW1lbnRfYW1vdW50IjogeyJhbW91bnQiOiAyNTAwMCwgImN1cnJlbmN5IjogIkJSTCJ9LCAicGF5bWVudF9pbnN0cnVtZW50IjogeyJpZCI6ICJwaS1icmwtMSIsICJ0eXBlIjogImNyZWRpdCJ9LCAiZXhlY3V0aW9uX2RhdGUiOiAiMjAyNy0wMy0zMVQwMDowMDowMFoifV0~",
+  "plaintext_payload": {
+    "vct": "mandate.payment.open.1",
+    "constraints": [],
+    "cnf": {
+      "jwk": {
+        "crv": "P-256",
+        "kid": "fixture-agent-3",
+        "kty": "EC",
+        "x": "DaaPW7bU2I3Hp-3MIdzPtSddL1bEKF8OESxeAN5PBDU",
+        "y": "BqZD2tacemKWpK8Y5q9o0szxb_bnWFJjAGvm6VB2uW8"
+      }
+    },
+    "payee": {
+      "id": "shop-brasil",
+      "name": "Loja Brasil",
+      "website": null
+    },
+    "payment_amount": {
+      "amount": 25000,
+      "currency": "BRL"
+    },
+    "payment_instrument": {
+      "id": "pi-brl-1",
+      "type": "credit",
+      "description": null
+    },
+    "pisp": null,
+    "execution_date": "2027-03-31T00:00:00Z",
+    "risk_data": null,
+    "iat": null,
+    "exp": null
+  }
+}

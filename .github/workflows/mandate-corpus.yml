@@ -1,0 +1,77 @@
+# Конформити-корпус мандатов AP2.
+#
+# Три уровня:
+#   1. позитивные векторы  — подписи корня и KB-хопа, cnf=agent key, сумма
+#   2. отрицательные       — подделка обязана отвергаться, эталонная пара принимается
+#   3. кросс-валидация     — Go и Python обязаны дать одинаковый вердикт
+#
+# Третий уровень превращает заявление «корпус языконезависим» в проверяемый
+# контракт: раньше независимой реализации не существовало, поэтому заявление
+# было непроверяемым.
+name: mandate-corpus
+
+on:
+  pull_request:
+    paths:
+      - 'code/sdk/python/**'
+      - 'contrib/mandate-corpus/**'
+      - '.github/workflows/mandate-corpus.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'code/sdk/python/**'
+      - 'contrib/mandate-corpus/**'
+  workflow_dispatch:
+
+# Least privilege: the workflow only reads the checkout and runs local code.
+permissions:
+  contents: read
+
+jobs:
+  vectors:
+    name: signed mandate fixtures
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      # pyproject.toml lives at the repository root; the package under
+      # code/sdk/python is declared via [tool.setuptools.packages.find].
+      - run: pip install -e .
+      - name: verify fixtures
+        run: python contrib/mandate-corpus/tools/verify_fixtures.py
+      - name: negative vectors
+        run: python contrib/mandate-corpus/tools/negative_vectors.py
+      # Reproducer for the expected_aud defect; fails while the defect is open.
+      # continue-on-error until fixed, then drop the flag and it gates the build.
+      - name: poc expected_aud (known defect, non-blocking)
+        continue-on-error: true
+        run: python contrib/mandate-corpus/tools/poc_aud_not_enforced.py
+
+  cross-language:
+    name: python and go must agree
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff # v5
+        with:
+          go-version: '1.22'
+      - run: pip install -e .
+      - name: build the go verifier
+        run: go build ./...
+        working-directory: contrib/mandate-corpus/go
+      - name: go verifier alone
+        run: go run ./cmd/verify ../vectors
+        working-directory: contrib/mandate-corpus/go
+      # The corpus is only meaningful for third-party implementations if two
+      # independent implementations reach the same verdict on the same vectors.
+      - name: cross-check python against go
+        run: python contrib/mandate-corpus/crosscheck.py

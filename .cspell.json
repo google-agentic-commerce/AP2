@@ -4,6 +4,7 @@
   "caseSensitive": true,
   "useGitignore": true,
   "ignorePaths": [
+    "contrib/mandate-corpus/vectors/**",
     ".github/**",
     ".cspell/**",
     ".gemini/**",
@@ -13,9 +14,9 @@
   ],
   "dictionaryDefinitions": [
     {
-        "name": "custom-words",
-        "path": "./.cspell/custom-words.txt",
-        "addWords": true
+      "name": "custom-words",
+      "path": "./.cspell/custom-words.txt",
+      "addWords": true
     }
   ],
   "dictionaries": [

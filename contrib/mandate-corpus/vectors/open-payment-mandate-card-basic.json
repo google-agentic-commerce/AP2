@@ -1,0 +1,57 @@
+{
+  "id": "open-payment-mandate-card-basic",
+  "description": "Базовый открытый платёжный мандат: 100 USD картой, payee — Shop.",
+  "expected": "Подпись корня и KB-хопа валидны; cnf корня равен agent_jwk.",
+  "issuance": {
+    "issuer_jwk": {
+      "crv": "P-256",
+      "kid": "fixture-issuer-1",
+      "kty": "EC",
+      "x": "1_Aw9SxcjyVhMj4eXyA6pMQHpe4HebaEObsiLwBSp6w",
+      "y": "PGKBUMy1zDMqzsR59fbN8vEPot5q9g9VUX2Fdspl09U"
+    },
+    "agent_jwk": {
+      "crv": "P-256",
+      "kid": "fixture-agent-1",
+      "kty": "EC",
+      "x": "hzpO_on0IKGLFmm0WHfe-vwAuxCsTzV40OLW3lDITJU",
+      "y": "fWiBK7Bf8Dzuz5Pj2Vq5uQ59Xnj2bijOCHWqx49ExDc"
+    },
+    "aud": "https://merchant.example/ap2",
+    "nonce": "fixture-nonce-0001"
+  },
+  "root_sd_jwt": "eyJhbGciOiAiRVMyNTYiLCAidHlwIjogImV4YW1wbGUrc2Qtand0IiwgImtpZCI6ICJmaXh0dXJlLWlzc3Vlci0xIn0.eyJkZWxlZ2F0ZV9wYXlsb2FkIjogW3siLi4uIjogImdfeWwzWTYyQ3RYQ2xEeHVPZTRfWGlRa2lZMVVIX0xTVGFUREFIVFJQZWMifV0sICJfc2RfYWxnIjogInNoYS0yNTYifQ.Sk5WaVS_AQxGlpq_EQYhEKzm2hCufHibJOzO_33J08nTXJpfBZDWAwNkREIYIGhUSYuMDyijY9kXIrHm4yY62g~WyJtVXhna0FkUk5VYXhXQk9MdG00TGp3IiwgeyJ2Y3QiOiAibWFuZGF0ZS5wYXltZW50Lm9wZW4uMSIsICJjb25zdHJhaW50cyI6IFtdLCAiY25mIjogeyJqd2siOiB7ImNydiI6ICJQLTI1NiIsICJraWQiOiAiZml4dHVyZS1hZ2VudC0xIiwgImt0eSI6ICJFQyIsICJ4IjogImh6cE9fb24wSUtHTEZtbTBXSGZlLXZ3QXV4Q3NUelY0ME9MVzNsRElUSlUiLCAieSI6ICJmV2lCSzdCZjhEenV6NVBqMlZxNXVRNTlYbmoyYmlqT0NIV3F4NDlFeERjIn19LCAicGF5ZWUiOiB7ImlkIjogInNob3AtYmFzaWMiLCAibmFtZSI6ICJTaG9wIn0sICJwYXltZW50X2Ftb3VudCI6IHsiYW1vdW50IjogMTAwLCAiY3VycmVuY3kiOiAiVVNEIn0sICJwYXltZW50X2luc3RydW1lbnQiOiB7ImlkIjogInBpLWJhc2ljLTEiLCAidHlwZSI6ICJjcmVkaXQifSwgImV4ZWN1dGlvbl9kYXRlIjogIjIwMjctMDEtMDFUMDA6MDA6MDBaIn1d~",
+  "kb_sd_jwt": "eyJhbGciOiAiRVMyNTYiLCAidHlwIjogImtiK3NkLWp3dCtrYiIsICJraWQiOiAiZml4dHVyZS1hZ2VudC0xIn0.eyJkZWxlZ2F0ZV9wYXlsb2FkIjogW3siLi4uIjogIm1rbFc1blFpOC02ZHA1QWZPTEc2aEJiREZDcV9ieFozU2NfX1FUaDc5VE0ifV0sICJpYXQiOiAxNzkxMDY5NTA2LCAiYXVkIjogImh0dHBzOi8vbWVyY2hhbnQuZXhhbXBsZS9hcDIiLCAibm9uY2UiOiAiZml4dHVyZS1ub25jZS0wMDAxIiwgInNkX2hhc2giOiAiMjkxRnlLV2xOLVVlMmVJWmlnTVBLWUR5T1lJUkhfUVpjVGhZQ1luV1N0MCIsICJfc2RfYWxnIjogInNoYS0yNTYifQ.s3iFOpbymnYW_DjQe6jGikyHVy64Jknh5l2_f2kxSsbZaYOgzxVxvDiy-qXR_iyavVQZMosX_RXeQT93PI6UHA~WyJKRGZfQnFxcVQtWFZKOHB4MzhhOENRIiwgeyJ2Y3QiOiAibWFuZGF0ZS5wYXltZW50Lm9wZW4uMSIsICJjb25zdHJhaW50cyI6IFtdLCAiY25mIjogeyJqd2siOiB7ImNydiI6ICJQLTI1NiIsICJraWQiOiAiZml4dHVyZS1hZ2VudC0xIiwgImt0eSI6ICJFQyIsICJ4IjogImh6cE9fb24wSUtHTEZtbTBXSGZlLXZ3QXV4Q3NUelY0ME9MVzNsRElUSlUiLCAieSI6ICJmV2lCSzdCZjhEenV6NVBqMlZxNXVRNTlYbmoyYmlqT0NIV3F4NDlFeERjIn19LCAicGF5ZWUiOiB7ImlkIjogInNob3AtYmFzaWMiLCAibmFtZSI6ICJTaG9wIn0sICJwYXltZW50X2Ftb3VudCI6IHsiYW1vdW50IjogMTAwLCAiY3VycmVuY3kiOiAiVVNEIn0sICJwYXltZW50X2luc3RydW1lbnQiOiB7ImlkIjogInBpLWJhc2ljLTEiLCAidHlwZSI6ICJjcmVkaXQifSwgImV4ZWN1dGlvbl9kYXRlIjogIjIwMjctMDEtMDFUMDA6MDA6MDBaIn1d~",
+  "plaintext_payload": {
+    "vct": "mandate.payment.open.1",
+    "constraints": [],
+    "cnf": {
+      "jwk": {
+        "crv": "P-256",
+        "kid": "fixture-agent-1",
+        "kty": "EC",
+        "x": "hzpO_on0IKGLFmm0WHfe-vwAuxCsTzV40OLW3lDITJU",
+        "y": "fWiBK7Bf8Dzuz5Pj2Vq5uQ59Xnj2bijOCHWqx49ExDc"
+      }
+    },
+    "payee": {
+      "id": "shop-basic",
+      "name": "Shop",
+      "website": null
+    },
+    "payment_amount": {
+      "amount": 100,
+      "currency": "USD"
+    },
+    "payment_instrument": {
+      "id": "pi-basic-1",
+      "type": "credit",
+      "description": null
+    },
+    "pisp": null,
+    "execution_date": "2027-01-01T00:00:00Z",
+    "risk_data": null,
+    "iat": null,
+    "exp": null
+  }
+}

@@ -492,6 +492,48 @@ def test_payment_budget_missing_context():
     )
 
 
+def test_payment_budget_decimal_boundary_usd():
+    """A budget of 19.99 USD admits a 1999-cent spend (no float truncation)."""
+    violations = check_payment_constraints(
+        _open_payment(
+            constraints=[
+                Budget(max=19.99, currency='USD'),  # 1999 cents
+            ]
+        ),
+        _closed_payment(payment_amount=Amount(amount=1999, currency='USD')),
+        mandate_context=MandateContext(total_uses=0, total_amount=0),
+    )
+    assert violations == []
+
+
+@pytest.mark.parametrize(
+    ('budget_max', 'currency', 'amount', 'allowed'),
+    [
+        pytest.param(1000, 'JPY', 1000, True, id='jpy_zero_decimal_at_limit'),
+        pytest.param(1000, 'JPY', 1001, False, id='jpy_zero_decimal_over'),
+        pytest.param(50000, 'KRW', 50000, True, id='krw_zero_decimal_at_limit'),
+        pytest.param(1.5, 'KWD', 1500, True, id='kwd_three_decimal_at_limit'),
+        pytest.param(1.5, 'KWD', 1501, False, id='kwd_three_decimal_over'),
+        pytest.param(0.29, 'EUR', 29, True, id='eur_float_truncation'),
+    ],
+)
+def test_payment_budget_iso4217_minor_units(
+    budget_max, currency, amount, allowed
+):
+    """Budget max (major units) is converted with the currency's exponent."""
+    violations = check_payment_constraints(
+        _open_payment(constraints=[Budget(max=budget_max, currency=currency)]),
+        _closed_payment(
+            payment_amount=Amount(amount=amount, currency=currency)
+        ),
+        mandate_context=MandateContext(total_uses=0, total_amount=0),
+    )
+    if allowed:
+        assert violations == []
+    else:
+        assert any('exceeds budget limit' in v for v in violations)
+
+
 # ── check_payment_constraints – execution_date ───────────────────────────
 
 

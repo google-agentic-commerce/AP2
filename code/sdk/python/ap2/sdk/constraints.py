@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
+from decimal import ROUND_FLOOR, Decimal
 
 from ap2.sdk.generated.open_checkout_mandate import (
     AllowedMerchants,
@@ -32,6 +33,66 @@ from ap2.sdk.generated.types.checkout import Checkout
 from ap2.sdk.generated.types.merchant import Merchant
 from ap2.sdk.max_flow_helper import evaluate_line_items_max_flow
 from pydantic import BaseModel
+
+
+# ISO 4217 currencies whose minor-unit exponent differs from the default 2.
+_ZERO_DECIMAL_CURRENCIES = frozenset(
+    {
+        'BIF',
+        'CLP',
+        'DJF',
+        'GNF',
+        'ISK',
+        'JPY',
+        'KMF',
+        'KRW',
+        'PYG',
+        'RWF',
+        'UGX',
+        'UYI',
+        'VND',
+        'VUV',
+        'XAF',
+        'XOF',
+        'XPF',
+    }
+)
+_THREE_DECIMAL_CURRENCIES = frozenset(
+    {
+        'BHD',
+        'IQD',
+        'JOD',
+        'KWD',
+        'LYD',
+        'OMR',
+        'TND',
+    }
+)
+_FOUR_DECIMAL_CURRENCIES = frozenset({'CLF', 'UYW'})
+
+
+def minor_unit_exponent(currency: str) -> int:
+    """Return the ISO 4217 minor-unit exponent for ``currency``."""
+    code = currency.upper()
+    if code in _ZERO_DECIMAL_CURRENCIES:
+        return 0
+    if code in _THREE_DECIMAL_CURRENCIES:
+        return 3
+    if code in _FOUR_DECIMAL_CURRENCIES:
+        return 4
+    return 2
+
+
+def major_to_minor_units(value: float | int | str, currency: str) -> int:
+    """Convert a major-unit amount to integer minor units for ``currency``.
+
+    Uses exact decimal arithmetic (``19.99`` USD -> ``1999``, not ``1998``)
+    and the ISO 4217 minor-unit exponent (``1000`` JPY -> ``1000``,
+    ``1.5`` KWD -> ``1500``). Fractions of a minor unit are floored so a
+    budget can never be exceeded through rounding.
+    """
+    scaled = Decimal(str(value)) * Decimal(10) ** minor_unit_exponent(currency)
+    return int(scaled.to_integral_value(rounding=ROUND_FLOOR))
 
 
 class MandateContext(BaseModel):
@@ -304,11 +365,13 @@ class BudgetEvaluator(PaymentConstraintEvaluator):
         past_spend = self.mandate_context.total_amount
         total_spend = past_spend + closed_mandate.payment_amount.amount
 
-        budget_max_cents = int(self.constraint.max * 100)
-        if total_spend > budget_max_cents:
+        budget_max_minor = major_to_minor_units(
+            self.constraint.max, self.constraint.currency
+        )
+        if total_spend > budget_max_minor:
             return [
                 f'Cumulative spend {total_spend} exceeds '
-                f'budget limit {budget_max_cents} (past spend: {past_spend})'
+                f'budget limit {budget_max_minor} (past spend: {past_spend})'
             ]
         return []
 

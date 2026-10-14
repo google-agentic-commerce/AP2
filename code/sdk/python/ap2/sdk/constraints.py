@@ -8,7 +8,7 @@ by implementing a new evaluator and registering it in the factory function.
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from datetime import datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 
 from ap2.sdk.generated.open_checkout_mandate import (
     AllowedMerchants,
@@ -313,6 +313,36 @@ class BudgetEvaluator(PaymentConstraintEvaluator):
         return []
 
 
+_ISO_DATE_LENGTH = len('YYYY-MM-DD')
+
+
+def _parse_iso8601(value: str) -> date | datetime:
+    """Parse an ISO 8601 date (``YYYY-MM-DD``) or date-time.
+
+    Naive date-times are treated as UTC. Raises ``ValueError`` when the value
+    is not ISO 8601.
+    """
+    if len(value) == _ISO_DATE_LENGTH:
+        return date.fromisoformat(value)
+    parsed = datetime.fromisoformat(value)
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=UTC)
+    return parsed
+
+
+def _compare_iso8601(a: date | datetime, b: date | datetime) -> int:
+    """Return -1/0/1 comparing ``a`` and ``b``.
+
+    If either side is a calendar date, both sides are compared at day
+    granularity (a date-time is reduced to its calendar date in its own
+    offset); otherwise instants are compared.
+    """
+    if not isinstance(a, datetime) or not isinstance(b, datetime):
+        a = a.date() if isinstance(a, datetime) else a
+        b = b.date() if isinstance(b, datetime) else b
+    return (a > b) - (a < b)
+
+
 class ExecutionDateEvaluator(PaymentConstraintEvaluator):
     """Evaluates if the execution date is within the allowed window."""
 
@@ -328,16 +358,34 @@ class ExecutionDateEvaluator(PaymentConstraintEvaluator):
         if not exec_date:
             return []
 
+        try:
+            exec_value = _parse_iso8601(exec_date)
+            not_before = (
+                _parse_iso8601(self.constraint.not_before)
+                if self.constraint.not_before
+                else None
+            )
+            not_after = (
+                _parse_iso8601(self.constraint.not_after)
+                if self.constraint.not_after
+                else None
+            )
+        except ValueError as e:
+            return [f'Invalid ISO 8601 date in execution_date check: {e}']
+
         violations = []
         if (
-            self.constraint.not_before
-            and exec_date < self.constraint.not_before
+            not_before is not None
+            and _compare_iso8601(exec_value, not_before) < 0
         ):
             violations.append(
                 f'Execution date {exec_date} is before allowed window '
                 f'{self.constraint.not_before}'
             )
-        if self.constraint.not_after and exec_date > self.constraint.not_after:
+        if (
+            not_after is not None
+            and _compare_iso8601(exec_value, not_after) > 0
+        ):
             violations.append(
                 f'Execution date {exec_date} is after allowed window '
                 f'{self.constraint.not_after}'

@@ -547,6 +547,92 @@ def test_payment_execution_date_missing_passes():
     assert violations == []
 
 
+def test_payment_execution_date_on_datetime_window_start():
+    """A date-only execution on the window's first day passes.
+
+    Mirrors the spec example window (``not_before`` with a time component).
+    """
+    violations = check_payment_constraints(
+        _open_payment(
+            constraints=[
+                ExecutionDate(
+                    not_before='2026-03-31T00:00:00Z',
+                    not_after='2026-04-30T23:59:59Z',
+                ),
+            ]
+        ),
+        _closed_payment(execution_date='2026-03-31'),
+    )
+    assert violations == []
+
+
+def test_payment_execution_date_offset_compared_as_instant():
+    """Offsets are honoured: 2026-05-01T08:00+09:00 is 2026-04-30T23:00Z."""
+    violations = check_payment_constraints(
+        _open_payment(
+            constraints=[
+                ExecutionDate(not_after='2026-04-30T23:59:59Z'),
+            ]
+        ),
+        _closed_payment(execution_date='2026-05-01T08:00:00+09:00'),
+    )
+    assert violations == []
+
+
+def test_payment_execution_date_offset_after_window():
+    """An instant after ``not_after`` is a violation regardless of format."""
+    violations = check_payment_constraints(
+        _open_payment(
+            constraints=[
+                ExecutionDate(not_after='2026-04-30T23:59:59Z'),
+            ]
+        ),
+        _closed_payment(execution_date='2026-05-01T09:30:00+09:00'),
+    )
+    assert any('after allowed window' in v for v in violations)
+
+
+
+@pytest.mark.parametrize(
+    'execution_date',
+    [
+        pytest.param('2026-04-30T23:59:59-09:00', id='negative_offset_after'),
+        pytest.param('2026-03-31T08:00:00+09:00', id='positive_offset_before'),
+        pytest.param('2026-04-30T23:59:59.5Z', id='fractional_second_after'),
+    ],
+)
+def test_payment_execution_date_outside_window_is_rejected(execution_date):
+    """Instants outside the window are rejected even when they sort inside.
+
+    Raw string comparison let all three through: '-' and '.' sort before 'Z',
+    and a later local date-time with a positive offset is an earlier instant.
+    """
+    violations = check_payment_constraints(
+        _open_payment(
+            constraints=[
+                ExecutionDate(
+                    not_before='2026-03-31T00:00:00Z',
+                    not_after='2026-04-30T23:59:59Z',
+                ),
+            ]
+        ),
+        _closed_payment(execution_date=execution_date),
+    )
+    assert violations
+
+def test_payment_execution_date_invalid_fails_closed():
+    """A non-ISO-8601 execution date is reported, not silently compared."""
+    violations = check_payment_constraints(
+        _open_payment(
+            constraints=[
+                ExecutionDate(not_before='2025-01-01', not_after='2025-12-31'),
+            ]
+        ),
+        _closed_payment(execution_date='06/01/2025'),
+    )
+    assert any('Invalid ISO 8601 date' in v for v in violations)
+
+
 # ── check_payment_constraints – allowed_pisp ─────────────────────────────
 
 

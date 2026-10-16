@@ -17,6 +17,7 @@ function ItemRow({
   onClick?: () => void;
 }) {
   return (
+    // biome-ignore lint/a11y/useSemanticElements: card contains block content; keyboard handling provided
     <div
       className={`item-card ${onClick ? 'clickable' : ''} ${selected ? 'selected' : ''}`}
       role="button"
@@ -26,7 +27,7 @@ function ItemRow({
       <div className="row-content">
         {selected && (
           <div className="selected-icon">
-            <svg width="8" height="8" viewBox="0 0 8 8">
+            <svg aria-hidden="true" width="8" height="8" viewBox="0 0 8 8">
               <path
                 d="M1.5 4l2 2 3-3"
                 stroke="white"
@@ -65,7 +66,7 @@ export function InventoryOptionsCard({inventory, onSelect}: Props) {
     <div className="msg-agent inventory-options-container">
       <div className="header-wrapper">
         <div className="icon-wrapper">
-          <svg width="10" height="10" viewBox="0 0 10 10">
+          <svg aria-hidden="true" width="10" height="10" viewBox="0 0 10 10">
             <path
               d="M2 5l2 2 4-4"
               stroke="#34d399"
@@ -113,7 +114,7 @@ export function InventoryOptionsCard({inventory, onSelect}: Props) {
         )}
       </div>
       {canConfirm && (
-        <button
+        <button type="button"
           onClick={() => {
             setHasConfirmed(true);
             onSelect?.(selected);

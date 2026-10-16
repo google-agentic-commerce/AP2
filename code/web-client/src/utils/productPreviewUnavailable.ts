@@ -19,7 +19,7 @@ export function normalizeProductPreviewUnavailable(
     if (typeof v === 'string') {
       const cleaned = v.replace(/[$,]/g, '').trim();
       const n = Number(cleaned);
-      return isNaN(n) ? undefined : n;
+      return Number.isNaN(n) ? undefined : n;
     }
     return undefined;
   };

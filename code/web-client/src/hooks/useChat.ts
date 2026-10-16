@@ -202,7 +202,7 @@ export function useChat() {
               if (event.status.state === 'failed') {
                 addMessage({
                   role: 'system',
-                  text: 'Agent error: ' + JSON.stringify(event.status.message),
+                  text: `Agent error: ${JSON.stringify(event.status.message)}`,
                 });
               }
               const statusParts = event.status.message?.parts ?? [];
@@ -401,12 +401,12 @@ export function useChat() {
             }
           }
         } catch (e) {
-          addMessage({role: 'system', text: 'Connection error: ' + String(e)});
+          addMessage({role: 'system', text: `Connection error: ${String(e)}`});
         } finally {
           setLoading(false);
         }
       },
-      [addMessage]);
+      [addMessage, fetchMandate]);
 
   // Trigger-state polling: 500ms interval while monitoring
   const lastTriggerStateRef = useRef<string>('');
@@ -463,6 +463,7 @@ export function useChat() {
       ]);
 
   // Auto-poll fallback (15s)
+  // biome-ignore lint/correctness/useExhaustiveDependencies: intentionally keyed on specific monitoring fields
   useEffect(
       () => {
         if (!isMonitoring || hasPurchaseComplete || !pendingTaskId) return;

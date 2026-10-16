@@ -77,7 +77,7 @@ export function MonitoringCard({
           </p>
         )}
         {onCheckNow && (
-          <button onClick={onCheckNow} className="check-button">
+          <button type="button" onClick={onCheckNow} className="check-button">
             Check now
           </button>
         )}

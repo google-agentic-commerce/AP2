@@ -25,7 +25,7 @@ const AppHeader = ({usedServers}: {usedServers: Set<string>}) => {
     },
   ];
 
-  const flow = (import.meta as any).env?.VITE_FLOW;
+  const flow = (import.meta as ImportMeta & {env?: Record<string, string | undefined>}).env?.VITE_FLOW;
 
   return (
     <div className="app-header">
@@ -68,12 +68,12 @@ const TabBar = ({
   mandateCount: number;
 }) => (
   <div className="tab-bar">
-    <button
+    <button type="button"
       className={`tab ${activeTab === 'chat' ? 'active' : ''}`}
       onClick={() => onChange('chat')}>
       Chat
     </button>
-    <button
+    <button type="button"
       className={`tab ${activeTab === 'mandates' ? 'active' : ''}`}
       onClick={() => onChange('mandates')}>
       Mandates
@@ -124,7 +124,7 @@ const ChatInput = ({input, setInput, handleSend, loading}: ChatInputProps) => (
       disabled={loading}
       className="chat-input"
     />
-    <button
+    <button type="button"
       onClick={() =>
         handleSend({fallbackIfEmpty: DEFAULT_CHAT_STARTER_MESSAGE})
       }
@@ -144,6 +144,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<TabKey>('chat');
   const bottomRef = useRef<HTMLDivElement>(null);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: scroll to bottom whenever messages change
   useEffect(() => {
     if (activeTab === 'chat') {
       bottomRef.current?.scrollIntoView({behavior: 'smooth'});

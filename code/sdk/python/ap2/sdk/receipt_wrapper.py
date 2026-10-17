@@ -143,7 +143,10 @@ class ReceiptClient:
 
         # 2. Verify receipt reference exists in the issuer's store
         receipt_reference = getattr(receipt.root, 'reference', None)
-        if not has_reference_in_store_cb(receipt_reference):
+        if (
+            has_reference_in_store_cb is not None
+            and not has_reference_in_store_cb(receipt_reference)
+        ):
             _logger.warning(
                 'Receipt reference not found in store: %s',
                 receipt_reference,

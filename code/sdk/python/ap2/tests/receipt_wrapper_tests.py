@@ -107,6 +107,63 @@ def test_verify_payment_receipt_success(issuer_key, issuer_public_key):
     has_ref_cb.assert_called_once_with(reference)
 
 
+def test_verify_payment_receipt_success_without_store_cb(
+    issuer_key, issuer_public_key
+):
+    """Test verification of a payment receipt when reference callback is omitted."""
+    client = ReceiptClient()
+    reference = 'ref_123'
+    base_receipt = client._create_base_receipt(
+        'Success', 'issuer.com', reference
+    )
+    payment_receipt = PaymentReceipt(
+        **base_receipt,
+        payment_id='pid_123',
+        psp_confirmation_id='pid_123',
+        network_confirmation_id='pid_123',
+    )
+    receipt_jwt = create_jwt(
+        {'alg': 'ES256'}, payment_receipt.model_dump(), issuer_key
+    )
+
+    result = client.verify_receipt(
+        receipt_jwt=receipt_jwt,
+        receipt_issuer_public_key=issuer_public_key,
+        is_payment_receipt=True,
+    )
+
+    assert result == {'verified': True}
+
+
+def test_verify_payment_receipt_success_explicit_none_cb(
+    issuer_key, issuer_public_key
+):
+    """Test verification of a payment receipt when reference callback is explicitly None."""
+    client = ReceiptClient()
+    reference = 'ref_123'
+    base_receipt = client._create_base_receipt(
+        'Success', 'issuer.com', reference
+    )
+    payment_receipt = PaymentReceipt(
+        **base_receipt,
+        payment_id='pid_123',
+        psp_confirmation_id='pid_123',
+        network_confirmation_id='pid_123',
+    )
+    receipt_jwt = create_jwt(
+        {'alg': 'ES256'}, payment_receipt.model_dump(), issuer_key
+    )
+
+    result = client.verify_receipt(
+        receipt_jwt=receipt_jwt,
+        receipt_issuer_public_key=issuer_public_key,
+        has_reference_in_store_cb=None,
+        is_payment_receipt=True,
+    )
+
+    assert result == {'verified': True}
+
+
 def test_verify_checkout_receipt_success(issuer_key, issuer_public_key):
     """Test successful verification of a checkout receipt."""
     client = ReceiptClient()
@@ -131,6 +188,53 @@ def test_verify_checkout_receipt_success(issuer_key, issuer_public_key):
 
     assert result == {'verified': True}
     has_ref_cb.assert_called_once_with(reference)
+
+
+def test_verify_checkout_receipt_success_without_store_cb(
+    issuer_key, issuer_public_key
+):
+    """Test verification of a checkout receipt when reference callback is omitted."""
+    client = ReceiptClient()
+    reference = 'ref_456'
+    base_receipt = client._create_base_receipt(
+        'Success', 'merchant.com', reference
+    )
+    checkout_receipt = CheckoutReceipt(**base_receipt, order_id='order_456')
+    receipt_jwt = create_jwt(
+        {'alg': 'ES256'}, checkout_receipt.model_dump(), issuer_key
+    )
+
+    result = client.verify_receipt(
+        receipt_jwt=receipt_jwt,
+        receipt_issuer_public_key=issuer_public_key,
+        is_payment_receipt=False,
+    )
+
+    assert result == {'verified': True}
+
+
+def test_verify_checkout_receipt_success_explicit_none_cb(
+    issuer_key, issuer_public_key
+):
+    """Test verification of a checkout receipt when reference callback is explicitly None."""
+    client = ReceiptClient()
+    reference = 'ref_456'
+    base_receipt = client._create_base_receipt(
+        'Success', 'merchant.com', reference
+    )
+    checkout_receipt = CheckoutReceipt(**base_receipt, order_id='order_456')
+    receipt_jwt = create_jwt(
+        {'alg': 'ES256'}, checkout_receipt.model_dump(), issuer_key
+    )
+
+    result = client.verify_receipt(
+        receipt_jwt=receipt_jwt,
+        receipt_issuer_public_key=issuer_public_key,
+        has_reference_in_store_cb=None,
+        is_payment_receipt=False,
+    )
+
+    assert result == {'verified': True}
 
 
 def test_verify_receipt_invalid_signature(issuer_public_key):

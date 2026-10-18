@@ -26,6 +26,8 @@ nav:
       - Payment Mandate: ap2/payment_mandate.md
       - Security and Privacy Considerations: ap2/security_and_privacy_considerations.md
       - Implementation Considerations: ap2/implementation_considerations.md
+  - Extensions:
+      - Fiduciary Circuit Breaker: extensions/fiduciary_circuit_breaker.md
   - Glossary: glossary.md
   - FAQ: faq.md
   - Samples:
@@ -145,6 +147,8 @@ plugins:
           - ap2/security_and_privacy_considerations.md
           - ap2/implementation_considerations.md
           - ap2/agent_authorization.md
+        "Extensions":
+          - extensions/fiduciary_circuit_breaker.md
         "Additional Resources":
           - glossary.md
           - faq.md

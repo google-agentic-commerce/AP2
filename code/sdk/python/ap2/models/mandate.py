@@ -21,6 +21,7 @@ from ap2.models.payment_request import (
     PaymentRequest,
     PaymentResponse,
 )
+from ap2.models.risk import RiskPayload
 from pydantic import BaseModel, Field
 
 
@@ -36,6 +37,13 @@ class IntentMandate(BaseModel):
     human-not-present flows, additional fields will be added to this mandate.
     """
 
+    risk_payload: RiskPayload | None = Field(
+        None,
+        description=(
+            'Optional structured risk payload carrying the current risk'
+            ' assessment state (Risk Signals, AP2 v0.1 Section 7.4).'
+        ),
+    )
     user_cart_confirmation_required: bool = Field(
         True,
         description=(
@@ -111,6 +119,13 @@ class CartMandate(BaseModel):
     """
 
     contents: CartContents = Field(..., description='The contents of the cart.')
+    risk_payload: RiskPayload | None = Field(
+        None,
+        description=(
+            'Optional structured risk payload carrying the current risk'
+            ' assessment state (Risk Signals, AP2 v0.1 Section 7.4).'
+        ),
+    )
     merchant_authorization: str | None = Field(
         None,
         description=(
@@ -156,6 +171,13 @@ class PaymentMandateContents(BaseModel):
         ),
     )
     merchant_agent: str = Field(..., description='Identifier for the merchant.')
+    risk_payload: RiskPayload | None = Field(
+        None,
+        description=(
+            'Optional structured risk payload carrying the current risk'
+            ' assessment state (Risk Signals, AP2 v0.1 Section 7.4).'
+        ),
+    )
     timestamp: str = Field(
         description=(
             'The date and time the mandate was created, in ISO 8601 format.'

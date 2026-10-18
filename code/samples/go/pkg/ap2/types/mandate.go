@@ -23,6 +23,9 @@ const (
 )
 
 type IntentMandate struct {
+	// RiskPayload carries optional FCB risk signals (AP2 v0.1 Section 7.4).
+	RiskPayload *RiskPayload `json:"risk_payload,omitempty"`
+
 	UserCartConfirmationRequired *bool    `json:"user_cart_confirmation_required,omitempty"`
 	NaturalLanguageDescription   string   `json:"natural_language_description"`
 	Merchants                    []string `json:"merchants,omitempty"`
@@ -67,6 +70,8 @@ type CartContents struct {
 type CartMandate struct {
 	Contents              CartContents `json:"contents"`
 	MerchantAuthorization *string      `json:"merchant_authorization,omitempty"`
+	// RiskPayload carries optional FCB risk signals (AP2 v0.1 Section 7.4).
+	RiskPayload *RiskPayload `json:"risk_payload,omitempty"`
 }
 
 type PaymentMandateContents struct {
@@ -76,6 +81,8 @@ type PaymentMandateContents struct {
 	PaymentResponse     PaymentResponse `json:"payment_response"`
 	MerchantAgent       string          `json:"merchant_agent"`
 	Timestamp           string          `json:"timestamp,omitempty"`
+	// RiskPayload carries optional FCB risk signals (AP2 v0.1 Section 7.4).
+	RiskPayload *RiskPayload `json:"risk_payload,omitempty"`
 }
 
 func NewPaymentMandateContents() *PaymentMandateContents {

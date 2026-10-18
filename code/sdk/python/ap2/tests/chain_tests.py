@@ -6,6 +6,8 @@ import json
 import re
 import time
 
+from typing import Any
+
 import pytest
 
 from ap2.sdk.disclosure_metadata import DisclosureMetadata
@@ -33,6 +35,7 @@ from ap2.tests.conftest import (
 from cryptography import x509
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import ec
+from jwcrypto import jws
 from jwcrypto.jwk import JWK
 from sd_jwt.issuer import SDJWTIssuer
 
@@ -574,3 +577,98 @@ def test_three_step_bank_sa_cp_merchant_flow():
     assert payloads[2]['transaction_id'] == 'tx_abc'  # CP's closed mandate
     leaf_jwt = MandateClient().get_closed_mandate_jwt(chain_step3)
     assert leaf_jwt == cp_segment.split('~', 1)[0]
+
+
+def test_parsed_token_cnf_jwk_with_use():
+    """ParsedToken.cnf_jwk serializes 'use' to a string instead of an Enum."""
+    key = JWK.generate(kty='EC', crv='P-256')
+    pub = key.export_public(as_dict=True)
+    pub['use'] = 'sig'
+    pub['alg'] = 'ES256'
+
+    token = common.ParsedToken(
+        issuer_jwt='',
+        disclosures=[],
+        kb_jwt=None,
+        header={},
+        payload={},
+        verified_payload={'cnf': {'jwk': pub}},
+        delegate_items=None,
+    )
+    rebuilt_key = token.cnf_jwk()
+    assert rebuilt_key is not None
+    assert rebuilt_key.get('use') == 'sig'
+    assert isinstance(rebuilt_key.get('use'), str)
+
+    # Verify that jwcrypto can use the reconstructed key to verify signatures
+    verifier_jws = jws.JWS(b'test-payload')
+    verifier_jws.add_signature(key, alg='ES256', protected={'alg': 'ES256'})
+    token_str = verifier_jws.serialize(compact=True)
+
+    check = jws.JWS()
+    check.deserialize(token_str)
+    check.verify(rebuilt_key)
+
+
+def test_delegation_hop_verifies_when_cnf_jwk_has_use():
+    """A delegation hop verifies successfully when intermediate cnf.jwk carries 'use'."""
+    bank_key = _mk_signing_jwk('bank-1')
+    sa_key = _mk_signing_jwk('sa-1')
+    cp_key = _mk_signing_jwk('cp-1')
+    bank_pub = JWK.from_json(bank_key.export_public())
+
+    def _cnf_with_use(key: JWK) -> dict[str, Any]:
+        d = json.loads(key.export_public())
+        d['use'] = 'sig'
+        d['alg'] = 'ES256'
+        return {'jwk': d}
+
+    sa_pub = JWK.from_json(sa_key.export_public())
+    cp_pub = JWK.from_json(cp_key.export_public())
+
+    bank_segment = sd_jwt.create(
+        payload=OpenPaymentMandate(
+            constraints=[],
+            cnf=_cnf_with_use(sa_pub),
+        ),
+        issuer_key=bank_key,
+    ).sd_jwt_issuance
+
+    sa_segment = kb_sd_jwt.create(
+        prev_token=_parse(bank_segment),
+        holder_key=sa_key,
+        payload=OpenPaymentMandate(
+            constraints=[],
+            cnf=_cnf_with_use(cp_pub),
+        ),
+        aud='cp-agent',
+        nonce='cp-nonce-123',
+    ).sd_jwt_issuance
+
+    closed_payload = PaymentMandate(
+        transaction_id='tx_123',
+        payee=Merchant(id='m-1', name='Shop'),
+        payment_amount=Amount(amount=1000, currency='USD'),
+        payment_instrument=PaymentInstrument(id='pi-1', type='credit'),
+    )
+    cp_segment = kb_sd_jwt.create(
+        prev_token=_parse(sa_segment),
+        holder_key=cp_key,
+        payload=closed_payload,
+        aud='merchant',
+        nonce='merchant-nonce-456',
+    ).sd_jwt_issuance
+
+    sa_segment_stripped = (
+        sa_segment[:-1] if sa_segment.endswith('~') else sa_segment
+    )
+    chain = f'{bank_segment[:-1]}~~{sa_segment_stripped}~~{cp_segment}'
+
+    payloads = MandateClient().verify(
+        token=chain,
+        key_or_provider=lambda _token: bank_pub,
+        expected_aud='merchant',
+        expected_nonce='merchant-nonce-456',
+    )
+    assert len(payloads) == 3
+    assert payloads[2]['transaction_id'] == 'tx_123'

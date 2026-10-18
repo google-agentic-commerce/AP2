@@ -85,6 +85,7 @@ jvmargs
 Kaia
 keepattributes
 keepclassmembers
+keypair
 Klarna
 kotlin
 kotlinx
@@ -132,6 +133,7 @@ proguard
 Proguard
 prometheus
 protoc
+pyca
 pyflow
 pymdownx
 pypa
@@ -149,6 +151,9 @@ ropeproject
 RPCURL
 Rulebook
 screenreaders
+SDJWT
+sdjwt
+SECP
 setlocal
 sharedpref
 Shopcider

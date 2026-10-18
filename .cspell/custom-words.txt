@@ -149,6 +149,7 @@ ropeproject
 RPCURL
 Rulebook
 screenreaders
+sdjwt
 setlocal
 sharedpref
 Shopcider

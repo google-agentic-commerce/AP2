@@ -137,6 +137,27 @@ def test_verify_accepts_valid_hop(issuer_key):
     )
 
 
+def test_verify_accepts_cnf_jwk_with_use_and_alg(issuer_key):
+    """A prior hop whose ``cnf.jwk`` carries ``use`` and ``alg`` still verifies."""
+    holder = JWK.generate(kty='EC', crv='P-256', use='sig', alg='ES256')
+    assert json.loads(holder.export_public())['use'] == 'sig'
+    prev = _root_open(issuer_key, holder)
+    result = _create(
+        prev_token=prev,
+        holder_key=holder,
+        payload=sample_payment_mandate(),
+        aud='a',
+        nonce='n',
+    )
+    _verify(
+        result.sd_jwt_issuance,
+        prev,
+        issuer_key,
+        expected_aud='a',
+        expected_nonce='n',
+    )
+
+
 def test_verify_accepts_issuer_jwt_hash_mode(issuer_key):
     holder = JWK.generate(kty='EC', crv='P-256')
     prev = _root_open(issuer_key, holder)

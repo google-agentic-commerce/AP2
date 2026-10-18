@@ -83,7 +83,7 @@ class ParsedToken:
         cnf = self._find_cnf()
         if isinstance(cnf, dict) and 'jwk' in cnf:
             jwk_model = JsonWebKey.model_validate(cnf['jwk'])
-            return JWK(**jwk_model.model_dump(exclude_none=True))
+            return JWK(**jwk_model.model_dump(mode='json', exclude_none=True))
         return None
 
     def _find_cnf(self) -> dict[str, Any] | None:

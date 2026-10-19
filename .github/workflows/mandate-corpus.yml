@@ -18,6 +18,9 @@ on:
       - 'contrib/mandate-corpus/**'
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   vectors:
     name: signed mandate fixtures

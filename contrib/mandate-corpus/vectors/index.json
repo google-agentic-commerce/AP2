@@ -1,0 +1,17 @@
+[
+  {
+    "id": "open-payment-mandate-card-basic",
+    "file": "open-payment-mandate-card-basic.json",
+    "expected": "Подпись корня и KB-хопа валидны; cnf корня равен agent_jwk."
+  },
+  {
+    "id": "open-payment-mandate-debit-large",
+    "file": "open-payment-mandate-debit-large.json",
+    "expected": "Сумма и валюта декодируются без потерь; валюта не меняется молча."
+  },
+  {
+    "id": "open-payment-mandate-nonusd",
+    "file": "open-payment-mandate-nonusd.json",
+    "expected": "Валюта в подписи и в payload совпадают посимвольно."
+  }
+]

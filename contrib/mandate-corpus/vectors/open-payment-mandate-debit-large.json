@@ -1,0 +1,57 @@
+{
+  "id": "open-payment-mandate-debit-large",
+  "description": "Крупный платёж дебетовой картой — проверка границ суммы.",
+  "expected": "Сумма и валюта декодируются без потерь; валюта не меняется молча.",
+  "issuance": {
+    "issuer_jwk": {
+      "crv": "P-256",
+      "kid": "fixture-issuer-2",
+      "kty": "EC",
+      "x": "-A9OaChhz0z5Ux_aWxSgI-4D_kSo72rJvzoumU5HTwc",
+      "y": "QHFa8DW7I5z_KA9EGJ5EAGYfMiMXwUiOERhYQFh1zzI"
+    },
+    "agent_jwk": {
+      "crv": "P-256",
+      "kid": "fixture-agent-2",
+      "kty": "EC",
+      "x": "pvzV-jmqqAsWcRk_A8i90CXH5r7uG6M6YJPqmyqIJ8s",
+      "y": "F2p7w2i1hCpIdqxMP7nCwf6Z1ADSz8H2NGfXY3gRUc8"
+    },
+    "aud": "https://merchant.example/ap2",
+    "nonce": "fixture-nonce-0002"
+  },
+  "root_sd_jwt": "eyJhbGciOiAiRVMyNTYiLCAidHlwIjogImV4YW1wbGUrc2Qtand0IiwgImtpZCI6ICJmaXh0dXJlLWlzc3Vlci0yIn0.eyJkZWxlZ2F0ZV9wYXlsb2FkIjogW3siLi4uIjogIjE2UFNxVTZnYUhJaWctb3B1eTFNb1dtZlBzTUIwVHptTkRPRS04OFRtN00ifV0sICJfc2RfYWxnIjogInNoYS0yNTYifQ.5I9LUxt6ea8SGSAm0jaAOexwG7KHU7DXdoBXOW_NLhA3Oq-JIsI_bhQdvG74x-gBdlOBfhWt83aMTWTIHKNfsw~WyJVNnVvSDN6OWpya2VaajFxTjJ3Vmt3IiwgeyJ2Y3QiOiAibWFuZGF0ZS5wYXltZW50Lm9wZW4uMSIsICJjb25zdHJhaW50cyI6IFtdLCAiY25mIjogeyJqd2siOiB7ImNydiI6ICJQLTI1NiIsICJraWQiOiAiZml4dHVyZS1hZ2VudC0yIiwgImt0eSI6ICJFQyIsICJ4IjogInB2elYtam1xcUFzV2NSa19BOGk5MENYSDVyN3VHNk02WUpQcW15cUlKOHMiLCAieSI6ICJGMnA3dzJpMWhDcElkcXhNUDduQ3dmNloxQURTejhIMk5HZlhZM2dSVWM4In19LCAicGF5ZWUiOiB7ImlkIjogInNob3AtbGFyZ2UiLCAibmFtZSI6ICJTaG9wIExhcmdlIn0sICJwYXltZW50X2Ftb3VudCI6IHsiYW1vdW50IjogNTAwMDAsICJjdXJyZW5jeSI6ICJVU0QifSwgInBheW1lbnRfaW5zdHJ1bWVudCI6IHsiaWQiOiAicGktbGFyZ2UtMSIsICJ0eXBlIjogImRlYml0In0sICJleGVjdXRpb25fZGF0ZSI6ICIyMDI3LTA2LTMwVDAwOjAwOjAwWiJ9XQ~",
+  "kb_sd_jwt": "eyJhbGciOiAiRVMyNTYiLCAidHlwIjogImtiK3NkLWp3dCtrYiIsICJraWQiOiAiZml4dHVyZS1hZ2VudC0yIn0.eyJkZWxlZ2F0ZV9wYXlsb2FkIjogW3siLi4uIjogImNlYUE2VEpOS3FyN1hUcDRlYzdHMFFsdjVxQ0stSE1aMWJsWndVanBEY0kifV0sICJpYXQiOiAxNzkxMDY5NTA2LCAiYXVkIjogImh0dHBzOi8vbWVyY2hhbnQuZXhhbXBsZS9hcDIiLCAibm9uY2UiOiAiZml4dHVyZS1ub25jZS0wMDAyIiwgInNkX2hhc2giOiAicTFKSzJfUTBBMFpiWk5jWXg3RUZjZWdxajZtdE1IZ1B2WWc3ZHBrVndkWSIsICJfc2RfYWxnIjogInNoYS0yNTYifQ.-Rt3KqskrEEfGz3yzIQtF4Twgp6M3zVPfSSTL8ZkzbRz24n7yajRrWRjDcYh7ilA9rviRIclyloqe4LSPP4qgA~WyJVZWNIR2xjQTlfbHJ5NzE3cXozOXBnIiwgeyJ2Y3QiOiAibWFuZGF0ZS5wYXltZW50Lm9wZW4uMSIsICJjb25zdHJhaW50cyI6IFtdLCAiY25mIjogeyJqd2siOiB7ImNydiI6ICJQLTI1NiIsICJraWQiOiAiZml4dHVyZS1hZ2VudC0yIiwgImt0eSI6ICJFQyIsICJ4IjogInB2elYtam1xcUFzV2NSa19BOGk5MENYSDVyN3VHNk02WUpQcW15cUlKOHMiLCAieSI6ICJGMnA3dzJpMWhDcElkcXhNUDduQ3dmNloxQURTejhIMk5HZlhZM2dSVWM4In19LCAicGF5ZWUiOiB7ImlkIjogInNob3AtbGFyZ2UiLCAibmFtZSI6ICJTaG9wIExhcmdlIn0sICJwYXltZW50X2Ftb3VudCI6IHsiYW1vdW50IjogNTAwMDAsICJjdXJyZW5jeSI6ICJVU0QifSwgInBheW1lbnRfaW5zdHJ1bWVudCI6IHsiaWQiOiAicGktbGFyZ2UtMSIsICJ0eXBlIjogImRlYml0In0sICJleGVjdXRpb25fZGF0ZSI6ICIyMDI3LTA2LTMwVDAwOjAwOjAwWiJ9XQ~",
+  "plaintext_payload": {
+    "vct": "mandate.payment.open.1",
+    "constraints": [],
+    "cnf": {
+      "jwk": {
+        "crv": "P-256",
+        "kid": "fixture-agent-2",
+        "kty": "EC",
+        "x": "pvzV-jmqqAsWcRk_A8i90CXH5r7uG6M6YJPqmyqIJ8s",
+        "y": "F2p7w2i1hCpIdqxMP7nCwf6Z1ADSz8H2NGfXY3gRUc8"
+      }
+    },
+    "payee": {
+      "id": "shop-large",
+      "name": "Shop Large",
+      "website": null
+    },
+    "payment_amount": {
+      "amount": 50000,
+      "currency": "USD"
+    },
+    "payment_instrument": {
+      "id": "pi-large-1",
+      "type": "debit",
+      "description": null
+    },
+    "pisp": null,
+    "execution_date": "2027-06-30T00:00:00Z",
+    "risk_data": null,
+    "iat": null,
+    "exp": null
+  }
+}

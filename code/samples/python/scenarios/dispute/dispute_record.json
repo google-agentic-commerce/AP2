@@ -1,0 +1,35 @@
+{
+  "dispute_id": "dsp_01J9X0",
+  "policy_version": "ATDRP-0.1",
+  "claimant": "payer",
+  "checkout_hash": "u8Y2…checkout_hash…",
+  "payment_mandate": {
+    "vct": "mandate.payment.1",
+    "transaction_id": "u8Y2…checkout_hash…",
+    "payee": {"id": "merchant_42", "name": "Example Merchant"},
+    "payment_amount": {"currency": "USD", "amount": 10000},
+    "payment_instrument": {"type": "card", "token_ref": "redacted"},
+    "iat": 1760000000,
+    "exp": 1760086400
+  },
+  "checkout_receipt": {"status": "Success", "iss": "merchant_42", "iat": 1760000010, "reference": "u8Y2…checkout_hash…", "order_id": "ord_001"},
+  "payment_receipt": {"status": "Success", "iss": "psp_example", "iat": 1760000020, "reference": "u8Y2…checkout_hash…", "payment_id": "pay_001", "psp_confirmation_id": "psp_c_1", "network_confirmation_id": "net_c_1"},
+  "order": {
+    "id": "ord_001",
+    "checkout_session_id": "checkout_session_123",
+    "permalink_url": "https://merchant.example/orders/ord_001",
+    "status": "processing",
+    "estimated_delivery": {"earliest": "2025-10-14", "latest": "2025-10-16"},
+    "line_items": [
+      {"id": "line_item_456", "item": {"id": "item_789", "title": "Blue widget"}, "quantity": {"ordered": 4, "current": 4, "fulfilled": 1}, "total": 10000}
+    ],
+    "fulfillments": [{"id": "ful_1", "type": "shipping", "line_items": [{"id": "line_item_456", "quantity": 1}], "events": [{"type": "shipped", "at": "2025-10-12T10:00:00Z"}]}],
+    "adjustments": []
+  },
+  "confirmed_cart": "4x Blue widget, $100.00 total, deliver by Oct 16",
+  "claim": {
+    "line_ids": ["line_item_456"],
+    "ground": "performance",
+    "statement": "Only 1 of 4 units delivered; estimated delivery window has passed with no adjustment."
+  }
+}

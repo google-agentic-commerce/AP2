@@ -15,8 +15,9 @@ from typing import Any
 
 from ap2.sdk.mandate import MandateClient
 from ap2.sdk.payment_mandate_chain import PaymentMandateChain
-from common.constants import AGENT_PROVIDER_PUB_PATH
+from common.constants import AGENT_PROVIDER_PUB_PATH, TEMP_DB
 from common.x402_constants import (
+  DEFAULT_FACILITATOR_PRIVATE_KEY,
   DEFAULT_MERCHANT_ADDRESS,
   DEFAULT_RPC_URL,
   DEFAULT_USDC_CONTRACT,
@@ -49,6 +50,14 @@ mcp.add_middleware(
         max_payload_length=8000,
     )
 )
+
+
+def _load_persisted_mandate(filename: str) -> str | None:
+  path = TEMP_DB / filename
+  try:
+    return path.read_text(encoding="ascii").strip()
+  except OSError:
+    return None
 
 
 @mcp.tool()
@@ -242,7 +251,7 @@ def settle_payment(
 
       facilitator_key = (
           os.environ.get("FACILITATOR_PRIVATE_KEY")
-          or DEFAULT_FACILITATOR_ADDRESS
+          or DEFAULT_FACILITATOR_PRIVATE_KEY
       )
       if not facilitator_key:
         return {

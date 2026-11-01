@@ -229,6 +229,29 @@ def test_payment_amount_no_min():
     assert violations == []
 
 
+def test_payment_amount_negative_rejected():
+    """Negative payment amount is rejected even if min is absent."""
+    violations = check_payment_constraints(
+        _open_payment(
+            constraints=[
+                AmountRange(max=2000, currency='USD'),
+            ]
+        ),
+        _closed_payment(payment_amount=Amount(amount=-100, currency='USD')),
+    )
+    assert any('cannot be negative' in v for v in violations)
+
+    violations_with_min = check_payment_constraints(
+        _open_payment(
+            constraints=[
+                AmountRange(min=500, max=2000, currency='USD'),
+            ]
+        ),
+        _closed_payment(payment_amount=Amount(amount=-100, currency='USD')),
+    )
+    assert any('cannot be negative' in v for v in violations_with_min)
+
+
 # ── check_payment_constraints – amount boundary cases (parameterized) ────
 
 
@@ -490,6 +513,20 @@ def test_payment_budget_missing_context():
         'Missing mandate context required to evaluate budget' in v
         for v in violations
     )
+
+
+def test_payment_budget_negative_amount_rejected():
+    """Negative payment amount is rejected by budget evaluator."""
+    violations = check_payment_constraints(
+        _open_payment(
+            constraints=[
+                Budget(max=10.0, currency='USD'),
+            ]
+        ),
+        _closed_payment(payment_amount=Amount(amount=-100, currency='USD')),
+        mandate_context=MandateContext(total_amount=500, total_uses=1),
+    )
+    assert any('cannot be negative' in v for v in violations)
 
 
 # ── check_payment_constraints – execution_date ───────────────────────────

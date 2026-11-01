@@ -92,6 +92,8 @@ class AmountRangeEvaluator(PaymentConstraintEvaluator):
         violations: list[str] = []
         amount = closed_mandate.payment_amount
 
+        if amount.amount < 0:
+            violations.append(f'Amount {amount.amount} cannot be negative')
         if (
             self.constraint.currency
             and amount.currency != self.constraint.currency
@@ -103,6 +105,7 @@ class AmountRangeEvaluator(PaymentConstraintEvaluator):
         if (
             self.constraint.min is not None
             and amount.amount < self.constraint.min
+            and amount.amount >= 0
         ):
             violations.append(
                 f'Amount {amount.amount} below minimum {self.constraint.min}'
@@ -291,6 +294,14 @@ class BudgetEvaluator(PaymentConstraintEvaluator):
         closed_mandate: PaymentMandate,
         open_checkout_hash: str | None = None,
     ) -> list[str]:
+        if closed_mandate.payment_amount.amount < 0:
+            return [
+                (
+                    'Payment amount '
+                    f'{closed_mandate.payment_amount.amount} cannot be negative'
+                )
+            ]
+
         if closed_mandate.payment_amount.currency != self.constraint.currency:
             return [
                 'Budget currency mismatch: expected '

@@ -18,6 +18,7 @@ from ap2.sdk.generated.types.amount import Amount
 from ap2.sdk.generated.types.jwk import JsonWebKey
 from ap2.sdk.generated.types.merchant import Merchant
 from ap2.sdk.generated.types.payment_instrument import PaymentInstrument
+from ap2.sdk.mandate import MandateClient
 from ap2.sdk.utils import ec_key_to_jwk
 from cryptography.hazmat.primitives.asymmetric import ec
 
@@ -178,3 +179,26 @@ def test_payment_agent_recurrence_missing_context():
         'Missing mandate context required to evaluate recurrence' in v
         for v in violations
     )
+
+
+def test_open_payment_mandate_agent_recurrence_can_be_signed(issuer_key):
+    """OpenPaymentMandate carrying AgentRecurrence signs and verifies."""
+    mandate = _open_payment(
+        constraints=[
+            AgentRecurrence(frequency=Frequency.DAILY, max_occurrences=2),
+            AmountRange(min=100, max=2000, currency='USD'),
+            Budget(max=5000, currency='USD'),
+        ]
+    )
+    client = MandateClient()
+    token = client.create(payloads=[mandate], issuer_key=issuer_key)
+    assert token
+    res = client.verify(
+        token, key_or_provider=issuer_key, payload_type=OpenPaymentMandate
+    )
+    assert res.is_valid
+    assert len(res.mandate_payload.constraints) == 3
+    recurrence = res.mandate_payload.constraints[0]
+    assert isinstance(recurrence, AgentRecurrence)
+    assert recurrence.frequency == Frequency.DAILY
+    assert recurrence.max_occurrences == 2

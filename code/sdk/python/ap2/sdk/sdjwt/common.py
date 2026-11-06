@@ -226,7 +226,7 @@ def delegate_claims_from_model(payload: BaseModel) -> dict[str, Any]:
     """Serialize a Pydantic payload into AP2 delegate claims."""
     if not isinstance(payload, BaseModel):
         raise TypeError('payload must be an instance of pydantic.BaseModel')
-    return payload.model_dump(by_alias=True, exclude_none=True)
+    return payload.model_dump(by_alias=True, exclude_none=True, mode='json')
 
 
 def selectively_disclosable_claims(

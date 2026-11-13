@@ -1,5 +1,6 @@
 """Script to generate pydantic models from json schemas."""
 
+import json
 import os
 import shutil
 import subprocess
@@ -29,8 +30,9 @@ def main():
             for jf in json_files:
                 shutil.copy(jf, temp_dir)
 
-            shutil.copytree(root_dir / 'types', temp_dir / 'types', dirs_exist_ok=True)
-
+            shutil.copytree(
+                root_dir / 'types', temp_dir / 'types', dirs_exist_ok=True
+            )
 
         command = [
             sys.executable,
@@ -48,6 +50,23 @@ def main():
             '--use-title-as-name',
             '--use-default-kwarg',
             '--use-default',
+            '--validators',
+            json.dumps(
+                {
+                    'OpenPaymentMandate': {
+                        'validators': [
+                            {
+                                'field': 'constraints',
+                                'function': (
+                                    'ap2.sdk.constraint_validation.'
+                                    'require_payment_constraint_types'
+                                ),
+                                'mode': 'before',
+                            }
+                        ],
+                    },
+                }
+            ),
             '--field-extra-keys',
             'x-selectively-disclosable-field',
             'x-selectively-disclosable-array',

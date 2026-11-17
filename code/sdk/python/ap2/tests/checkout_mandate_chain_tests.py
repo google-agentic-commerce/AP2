@@ -14,6 +14,7 @@ from ap2.sdk.generated.open_checkout_mandate import (
     Item as MandateItem,
 )
 from ap2.sdk.generated.types.merchant import Merchant
+from ap2.sdk.utils import compute_sha256_b64url
 from ap2.tests.conftest import make_checkout_jwt, make_cnf, make_line_item
 from cryptography.hazmat.primitives.asymmetric import ec
 
@@ -64,7 +65,9 @@ def test_checkout_chain_hash_mismatch():
         ),
         CheckoutMandate(
             checkout_jwt=checkout_jwt,
-            checkout_hash='actual_hash',
+            # Tied to checkout_jwt, so only the expected_checkout_hash
+            # comparison below should produce a violation.
+            checkout_hash=compute_sha256_b64url(checkout_jwt),
         ),
     ]
     chain = CheckoutMandateChain.parse(payloads)
@@ -73,6 +76,46 @@ def test_checkout_chain_hash_mismatch():
     )
     assert len(violations) == 1
     assert 'Checkout checkout_hash mismatch' in violations[0]
+
+
+def test_checkout_chain_rejects_checkout_hash_not_tied_to_checkout_jwt():
+    """verify() must reject a closed_mandate whose checkout_hash does not
+    correspond to the checkout_jwt it is presented with, even when no
+    expected_checkout_hash is supplied by the caller.
+
+    checkout_hash is meant to bind the closed mandate to one specific
+    checkout_jwt (see the merchant sample's
+    ``checkout_hash = _compute_sha256_b64url(checkout_jwt)``). Without
+    verify() checking that binding itself, a party holding a validly-signed
+    CheckoutMandateChain for one checkout could substitute a *different*
+    checkout_jwt (e.g. a cheaper cart, or one for a different merchant) and
+    verify() would accept it as long as the caller happens not to pass
+    expected_checkout_hash from its own already-trusted source - the field
+    is otherwise decorative.
+    """
+    real_checkout_jwt = make_checkout_jwt(
+        merchant=Merchant(id='m-1', name='Good Store'),
+    )
+    substituted_checkout_jwt = make_checkout_jwt(
+        merchant=Merchant(id='m-evil', name='Evil Store'),
+    )
+    payloads = [
+        OpenCheckoutMandate(
+            constraints=[],
+            cnf=make_cnf(_DUMMY_KEY.public_key()),
+        ),
+        CheckoutMandate(
+            # checkout_hash was computed over real_checkout_jwt at issuance
+            # time, NOT over substituted_checkout_jwt.
+            checkout_jwt=real_checkout_jwt,
+            checkout_hash=compute_sha256_b64url(real_checkout_jwt),
+        ),
+    ]
+    chain = CheckoutMandateChain.parse(payloads)
+    # No expected_checkout_hash supplied: verify() must still catch that
+    # substituted_checkout_jwt was never the checkout this chain committed to.
+    violations = chain.verify(checkout_jwt=substituted_checkout_jwt)
+    assert any('checkout_hash' in v for v in violations)
 
 
 def test_full_checkout_end_to_end(
@@ -101,7 +144,10 @@ def test_full_checkout_end_to_end(
         holder_key=agent_key,
         mandate_token=open_tok,
         payloads=[
-            CheckoutMandate(checkout_jwt=checkout_jwt, checkout_hash='hash')
+            CheckoutMandate(
+                checkout_jwt=checkout_jwt,
+                checkout_hash=compute_sha256_b64url(checkout_jwt),
+            )
         ],
         aud='merchant',
         nonce='merchant-nonce',
@@ -141,7 +187,10 @@ def test_checkout_line_items_constraint():
             ],
             cnf=make_cnf(_DUMMY_KEY.public_key()),
         ),
-        CheckoutMandate(checkout_jwt=checkout_jwt, checkout_hash='hash'),
+        CheckoutMandate(
+            checkout_jwt=checkout_jwt,
+            checkout_hash=compute_sha256_b64url(checkout_jwt),
+        ),
     ]
     chain = CheckoutMandateChain.parse(payloads)
     violations = chain.verify(checkout_jwt=checkout_jwt)

@@ -13,7 +13,7 @@ from ap2.sdk.generated.checkout_mandate import CheckoutMandate
 from ap2.sdk.generated.open_checkout_mandate import OpenCheckoutMandate
 from ap2.sdk.generated.types.checkout import Checkout
 from ap2.sdk.mandate import _log_event
-from ap2.sdk.utils import b64url_decode
+from ap2.sdk.utils import b64url_decode, compute_sha256_b64url
 from pydantic import ValidationError
 
 
@@ -88,6 +88,22 @@ class CheckoutMandateChain:
                 checkout,
             )
         )
+
+        # The closed mandate's checkout_hash is meant to bind it to this one
+        # checkout_jwt (see the merchant sample's
+        # ``checkout_hash = compute_sha256_b64url(checkout_jwt)``). That
+        # binding must be checked unconditionally, not only when a caller
+        # happens to pass expected_checkout_hash from its own already-trusted
+        # source - otherwise a party could substitute a different
+        # checkout_jwt for the one this chain actually committed to and
+        # verify() would accept it.
+        actual_checkout_hash = compute_sha256_b64url(checkout_jwt)
+        if actual_checkout_hash != self.closed_mandate.checkout_hash:
+            violations.append(
+                'Checkout checkout_hash does not match checkout_jwt: '
+                f'computed {actual_checkout_hash}, got'
+                f' {self.closed_mandate.checkout_hash}'
+            )
 
         if (
             expected_checkout_hash is not None

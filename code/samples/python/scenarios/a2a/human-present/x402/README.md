@@ -130,3 +130,42 @@ This section walks you through a typical interaction with the sample.
     transaction information in a PaymentMandate and ask you to sign the
     mandate. It will initiate payment using the PaymentMandate.
 1. **Purchase Complete**: The payment will be processed (OTP challenge is skipped for x402 demo), and you'll receive a confirmation message and a digital receipt.
+
+### Offline signing for a closed Base USDC purchase
+
+The human-present launcher also accepts `--closed-x402` for one Deterministic
+Commerce Assurance purchase at 0.025 USDC (25,000 atomic units). This mode uses
+the buyer's locally encrypted Ethereum keystore. It verifies the signed checkout
+and payment mandates and prepares the x402 authorization, holder binding and
+HTTP request proof. The signer runs entirely on the buyer's machine.
+
+Activate the Python samples environment first (`uv sync --package ap2-samples`
+and `source .venv/bin/activate` from the repository root). Supply these local
+inputs for the merchant's `com.weverlabs.ap2.commerce-assurance.1` profile:
+
+* `challenge.json` is the full unsigned x402 v2 challenge from the Commerce
+  Assurance resource. Its `accepts` entry must match the exact Base mainnet
+  native USDC offer and the merchant's payee.
+* `mandates.json` is the issuer's closed pair for this buyer and purchase. It
+  contains `profile`, `checkout_mandate` and `payment_mandate`.
+* `trust.json` contains the trusted public keys obtained independently from the
+  operator. Both `merchant` and `issuer` entries carry a pinned `kid` and public
+  P-256 `jwk`.
+* `input.json` contains the exact canonical UTF-8 service input bytes whose
+  SHA-256 digest the merchant signed. A trailing newline changes the digest.
+
+Preview the verified purchase using the public address of your own wallet:
+
+```sh
+code/samples/python/scenarios/a2a/human-present/cards/run.sh --closed-x402 \
+  --buyer "$BUYER_ADDRESS" --challenge challenge.json --mandates mandates.json \
+  --trust trust.json --input input.json
+```
+
+To authorize the displayed purchase, add `--keystore buyer-keystore.json
+--sign-to ./signed-purchase` to the same command. The signer asks for confirmation
+and the keystore password, checks the buyer and expiry again, and creates a new
+private directory containing `body.json` and `proof.txt`. These files together
+authorize the purchase until expiry. The command makes zero network requests.
+The merchant's [settlement contract](https://exchange.weverpay.com/api/ap2-settlement/contract)
+describes the two artifacts.

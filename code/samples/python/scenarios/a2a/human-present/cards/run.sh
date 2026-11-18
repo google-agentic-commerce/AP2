@@ -7,6 +7,12 @@
 # Exit immediately if any command exits with a non-zero status.
 set -e
 
+# Buyer-operated offline signing uses a local keystore and signed checkout files.
+if [[ "${1:-}" == "--closed-x402" ]]; then
+  shift
+  exec python3 "$(dirname "$0")/../x402/wever-pay/sign_purchase.py" "$@"
+fi
+
 # Default payment method
 PAYMENT_METHOD="CARD"
 

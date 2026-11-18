@@ -47,6 +47,7 @@ emvco
 endlocal
 envoyproxy
 esac
+fastmcp
 felixge
 Fiuu
 fontawesome
@@ -81,6 +82,7 @@ issuerauth
 JAVACMD
 jetbrains
 Jetpack
+jose
 jvmargs
 Kaia
 keepattributes
@@ -100,6 +102,7 @@ llms
 llmstxt
 logr
 longrunning
+mainnet
 mastercard
 micropayments
 Mispick
@@ -110,6 +113,7 @@ MSYS
 multistep
 Mysten
 nexi
+Noncanonical
 nosetests
 Nuvei
 objx
@@ -174,6 +178,9 @@ vulnz
 Wallex
 Wayfair
 webassets
+wever
+Wever
+weverlabs
 Worldline
 Worldpay
 Xdock

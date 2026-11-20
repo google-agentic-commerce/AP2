@@ -1,0 +1,3 @@
+{
+  "files": { "includes": ["**", "!code/web-client", "!docs/assets"] }
+}

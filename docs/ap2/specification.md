@@ -352,12 +352,18 @@ Receipts.
 -   The hash of the `checkout_jwt` MUST be independently computed from the
     included `checkout_jwt`.
 -   The Checkout Receipt `reference` MUST match the hash of the closed Checkout
-    Mandate. This is calculated in the same manner as the `sd_hash` would be.
+    Mandate's issuer-signed JWT: the last `~~` segment of the presentation, up
+    to its first `~`, without disclosures. The reference therefore stays the
+    same however the mandate is presented.
 -   The Payment Mandate MUST be verified according to the
     [Merchant Payment Processor](#merchant-payment-processor) section using the
     `checkout_hash` from the Checkout Mandate.
--   The Payment Receipt reference MUST match the hash of the closed Payment
-    Mandate. This is calculated in the same manner as the `sd_hash` would be.
+-   The Payment Receipt `reference` MUST match the hash of the closed Payment
+    Mandate's issuer-signed JWT, computed as for the Checkout Receipt.
+-   The reference does not bind which disclosures were presented. The closed
+    Mandates' disclosures MUST be kept with the dispute evidence and verified
+    against the digests in their signed payloads, which commit the transaction
+    details, including the amount and payee.
 
 After all these steps have been performed successfully, then the information
 contained in the Checkout Mandate and Payment Mandate is able to be used as

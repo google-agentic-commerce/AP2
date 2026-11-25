@@ -366,9 +366,11 @@ Receipts.
     details, including the amount and payee.
 -   Earlier versions of this section described the reference as computed in
     the manner of `sd_hash`, over the closed segment including its disclosures
-    and trailing `~`. A verifier MAY recognise that form in evidence produced
+    and trailing `~`. A verifier MAY recognize that form in evidence produced
     under the earlier text, and if it does, it MUST report which form matched.
     New receipts MUST use the form defined above.
+
+<!-- cspell:ignore WPLG Frqt Oierpj KZSGL -->
 
 For example, for a payment chain produced by the SDK with one closed-mandate
 disclosure, the closed segment is `<issuer-signed JWT>~<disclosure>~`:

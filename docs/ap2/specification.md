@@ -352,12 +352,35 @@ Receipts.
 -   The hash of the `checkout_jwt` MUST be independently computed from the
     included `checkout_jwt`.
 -   The Checkout Receipt `reference` MUST match the hash of the closed Checkout
-    Mandate. This is calculated in the same manner as the `sd_hash` would be.
+    Mandate's issuer-signed JWT: the last `~~` segment of the presentation, up
+    to its first `~`, without disclosures. The reference therefore stays the
+    same however the mandate is presented.
 -   The Payment Mandate MUST be verified according to the
     [Merchant Payment Processor](#merchant-payment-processor) section using the
     `checkout_hash` from the Checkout Mandate.
--   The Payment Receipt reference MUST match the hash of the closed Payment
-    Mandate. This is calculated in the same manner as the `sd_hash` would be.
+-   The Payment Receipt `reference` MUST match the hash of the closed Payment
+    Mandate's issuer-signed JWT, computed as for the Checkout Receipt.
+-   The reference does not bind which disclosures were presented. The closed
+    Mandates' disclosures MUST be kept with the dispute evidence and verified
+    against the digests in their signed payloads, which commit the transaction
+    details, including the amount and payee.
+-   Earlier versions of this section described the reference as computed in
+    the manner of `sd_hash`, over the closed segment including its disclosures
+    and trailing `~`. A verifier MAY recognize that form in evidence produced
+    under the earlier text, and if it does, it MUST report which form matched.
+    New receipts MUST use the form defined above.
+
+<!-- cspell:ignore WPLG Frqt Oierpj KZSGL -->
+
+For example, for a payment chain produced by the SDK with one closed-mandate
+disclosure, the closed segment is `<issuer-signed JWT>~<disclosure>~`:
+
+-   The `reference`: SHA-256, base64url, over `<issuer-signed JWT>` only:
+    `D6NcQ86eCkOBS1MNTICNjG0_KqSf-vRxkP00sJtXMX0`. This is the value the SDK's
+    processor sample signs into the receipt.
+-   The earlier form, over the whole closed segment:
+    `I2r-YsYK58DK78ntNNkWPLGFrqtOierpjF60KZSGLNg`. An implementation of the
+    earlier text computes this value, and it does not match.
 
 After all these steps have been performed successfully, then the information
 contained in the Checkout Mandate and Payment Mandate is able to be used as
